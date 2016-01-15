@@ -9,7 +9,7 @@
 #import "SimiPaymentWebView.h"
 #import <SimiCartBundle/SimiOrderModel.h>
 #import <SimiCartBundle/UIImage+SimiCustom.h>
-
+#import <SafariServices/SafariServices.h>
 #define BACK_ITEM 123
 #define SPACE_ITEM 134
 
@@ -18,7 +18,11 @@
 @end
 
 @implementation SimiPaymentWebView
-
+{
+    NSURLRequest* request;
+    BOOL isDone;
+    NSURLRequest* failedRequest;
+}
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -37,10 +41,13 @@
     _webView.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     [self.view addSubview:_webView];
     
+    isDone = NO;
     _webView.delegate = self;
-    NSMutableURLRequest *request = [[NSMutableURLRequest alloc]initWithURL:[NSURL URLWithString:_urlPath]];
-    [request addValue:@"YES" forHTTPHeaderField:@"Mobile-App"];
+    request = [[NSURLRequest alloc]initWithURL:[NSURL URLWithString:_urlPath]];
+//    [request addValue:@"YES" forHTTPHeaderField:@"Mobile-App"];
     [_webView loadRequest:request];
+
+
 }
 
 - (void)didReceiveMemoryWarning
@@ -64,6 +71,7 @@
 - (void)webViewDidStartLoad:(UIWebView *)webView{
     [self startLoadingData];
     webView.hidden = YES;
+    NSLog(@"webViewDidStartLoad");
 }
 
 - (void)webViewDidFinishLoad:(UIWebView *)webView{
@@ -72,18 +80,31 @@
     if (_webTitle == nil || _webTitle.length == 0) {
         [self setWebTitle:[webView stringByEvaluatingJavaScriptFromString:@"document.title"]];
     }
+    NSLog(@"webViewDidFinishLoad");
 }
 
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
 {
+    NSLog(@"shouldStartLoadWithRequest");
+    if(!isDone) {
+        isDone = NO;
+        NSLog(@"shouldStartLoadWithRequest() 111");
+        failedRequest = request;
+        [_webView stopLoading];
+        NSURLConnection* con = [[NSURLConnection alloc] initWithRequest:request delegate:self startImmediately:YES];
+        [con start];
+        return NO;
+    }
+    NSLog(@"shouldStartLoadWithRequest ---------");
+    NSString* requestURL = [NSString stringWithFormat:@"%@",[request mainDocumentURL]];
     if(_payment){
-        NSString *requestURL = [NSString stringWithFormat:@"%@",request];
-        if([requestURL rangeOfString:[_payment valueForKey:@"url_success"] ].location != NSNotFound){
+        if([requestURL rangeOfString:[_payment valueForKey:@"url_redirect"]].location != NSNotFound){
+            return YES;
+        }else if([requestURL rangeOfString:[_payment valueForKey:@"url_success"] ].location != NSNotFound){
             UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:SCLocalizedString(@"SUCCESS") message:SCLocalizedString([_payment valueForKey:@"message_success"]) delegate:nil cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles: nil];
             [alertView show];
             [self.navigationController popToRootViewControllerAnimated:YES];
             return NO;
-            
         }else if([requestURL rangeOfString:[_payment valueForKey:@"url_fail"]].location != NSNotFound){
             UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:SCLocalizedString(@"FAIL") message:SCLocalizedString([_payment valueForKey:@"message_fail"]) delegate:nil cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles: nil];
             [alertView show];
@@ -103,6 +124,53 @@
     }
     return YES;
 }
+
+- (void)webView:(UIWebView *)webView didFailLoadWithError:(nullable NSError *)error{
+    NSLog(@"didFailLoadWithError: %@",error);
+    
+}
+
+
+//NSURLConnectionDataDelegate
+- (BOOL)connection:(NSURLConnection *)connection canAuthenticateAgainstProtectionSpace:(NSURLProtectionSpace *)protectionSpace {
+    NSLog(@"canAuthenticateAgainstProtectionSpace");
+    return [protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust];
+}
+
+//- (void)connection:(NSURLConnection *)connection didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge {
+////    if ([challenge.protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust])
+////        if ([trustedHosts containsObject:challenge.protectionSpace.host])
+//    [challenge.sender useCredential:[NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust] forAuthenticationChallenge:challenge];
+//    
+//    [challenge.sender continueWithoutCredentialForAuthenticationChallenge:challenge];
+//}
+
+-(void)connection:(NSURLConnection *)connection willSendRequestForAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge{
+    NSLog(@"willSendRequestForAuthenticationChallenge");
+    if([challenge previousFailureCount] == 0){
+        isDone = YES;
+        NSLog(@"x1");
+        NSURLCredential *credential = [[NSURLCredential alloc] initWithTrust:challenge.protectionSpace.serverTrust];
+        [challenge.sender useCredential:credential forAuthenticationChallenge:challenge];
+    }else {
+        NSLog(@"x2");
+        [challenge.sender cancelAuthenticationChallenge:challenge];
+    }
+}
+-(void) connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response{
+    NSLog(@"didReceiveResponse");
+    isDone = YES;
+    [connection cancel];
+    [_webView loadRequest:failedRequest];
+}
+
+
+//- (nullable NSURLRequest *)connection:(NSURLConnection *)connection willSendRequest:(NSURLRequest *)request redirectResponse:(nullable NSURLResponse *)response{
+//    NSLog(@"Response: %@", request);
+//    [_webView loadRequest:request];
+//    return request;
+//}
+
 
 
 @end
