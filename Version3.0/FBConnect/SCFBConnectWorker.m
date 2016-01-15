@@ -125,25 +125,22 @@
          startWithCompletionHandler:^(FBSDKGraphRequestConnection *connection, id result, NSError *error) {
              if (!error) {
                  if([result isKindOfClass:[NSDictionary class]]){
-                     
                      NSString *email = [result objectForKey:@"email"];
                      NSString *name = SCLocalizedString([result objectForKey:@"name"]);
                      if(customer == nil)
                          customer = [[SimiCustomerModel alloc] init];
-                     
-//                     NSDictionary *info = [[NSBundle mainBundle] infoDictionary];
-//                     NSString *bundleIdentifier = [NSString stringWithFormat:@"%@", [info objectForKey:@"CFBundleIdentifier"]];
-//                     KeychainItemWrapper *wrapper = [[KeychainItemWrapper alloc] initWithIdentifier:bundleIdentifier accessGroup:nil];
-//                     [wrapper setObject:name forKey:(__bridge id)(kSecAttrComment)];
-//                     [wrapper setObject:@"loginwithfacebook" forKey:(__bridge id)(kSecAttrLabel)];
-                     
                      if(email && name){
-                     [customer loginWithFacebookEmail:email name:name];
-                     [[NSNotificationCenter defaultCenter] postNotificationName:@"SimiFaceBookWorker_StartLoginWithFaceBook" object:nil];
+                         [customer loginWithFacebookEmail:email name:name];
+                         NSDictionary *info = [[NSBundle mainBundle] infoDictionary];
+                         NSString *bundleIdentifier = [NSString stringWithFormat:@"%@", [info objectForKey:@"CFBundleIdentifier"]];
+                         KeychainItemWrapper *wrapper = [[KeychainItemWrapper alloc] initWithIdentifier:bundleIdentifier accessGroup:nil];
+                         [wrapper setObject:@"" forKey:(__bridge id)(kSecAttrDescription)];
+                         [wrapper setObject:email forKey:(__bridge id)(kSecAttrAccount)];
+                         
+                         [[NSNotificationCenter defaultCenter] postNotificationName:@"SimiFaceBookWorker_StartLoginWithFaceBook" object:nil];
                          [viewController startLoadingData];
                      }
                  }
-                 
              }
          }];
     }
