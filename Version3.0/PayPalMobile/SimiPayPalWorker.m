@@ -85,7 +85,7 @@
         }
         
         PayPalConfiguration *_payPalConfig = [[PayPalConfiguration alloc] init];
-        _payPalConfig.acceptCreditCards = NO;
+        _payPalConfig.acceptCreditCards = YES;
         _payPalConfig.languageOrLocale = LOCALE_IDENTIFIER;
         
         PayPalPayment *pay = [[PayPalPayment alloc] init];
@@ -133,7 +133,7 @@
 
 - (void)didUpdatePaymentStatus:(NSNotification *)noti{
     SimiResponder *responder = [noti.userInfo valueForKey:@"responder"];
-    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:SCLocalizedString(responder.status) message:responder.responseMessage delegate:nil cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles: nil];
+    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:SCLocalizedString(responder.status) message:SCLocalizedString(responder.responseMessage) delegate:nil cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles: nil];
     [alertView show];
     [self removeObserverForNotification:noti];
     [viewController stopLoadingData];
