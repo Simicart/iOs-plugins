@@ -17,7 +17,7 @@
     BOOL isProductMoreView;
     UIView *commentView;
 }
-@synthesize btnComment, btnShare;
+@synthesize btnComment, btnShare, btnClearAllFacebookCookies;
 @synthesize isShowFacebookView, isHideTabBar, isShowComment;
 @synthesize tagFacebookView, section, productModel, productMoreVC;
 @synthesize stringFacebookAppID, stringHtml;
@@ -220,15 +220,6 @@
 
 - (void)didClickCommentButton
 {
-    NSHTTPCookieStorage* cookies = [NSHTTPCookieStorage sharedHTTPCookieStorage];
-    
-    NSArray *allCookies = [cookies cookies];
-    
-    for(NSHTTPCookie *cookie in allCookies) {
-        if([[cookie domain] rangeOfString:@"facebook.com"].location != NSNotFound) {
-            [cookies deleteCookie:cookie];
-        }
-    }
     isShowComment = YES;
     commentView = [[UIView alloc]init];
     commentView.tag = tagView;
@@ -257,21 +248,16 @@
     [viewContent.layer setMasksToBounds:YES];
     [commentView addSubview:viewContent];
     
-//    btnCommentWithOtherAccount = [[UIButton alloc]initWithFrame:CGRectMake(20, 25, frame.size.width - 60, 35)];
-//    [btnCommentWithOtherAccount setTitle:@" Comment with another account" forState:UIControlStateNormal];
-//    [btnCommentWithOtherAccount setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-//    [btnCommentWithOtherAccount setBackgroundColor:[UIColor colorWithRed:70.0/255 green:98.0/255 blue:158.0/255 alpha:1.0]];
-//    [btnCommentWithOtherAccount.layer setCornerRadius:5.0f];
-//    [btnCommentWithOtherAccount.layer setMasksToBounds:YES];
-//    [btnCommentWithOtherAccount addTarget:self action:@selector(didClickChangeAccount) forControlEvents:UIControlEventTouchUpInside];
-//    [btnCommentWithOtherAccount.titleLabel setFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE]];
-//    [commentView addSubview:btnCommentWithOtherAccount];
-//    if (isLoginWithComment) {
-//        [btnCommentWithOtherAccount setHidden:NO];
-//    }else
-//    {
-//        [btnCommentWithOtherAccount setHidden:YES];
-//    }
+    btnClearAllFacebookCookies = [[UIButton alloc]initWithFrame:CGRectMake(20, 25, frame.size.width - 60, 35)];
+    [btnClearAllFacebookCookies setTitle:@"Logout your facebook account" forState:UIControlStateNormal];
+    [btnClearAllFacebookCookies setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [btnClearAllFacebookCookies setBackgroundColor:[UIColor colorWithRed:70.0/255 green:98.0/255 blue:158.0/255 alpha:1.0]];
+    [btnClearAllFacebookCookies.layer setCornerRadius:5.0f];
+    [btnClearAllFacebookCookies.layer setMasksToBounds:YES];
+    [btnClearAllFacebookCookies addTarget:self action:@selector(didClearAllFacebookCookies) forControlEvents:UIControlEventTouchUpInside];
+    [btnClearAllFacebookCookies.titleLabel setFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE]];
+    [commentView addSubview:btnClearAllFacebookCookies];
+    
     
     UIButton *btnClose = [[UIButton alloc]initWithFrame:CGRectMake(frame.size.width - 40, 20, 50, 50)];
     [btnClose setImage:[UIImage imageNamed:@"facebookconnect_close"] forState:UIControlStateNormal];
@@ -357,25 +343,40 @@
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
 {
     NSString *stringURL = [NSString stringWithFormat:@"%@",request.URL];
-//    if ([stringURL containsString:@"https://m.facebook.com/plugins/login_success.php?refsrc"] || [stringURL containsString:@"https://m.facebook.com/plugins/login_success.php?_rdr"]) {
-//        [webComment loadHTMLString:stringHtml baseURL:[NSURL URLWithString:[productModel valueForKey:@"product_url"]]];
-//        isLoginWithComment = YES;
-//        [btnCommentWithOtherAccount setHidden:NO];
-//        return NO;
-//    }else
-        if ([stringURL containsString:@"facebook.com/plugins/comments.php?api_key"]) {
+    if ([stringURL containsString:@"facebook.com/plugins/comments.php?api_key"]) {
         [activityView stopAnimating];
         [activityView removeFromSuperview];
     }else if([stringURL containsString:@"facebook.com/plugins/close_popup.php"]){
         [webComment loadHTMLString:stringHtml baseURL:[NSURL URLWithString:[productModel valueForKey:@"product_url"]]];
+    }else if([stringURL containsString:[productModel valueForKey:@"product_url"]]){
+        NSHTTPCookieStorage* cookies = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+        NSArray *allCookies = [cookies cookies];
+        btnClearAllFacebookCookies.hidden = YES;
+        for(NSHTTPCookie *cookie in allCookies) {
+            if([[cookie domain] rangeOfString:@"facebook.com"].location != NSNotFound) {
+                btnClearAllFacebookCookies.hidden = NO;
+                return YES;
+            }
+        }
     }
     return YES;
 }
 
-- (void)didClickChangeAccount
+
+
+- (void)didClearAllFacebookCookies
 {
-//    isLoginWithComment = NO;
-//    [btnCommentWithOtherAccount setHidden:YES];
+    NSHTTPCookieStorage* cookies = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+    
+    NSArray *allCookies = [cookies cookies];
+    
+    for(NSHTTPCookie *cookie in allCookies) {
+        NSLog(@"%@",cookie);
+        if([[cookie domain] rangeOfString:@"facebook.com"].location != NSNotFound) {
+            [cookies deleteCookie:cookie];
+        }
+    }
+
     [webComment loadHTMLString:stringHtml baseURL:[NSURL URLWithString:[productModel valueForKey:@"product_url"]]];
 }
 
