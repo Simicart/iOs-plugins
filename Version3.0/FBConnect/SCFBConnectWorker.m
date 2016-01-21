@@ -29,7 +29,6 @@
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"DidLogout" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"SCLoginViewController_InitCellAfter" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"ApplicationWillTerminate" object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"AutoLoginWithFacebook" object:nil];
         
     }
     return self;
@@ -96,19 +95,8 @@
     else if ([noti.name isEqualToString:@"DidLogout"] || [noti.name isEqualToString:@"ApplicationWillTerminate"]){
         [[[FBSDKLoginManager alloc] init] logOut];
     }
-    else if([noti.name isEqualToString:@"DidLogin"])
-    {
-            }
-    else if([noti.name isEqualToString:@"AutoLoginWithFacebook"])
-    {
+    else if([noti.name isEqualToString:@"DidLogin"]){
         
-        NSString *stringEmail = noti.object;
-        NSString *stringName = [noti.userInfo valueForKey:@"name"];
-        if (customer == nil) {
-            customer = [[SimiCustomerModel alloc]init];
-            [customer loginWithFacebookEmail:stringEmail name:stringName];
-        }
-       
     }
 }
 
