@@ -12,3 +12,12 @@
 @interface CustomPaymentModelCollection : SimiModelCollection
 -(void) getCustomPaymentsWithParams:(NSDictionary*) params;
 @end
+
+#define kSimiCancelPayment @"connector/checkout/cancel_order/"
+#define DidCancelPayment @"DidCancelPayment"
+
+
+//inner class because conflict to server source files for customization
+@interface CustomPaymentModel : SimiModel
+-(void) cancelPaymentWithOrderID:(NSString* )orderID;
+@end

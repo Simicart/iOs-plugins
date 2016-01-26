@@ -7,9 +7,6 @@
 //
 
 #import "SimiPaymentWebView.h"
-#import <SimiCartBundle/SimiOrderModel.h>
-#import <SimiCartBundle/UIImage+SimiCustom.h>
-#import <SafariServices/SafariServices.h>
 
 #define BACK_ITEM 123
 #define SPACE_ITEM 134
@@ -86,7 +83,7 @@
             CustomPaymentModel* customPaymentModel = [CustomPaymentModel new];
             [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:DidCancelPayment object:customPaymentModel];
             [self startLoadingData];
-            [customPaymentModel cancelPaymentWithOrderID:_orderID];
+            [customPaymentModel cancelPaymentWithOrderID:_orderID];            
         }
     }
 }
