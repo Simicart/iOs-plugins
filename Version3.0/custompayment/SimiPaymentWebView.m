@@ -10,11 +10,11 @@
 #import <SimiCartBundle/SimiOrderModel.h>
 #import <SimiCartBundle/UIImage+SimiCustom.h>
 #import <SafariServices/SafariServices.h>
+
 #define BACK_ITEM 123
 #define SPACE_ITEM 134
 
 @interface SimiPaymentWebView ()
-
 @end
 
 @implementation SimiPaymentWebView
@@ -22,6 +22,7 @@
     NSURLRequest* request;
     BOOL isDone;
     NSURLRequest* failedRequest;
+    UIActivityIndicatorView* simiLoading;    
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -32,22 +33,33 @@
     }
     return self;
 }
-- (void)viewDidLoadAfter
+- (void)viewDidLoad
 {
-    [self setToSimiView];
+//    [self setToSimiView];
     self.navigationItem.title = SCLocalizedString(self.navigationItem.title);
     _webView = [[UIWebView alloc] initWithFrame:self.view.frame];
     _webView.scalesPageToFit = YES;
     _webView.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     [self.view addSubview:_webView];
-    
     isDone = NO;
     _webView.delegate = self;
     request = [[NSURLRequest alloc]initWithURL:[NSURL URLWithString:_urlPath]];
 //    [request addValue:@"YES" forHTTPHeaderField:@"Mobile-App"];
     [_webView loadRequest:request];
+    self.navigationItem.hidesBackButton = YES;
+    UIBarButtonItem* backButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancelPayment:)];
+    backButton.title = @"Cancel";
+    NSMutableArray* leftBarButtons = [NSMutableArray arrayWithArray:self.navigationController.navigationItem.leftBarButtonItems];
+    [leftBarButtons addObjectsFromArray:@[backButton]];
+    self.navigationItem.leftBarButtonItems = leftBarButtons;
+    [super viewDidLoad];
+}
 
 
+-(void) cancelPayment:(id) sender{
+    UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:@"Confirmation" message:@"Are you sure that you want to cancel the order?" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"OK", nil];
+    [alertView show];
+    alertView.tag = 0;
 }
 
 - (void)didReceiveMemoryWarning
@@ -65,6 +77,19 @@
     }
 }
 
+//UIAlertViewDelegate
+-(void) alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
+    if(alertView.tag == 0){
+        if(buttonIndex == 0){
+        
+        }else if(buttonIndex == 1){
+            CustomPaymentModel* customPaymentModel = [CustomPaymentModel new];
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:DidCancelPayment object:customPaymentModel];
+            [self startLoadingData];
+            [customPaymentModel cancelPaymentWithOrderID:_orderID];
+        }
+    }
+}
 
 
 #pragma mark WebView Delegates
@@ -127,7 +152,6 @@
 
 - (void)webView:(UIWebView *)webView didFailLoadWithError:(nullable NSError *)error{
     NSLog(@"didFailLoadWithError: %@",error);
-    
 }
 
 
@@ -171,6 +195,40 @@
 //    return request;
 //}
 
+-(void) didReceiveNotification:(NSNotification *)noti{
+    SimiResponder* responder = [noti.userInfo valueForKey:@"responder"];
+    [self removeObserverForNotification:noti];
+    [self stopLoadingData];
+    UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:responder.status message:responder.responseMessage delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+    [alertView show];
+    [self.navigationController popToRootViewControllerAnimated:YES];
+}
 
+- (void)startLoadingData{
+    if (!simiLoading.isAnimating) {
+        CGRect frame = self.view.frame;
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad && self.navigationController) {
+            if (frame.size.width > self.navigationController.view.frame.size.width) {
+                frame = self.navigationController.view.frame;
+            }
+        }
+        
+        simiLoading = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+        simiLoading.hidesWhenStopped = YES;
+        simiLoading.center = CGPointMake(frame.size.width/2, frame.size.height/2);
+        [self.view addSubview:simiLoading];
+        self.view.userInteractionEnabled = NO;
+        [simiLoading startAnimating];
+        self.view.alpha = 0.5;
+        
+    }
+}
+
+- (void)stopLoadingData{
+    self.view.userInteractionEnabled = YES;
+    self.view.alpha = 1;
+    [simiLoading stopAnimating];
+    [simiLoading removeFromSuperview];
+}
 
 @end

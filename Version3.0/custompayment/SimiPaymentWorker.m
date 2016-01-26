@@ -80,9 +80,10 @@
                     break;
                 }
             }
+            [nextController setOrderID:[order valueForKey:@"invoice_number" ]];
             [nextController setUrlPath:url];
-            nextController.title =  SCLocalizedString(@"Credit Card Payments");
-            nextController.webTitle = SCLocalizedString(@"Credit Card Payments");
+            nextController.title =  SCLocalizedString([payment valueForKey:@"title"]);
+            nextController.webTitle = SCLocalizedString([payment valueForKey:@"title"]);
             [(UINavigationController *)currentVC pushViewController:nextController animated:YES];
         }else{
             UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:SCLocalizedString(@"Error") message:SCLocalizedString(@"Sorry, Credit Card Payments is not now available. Please try again later.") delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil];

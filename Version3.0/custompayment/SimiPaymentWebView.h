@@ -8,11 +8,14 @@
 
 #import <SimiCartBundle/SimiViewController.h>
 #import <SafariServices/SafariServices.h>
-@interface SimiPaymentWebView : SimiViewController<UIWebViewDelegate, NSURLConnectionDataDelegate,NSURLConnectionDelegate>{
+#import "CustomPaymentModel.h"
+//
+@interface SimiPaymentWebView : UIViewController<UIWebViewDelegate, NSURLConnectionDataDelegate,NSURLConnectionDelegate, UIAlertViewDelegate>{
     NSURL *url;
     UIBarButtonItem *backItem;
 }
 
+@property (strong, nonatomic) NSString* orderID;
 @property (strong, nonatomic) NSString *urlPath;
 @property (strong, nonatomic) NSString *webTitle;
 @property (strong, nonatomic) UIWebView *webView;
