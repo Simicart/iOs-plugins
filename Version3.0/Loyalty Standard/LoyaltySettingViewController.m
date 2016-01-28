@@ -46,7 +46,13 @@
 
 - (void)viewWillAppear:(BOOL)animated
 {
-    _tableView.frame = self.view.bounds;
+    //Ravi
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        _tableView.frame = CGRectMake(0, SCREEN_HEIGHT/3, SCREEN_WIDTH*2/3, SCREEN_HEIGHT*2/3);
+    }else{
+        _tableView.frame = self.view.bounds;
+    }
+    //End
     [super viewWillAppear:YES];
 }
 
