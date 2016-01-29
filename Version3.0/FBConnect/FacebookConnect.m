@@ -16,6 +16,7 @@
     UIImageView* imgLikeCount;
     BOOL isProductMoreView;
     UIView *commentView;
+    FBSDKLikeControl* fbLikeControl;
 }
 @synthesize btnComment, btnShare, btnClearAllFacebookCookies;
 @synthesize isShowFacebookView, isHideTabBar, isShowComment;
@@ -79,6 +80,10 @@
         UIImageView* iMoreView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"ic_bg_more"]];
         iMoreView.frame = CGRectMake(0, 0, sizeLikeView, sizeLikeView);
         iMoreView.contentMode = UIViewContentModeScaleAspectFit;
+        
+        
+        fbLikeControl.likeControlHorizontalAlignment =
+        FBSDKLikeControlHorizontalAlignmentRight;
         if (fbLikeButton == nil) {
             fbLikeButton = [[FBSDKLikeButton alloc]initWithFrame:CGRectMake(sizeLikeView/6, sizeLikeView/4 + 3,2*sizeLikeView/3, sizeLikeView/4)];
         }
@@ -86,6 +91,7 @@
         fbLikeButton.titleLabel.font = [UIFont fontWithName:THEME_FONT_NAME_REGULAR size:10];
       
         fbLikeButton.objectID = [productModel valueForKey:@"product_url"];
+        
         [fbLikeButton addTarget:self action:@selector(didClickLikeButton) forControlEvents:UIControlEventTouchUpInside];
         lblLikeCount = [[UILabel alloc]initWithFrame:CGRectMake(sizeLikeView/4, sizeLikeView/2 + 3,sizeLikeView/2, sizeLikeView/3)];
         lblLikeCount.font = [UIFont fontWithName:THEME_FONT_NAME size:10];
@@ -98,6 +104,7 @@
         
         [facebookLikeView addSubview:iMoreView];
         [facebookLikeView addSubview:fbLikeButton];
+//        [facebookLikeView addSubview:fbLikeControl];
         [facebookLikeView addSubview:imgLikeCount];
         [facebookLikeView addSubview:lblLikeCount];
         [facebookLikeView setBackgroundColor:[UIColor clearColor]];
@@ -425,20 +432,28 @@
 
 -(void) updateLikeLabel{
     [productMoreVC startLoadingData];
-    FBSDKGraphRequest *request = [[FBSDKGraphRequest alloc]
-                                  initWithGraphPath:[productModel valueForKey:@"product_url"]
-                                  parameters:@{@"fields":@"share"}
-                                  HTTPMethod:@"GET"];
-    [request startWithCompletionHandler:^(FBSDKGraphRequestConnection *connection, id result, NSError *error) {
-        if(!error){
-            lblLikeCount.textColor = [UIColor lightGrayColor];
-            lblLikeCount.text = [NSString stringWithFormat:@"%@",[[result objectForKey:@"share"] objectForKey:@"share_count"] ];
-        }
-//        if([FBSDKAccessToken currentAccessToken])
-//        [[[FBSDKLoginManager alloc] init] logOut];
+    NSString* productURL = [NSString stringWithFormat:@"%@",[productModel valueForKey:@"product_url"]];
+    NSString* requestURL = [NSString stringWithFormat:@"https://graph.facebook.com/fql?q=SELECT like_count FROM link_stat WHERE url = \"%@\"",productURL];
+  
+    NSURL* url = [NSURL URLWithString:[requestURL stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+    NSURLRequest *request = [NSURLRequest requestWithURL:url];
+    
+    NSURLResponse *response;
+    NSError *error;
+    //send it synchronous
+    NSData *responseData = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
+    
+    NSDictionary* data = [NSJSONSerialization JSONObjectWithData:responseData
+                                                         options:kNilOptions
+                                                           error:&error];
     [productMoreVC stopLoadingData];
-    }];
-
+    
+    if(!error)
+    {
+        lblLikeCount.text = [NSString stringWithFormat:@"%@", [[[data objectForKey:@"data"] objectAtIndex:0] objectForKey:@"like_count"]];
+    }
+    
+    
 }
 
 -(void) didClickLikeButton{
