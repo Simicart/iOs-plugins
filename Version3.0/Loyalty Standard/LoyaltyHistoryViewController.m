@@ -20,10 +20,12 @@
 @implementation LoyaltyHistoryViewController
 @synthesize tableView = _tableView;
 
-- (void)viewDidLoad
+- (void)viewDidLoadBefore
 {
     [self setToSimiView];
-    [super viewDidLoad];
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        [super viewDidLoadBefore];
+    }
     self.title = SCLocalizedString(@"Rewards History");
     
     // Start load transactions
@@ -48,10 +50,12 @@
     [self loadTransactions];
 }
 
-- (void)viewWillAppear:(BOOL)animated
+- (void)viewWillAppearBefore:(BOOL)animated
 {
     _tableView.frame = self.view.frame;
-    [super viewWillAppear:animated];
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        [super viewWillAppearBefore:animated];
+    }
 }
 
 - (void)dealloc

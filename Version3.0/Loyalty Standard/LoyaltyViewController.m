@@ -22,9 +22,14 @@
 @synthesize loyaltyPolicy = _loyaltyPolicy, cells = _cells;
 @synthesize skipReloadData = _skipReloadData;
 
-- (void)viewDidLoad {
+- (void)viewDidLoadBefore {
     [self setToSimiView];
-    [super viewDidLoad];
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        [super viewDidLoadBefore];
+    }else
+    {
+        [self configureNavigationBarOnViewDidLoad];
+    }
     // Init Views
     self.navigationItem.title = SCLocalizedString(@"My Rewards");
     // Table View
@@ -34,6 +39,13 @@
     _tableView.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     _cells = [SimiTable new];
     [self.view addSubview:_tableView];
+}
+
+- (void)viewWillAppearBefore:(BOOL)animated
+{
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        [super viewWillAppearBefore:YES];
+    }
 }
 
 - (void)viewDidAppear:(BOOL)animated

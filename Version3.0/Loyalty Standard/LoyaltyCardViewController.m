@@ -18,10 +18,13 @@
 @implementation LoyaltyCardViewController
 @synthesize model = _model;
 
-- (void)viewDidLoad
+- (void)viewDidLoadBefore
 {
     [self setToSimiView];
-    [super viewDidLoad];
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        [super viewDidLoadBefore];
+    }else
+        [self configureNavigationBarOnViewDidLoad];
     self.title = SCLocalizedString(@"Rewards Card");
     // Show Rewards Card
     UIView *passbook = [[UIView alloc] initWithFrame:CGRectMake(10, 85, 300, 190)];
@@ -97,13 +100,13 @@
     }
 }
 
-- (void)viewWillAppear:(BOOL)animated
+- (void)viewWillAppearBefore:(BOOL)animated
 {
-    [super viewWillAppear:animated];
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         UIView *passbook = [self.view viewWithTag:100];
         passbook.center = CGPointMake(self.view.center.x, 150);
-    }
+    }else
+        [super viewWillAppearBefore:YES];
 }
 
 - (NSString *)barcodeUrl

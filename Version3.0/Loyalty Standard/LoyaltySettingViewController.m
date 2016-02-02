@@ -20,10 +20,13 @@
 @synthesize tableView = _tableView, model = _model;
 @synthesize table = _table, settings = _settings;
 
-- (void)viewDidLoad
+- (void)viewDidLoadBefore
 {
     [self setToSimiView];
-    [super viewDidLoad];
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        [super viewDidLoadBefore];
+    }else
+        [self configureNavigationBarOnViewDidLoad];
     self.title = SCLocalizedString(@"Settings");
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(saveSettings)];
     
@@ -44,16 +47,16 @@
     }
 }
 
-- (void)viewWillAppear:(BOOL)animated
+- (void)viewWillAppearBefore:(BOOL)animated
 {
     //Ravi
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         _tableView.frame = CGRectMake(0, SCREEN_HEIGHT/3, SCREEN_WIDTH*2/3, SCREEN_HEIGHT*2/3);
     }else{
         _tableView.frame = self.view.bounds;
+        [super viewWillAppearBefore:YES];
     }
     //End
-    [super viewWillAppear:YES];
 }
 
 - (void)dealloc
