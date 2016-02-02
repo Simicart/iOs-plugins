@@ -71,8 +71,14 @@
         if ([storeLocatorModel valueForKey:@"city"]) {
             stringAddress = [NSString stringWithFormat:@"%@, %@",stringAddress, [storeLocatorModel valueForKey:@"city"]];
         }
-        if ([storeLocatorModel valueForKey:@"country"]) {
-            stringAddress = [NSString stringWithFormat:@"%@, %@", stringAddress, [storeLocatorModel valueForKey:@"country"]];
+        if ([storeLocatorModel valueForKey:@"state"]) {
+            stringAddress = [NSString stringWithFormat:@"%@, %@", stringAddress, [storeLocatorModel valueForKey:@"state"]];
+        }
+        if ([storeLocatorModel valueForKey:@"zipcode"]) {
+            stringAddress = [NSString stringWithFormat:@"%@, %@", stringAddress, [storeLocatorModel valueForKey:@"zipcode"]];
+        }
+        if ([storeLocatorModel valueForKey:@"country_name"]) {
+            stringAddress = [NSString stringWithFormat:@"%@, %@", stringAddress, [storeLocatorModel valueForKey:@"country_name"]];
         }
         [lblStoreAddress setText:stringAddress];
         [lblStoreAddress resizeToFit];

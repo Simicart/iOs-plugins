@@ -143,10 +143,16 @@
         stringAddress = [NSString stringWithFormat:@"%@",[sLModel valueForKey:@"address"]];
     }
     if ([sLModel valueForKey:@"city"]) {
-        stringAddress = [NSString stringWithFormat:@"%@, %@",stringAddress,[sLModel valueForKey:@"city"]];
+        stringAddress = [NSString stringWithFormat:@"%@, %@",stringAddress, [sLModel valueForKey:@"city"]];
     }
-    if ([sLModel valueForKey:@"country"]) {
-        stringAddress = [NSString stringWithFormat:@"%@, %@",stringAddress, [sLModel valueForKey:@"country"]];
+    if ([sLModel valueForKey:@"state"]) {
+        stringAddress = [NSString stringWithFormat:@"%@, %@", stringAddress, [sLModel valueForKey:@"state"]];
+    }
+    if ([sLModel valueForKey:@"zipcode"]) {
+        stringAddress = [NSString stringWithFormat:@"%@, %@", stringAddress, [sLModel valueForKey:@"zipcode"]];
+    }
+    if ([sLModel valueForKey:@"country_name"]) {
+        stringAddress = [NSString stringWithFormat:@"%@, %@", stringAddress, [sLModel valueForKey:@"country_name"]];
     }
     [lblStoreAddress setText:stringAddress];
     [lblStoreAddress resizeToFit];
