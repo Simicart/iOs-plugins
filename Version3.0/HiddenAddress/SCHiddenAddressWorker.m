@@ -193,25 +193,30 @@
                                  @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:scHiddenAddress_birthday] isEqualToString:@"req"]]
                                  }];
             }
-            
-            if ([self hasField:[hiddenAddressModel valueForKey:scHiddenAddress_gender]] && ![[SimiGlobalVar sharedInstance]isLogin]) {
-                [form addField:@"Select"
-                        config:@{
-                                 @"name": @"gender",
-                                 @"title": SCLocalizedString(@"Gender"),
-                                 @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:scHiddenAddress_gender] isEqualToString:@"req"]],
-                                 @"source": @[@{@"value":@"123",@"label":SCLocalizedString(@"Male")},@{@"value":@"234",@"label":SCLocalizedString(@"Female")}]
-                                 }];
+            NSMutableArray *genderValues = [[NSMutableArray alloc]initWithArray:[[[[SimiGlobalVar sharedInstance]store]valueForKey:@"customer_address_config"]valueForKey:@"gender_value"]];
+            if (genderValues.count == 2) {
+                NSDictionary *dict01 = [[NSDictionary alloc]initWithDictionary:[genderValues objectAtIndex:0]];
+                NSDictionary *dict02 = [[NSDictionary alloc]initWithDictionary:[genderValues objectAtIndex:1]];
+                if ([self hasField:[hiddenAddressModel valueForKey:scHiddenAddress_gender]] && ![[SimiGlobalVar sharedInstance]isLogin]) {
+                    [form addField:@"Select"
+                            config:@{
+                                     @"name": @"gender",
+                                     @"title": SCLocalizedString(@"Gender"),
+                                     @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:scHiddenAddress_gender] isEqualToString:@"req"]],
+                                     @"source": @[@{@"value":[dict01 valueForKey:@"value"],@"label":SCLocalizedString([dict01 valueForKey:@"label"])},@{@"value":[dict02 valueForKey:@"value"] ,@"label":SCLocalizedString([dict02 valueForKey:@"label"])}]
+                                     }];
+                }
             }
             
             if (newAddressController.isNewCustomer) {
-                
-                [form addField:@"Text"
-                        config:@{
-                                 @"name": @"taxvat",
-                                 @"title": SCLocalizedString(@"Tax/VAT number"),
-                                 @"required": [NSNumber numberWithBool:[[config taxvatShow] isEqualToString:@"req"]]
-                                 }];
+                if (![[config taxvatShow] isEqualToString:@""]) {
+                    [form addField:@"Text"
+                            config:@{
+                                     @"name": @"taxvat",
+                                     @"title": SCLocalizedString(@"Tax/VAT number"),
+                                     @"required": [NSNumber numberWithBool:[[config taxvatShow] isEqualToString:@"req"]]
+                                     }];
+                }
                 
                 [form addField:@"Password"
                         config:@{
