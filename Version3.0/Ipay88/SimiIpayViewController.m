@@ -34,24 +34,26 @@
     paymentsdk = [[Ipay alloc] init];
     paymentsdk.delegate = self;
     IpayPayment *ipay = [[IpayPayment alloc] init];
-    [ipay setPaymentId:@""];
+    [ipay setPaymentId:@"2"];
     [ipay setMerchantKey:[payment valueForKey:@"merchant_key"]];
     [ipay setMerchantCode:[payment valueForKey:@"merchant_code"]];
-    [ipay setRefNo:[order valueForKey:@"invoice_number"]];
+    [ipay setRefNo:[NSString stringWithFormat:@"%f", [[NSDate date] timeIntervalSince1970]]];
     [ipay setCurrency:[order valueForKey:@"currency_code"]];
     [ipay setProdDesc:[order valueForKey:@"product_des"]];
     [ipay setUserName:[order valueForKey:@"name"]];
     [ipay setUserEmail:[order valueForKey:@"email"]];
     [ipay setUserContact:[order valueForKey:@"contact"]];
     [ipay setRemark:@"Success"];
-    [ipay setLang:@"ISO-8859-1"];
+    [ipay setLang:@"UTF-8"];
     [ipay setCountry:[order valueForKey:@"country_id"]];
     [ipay setAmount:[order valueForKey:@"amount"]];
+    [ipay setBackendPostURL:@"http://merchant.com/backend.php"];
     if([[payment valueForKey:@"is_sandbox"] isEqualToString:@"1"]){
         [ipay setAmount:@"1.00"];
         [ipay setCurrency:@"MYR"];
         [ipay setCountry:@"MY"];
     }
+    
     UIView *paymentView = [paymentsdk checkout:ipay];
     [self.view addSubview:paymentView];
     [self setContentSizeForViewInPopover:CGSizeMake(3*SCREEN_WIDTH/4, 3*SCREEN_HEIGHT/4)];

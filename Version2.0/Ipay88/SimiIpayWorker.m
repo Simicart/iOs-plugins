@@ -11,7 +11,7 @@
 #import "SimiIpayViewController.h"
 #import <SimiCartBundle/SCAppDelegate.h>
 
-#define METHOD_IPAY @"SIMI_IPAY88"
+#define METHOD_IPAY @"SIMIIPAY88"
 #define ALERT_VIEW_ERROR 0
 
 @implementation SimiIpayWorker{
