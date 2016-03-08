@@ -8,7 +8,7 @@
 
 #import "SimiGlobalVar+Facebook.h"
 
-NSString *const kSimiFacebookLogin  =   @"fblogin/index/login";
+NSString *const kSimiFacebookLogin  =   @"simifblogin/index/login";
 
 @implementation SimiGlobalVar (Facebook)
 
