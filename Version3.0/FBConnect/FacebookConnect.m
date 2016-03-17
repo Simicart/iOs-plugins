@@ -446,12 +446,13 @@
     NSDictionary* data = [NSJSONSerialization JSONObjectWithData:responseData
                                                          options:kNilOptions
                                                            error:&error];
-    [productMoreVC stopLoadingData];
     
     if(!error)
     {
-        lblLikeCount.text = [NSString stringWithFormat:@"%@", [[[data objectForKey:@"data"] objectAtIndex:0] objectForKey:@"like_count"]];
+        if(data)
+            lblLikeCount.text = [NSString stringWithFormat:@"%@", [[[data objectForKey:@"data"] objectAtIndex:0] objectForKey:@"like_count"]];
     }
+    [productMoreVC stopLoadingData];
     
     
 }
