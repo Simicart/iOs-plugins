@@ -91,7 +91,11 @@
             updateAddressView = [[UIView alloc]init];
             updateAddressView.frame = CGRectMake(0, 0, SCREEN_WIDTH, 40);
             updateButton = [[UIButton alloc]initWithFrame:CGRectMake(20,0 , 200, 40)];
-            [updateButton setBackgroundColor:THEME_COLOR];
+            //Ravi fix color
+//            [updateButton setBackgroundColor:THEME_COLOR];
+            [updateButton setBackgroundColor:THEME_BUTTON_BACKGROUND_COLOR];
+            updateButton.tintColor = THEME_BUTTON_TEXT_COLOR;
+            //End
             [updateButton setTitle:SCLocalizedString(@"Confirm Address") forState:UIControlStateNormal];
             [updateButton.layer setCornerRadius:5.0f];
             [updateButton addTarget:self action:@selector(updateAddressInformation:) forControlEvents:UIControlEventTouchUpInside];

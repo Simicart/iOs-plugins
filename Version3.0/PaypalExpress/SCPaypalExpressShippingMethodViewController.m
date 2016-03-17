@@ -118,7 +118,11 @@
                 placeOrderView = [[UIView alloc]init];
                 placeOrderView.frame = CGRectMake(0, 0, self.view.frame.size.width, 500);
                 placeOrderButton = [[UIButton alloc]initWithFrame:CGRectMake(30,5 , 250, 40)];
-                [placeOrderButton setBackgroundColor:THEME_COLOR];
+                //Ravi fix color
+//                [placeOrderButton setBackgroundColor:THEME_COLOR];
+                [placeOrderButton setBackgroundColor:THEME_BUTTON_BACKGROUND_COLOR];
+                placeOrderButton.tintColor = THEME_BUTTON_TEXT_COLOR;
+                //End
                 [placeOrderButton setTitle:SCLocalizedString(@"Place Order") forState:UIControlStateNormal];
                 [placeOrderButton.layer setCornerRadius:5.0f];
                 [placeOrderButton addTarget:self action:@selector(placeOrder:) forControlEvents:UIControlEventTouchUpInside];
