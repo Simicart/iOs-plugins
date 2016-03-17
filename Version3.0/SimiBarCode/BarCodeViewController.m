@@ -208,14 +208,14 @@
 - (void)displayPermissionMissingAlert {
     NSString *message = nil;
     if ([MTBBarcodeScanner scanningIsProhibited]) {
-        message = @"This app does not have permission to use the camera.";
+        message = SCLocalizedString(@"This app does not have permission to use the camera.");
     } else if (![MTBBarcodeScanner cameraIsPresent]) {
-        message = @"This device does not have a camera.";
+        message = SCLocalizedString(@"This device does not have a camera.");
     } else {
-        message = @"An unknown error occurred.";
+        message = SCLocalizedString(@"An unknown error occurred.");
     }
     
-    [[[UIAlertView alloc] initWithTitle:@"Scanning Unavailable"
+    [[[UIAlertView alloc] initWithTitle:SCLocalizedString(@"Scanning Unavailable")
                                 message:message
                                delegate:nil
                       cancelButtonTitle:@"Ok"
@@ -282,7 +282,7 @@
     
     if (!sym) {
         [self hiddenCanvasScan:YES];
-        UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Scanning Error" message:@"Unable to detect valid code." delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
+        UIAlertView *alert = [[UIAlertView alloc]initWithTitle:SCLocalizedString(@"Scanning Error") message:SCLocalizedString(@"Unable to detect valid code.") delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
         alert.simiObjectName = @"AlertScanError";
         [alert show];
     }else
@@ -344,7 +344,7 @@
         }else
         {
             [_previewView setHidden:NO];
-            UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Scanning Error" message:@"No product matching code" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
+            UIAlertView *alert = [[UIAlertView alloc]initWithTitle:SCLocalizedString(@"Scanning Error") message:SCLocalizedString(@"No product matching code") delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
             alert.simiObjectName = @"AlertFindProductFail";
             [alert show];
         }
