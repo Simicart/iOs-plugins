@@ -55,6 +55,10 @@
     _tableView.frame = self.view.frame;
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         [super viewWillAppearBefore:animated];
+    }else{
+        if (SIMI_SYSTEM_IOS >= 9.0) {
+            _tableView.frame = CGRectMake(SCREEN_WIDTH/3, SCREEN_HEIGHT/3, SCREEN_WIDTH*2/3, SCREEN_HEIGHT*2/3);
+        }
     }
 }
 
