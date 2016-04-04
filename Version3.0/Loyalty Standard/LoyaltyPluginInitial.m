@@ -135,8 +135,10 @@ static NSString *LEFTMENU_REWARDS_ROW     = @"leftmenu_rewards";
         }
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             [[(SCOrderViewControllerPad *)self.orderViewController tableRight] reloadData];
-        }else
-            [[(SCOrderViewController *)self.orderViewController tableViewOrder] reloadData];
+        }
+        if ([noti.name isEqualToString:@"DidSpendPointsOrder"]) {
+            [[self.orderViewController tableViewOrder]reloadData];
+        }
         
 #pragma mark init Cart Cell
     } else if ([noti.name isEqualToString:@"InitCartCell-Before"]) {
