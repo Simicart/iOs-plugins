@@ -48,6 +48,7 @@
         }
     }else if([noti.name isEqualToString:@"SCLeftMenu_DidSelectRow"])
     {
+        NSLog(@"store config : %@", [[[SimiGlobalVar sharedInstance] store] valueForKeyPath:@"store_config"]);
         NSArray *zopimConfig = [[[[SimiGlobalVar sharedInstance] store] valueForKeyPath:@"store_config"] valueForKeyPath:@"zopim_config"];
         NSString *accountKey = [zopimConfig valueForKey:@"account_key"];
         NSString *showProfile = [zopimConfig valueForKey:@"show_profile"];
@@ -68,7 +69,8 @@
 
 - (void)startZopimChat:(NSString *)accountKey showProfile:(NSString *)showProfile name:(NSString *)name email:(NSString *)email phone:(NSString *)phone
 {
-    [ChatStyling applyStyling];
+    [self styleApp];
+//    [ChatStyling applyStyling];
     [ZDCChat configure:^(ZDCConfig *defaults) {
         
         defaults.accountKey = accountKey;
@@ -83,10 +85,10 @@
     
     [ZDCLog enable:YES];
     [ZDCLog setLogLevel:ZDCLogLevelWarn];
-    
-    [[ZDCChat instance].session trackEvent:@"Chat button pressed: (all fields optional)"];
+//    [[ZDCChat instance].session trackEvent:@"Chat button pressed: (all fields optional)"];
     
     // start a chat in a new modal
+    // Lần click thứ 2 thì nó k call vào đây.
     [ZDCChat startChat:nil];
 }
 
@@ -102,7 +104,12 @@
                                           [UIColor whiteColor] ,UITextAttributeTextColor, nil];
         [[UINavigationBar appearance] setTintColor:[UIColor whiteColor]];
         [[UINavigationBar appearance] setTitleTextAttributes:navbarAttributes];
-        [[UINavigationBar appearance] setBarTintColor:[UIColor colorWithRed:0.91f green:0.16f blue:0.16f alpha:1.0f]];
+//        [[UINavigationBar appearance] setBarTintColor:[UIColor colorWithRed:0.91f green:0.16f blue:0.16f alpha:1.0f]];
+        [[UINavigationBar appearance] setBarTintColor:THEME_COLOR];
+//        [[ZDCChatOverlay appearance] setBackgroundColor:THEME_COLOR];
+//        [[ZDCChatOverlay appearance] setOverlayBackgroundImage:[UIImage imageNamed:@"icHome"]];
+        [[ZDCChatOverlay appearance] setOverlayTintColor:THEME_BUTTON_BACKGROUND_COLOR];
+        [[ZDCChatOverlay appearance] setMessageCountColor:THEME_BUTTON_TEXT_COLOR];
         
         if ([ZDUUtil isVersionOrNewer:@(8)]) {
             
@@ -118,8 +125,13 @@
         //[[UINavigationBar appearance] setBackgroundColor:[UIColor clearColor]];
         
     } else {
+//        [[UINavigationBar appearance] setTintColor:[UIColor colorWithRed:0.91f green:0.16f blue:0.16f alpha:1.0f]];
         
-        [[UINavigationBar appearance] setTintColor:[UIColor colorWithRed:0.91f green:0.16f blue:0.16f alpha:1.0f]];
+        [[UINavigationBar appearance] setTintColor:THEME_COLOR];
+//        [[ZDCChatOverlay appearance] setBackgroundColor:THEME_COLOR];
+//        [[ZDCChatOverlay appearance] setOverlayBackgroundImage:[UIImage imageNamed:@"icHome"]];
+        [[ZDCChatOverlay appearance] setOverlayTintColor:THEME_BUTTON_BACKGROUND_COLOR];
+        [[ZDCChatOverlay appearance] setMessageCountColor:THEME_BUTTON_TEXT_COLOR];
     }
 }
 
