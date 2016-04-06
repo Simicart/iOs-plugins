@@ -28,7 +28,10 @@
 #pragma mark searchVoice Button
         
         //Product More View
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(showSearchVoiceBtn:) name:@"showSearchVoiceBtn" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(showSearchVoiceBtn:) name:@"SCHomeViewControllerViewWillAppear" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(showSearchVoiceBtn:) name:@"MatrixHomeViewControllerViewWillAppear" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(showSearchVoiceBtn:) name:@"ZaraHomeViewControllerViewWillAppear" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(showSearchVoiceBtn:) name:@"SCProductListViewControllerViewWillAppear" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(searchVoicePad:) name:@"showSearchVoiceOnPad" object:nil];
         [SimiGlobalVar sharedInstance].isSearchVoice = YES;
     }
@@ -47,12 +50,7 @@
 {
     currentNoti = noti;
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-//        NSMutableArray *rightBarBtn = noti.object;
-//        // lionel edit for voice search
-//        UIButton *searchVoiceButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 40, 40)];
-//        [searchVoiceButton setImage:[[UIImage imageNamed:@"ic_micro_pad"] imageWithColor:THEME_NAVIGATION_ICON_COLOR] forState:UIControlStateNormal];
-//        [searchVoiceButton addTarget:self action:@selector(didSelectSearchVoiceButton) forControlEvents:(UIControlEventTouchUpInside)];
-////        _searchVoiceItem = [[UIBarButtonItem alloc] initWithCustomView:searchVoiceButton];
+
     } else {
         if ([noti.object isKindOfClass:[SCHomeViewController class]]) {
             SCHomeViewController *homeViewController = noti.object;
@@ -116,13 +114,9 @@
 
 -(void)finishAction:(NSString *)result {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        //        NSMutableArray *rightBarBtn = noti.object;
-        //        // lionel edit for voice search
-        //        UIButton *searchVoiceButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 40, 40)];
-        //        [searchVoiceButton setImage:[[UIImage imageNamed:@"ic_micro_pad"] imageWithColor:THEME_NAVIGATION_ICON_COLOR] forState:UIControlStateNormal];
-        //        [searchVoiceButton addTarget:self action:@selector(didSelectSearchVoiceButton) forControlEvents:(UIControlEventTouchUpInside)];
-        ////        _searchVoiceItem = [[UIBarButtonItem alloc] initWithCustomView:searchVoiceButton];
+        [self.searchVoicePadViewController dismissViewControllerAnimated:YES completion:nil];
     } else {
+        [self.searchVoiceViewController dismissViewControllerAnimated:YES completion:nil];
         if ([currentNoti.object isKindOfClass:[SCHomeViewController class]]) {
             SCHomeViewController *homeViewController = currentNoti.object;
             homeViewController.searchBarHome.text = result;
@@ -147,12 +141,7 @@
 {
     [self.searchVoiceViewController dismissViewControllerAnimated:YES completion:nil];
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        //        NSMutableArray *rightBarBtn = noti.object;
-        //        // lionel edit for voice search
-        //        UIButton *searchVoiceButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 40, 40)];
-        //        [searchVoiceButton setImage:[[UIImage imageNamed:@"ic_micro_pad"] imageWithColor:THEME_NAVIGATION_ICON_COLOR] forState:UIControlStateNormal];
-        //        [searchVoiceButton addTarget:self action:@selector(didSelectSearchVoiceButton) forControlEvents:(UIControlEventTouchUpInside)];
-        ////        _searchVoiceItem = [[UIBarButtonItem alloc] initWithCustomView:searchVoiceButton];
+        
     } else {
         if ([currentNoti.object isKindOfClass:[SCHomeViewController class]]) {
             SCHomeViewController *homeViewController = currentNoti.object;

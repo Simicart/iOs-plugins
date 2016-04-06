@@ -21,41 +21,37 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // check pad or phone
-    // if phone
-    // lionel editted for searchVoice
-         //setup recorder
          //Set the audio file
-        NSArray *pathComponents = [NSArray arrayWithObjects:
+    NSArray *pathComponents = [NSArray arrayWithObjects:
                                    [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject],
                                    @"MyAudioMemo.m4a",
                                    nil];
-        NSURL *outputFileURL = [NSURL fileURLWithPathComponents:pathComponents];
+    NSURL *outputFileURL = [NSURL fileURLWithPathComponents:pathComponents];
     
-        // Setup audio session
-        AVAudioSession *session = [AVAudioSession sharedInstance];
-        [session setCategory:AVAudioSessionCategoryPlayAndRecord error:nil];
+    // Setup audio session
+    AVAudioSession *session = [AVAudioSession sharedInstance];
+    [session setCategory:AVAudioSessionCategoryPlayAndRecord error:nil];
     
-        // Define the recorder setting
-        NSMutableDictionary *recordSetting = [[NSMutableDictionary alloc] init];
+    // Define the recorder setting
+    NSMutableDictionary *recordSetting = [[NSMutableDictionary alloc] init];
     
-        [recordSetting setValue:[NSNumber numberWithInt:kAudioFormatMPEG4AAC] forKey:AVFormatIDKey];
-        [recordSetting setValue:[NSNumber numberWithFloat:44100.0] forKey:AVSampleRateKey];
-        [recordSetting setValue:[NSNumber numberWithInt: 2] forKey:AVNumberOfChannelsKey];
+    [recordSetting setValue:[NSNumber numberWithInt:kAudioFormatMPEG4AAC] forKey:AVFormatIDKey];
+    [recordSetting setValue:[NSNumber numberWithFloat:44100.0] forKey:AVSampleRateKey];
+    [recordSetting setValue:[NSNumber numberWithInt: 2] forKey:AVNumberOfChannelsKey];
     
-        // Initiate and prepare the recorder
-        recorder = [[AVAudioRecorder alloc] initWithURL:outputFileURL settings:recordSetting error:nil];
-        recorder.delegate = self;
-        recorder.meteringEnabled = YES;
-        [recorder prepareToRecord];
-        self.recordStatusLb.text = @"Say something to looking for...";
-        self.recordingButton.enabled = YES;
-        [self.recordingButton setImage:[UIImage imageNamed:@"recording"] forState:(UIControlStateNormal)];
-        self.recordingButton.hidden = NO;
-        self.tryRecordBtn.hidden = YES;
-        self.tryRecordLb.hidden = YES;
-        self.searchTextBtn.hidden = YES;
-        self.searchTextLb.hidden = YES;
+    // Initiate and prepare the recorder
+    recorder = [[AVAudioRecorder alloc] initWithURL:outputFileURL settings:recordSetting error:nil];
+    recorder.delegate = self;
+    recorder.meteringEnabled = YES;
+    [recorder prepareToRecord];
+    self.recordStatusLb.text = @"Say something to looking for...";
+    self.recordingButton.enabled = YES;
+    [self.recordingButton setImage:[UIImage imageNamed:@"recording"] forState:(UIControlStateNormal)];
+    self.recordingButton.hidden = NO;
+    self.tryRecordBtn.hidden = YES;
+    self.tryRecordLb.hidden = YES;
+    self.searchTextBtn.hidden = YES;
+    self.searchTextLb.hidden = YES;
     
     // end
     // Do any additional setup after loading the view.
@@ -144,7 +140,6 @@
 }
 
 - (void)closeBtnHandle {
-//    [self dismissViewControllerAnimated:YES completion:nil];
     [self.delegate cancelAction];
 }
 
@@ -163,7 +158,6 @@
         module.langCode = LOCALE_IDENTIFIER;
     }
     [module beginRecording];
-//    [self.delegate tryAgainAction];
 }
 
 - (void)searchTextBtnHandle {
@@ -190,7 +184,6 @@
         NSNumber *resultIndex = [responseDict valueForKey:@"result_index"];
         NSString *stringResult = [[resultArray objectAtIndex:[resultIndex integerValue]] valueForKey:@"transcript"];
         NSLog(@"result string : %@", stringResult);
-        [self.navigationController popViewControllerAnimated:NO];
         [self.delegate finishAction:stringResult];
     } else {
         self.recordStatusLb.text = @"We didn't quite get that";
