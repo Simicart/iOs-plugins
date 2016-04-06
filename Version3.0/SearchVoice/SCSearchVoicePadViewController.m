@@ -43,7 +43,7 @@
     recorder.delegate = self;
     recorder.meteringEnabled = YES;
     [recorder prepareToRecord];
-    self.recordStatusLb.text = @"Say something to looking for...";
+    self.recordStatusLb.text = SCLocalizedString(@"Say something to looking for...");
     self.recordingButton.enabled = YES;
     [self.recordingButton setImage:[UIImage imageNamed:@"recording"] forState:(UIControlStateNormal)];
     self.recordingButton.hidden = NO;
@@ -61,8 +61,8 @@
     if (module == nil) {
         module = [[SpeechToTextModule alloc] init];
         module.delegate = self;
-        module.langCode = LOCALE_IDENTIFIER;
     }
+    module.langCode = LOCALE_IDENTIFIER;
     [module beginRecording];
     [self setUpSearchVoiceView];
 }
@@ -84,7 +84,7 @@
     self.recordingButton.layer.cornerRadius = self.recordingButton.frame.size.width / 2;
     // status label
     self.recordStatusLb = [[UILabel alloc] initWithFrame:[SimiGlobalVar scaleFrame:CGRectMake(8, self.recordingButton.frame.origin.y - 8 - [SimiGlobalVar scaleValue:50], SCREEN_WIDTH - 16, 50)]];
-    self.recordStatusLb.text = @"Say something to looking for...";
+    self.recordStatusLb.text = SCLocalizedString(@"Say something to looking for...");
     self.recordStatusLb.textColor = [UIColor whiteColor];
     [self.recordStatusLb setTextAlignment:(NSTextAlignmentCenter)];
     // close button
@@ -98,7 +98,7 @@
     self.tryRecordBtn.hidden = YES;
     
     self.tryRecordLb = [[UILabel alloc] initWithFrame:[SimiGlobalVar scaleFrame:CGRectMake(8, self.tryRecordBtn.frame.origin.y + 50, (SCREEN_WIDTH / 2) - 16, 20)]];
-    self.tryRecordLb.text = @"tap to try again";
+    self.tryRecordLb.text = SCLocalizedString(@"tap to try again");
     [self.tryRecordLb setFont:[UIFont systemFontOfSize:12]];
     self.tryRecordLb.textColor = [UIColor whiteColor];
     [self.tryRecordLb setTextAlignment:(NSTextAlignmentCenter)];
@@ -112,7 +112,7 @@
     self.searchTextBtn.hidden = YES;
     
     self.searchTextLb = [[UILabel alloc] initWithFrame:[SimiGlobalVar scaleFrame:CGRectMake((SCREEN_WIDTH /2) + 8, self.tryRecordBtn.frame.origin.y + 50, (SCREEN_WIDTH / 2) - 16, 20)]];
-    self.searchTextLb.text = @"type your search";
+    self.searchTextLb.text = SCLocalizedString(@"type your search");
     [self.searchTextLb setFont:[UIFont systemFontOfSize:12]];
     self.searchTextLb.textColor = [UIColor whiteColor];
     [self.searchTextLb setTextAlignment:(NSTextAlignmentCenter)];
@@ -144,7 +144,7 @@
 }
 
 - (void)tryRecordBtnHandle {
-    self.recordStatusLb.text = @"Say something to looking for...";
+    self.recordStatusLb.text = SCLocalizedString(@"Say something to looking for...");
     self.recordingButton.enabled = YES;
     [self.recordingButton setImage:[UIImage imageNamed:@"recording"] forState:(UIControlStateNormal)];
     self.recordingButton.hidden = NO;
@@ -155,8 +155,8 @@
     if (module == nil) {
         module = [[SpeechToTextModule alloc] init];
         module.delegate = self;
-        module.langCode = LOCALE_IDENTIFIER;
     }
+    module.langCode = LOCALE_IDENTIFIER;
     [module beginRecording];
     //    [self.delegate tryAgainAction];
 }
@@ -188,7 +188,7 @@
         [self.navigationController popViewControllerAnimated:NO];
         [self.delegate iPadFinishAction:stringResult];
     } else {
-        self.recordStatusLb.text = @"We didn't quite get that";
+        self.recordStatusLb.text = SCLocalizedString(@"We didn't quite get that");
         self.recordingButton.hidden = YES;
         self.tryRecordBtn.hidden = NO;
         self.tryRecordLb.hidden = NO;
