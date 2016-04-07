@@ -30,7 +30,7 @@
     self = [super init];
     if (self) {
 #pragma mark Event For Core & Matrix Theme
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"SCProductMoreViewController-AfterInitViewMore" object:nil];
+        
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"ApplicationDidBecomeActive" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"ApplicationWillTerminate" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"SimiFaceBookWorker_StartLoginWithFaceBook" object:nil];
@@ -56,21 +56,24 @@
     {
         moreActionView = noti.object;
         if(!buttonFacebook ){
-        buttonFacebook = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, sizeButton, sizeButton)];
-        [buttonFacebook setImage:[UIImage imageNamed:@"facebookconnect_ic_detail"] forState:UIControlStateNormal];
-        [buttonFacebook setImageEdgeInsets:UIEdgeInsetsMake(9, 9, 9, 9)];
-        [buttonFacebook.layer setCornerRadius:sizeButton/2.0f];
-        [buttonFacebook.layer setShadowOffset:CGSizeMake(1, 1)];
-        [buttonFacebook.layer setShadowRadius:2];
-        buttonFacebook.layer.shadowOpacity = 0.5;
-        [buttonFacebook setBackgroundColor:[UIColor whiteColor]];
-        [buttonFacebook addTarget:self action:@selector(didTouchFacebook) forControlEvents:UIControlEventTouchUpInside];
-        moreActionView.numberIcon += 1;
-        [moreActionView.arrayIcon addObject:buttonFacebook];
+            buttonFacebook = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, sizeButton, sizeButton)];
+            [buttonFacebook setImage:[UIImage imageNamed:@"facebookconnect_ic_detail"] forState:UIControlStateNormal];
+            [buttonFacebook setImageEdgeInsets:UIEdgeInsetsMake(9, 9, 9, 9)];
+            [buttonFacebook.layer setCornerRadius:sizeButton/2.0f];
+            [buttonFacebook.layer setShadowOffset:CGSizeMake(1, 1)];
+            [buttonFacebook.layer setShadowRadius:2];
+            buttonFacebook.layer.shadowOpacity = 0.5;
+            [buttonFacebook setBackgroundColor:[UIColor whiteColor]];
+            [buttonFacebook addTarget:self action:@selector(didTouchFacebook) forControlEvents:UIControlEventTouchUpInside];
+            moreActionView.numberIcon += 1;
+            [moreActionView.arrayIcon addObject:buttonFacebook];
         }
+        [self removeObserverForNotification:noti];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"SCProductMoreViewController-AfterInitViewMore" object:nil];
     }
     else if([noti.name isEqualToString:@"SCProductMoreViewController-AfterInitViewMore"])
     {
+        [self removeObserverForNotification:noti];
         productModel = [noti.userInfo valueForKey:@"productModel"];
         productMoreVC = [noti.userInfo valueForKey:@"controller"];
         
