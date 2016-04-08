@@ -23,6 +23,7 @@
 
 + (void) applyStyling
 {
+    /*
     UIEdgeInsets insets;
     
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -209,6 +210,7 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(chatLoaded:) name:ZDC_CHAT_UI_DID_LOAD object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(chatLayout:) name:ZDC_CHAT_UI_DID_LAYOUT object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(chatUnloaded:) name:ZDC_CHAT_UI_WILL_UNLOAD object:nil];
+    */
 }
 
 
