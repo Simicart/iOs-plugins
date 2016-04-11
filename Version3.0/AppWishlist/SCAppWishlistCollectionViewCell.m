@@ -46,7 +46,7 @@
     
     if ([[product objectForKey:@"stock_status"] boolValue]) {
         btnAddToCart.enabled = YES;
-        [btnAddToCart setBackgroundColor:THEME_COLOR];
+        [btnAddToCart setBackgroundColor:THEME_BUTTON_BACKGROUND_COLOR];
         [btnAddToCart setTitle:[SCLocalizedString(@"Add To Cart") uppercaseString] forState:UIControlStateNormal];
     }
     else
@@ -128,7 +128,8 @@
         btnAddToCart.enabled = NO;
         btnAddToCart.layer.cornerRadius = 1.0f;
         [btnAddToCart.titleLabel setFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE]];
-        [btnAddToCart setBackgroundColor:THEME_COLOR];
+        [btnAddToCart setBackgroundColor:THEME_BUTTON_BACKGROUND_COLOR];
+        [btnAddToCart setTitleColor:THEME_BUTTON_TEXT_COLOR forState:UIControlStateNormal];
         [btnAddToCart addTarget:self action:@selector(didClickAddToCart) forControlEvents:UIControlEventTouchUpInside];
         [self addSubview:btnAddToCart];
     }
