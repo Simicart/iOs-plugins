@@ -354,7 +354,6 @@ NSInteger const heightButtonSearch = 50;
 
 - (void)cacheDataWithstoreLocatorModelCollection:(SimiStoreLocatorModelCollection *)collection simiAddressStoreLocatorModelCollection:(SimiAddressStoreLocatorModelCollection *)addressCollection simiConfigSearchStoreLocatorModel:(SimiConfigSearchStoreLocatorModel *)configSearch simiTagModelCollection:(SimiTagModelCollection *)tagModelCollection tagChoise:(NSString *)tagString
 {
-//    NSLog(@"So luong model cache:%d",collection.count);
     [sLListViewControllerLandscape.sLModelCollection removeAllObjects];
     for (int i = 0; i < collection.count; i++) {
         [sLListViewControllerLandscape.sLModelCollection addObject:[collection objectAtIndex:i]];

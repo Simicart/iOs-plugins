@@ -117,7 +117,7 @@
         [lblCall setFont:[UIFont fontWithName:THEME_FONT_NAME size:12]];
         [lblCall setBackgroundColor:[UIColor clearColor]];
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-            [btnCall setFrame:CGRectMake(84, 60, 70, 34)];
+            [btnCall setFrame:CGRectMake(84, 75, 70, 34)];
             [lblCall setFrame:CGRectMake(35, 13, 35, 21)];
             [btnCall addSubview:lblCall];
             [self addSubview:btnCall];
@@ -136,7 +136,7 @@
         [lblMail setFont:[UIFont fontWithName:THEME_FONT_NAME size:12]];
         [lblMail setBackgroundColor:[UIColor clearColor]];
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-            [btnMail setFrame:CGRectMake(159, 60, 70, 34)];
+            [btnMail setFrame:CGRectMake(159, 75, 70, 34)];
             [lblMail setFrame:CGRectMake(35, 13, 35, 21)];
             [btnMail addSubview:lblMail];
             [self addSubview:btnMail];
@@ -165,7 +165,7 @@
         [lblMap setFont:[UIFont fontWithName:THEME_FONT_NAME size:12]];
         [lblMap setBackgroundColor:[UIColor clearColor]];
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-            [btnMap setFrame:CGRectMake(237, 60, 70, 34)];
+            [btnMap setFrame:CGRectMake(237, 75, 70, 34)];
             [lblMap setFrame:CGRectMake(35, 13, 35, 21)];
             [btnMap addSubview:lblMap];
             [self addSubview:btnMap];

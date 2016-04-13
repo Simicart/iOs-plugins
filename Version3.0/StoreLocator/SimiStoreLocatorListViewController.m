@@ -108,7 +108,7 @@
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        return 101;
+        return 120;
     }else
     {
         return 118;
@@ -127,11 +127,15 @@
 #pragma mark Simi CL Delegate
 - (void)locationUpdate:(CLLocation *)location {
     [cLController.locationManager stopUpdatingLocation];
-    [self didGetCurrentLocationWithLatitube:location.coordinate.latitude andLongitube:location.coordinate.longitude];
+    if (isFirstRun) {
+        [self didGetCurrentLocationWithLatitube:location.coordinate.latitude andLongitube:location.coordinate.longitude];
+    }
 }
 
 - (void)locationError:(NSError *)error {
-    [self didGetCurrentLocationWithLatitube:0 andLongitube:0];
+    if (isFirstRun) {
+        [self didGetCurrentLocationWithLatitube:0 andLongitube:0];
+    }
 }
 
 - (void) didGetCurrentLocationWithLatitube:(float)la andLongitube:(float)lng
