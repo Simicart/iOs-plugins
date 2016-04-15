@@ -55,21 +55,23 @@ static NSString *PRODUCT_ROW_YOUTUBE = @"PRODUCT_ROW_YOUTUBE";
 
 - (void)initViewMoreAction:(NSNotification*) noti
 {
-    float sizeButton = 50;
-    moreActionView = noti.object;
-    if(!_buttonSimiVideo ){
-        _buttonSimiVideo = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, sizeButton, sizeButton)];
-        [_buttonSimiVideo setImage:[UIImage imageNamed:@"ic_simivideo"] forState:UIControlStateNormal];
-        [_buttonSimiVideo setImageEdgeInsets:UIEdgeInsetsMake(9, 9, 9, 9)];
-        [_buttonSimiVideo.layer setCornerRadius:sizeButton/2.0f];
-        [_buttonSimiVideo.layer setShadowOffset:CGSizeMake(1, 1)];
-        [_buttonSimiVideo.layer setShadowRadius:2];
-        _buttonSimiVideo.layer.shadowOpacity = 0.5;
-        [_buttonSimiVideo setBackgroundColor:[UIColor whiteColor]];
-        [_buttonSimiVideo addTarget:self action:@selector(didTouchSimiVideo:) forControlEvents:UIControlEventTouchUpInside];
+    if(youtubeArray.count > 0){
+        float sizeButton = 50;
+        moreActionView = noti.object;
+        if(!_buttonSimiVideo ){
+            _buttonSimiVideo = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, sizeButton, sizeButton)];
+            [_buttonSimiVideo setImage:[UIImage imageNamed:@"ic_simivideo"] forState:UIControlStateNormal];
+            [_buttonSimiVideo setImageEdgeInsets:UIEdgeInsetsMake(9, 9, 9, 9)];
+            [_buttonSimiVideo.layer setCornerRadius:sizeButton/2.0f];
+            [_buttonSimiVideo.layer setShadowOffset:CGSizeMake(1, 1)];
+            [_buttonSimiVideo.layer setShadowRadius:2];
+            _buttonSimiVideo.layer.shadowOpacity = 0.5;
+            [_buttonSimiVideo setBackgroundColor:[UIColor whiteColor]];
+            [_buttonSimiVideo addTarget:self action:@selector(didTouchSimiVideo:) forControlEvents:UIControlEventTouchUpInside];
+        }
+        moreActionView.numberIcon += 1;
+        [moreActionView.arrayIcon addObject:_buttonSimiVideo];
     }
-    moreActionView.numberIcon += 1;
-    [moreActionView.arrayIcon addObject:_buttonSimiVideo];
 }
 
 - (void)didTouchSimiVideo:(id)sender
