@@ -166,7 +166,7 @@
     [self.delegate searchTextAction];
 }
 
-#pragma mark - AVAudioPlayerDelegate
+#pragma mark - AVAudioPlayerDelegate®
 
 -(BOOL)didReceiveVoiceResponse:(NSData *)data {
     NSString *string = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];

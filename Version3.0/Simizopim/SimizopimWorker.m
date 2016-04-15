@@ -25,8 +25,8 @@
 {
     self = [super init];
     if (self) {
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"SCLeftMenu_InitCellsAfter" object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"SCLeftMenu_DidSelectRow" object:nil];
+//        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"SCLeftMenu_InitCellsAfter" object:nil];
+//        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"SCLeftMenu_DidSelectRow" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didTapChatButton) name:@"tapToChatButton" object:nil];
         self.zoPimConfig = [[[[SimiGlobalVar sharedInstance] store] valueForKeyPath:@"store_config"] valueForKeyPath:@"zopim_config"];
         NSLog(@"zopim config : %@", self.zoPimConfig);
@@ -138,18 +138,22 @@
         NSDictionary *navbarAttributes = [NSDictionary dictionaryWithObjectsAndKeys:[UIColor whiteColor] ,UITextAttributeTextColor, nil];
         [[UINavigationBar appearance] setTintColor:[UIColor whiteColor]];
         [[UINavigationBar appearance] setTitleTextAttributes:navbarAttributes];
-        [[UINavigationBar appearance] setBarTintColor:THEME_COLOR];
+//        [[UINavigationBar appearance] setBarTintColor:THEME_COLOR];
+        [[UINavigationBar appearance] setBarTintColor:[UIColor colorWithRed:0.9 green:0.45 blue:0 alpha:1]];
         UIButton *cartButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 32, 32)];
         [cartButton setImage:[[UIImage imageNamed:@"ic_cart"] imageWithColor:THEME_NAVIGATION_ICON_COLOR] forState:UIControlStateNormal];
-        [[ZDCChatOverlay appearance] setOverlayTintColor:THEME_BUTTON_BACKGROUND_COLOR];
+//        [[ZDCChatOverlay appearance] setOverlayTintColor:THEME_BUTTON_BACKGROUND_COLOR];
+        [[ZDCChatOverlay appearance] setOverlayTintColor:[UIColor colorWithRed:0.9 green:0.45 blue:0 alpha:1]];
         [[ZDCChatOverlay appearance] setMessageCountColor:THEME_BUTTON_TEXT_COLOR];
         if ([ZDUUtil isVersionOrNewer:@(8)]) {
             // For translucent nav bars set YES
             [[UINavigationBar appearance] setTranslucent:NO];
         }
     } else {
-        [[UINavigationBar appearance] setTintColor:THEME_COLOR];
-        [[ZDCChatOverlay appearance] setOverlayTintColor:THEME_BUTTON_BACKGROUND_COLOR];
+//        [[UINavigationBar appearance] setTintColor:THEME_COLOR];
+        [[UINavigationBar appearance] setBarTintColor:[UIColor colorWithRed:0.9 green:0.45 blue:0 alpha:1]];
+//        [[ZDCChatOverlay appearance] setOverlayTintColor:THEME_BUTTON_BACKGROUND_COLOR];
+        [[ZDCChatOverlay appearance] setOverlayTintColor:[UIColor colorWithRed:0.9 green:0.45 blue:0 alpha:1]];
         [[ZDCChatOverlay appearance] setMessageCountColor:THEME_BUTTON_TEXT_COLOR];
     }
 }

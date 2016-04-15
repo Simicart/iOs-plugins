@@ -50,7 +50,7 @@
 {
     currentNoti = noti;
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-
+//        padNoti = noti;
     } else {
         if ([noti.object isKindOfClass:[SCHomeViewController class]]) {
             SCHomeViewController *homeViewController = noti.object;
@@ -199,7 +199,31 @@
 -(void)iPadFinishAction:(NSString *)result {
     [self.searchVoicePadViewController dismissViewControllerAnimated:YES completion:nil];
     SCNavigationBarPad *naviPad = padNoti.object;
+    if (naviPad.searchBar ==nil) {
+        naviPad.searchBar = [UISearchBar new];
+        naviPad.searchBar.placeholder = SCLocalizedString(@"Search");
+        //Gin edit
+        for ( UIView * subview in [[naviPad.searchBar.subviews objectAtIndex:0] subviews] )
+        {
+            if ([subview isKindOfClass:NSClassFromString(@"UISearchBarTextField") ] ) {
+                UITextField *searchView = (UITextField *)subview ;
+                if ([[SimiGlobalVar sharedInstance] isReverseLanguage]) {
+                    [searchView setTextAlignment:NSTextAlignmentRight];
+                }
+            }
+        }
+        //End
+//        naviPad.searchBar.delegate = self;
+    }
+//    naviPad.searchBar.frame = CGRectMake(SCREEN_WIDTH - 320 - itemSpace.width, 0, 0, 45);
+//    [UIView animateWithDuration:0.3 animations:^{
+//        naviPad.searchBar.frame = CGRectMake(0, 0, SCREEN_WIDTH - 320 - itemSpace.width, 45);
+//    }];
+    
+    naviPad.searchBar.tintColor = THEME_SEARCH_TEXT_COLOR;
     naviPad.searchBar.text = result;
+    NSLog(@"search bar text : %@", naviPad.searchBar.text);
+//    [naviPad didSelectSearchButton:naviPad.searchBar];
     [naviPad searchBarSearchButtonClicked:naviPad.searchBar];
 }
 
