@@ -23,7 +23,7 @@
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"ApplicationOpenURL" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"DidSelectPaymentMethod" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"DidPlaceOrder-After" object:nil];
-        [BTAppSwitch setReturnURLScheme:@"com.simicart.demo.payments"];
+        [BTAppSwitch setReturnURLScheme:[NSString stringWithFormat:@"%@.payments",[NSBundle mainBundle].bundleIdentifier]];
     }
     return self;
 }
@@ -34,7 +34,7 @@
         NSURL *url = [noti.userInfo valueForKey:@"url"];
         NSString* sourceApplication = [noti.userInfo valueForKey:@"source_application"];
         NSNumber* number = noti.object;
-        if ([url.scheme localizedCaseInsensitiveCompare:@"com.simicart.demo.payments"] == NSOrderedSame) {
+        if ([url.scheme localizedCaseInsensitiveCompare:[NSString stringWithFormat:@"%@.payments",[NSBundle mainBundle].bundleIdentifier]] == NSOrderedSame) {
             number = [NSNumber numberWithBool:[BTAppSwitch handleOpenURL:url sourceApplication:sourceApplication]];
         }
     }else if([noti.name isEqualToString:@"DidSelectPaymentMethod"]){

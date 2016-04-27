@@ -67,8 +67,8 @@
     paymentRequest.merchantIdentifier = [self.payment valueForKey:@"apple_merchant"];
     paymentRequest.supportedNetworks = @[PKPaymentNetworkAmex, PKPaymentNetworkVisa, PKPaymentNetworkMasterCard];
     paymentRequest.merchantCapabilities = PKMerchantCapability3DS;
-    paymentRequest.countryCode = [[[SimiGlobalVar sharedInstance] store] valueForKey:@"country_code"];
-    paymentRequest.currencyCode = [[[SimiGlobalVar sharedInstance] store] valueForKey:@"currency_code"];
+    paymentRequest.countryCode = [[[[SimiGlobalVar sharedInstance] store] objectForKey:@"store_config"] valueForKey:@"country_code"];
+    paymentRequest.currencyCode = [[[[SimiGlobalVar sharedInstance] store] objectForKey:@"store_config" ] valueForKey:@"currency_code"];
     NSMutableDictionary* fees = [order objectForKey:@"fee"];
     
     NSDecimalNumber* subTotal = [NSDecimalNumber decimalNumberWithString:[NSString stringWithFormat:@"%@",[fees valueForKey:@"sub_total"]]];
@@ -96,9 +96,9 @@
     if(!cell){
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier];
         if([identifier isEqualToString:@"braintree_applepay"]){
-            cell.textLabel.text = @"Apple Pay";
+            cell.textLabel.text = @"Pay with Apple Pay";
         }else if([identifier isEqualToString:@"braintree_paypal"]){
-            cell.textLabel.text = @"Paypal";
+            cell.textLabel.text = @"Pay with Paypal and Card";
         }
         else{
             
@@ -110,11 +110,11 @@
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
     UILabel* lblHeader = [UILabel new];
-    lblHeader.text = SCLocalizedString(@"BRAINTREE");
-    lblHeader.backgroundColor = [UIColor lightGrayColor];
+    lblHeader.text = SCLocalizedString(@"Braintree");
+    lblHeader.backgroundColor = [UIColor blackColor];
     lblHeader.textColor = [UIColor whiteColor];
     lblHeader.textAlignment = NSTextAlignmentCenter;
-    lblHeader.font = [UIFont fontWithName:@"Helvetica-Bold" size:17];
+    lblHeader.font = [UIFont fontWithName:@"Helvetica-Bold" size:30];
     return lblHeader;
 }
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
@@ -175,6 +175,10 @@
             [thankyouPage.navigationItem setHidesBackButton:YES];
             [self.navigationController pushViewController:thankyouPage animated:YES];
         }
+    }else{
+        UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:@"" message:responder.responseMessage delegate:nil cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles:nil, nil];
+        [alertView show];
+        [self.navigationController popToRootViewControllerAnimated:YES];
     }
     [self removeObserverForNotification:noti];
 }
@@ -231,7 +235,7 @@ requestsDismissalOfViewController:(UIViewController *)viewController {
     [self stopLoadingData];
 }
 
-#pragma mark PTDropInViewControllerDelegate
+#pragma mark BTDropInViewControllerDelegate
 - (void)dropInViewController:(BTDropInViewController *)viewController didSucceedWithTokenization:(BTPaymentMethodNonce *)paymentMethodNonce{
     if(paymentMethodNonce.nonce){
         [self postNonceToServer:paymentMethodNonce.nonce];
