@@ -16,7 +16,13 @@ NSString* const kBraintreeUpdatePayment = @"simibraintree/index/update_payment";
     SimiAPI *braintreeAPI = [[SimiAPI alloc] init];
     NSString* url = [NSString stringWithFormat:@"%@%@", kBaseURL, kBraintreeUpdatePayment];
     SimiOrderModel* order = [order_ copy];
-    NSMutableDictionary* params = [[NSMutableDictionary alloc] initWithDictionary:@{@"nonce":nonce,@"order_id":[order valueForKey:@"invoice_number"],@"amount":[[order valueForKey:@"fee"] valueForKey:@"grand_total"]}];
+//    NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
+//    formatter.numberStyle = NSNumberFormatterDecimalStyle;
+//    formatter.maximumFractionDigits = 2;
+//    NSNumber* amount = [formatter numberFromString: [NSString stringWithFormat:@"%@",[[order objectForKey:@"fee"] valueForKey:@"grand_total"]]];
+    
+    NSDecimalNumber* amount = [NSDecimalNumber decimalNumberWithString:[NSString stringWithFormat:@"%.02f",[[[order objectForKey:@"fee"] valueForKey:@"grand_total"] floatValue]]];
+    NSMutableDictionary* params = [[NSMutableDictionary alloc] initWithDictionary:@{@"nonce":nonce,@"order_id":[order valueForKey:@"invoice_number"],@"amount":amount}];
     [braintreeAPI requestWithURL:url params:params target:self selector:@selector(didFinishRequest:responder:) header:nil];
 }
 @end
