@@ -53,8 +53,8 @@
         for(NSDictionary* payment1 in _customPayment){
             if (([[payment1 valueForKey:@"paymentmethod"] isEqualToString:[payment valueForKey:@"payment_method"]])||([[[payment1 valueForKey:@"paymentmethod"] uppercaseString] isEqualToString:[payment valueForKey:@"payment_method"]])) {
                 [self didPlaceOrder:noti];
+                break;
             }
-            break;
         }
     }else if([noti.name isEqualToString:@"DidGetCustomPayments"]){
         if(noti.object)
