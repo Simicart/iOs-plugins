@@ -75,7 +75,7 @@
             SimiPaymentWebView *nextController = [[SimiPaymentWebView alloc] init];
             url = [url stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
             for(NSDictionary* payment1 in _customPayment){
-                if([[payment1 valueForKey:@"paymentmethod"] isEqualToString:[order valueForKey:@"payment_method"]]){
+                if([[NSString stringWithFormat:@"%@",[payment1 valueForKey:@"paymentmethod"]] caseInsensitiveCompare:[NSString stringWithFormat:@"%@",[order valueForKey:@"payment_method"]]] == NSOrderedSame){
                     nextController.payment = payment1;
                     break;
                 }
