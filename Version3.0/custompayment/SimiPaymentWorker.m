@@ -51,7 +51,7 @@
     if ([noti.name isEqualToString:@"DidPlaceOrder-Before"]){
         payment = [noti.userInfo valueForKey:@"payment"];
         for(NSDictionary* payment1 in _customPayment){
-            if (([[payment1 valueForKey:@"paymentmethod"] isEqualToString:[payment valueForKey:@"payment_method"]])||([[[payment1 valueForKey:@"paymentmethod"] uppercaseString] isEqualToString:[payment valueForKey:@"payment_method"]])) {
+            if ([[NSString stringWithFormat:@"%@",[payment1 valueForKey:@"paymentmethod"]] caseInsensitiveCompare:[NSString stringWithFormat:@"%@",[payment valueForKey:@"payment_method"]]] == NSOrderedSame) {
                 [self didPlaceOrder:noti];
                 break;
             }
