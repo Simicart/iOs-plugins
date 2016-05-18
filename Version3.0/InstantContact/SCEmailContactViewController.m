@@ -303,7 +303,10 @@
         }
         
         if ([_contactModel valueForKey:@"activecolor"]) {
-            stringColor = [NSString stringWithFormat:@"%@",[_contactModel valueForKey:@"activecolor"]];
+            if([stringColor containsString:@"#"])
+                stringColor = [NSString stringWithFormat:@"%@",[_contactModel valueForKey:@"activecolor"]];
+            else
+                stringColor = [NSString stringWithFormat:@"#%@",[_contactModel valueForKey:@"activecolor"]];
             stringColor = [stringColor stringByReplacingOccurrencesOfString:@" " withString:@""];
         }
         
