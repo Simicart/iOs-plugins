@@ -25,8 +25,6 @@
 {
     self = [super init];
     if (self) {
-//        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"SCLeftMenu_InitCellsAfter" object:nil];
-//        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"SCLeftMenu_DidSelectRow" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didTapChatButton) name:@"tapToChatButton" object:nil];
         self.zoPimConfig = [[[[SimiGlobalVar sharedInstance] store] valueForKeyPath:@"store_config"] valueForKeyPath:@"zopim_config"];
         NSLog(@"zopim config : %@", self.zoPimConfig);
@@ -76,16 +74,8 @@
     }
 }
 
-//- (NSUInteger) supportedInterfaceOrientations
-//{
-//    //Because your app is only landscape, your view controller for the view in your
-//    // popover needs to support only landscape
-//    return UIInterfaceOrientationMaskLandscapeLeft | UIInterfaceOrientationMaskLandscapeRight;
-//}
-
 -(void)didTapChatButton
 {
-//    [[NSNotificationCenter defaultCenter] postNotificationName:@"SCLeftMenu_DidSelectRow" object:nil];
     NSString *accountKey = [self.zoPimConfig valueForKey:@"account_key"];
     NSString *showProfile = [self.zoPimConfig valueForKey:@"show_profile"];
     if ([showProfile isEqualToString:@"0"]) {
@@ -94,8 +84,6 @@
         NSString *name = [self.zoPimConfig valueForKey:@"name"];
         NSString *email = [self.zoPimConfig valueForKey:@"email"];
         NSString *phone = [self.zoPimConfig valueForKey:@"phone"];
-        //    if(![showProfile isEqualToString:@"0"])
-        //    showProfile = @"3";
         [self startZopimChat:accountKey showProfile:showProfile name:name email:email phone:phone];
     }
     
