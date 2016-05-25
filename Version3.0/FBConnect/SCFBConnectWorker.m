@@ -59,7 +59,7 @@
             UITableViewCell *cell = noti.object;
             FBSDKLoginButton *loginButton = [[FBSDKLoginButton alloc] init];
             loginButton.readPermissions = @[@"email"];
-
+            loginButton.publishPermissions = @[@"publish_actions"];
             float widthCell = 7 *SCREEN_WIDTH/8;
             float heightCell = SCREEN_HEIGHT/16.2142857143f;
             float paddingY = SCREEN_HEIGHT/37.8333333333f/2;
