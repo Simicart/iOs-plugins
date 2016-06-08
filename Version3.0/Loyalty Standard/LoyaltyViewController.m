@@ -186,10 +186,10 @@
             balance.font = [UIFont fontWithName:THEME_FONT_NAME size:40];
             balance.textColor = THEME_PRICE_COLOR;
             balance.textAlignment = NSTextAlignmentCenter;
-            balance.text = [[_loyaltyPolicy objectForKey:@"loyalty_point"] stringValue];
-            if (balance.text == nil) {
+            if([_loyaltyPolicy objectForKey:@"loyalty_point"])
+                balance.text = [NSString stringWithFormat:@"%@",[_loyaltyPolicy objectForKey:@"loyalty_point"]];
+            else
                 balance.text = @"0";
-            }
             [left addSubview:balance];
             UILabel *available = [[UILabel alloc] initWithFrame:CGRectMake(0, 40, left.frame.size.width, 24)];
             available.font = [UIFont fontWithName:THEME_FONT_NAME size:20];
