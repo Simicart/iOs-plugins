@@ -48,7 +48,7 @@
     cLController = [[SimiCLController alloc]init];
     cLController.delegate = self;
     if (SIMI_SYSTEM_IOS >= 8.0) {
-        [cLController.locationManager requestAlwaysAuthorization];
+        [cLController.locationManager requestWhenInUseAuthorization];
     }
     [cLController.locationManager startUpdatingLocation];
     isFirstRun = YES;

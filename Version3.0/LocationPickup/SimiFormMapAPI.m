@@ -48,7 +48,7 @@
         dispatch_async(dispatch_get_main_queue(), ^{
             mapView_.myLocationEnabled = YES;
         });
-        [self start];
+//        [self start];
         [self addSubview: mapView_];
     }
     return self;
@@ -99,6 +99,23 @@
 }
 
 -(void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error{
+    CLAuthorizationStatus status = [CLLocationManager authorizationStatus];
+    
+    // If the status is denied or only granted for when in use, display an alert
+    if (status == kCLAuthorizationStatusAuthorizedWhenInUse || status == kCLAuthorizationStatusDenied) {
+        NSString *title;
+        title = (status == kCLAuthorizationStatusDenied) ? @"Location services are off" : @"Background location is not enabled";
+        NSString *message = @"To use your current location, you must turn to \"Always\" in Location settings";
+        
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:title
+                                                            message:message
+                                                           delegate:self
+                                                  cancelButtonTitle:@"Cancel"
+                                                  otherButtonTitles:@"Settings", nil];
+        [alertView show];
+        return;
+    }
+    
     UIAlertView *errorAlert = [[UIAlertView alloc]initWithTitle:@"Error" message:@"There was an error retrieving your location" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil];
     [errorAlert show];
     NSLog(@"Error: %@",error.description);
