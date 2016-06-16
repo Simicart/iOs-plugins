@@ -17,7 +17,7 @@
     {
         locationManager = [[CLLocationManager alloc]init];
         locationManager.delegate = self;
-        [locationManager requestAlwaysAuthorization];
+        [locationManager requestWhenInUseAuthorization];
     }
 }
 
@@ -27,7 +27,7 @@
     if (locationManager == nil){
         locationManager = [[CLLocationManager alloc]init];
         locationManager.delegate = self;
-        [locationManager requestAlwaysAuthorization];
+        [locationManager requestWhenInUseAuthorization];
     }
     [locationManager startUpdatingLocation];
     
@@ -66,7 +66,7 @@
              }
              // The user has not enabled any location services. Request background authorization.
              else if (status == kCLAuthorizationStatusNotDetermined) {
-                 [locationManager requestAlwaysAuthorization];
+                 [locationManager requestWhenInUseAuthorization];
              }
              [self.delegate autofillUpdateAddressTable:nil];
              /*{
