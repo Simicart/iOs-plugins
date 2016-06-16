@@ -22,7 +22,7 @@
 
 - (instancetype)initWithConfig:(NSDictionary *)config
 {
-     [GMSServices provideAPIKey:@"AIzaSyAmBe73HHr9CU1lYU96CFg6PTwG2i6NDwU"];
+     [GMSServices provideAPIKey:@"AIzaSyDh-R-4SO0lAeWa-2Dkfe7YPMQIa75GR5c"];
     self = [super initWithConfig:config];
     if(self)
     {
@@ -49,6 +49,7 @@
             mapView_.myLocationEnabled = YES;
         });
 //        [self start];
+        geocoder = [[CLGeocoder alloc] init];
         [self addSubview: mapView_];
     }
     return self;
