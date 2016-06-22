@@ -27,6 +27,7 @@
 @property (nonatomic, strong) UIImageView* imgStoreImage;
 @property (nonatomic, strong) UIImageView* imgBackground;
 
+@property (nonatomic, strong) UIView *viewButton;
 @property (nonatomic, strong) UILabel *lblCall;
 @property (nonatomic, strong) UILabel *lblMail;
 @property (nonatomic, strong) UILabel *lblMap;

@@ -61,7 +61,7 @@
         [lblStoreName setTextColor:[[SimiGlobalVar sharedInstance]colorWithHexString:@"#393939"]];
         [self addSubview:lblStoreName];
         
-        lblStoreAddress = [[UILabel alloc]initWithFrame:CGRectMake(labelPaddingLeft, 30, labelWidth, 35)];
+        lblStoreAddress = [[UILabel alloc]initWithFrame:CGRectMake(labelPaddingLeft, 25, labelWidth, 35)];
         [lblStoreAddress setFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE - 2]];
         [lblStoreAddress setTextColor:[[SimiGlobalVar sharedInstance]colorWithHexString:@"#393939"]];
         NSString *stringAddress = @"";
@@ -81,7 +81,7 @@
             stringAddress = [NSString stringWithFormat:@"%@, %@", stringAddress, [storeLocatorModel valueForKey:@"country_name"]];
         }
         [lblStoreAddress setText:stringAddress];
-        [lblStoreAddress resizeToFit];
+        float heightContent = [lblStoreAddress resizeToFit];
         [self addSubview:lblStoreAddress];
         
         lblStoreDistance = [[UILabel alloc]initWithFrame:CGRectMake(SCREEN_WIDTH - labelDistanceWidth, 5, labelDistanceWidth, labelHeight)];
@@ -107,6 +107,8 @@
             [self addSubview:imgStoreImage];
         }
         
+        _viewButton = [[UIView alloc]initWithFrame:CGRectMake(labelDistanceWidth, heightContent, cellWidth - labelDistanceWidth, 34)];
+        [self addSubview:_viewButton];
         btnCall = [UIButton new];
         [btnCall setImage:[UIImage imageNamed:@"storelocator_ic_call_iphone"] forState:UIControlStateNormal];
         [btnCall setImageEdgeInsets:UIEdgeInsetsMake(13, 0, 0, 0)];
@@ -117,10 +119,10 @@
         [lblCall setFont:[UIFont fontWithName:THEME_FONT_NAME size:12]];
         [lblCall setBackgroundColor:[UIColor clearColor]];
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-            [btnCall setFrame:CGRectMake(84, 75, 70, 34)];
+            [btnCall setFrame:CGRectMake(0, 0, 70, 34)];
             [lblCall setFrame:CGRectMake(35, 13, 35, 21)];
             [btnCall addSubview:lblCall];
-            [self addSubview:btnCall];
+            [_viewButton addSubview:btnCall];
             if (![storeLocatorModel valueForKey:@"phone"]) {
                 [btnCall setEnabled:NO];
             }
@@ -136,19 +138,19 @@
         [lblMail setFont:[UIFont fontWithName:THEME_FONT_NAME size:12]];
         [lblMail setBackgroundColor:[UIColor clearColor]];
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-            [btnMail setFrame:CGRectMake(159, 75, 70, 34)];
+            [btnMail setFrame:CGRectMake(75, 0, 70, 34)];
             [lblMail setFrame:CGRectMake(35, 13, 35, 21)];
             [btnMail addSubview:lblMail];
-            [self addSubview:btnMail];
+            [_viewButton addSubview:btnMail];
             if (![storeLocatorModel valueForKey:@"email"]) {
                 [btnMail setEnabled:NO];
             }
         }else
         {
-            [btnMail setFrame:CGRectMake(85, 75, 70, 34)];
+            [btnMail setFrame:CGRectMake(0, 0, 70, 34)];
             [lblMail setFrame:CGRectMake(35, 13, 35, 21)];
             [btnMail addSubview:lblMail];
-            [self addSubview:btnMail];
+            [_viewButton addSubview:btnMail];
             if (![storeLocatorModel valueForKey:@"email"]) {
                 [btnMail setEnabled:NO];
             }
@@ -165,16 +167,16 @@
         [lblMap setFont:[UIFont fontWithName:THEME_FONT_NAME size:12]];
         [lblMap setBackgroundColor:[UIColor clearColor]];
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-            [btnMap setFrame:CGRectMake(237, 75, 70, 34)];
+            [btnMap setFrame:CGRectMake(150, 0, 70, 34)];
             [lblMap setFrame:CGRectMake(35, 13, 35, 21)];
             [btnMap addSubview:lblMap];
-            [self addSubview:btnMap];
+            [_viewButton addSubview:btnMap];
         }else
         {
-            [btnMap setFrame:CGRectMake(185, 75, 70, 34)];
+            [btnMap setFrame:CGRectMake(75, 0, 70, 34)];
             [lblMap setFrame:CGRectMake(35, 13, 35, 21)];
             [btnMap addSubview:lblMap];
-            [self addSubview:btnMap];
+            [_viewButton addSubview:btnMap];
         }
     }
     return self;

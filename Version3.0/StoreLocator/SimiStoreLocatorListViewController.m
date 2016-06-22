@@ -107,12 +107,34 @@
 #pragma mark Table View Delegate
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        return 120;
-    }else
-    {
-        return 118;
+    SimiStoreLocatorModel *storeLocatorModel = [sLModelCollection objectAtIndex:indexPath.row];
+    NSString *stringAddress = @"";
+    if ([storeLocatorModel valueForKey:@"address"]) {
+        stringAddress = [NSString stringWithFormat:@"%@",[storeLocatorModel valueForKey:@"address"]];
     }
+    if ([storeLocatorModel valueForKey:@"city"]) {
+        stringAddress = [NSString stringWithFormat:@"%@, %@",stringAddress, [storeLocatorModel valueForKey:@"city"]];
+    }
+    if ([storeLocatorModel valueForKey:@"state"]) {
+        stringAddress = [NSString stringWithFormat:@"%@, %@", stringAddress, [storeLocatorModel valueForKey:@"state"]];
+    }
+    if ([storeLocatorModel valueForKey:@"zipcode"]) {
+        stringAddress = [NSString stringWithFormat:@"%@, %@", stringAddress, [storeLocatorModel valueForKey:@"zipcode"]];
+    }
+    if ([storeLocatorModel valueForKey:@"country_name"]) {
+        stringAddress = [NSString stringWithFormat:@"%@, %@", stringAddress, [storeLocatorModel valueForKey:@"country_name"]];
+    }
+    float cellWidth = SCREEN_WIDTH;
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        cellWidth = 320;
+    }
+    float labelWidth = cellWidth - 100;
+    float heightLabelAddress = [stringAddress boundingRectWithSize:CGSizeMake(labelWidth, 999) options:NSStringDrawingUsesFontLeading|NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE - 2]} context:nil].size.height;
+    float heightCell = heightLabelAddress + 70;
+    if (heightCell < 120) {
+        heightCell = 120;
+    }
+    return heightCell;
     
 }
 

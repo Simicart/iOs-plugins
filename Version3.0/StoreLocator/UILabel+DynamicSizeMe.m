@@ -12,7 +12,7 @@
 -(float)resizeToFit{
     float height = [self expectedHeight];
     CGRect newFrame = [self frame];
-    newFrame.size.height = height;
+    newFrame.size.height = height + 5;
     [self setFrame:newFrame];
     return newFrame.origin.y + newFrame.size.height;
 }
@@ -22,10 +22,7 @@
     self.lineBreakMode = NSLineBreakByWordWrapping;
     
     CGSize maximumLabelSize = CGSizeMake(self.frame.size.width,9999);
-    
-    CGSize expectedLabelSize = [[self text] sizeWithFont:[self font]
-                                       constrainedToSize:maximumLabelSize
-                                           lineBreakMode:[self lineBreakMode]];
+    CGSize expectedLabelSize = [[self text] boundingRectWithSize:maximumLabelSize options:NSStringDrawingUsesFontLeading|NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName:[self font]} context:nil].size;
     return expectedLabelSize.height;
 }
 @end
