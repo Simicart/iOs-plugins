@@ -11,7 +11,6 @@
 #import <SimiCartBundle/SCProductViewController.h>
 #import <SimiCartBundle/SCCartViewController.h>
 #import <SimiCartBundle/SCAccountViewController.h>
-#import <SimiCartBundle/SCOrderViewController.h>
 #import <SimiCartBundle/SimiSection.h>
 #import <SimiCartBundle/SimiGlobalVar.h>
 #import <SimiCartBundle/SimiTable.h>
@@ -133,13 +132,21 @@ static NSString *LEFTMENU_REWARDS_ROW     = @"leftmenu_rewards";
         } else {
             [v2 removeObjectForKey:@"loyalty_earn"];
         }
+        if ([noti.name isEqualToString:@"DidSpendPointsOrder"]) {
+            if([[order valueForKey:@"payment_method_list"] isKindOfClass:[NSArray class]])
+            {
+                self.orderViewController.paymentCollection = [[SimiPaymentModelCollection alloc]initWithArray:[order valueForKey:@"payment_method_list"]];
+                self.orderViewController.orderTable = nil;
+                if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+                    [(SCOrderViewControllerPad *)self.orderViewController configOrderTableLeft];
+                    [[(SCOrderViewControllerPad *)self.orderViewController tableLeft] reloadData];
+                }
+            }
+            [[self.orderViewController tableViewOrder]reloadData];
+        }
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             [[(SCOrderViewControllerPad *)self.orderViewController tableRight] reloadData];
         }
-        if ([noti.name isEqualToString:@"DidSpendPointsOrder"]) {
-            [[self.orderViewController tableViewOrder]reloadData];
-        }
-        
 #pragma mark init Cart Cell
     } else if ([noti.name isEqualToString:@"InitCartCell-Before"]) {
         SimiCartModelCollection *cart = [[SimiGlobalVar sharedInstance] cart];

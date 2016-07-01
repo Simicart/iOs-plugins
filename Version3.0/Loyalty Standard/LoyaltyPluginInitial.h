@@ -7,14 +7,14 @@
 //
 
 #import <Foundation/Foundation.h>
-
+#import <SimiCartBundle/SCOrderViewController.h>
 #define LOYALTY_TAG         9183756
 #define LOYALTY_CHECKOUT    LOYALTY_CART
 
 static NSString *LOYALTY_CART   = @"loyalty";
 
 @interface LoyaltyPluginInitial : NSObject
-@property (weak, nonatomic) id orderViewController;
+@property (weak, nonatomic) SCOrderViewController* orderViewController;
 @property (weak, nonatomic) id loyaltyMenuRow;
 @property (weak, nonatomic) id moreViewController;
 
