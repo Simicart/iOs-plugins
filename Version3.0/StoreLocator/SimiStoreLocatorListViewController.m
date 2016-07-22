@@ -129,7 +129,7 @@
         cellWidth = 320;
     }
     float labelWidth = cellWidth - 100;
-    float heightLabelAddress = [stringAddress boundingRectWithSize:CGSizeMake(labelWidth, 999) options:NSStringDrawingUsesFontLeading|NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE - 2]} context:nil].size.height;
+    float heightLabelAddress = [stringAddress boundingRectWithSize:CGSizeMake(labelWidth, 999) options:NSStringDrawingUsesFontLeading|NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE - 3]} context:nil].size.height;
     float heightCell = heightLabelAddress + 70;
     if (heightCell < 120) {
         heightCell = 120;
@@ -180,7 +180,7 @@
             if (isFirstRun || offset != [sLModelCollection count]) {
                 isFirstRun = NO;
                 offset = [sLModelCollection count];
-                [sLModelCollection getStoreListWithLatitude:[NSString stringWithFormat:@"%f",currentLatitube] longitude:[NSString stringWithFormat:@"%f",currentLongitube] offset:[NSString stringWithFormat:@"%d",(int)offset] limit:@"10"];
+                [sLModelCollection getStoreListWithLatitude:[NSString stringWithFormat:@"%f",currentLatitube] longitude:[NSString stringWithFormat:@"%f",currentLongitube] offset:[NSString stringWithFormat:@"%d",(int)offset] limit:@"20"];
                 [self.tableView.infiniteScrollingView startAnimating];
             }else
             {
@@ -195,7 +195,7 @@
             if (isFirstRun ||offset != [sLModelCollection count]) {
                 isFirstRun = NO;
                 offset = [sLModelCollection count];
-                [sLModelCollection getStoreListWithLatitude:[NSString stringWithFormat:@"%f",currentLatitube] longitude:[NSString stringWithFormat:@"%f",currentLongitube] offset:[NSString stringWithFormat:@"%d",(int)offset] limit:@"10" country:[dictSearch valueForKey:@"countryCode"] city:[dictSearch valueForKey:@"city"] state:[dictSearch valueForKey:@"state"] zipcode:[dictSearch valueForKey:@"zipcode"] tag:[dictSearch valueForKey:@"tag"]];
+                [sLModelCollection getStoreListWithLatitude:[NSString stringWithFormat:@"%f",currentLatitube] longitude:[NSString stringWithFormat:@"%f",currentLongitube] offset:[NSString stringWithFormat:@"%d",(int)offset] limit:@"20" country:[dictSearch valueForKey:@"countryCode"] city:[dictSearch valueForKey:@"city"] state:[dictSearch valueForKey:@"state"] zipcode:[dictSearch valueForKey:@"zipcode"] tag:[dictSearch valueForKey:@"tag"]];
                 [self.tableView.infiniteScrollingView startAnimating];
             }else
             {

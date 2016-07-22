@@ -26,7 +26,6 @@ typedef NS_ENUM(NSInteger, ButtonSearchOption)
 
 @interface SimiStoreLocatorViewControllerPad : SimiViewController<SimiStoreLocatorListViewControllerDelegate, SimiStoreLocatorMapViewControllerDelegate, UIPopoverControllerDelegate,SimiCLControllerDelegate, SimiStoreLocatorSearchViewControllerDelegate>
 {
-    SimiStoreLocatorListViewController *sLListViewControllerPortrait;
     SimiStoreLocatorListViewController *sLListViewControllerLandscape;
     SimiStoreLocatorMapViewController *sLMapViewController;
     SimiCLController *cLController;
@@ -34,9 +33,6 @@ typedef NS_ENUM(NSInteger, ButtonSearchOption)
     SimiStoreLocatorDetailViewController *detailViewController;
 }
 
-@property (nonatomic, strong) ILTranslucentView *viewToolBar;
 @property (nonatomic, strong) UIPopoverController *popOverController;
-@property (nonatomic, strong) UIPopoverController *popOver;
 @property (nonatomic, strong) UIButton *btnSearch;
-@property (nonatomic, strong) UIButton *btnStoreLocatorListView;
 @end

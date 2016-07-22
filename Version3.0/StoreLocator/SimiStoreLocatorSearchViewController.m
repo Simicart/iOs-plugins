@@ -71,7 +71,7 @@
     if (simiConfigSearchStoreLocatorModel != nil) {
         [self setInterfaceSearchByArea];
         
-        if (tagModelCollection != nil) {
+        if (tagModelCollection.count > 0) {
             [self setInterfaceSearchByTag];
         }
     }else
@@ -88,6 +88,7 @@
     if (tagModelCollection == nil) {
         [self getTagList];
     }
+    stringTagSearch = @"";
 }
 
 - (void)viewWillAppearBefore:(BOOL)animated
@@ -495,7 +496,11 @@
     }
     
     [self getStoreLocator];
-    
+    if (activityIndicatorView == nil) {
+        activityIndicatorView = [[UIActivityIndicatorView alloc]initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+        activityIndicatorView.hidesWhenStopped = YES;
+        activityIndicatorView.frame = self.view.bounds;
+    }
     [self.view addSubview:activityIndicatorView];
     [activityIndicatorView startAnimating];
     for (UIView *subView in scrView.subviews) {
@@ -604,7 +609,7 @@
     sLModelCollection = [[SimiStoreLocatorModelCollection alloc]init];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didGetStoreLocator:) name:@"StoreLocator_DidGetStoreList" object:sLModelCollection];
     
-     [sLModelCollection getStoreListWithLatitude:[NSString stringWithFormat:@"%f",currentLatitube] longitude:[NSString stringWithFormat:@"%f",currentLongitube] offset:@"0" limit:@"5" country:stringCountrySearchCode city:stringCitySearch state:stringStateSearch zipcode:stringZipCodeSearch tag:stringTagSearch];
+     [sLModelCollection getStoreListWithLatitude:[NSString stringWithFormat:@"%f",currentLatitube] longitude:[NSString stringWithFormat:@"%f",currentLongitube] offset:@"0" limit:@"20" country:stringCountrySearchCode city:stringCitySearch state:stringStateSearch zipcode:stringZipCodeSearch tag:stringTagSearch];
 }
 
 - (void)didGetStoreLocator:(NSNotification*)noti
@@ -646,8 +651,11 @@
 
 - (void)didGetTagList:(NSNotification*)noti
 {
-    if (simiConfigSearchStoreLocatorModel != nil && didGetSearchConfig) {
-        [self setInterfaceSearchByTag];
+    SimiResponder* responder = [noti.userInfo valueForKey:@"responder"];
+    if ([[responder.status uppercaseString] isEqualToString:@"SUCCESS"]) {
+        if (simiConfigSearchStoreLocatorModel != nil && didGetSearchConfig && tagModelCollection.count >  0) {
+            [self setInterfaceSearchByTag];
+        }
     }
     [self.scrView.infiniteScrollingView stopAnimating];
 }

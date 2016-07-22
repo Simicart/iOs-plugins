@@ -8,7 +8,7 @@
 
 #import "SimiStoreLocatorViewControllerPad.h"
 #import "SimiGlobalVar+StoreLocator.h"
-NSInteger const widthListView = 330;
+NSInteger const widthListView = 420;
 NSInteger const heightButtonSearch = 50;
 
 
@@ -23,7 +23,7 @@ NSInteger const heightButtonSearch = 50;
     BOOL isSearchViewController;
     BOOL isDetailViewController;
 }
-@synthesize viewToolBar, popOverController, popOver, btnSearch, btnStoreLocatorListView;
+@synthesize popOverController, btnSearch;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -34,7 +34,6 @@ NSInteger const heightButtonSearch = 50;
     return self;
 }
 
-#pragma mark
 #pragma mark View Cycle
 
 - (void)viewDidLoad
@@ -44,12 +43,6 @@ NSInteger const heightButtonSearch = 50;
     sLListViewControllerLandscape.delegate = self;
     sLListViewControllerLandscape.sLModelCollection = [[SimiStoreLocatorModelCollection alloc]init];
     
-    sLListViewControllerPortrait = [[SimiStoreLocatorListViewController alloc]init];
-    sLListViewControllerPortrait.delegate = self;
-    sLListViewControllerPortrait.sLModelCollection = [[SimiStoreLocatorModelCollection alloc]init];
-    
-    sLListViewControllerLandscape.sLModelCollection = sLListViewControllerPortrait.sLModelCollection;
-    
     cLController = [[SimiCLController alloc]init];
     cLController.delegate = self;
     if (SIMI_SYSTEM_IOS >= 8.0) {
@@ -58,6 +51,7 @@ NSInteger const heightButtonSearch = 50;
     [cLController.locationManager startUpdatingLocation];
 
     [self addChildViewController:sLListViewControllerLandscape];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didGetStoreLocatorList:) name:@"StoreLocator_DidGetStoreList" object:nil];
     // Do any additional setup after loading the view.
 }
 
@@ -66,13 +60,7 @@ NSInteger const heightButtonSearch = 50;
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:YES];
-    if ([UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationLandscapeLeft
-        || [UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationLandscapeRight) {
-        [self setInterfaceLandscape];
-    }else
-    {
-        [self setInterfacePortrait];
-    }
+    [self setInterfaceLandscape];
 }
 
 - (void)didReceiveMemoryWarning
@@ -130,30 +118,14 @@ NSInteger const heightButtonSearch = 50;
     }
 }
 
-#pragma mark
-#pragma mark btnListView Click
-- (void)btnStoreLocatorListView_Click:(id)sender
+#pragma mark Sync Data From List To Map
+- (void)didGetStoreLocatorList:(NSNotification*)noti
 {
-    UIButton* senderButton = (UIButton*)sender;
-        //Create the ColorPickerViewController.
-    
-    sLListViewControllerPortrait.preferredContentSize = CGSizeMake(widthListView, 800);
-    
-    if (popOver == nil) {
-        //The color picker popover is not showing. Show it.
-        popOver = [[UIPopoverController alloc] initWithContentViewController:sLListViewControllerPortrait];
-        if (SIMI_SYSTEM_IOS >= 7.0)
-            [popOver setBackgroundColor:[UIColor whiteColor]];
-        popOver.delegate = self;
-        [popOver presentPopoverFromRect:senderButton.bounds inView:senderButton permittedArrowDirections:UIPopoverArrowDirectionUp animated:YES];
-    } else {
-        //The color picker popover is showing. Hide it.
-        [popOver dismissPopoverAnimated:YES];
-        popOver = nil;
-    }
+    sLMapViewController.sLModelCollectionSyncList =  sLListViewControllerLandscape.sLModelCollection;
+    [sLMapViewController syncDataFromList];
+    [sLMapViewController showMaker];
 }
 
-#pragma mark
 #pragma mark btnSearch
 - (UIButton*)setInterfaceButtonSearch:(ButtonSearchOption)searchOption
 {
@@ -180,46 +152,10 @@ NSInteger const heightButtonSearch = 50;
     return btnSearch;
 }
 
-#pragma mark
 #pragma mark Set Interface List, Map
-- (void)setInterfacePortrait
-{
-    
-    [sLListViewControllerLandscape.view removeFromSuperview];
-    [sLMapViewController.view removeFromSuperview];
-    [btnSearch removeFromSuperview];
-    
-    btnStoreLocatorListView = [[UIButton alloc]init ];
-    [btnStoreLocatorListView setFrame:CGRectMake(0, 0, 50, 50)];
-    btnStoreLocatorListView.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
-    btnStoreLocatorListView.backgroundColor = [UIColor clearColor];
-    [btnStoreLocatorListView setImage:[UIImage imageNamed:@"sl_icon_list.png"] forState:UIControlStateNormal];
-    [btnStoreLocatorListView addTarget:self action:@selector(btnStoreLocatorListView_Click:) forControlEvents:UIControlEventTouchUpInside];
-    
-    CGRect frame = self.view.frame;
-    frame.origin.y = 0;
-    frame.size.height = 50;
-    viewToolBar = [[ILTranslucentView alloc] initWithFrame:frame];
-    viewToolBar.backgroundColor = [UIColor clearColor];
-    viewToolBar.translucentTintColor = [UIColor clearColor];
-    viewToolBar.alpha = 1;
-    viewToolBar.translucentStyle = UIBarStyleDefault;
-    
-    [self setInterfaceButtonSearch:ButtonSearchOptionPortrait];
-    [viewToolBar addSubview:btnSearch];
-    [viewToolBar addSubview:btnStoreLocatorListView];
-    
-    [self.view addSubview:viewToolBar];
-    
-    [sLMapViewController.view setFrame:CGRectMake(0, viewToolBar.bounds.size.height, SCREEN_WIDTH, self.view.bounds.size.height)];
-    [self.view addSubview:sLMapViewController.view];
-}
 
 - (void)setInterfaceLandscape
 {
-    [sLMapViewController.view removeFromSuperview];
-    [viewToolBar removeFromSuperview];
-    
     [self setInterfaceButtonSearch:ButtonSearchOptionLandscape];
     [self.view addSubview:btnSearch];
     
@@ -234,19 +170,10 @@ NSInteger const heightButtonSearch = 50;
     [self.view addSubview:sLMapViewController.view];
 }
 
-
-#pragma mark
 #pragma mark ListViewController Delegate
 -(void)didChoiseStoreFromListToMap
 {
-    if ([UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationLandscapeLeft
-        || [UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationLandscapeRight)
-    {
-         sLMapViewController.sLModel = sLListViewControllerLandscape.sLModel;
-    }else
-    {
-        sLMapViewController.sLModel = sLListViewControllerPortrait.sLModel;
-    }
+    sLMapViewController.sLModel = sLListViewControllerLandscape.sLModel;
     sLMapViewController.mapViewOption = MapViewSelectedMarker;
     [sLMapViewController showMaker];
 }
@@ -263,15 +190,10 @@ NSInteger const heightButtonSearch = 50;
     return [UIColor colorWithRed:((rgbValue & 0xFF0000) >> 16)/255.0 green:((rgbValue & 0xFF00) >> 8)/255.0 blue:(rgbValue & 0xFF)/255.0 alpha:1.0];
 }
 
-#pragma mark
 #pragma mark List View Controller Delegate
 - (void)showViewDetailControllerFromList:(SimiStoreLocatorModel *)sLModel_
 {
     isDetailViewController = YES;
-    if (popOver != nil) {
-        [popOver dismissPopoverAnimated:YES];
-        popOver = nil;
-    }
     detailViewController = [SimiStoreLocatorDetailViewController new];
     detailViewController.sLModel = sLModel_;
     detailViewController.currentLatitude = sLMapViewController.currentLatitube;
@@ -291,8 +213,6 @@ NSInteger const heightButtonSearch = 50;
     }
 }
 
-
-#pragma mark
 #pragma mark Map View Controller Delegate
 - (void)showViewDetailControllerFromMap:(SimiStoreLocatorModel *)sLModel_
 {
@@ -316,14 +236,9 @@ NSInteger const heightButtonSearch = 50;
     }
 }
 
-#pragma mark 
 #pragma mark popOverViewController Delegate
 - (void)popoverControllerDidDismissPopover:(UIPopoverController *)popoverController
 {
-    if (popOver) {
-        popOver = nil;
-    }
-    
     if (popOverController) {
         popOverController = nil;
         isSearchViewController = NO;
@@ -332,7 +247,6 @@ NSInteger const heightButtonSearch = 50;
     }
 }
 
-#pragma mark
 #pragma mark SearchView Controller Delegate
 - (void)searchStoreLocatorWithCountryName:(NSString *)countryName countryCode:(NSString *)countryCode city:(NSString *)city state:(NSString *)state zipcode:(NSString *)zipcode tag:(NSString *)tag
 {
@@ -340,15 +254,12 @@ NSInteger const heightButtonSearch = 50;
     popOverController = nil;
     
     sLListViewControllerLandscape.dictSearch = @{@"countryCode":countryCode,@"countryName":countryName,@"city":city,@"state":state,@"zipcode":zipcode,@"tag":tag};
-    sLListViewControllerPortrait.dictSearch = @{@"countryCode":countryCode,@"countryName":countryName,@"city":city,@"state":state,@"zipcode":zipcode,@"tag":tag};
-    
     if (sLMapViewController == nil) {
         sLMapViewController = [[SimiStoreLocatorMapViewController alloc]init];
     }
     sLMapViewController.dictSearch = @{@"countryCode":countryCode,@"countryName":countryName,@"city":city,@"state":state,@"zipcode":zipcode,@"tag":tag};
     
     sLListViewControllerLandscape.listViewOption = ListViewOptionSearched;
-    sLListViewControllerPortrait.listViewOption = ListViewOptionSearched;
     sLMapViewController.searchOption = SearchOptionSearched;
 }
 
@@ -358,16 +269,7 @@ NSInteger const heightButtonSearch = 50;
     for (int i = 0; i < collection.count; i++) {
         [sLListViewControllerLandscape.sLModelCollection addObject:[collection objectAtIndex:i]];
     }
-    if ([UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationLandscapeLeft
-        || [UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationLandscapeRight)
-    {
-        [sLListViewControllerLandscape.tableView reloadData];
-    }
-    
-    [sLListViewControllerPortrait.sLModelCollection removeAllObjects];
-    for (int i = 0; i < collection.count; i++) {
-        [sLListViewControllerPortrait.sLModelCollection addObject:[collection objectAtIndex:i]];
-    }
+    [sLListViewControllerLandscape.tableView reloadData];
     
     if (sLMapViewController == nil) {
         sLMapViewController = [[SimiStoreLocatorMapViewController alloc]init];
@@ -389,5 +291,4 @@ NSInteger const heightButtonSearch = 50;
     // Pass the selected object to the new view controller.
 }
 */
-
 @end

@@ -31,7 +31,7 @@ typedef NS_ENUM(NSInteger, ListViewOption){
 {
     SimiCLController *cLController;
 }
-@property (nonatomic, strong) id<SimiStoreLocatorListViewControllerDelegate> delegate;
+@property (nonatomic, weak) id<SimiStoreLocatorListViewControllerDelegate> delegate;
 @property (nonatomic, strong) SimiStoreLocatorModelCollection *sLModelCollection;
 @property (nonatomic, strong) SimiStoreLocatorModel *sLModel;
 @property (nonatomic) ListViewOption listViewOption;

@@ -69,33 +69,7 @@
 {
     //Load lai du lieu vao collection all
     [mapView_ setFrame:self.view.bounds];
-    
-    NSUInteger sLModelCollectionAllCount;
-    NSUInteger storeLocatorModelCollectionSyncListCount;
-    sLModelCollectionAllCount = sLModelCollectionAll.count;
-    storeLocatorModelCollectionSyncListCount = sLModelCollectionSyncList.count;
-    if (storeLocatorModelCollectionSyncListCount != 0) {
-        if (sLModelCollectionAllCount == 0 ) {
-            for (int i = 0; i < storeLocatorModelCollectionSyncListCount; i++)
-            {
-                [sLModelCollectionAll addObject:[sLModelCollectionSyncList objectAtIndex:i]];
-            }
-        }else
-        {
-            for (int i = 0; i < storeLocatorModelCollectionSyncListCount; i++) {
-                BOOL isNewStoreLocatorModel = YES;
-                for (int j = 0; j < sLModelCollectionAllCount; j++) {
-                    if ([[[sLModelCollectionSyncList objectAtIndex:i] valueForKey:@"storelocator_id"] isEqualToString:[[sLModelCollectionAll objectAtIndex:j] valueForKey:@"storelocator_id"]]) {
-                        isNewStoreLocatorModel = NO;
-                    }
-                }
-                if (isNewStoreLocatorModel) {
-                    [sLModelCollectionAll addObject:[sLModelCollectionSyncList objectAtIndex:i]];
-                }
-            }
-        }
-    }
-    
+    [self syncDataFromList];
     [self showMaker];
 }
 
@@ -142,10 +116,10 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didGetStoreLocatorList:) name:@"StoreLocator_DidGetStoreList" object:sLModelCollectionUpdate];
     switch (searchOption) {
         case SearchOptionNoneSearch:
-            [sLModelCollectionUpdate getStoreListWithLatitude:[NSString stringWithFormat:@"%f",position.target.latitude] longitude:[NSString stringWithFormat:@"%f",position.target.longitude] offset:@"0" limit:@"10"];
+            [sLModelCollectionUpdate getStoreListWithLatitude:[NSString stringWithFormat:@"%f",position.target.latitude] longitude:[NSString stringWithFormat:@"%f",position.target.longitude] offset:@"0" limit:@"20"];
             break;
         case SearchOptionSearched:
-            [sLModelCollectionUpdate getStoreListWithLatitude:[NSString stringWithFormat:@"%f",position.target.latitude] longitude:[NSString stringWithFormat:@"%f",position.target.longitude] offset:@"0" limit:@"10" country:[dictSearch valueForKey:@"countryCode"] city:[dictSearch valueForKey:@"city"] state:[dictSearch valueForKey:@"state"] zipcode:[dictSearch valueForKey:@"zipcode"] tag:[dictSearch valueForKey:@"tag"]];
+            [sLModelCollectionUpdate getStoreListWithLatitude:[NSString stringWithFormat:@"%f",position.target.latitude] longitude:[NSString stringWithFormat:@"%f",position.target.longitude] offset:@"0" limit:@"20" country:[dictSearch valueForKey:@"countryCode"] city:[dictSearch valueForKey:@"city"] state:[dictSearch valueForKey:@"state"] zipcode:[dictSearch valueForKey:@"zipcode"] tag:[dictSearch valueForKey:@"tag"]];
             break;
         default:
             break;
@@ -193,6 +167,34 @@
 
 #pragma mark
 #pragma mark Show Choice Maker on iPad
+- (void)syncDataFromList
+{
+    NSUInteger sLModelCollectionAllCount;
+    NSUInteger storeLocatorModelCollectionSyncListCount;
+    sLModelCollectionAllCount = sLModelCollectionAll.count;
+    storeLocatorModelCollectionSyncListCount = sLModelCollectionSyncList.count;
+    if (storeLocatorModelCollectionSyncListCount != 0) {
+        if (sLModelCollectionAllCount == 0 ) {
+            for (int i = 0; i < storeLocatorModelCollectionSyncListCount; i++)
+            {
+                [sLModelCollectionAll addObject:[sLModelCollectionSyncList objectAtIndex:i]];
+            }
+        }else
+        {
+            for (int i = 0; i < storeLocatorModelCollectionSyncListCount; i++) {
+                BOOL isNewStoreLocatorModel = YES;
+                for (int j = 0; j < sLModelCollectionAllCount; j++) {
+                    if ([[[sLModelCollectionSyncList objectAtIndex:i] valueForKey:@"mgstorelocator_id"] isEqualToString:[[sLModelCollectionAll objectAtIndex:j] valueForKey:@"mgstorelocator_id"]]) {
+                        isNewStoreLocatorModel = NO;
+                    }
+                }
+                if (isNewStoreLocatorModel) {
+                    [sLModelCollectionAll addObject:[sLModelCollectionSyncList objectAtIndex:i]];
+                }
+            }
+        }
+    }
+}
 - (void)showMaker
 {
     [mapView_ clear];
@@ -240,5 +242,4 @@
     // Pass the selected object to the new view controller.
 }
 */
-
 @end

@@ -46,4 +46,5 @@ typedef NS_ENUM(NSInteger, SearchOption){
 @property (nonatomic, weak) id<SimiStoreLocatorMapViewControllerDelegate> delegate;
 
 - (void)showMaker;
+- (void)syncDataFromList;
 @end
