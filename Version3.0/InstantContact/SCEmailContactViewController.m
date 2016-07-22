@@ -26,8 +26,8 @@
     NSString *stringColor;
     UIActivityIndicatorView *indicatorView;
     BOOL isFirstLoad;
-    int numberItemPhone;
-    int numberItemPad;
+    float itemWidth;
+    float itemHeight;
 }
 
 - (void)viewDidLoadBefore {
@@ -44,6 +44,8 @@
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         [super viewWillAppearBefore:YES];
     }
+    itemWidth = [SimiGlobalVar scaleValue:120];
+    itemHeight = [SimiGlobalVar scaleValue:100];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -246,12 +248,8 @@
                     [arrayPhoneNumberAfterCheck addObject:stringPhone];
                 }
             }
-            if (arrayPhoneNumberAfterCheck.count > 0) {
-                numberItemPhone += 1;
-            }
         }
         
-        // Liam ADD 150416
         if ([_contactModel valueForKey:@"message"]) {
             arrayMessageNumber = (NSMutableArray *)[_contactModel valueForKey:@"message"];
             arrayMessageNumberAfterCheck = [[NSMutableArray alloc]init];
@@ -262,13 +260,8 @@
                     [arrayMessageNumberAfterCheck addObject:stringPhone];
                 }
             }
-            if (arrayMessageNumberAfterCheck.count > 0) {
-                numberItemPhone += 1;
-                numberItemPad += 1;
-            }
         }
         
-        //End 150416
         
         if ([_contactModel valueForKey:@"email"]) {
             arrayEmail = (NSMutableArray*)[_contactModel valueForKey:@"email"];
@@ -280,19 +273,11 @@
                     [arrayEmailCheck addObject:stringEmail];
                 }
             }
-            if (arrayEmailCheck.count > 0) {
-                numberItemPhone += 1;
-                numberItemPad += 1;
-            }
         }
         
         if ([_contactModel valueForKey:@"website"]) {
             stringWebsite = [NSString stringWithFormat:@"%@",[_contactModel valueForKey:@"website"]];
             stringWebsite = [stringWebsite stringByReplacingOccurrencesOfString:@" " withString:@""];
-            if (![stringWebsite isEqualToString:@""]) {
-                numberItemPhone += 1;
-                numberItemPad += 1;
-            }
         }
         
         if ([_contactModel valueForKey:@"style"]) {
@@ -310,171 +295,26 @@
             stringColor = [stringColor stringByReplacingOccurrencesOfString:@" " withString:@""];
         }
         
+        [self setCells:nil];
         if ([stringStyle isEqualToString:@"1"]) {
             _tblViewContent = [[UITableView alloc]initWithFrame:self.view.bounds];
             [_tblViewContent setContentInset:UIEdgeInsetsMake(0, 0, 0, 0)];
             _tblViewContent.dataSource = self;
             _tblViewContent.delegate = self;
             [self.view addSubview:_tblViewContent];
-            [self setCells:nil];
             [_tblViewContent reloadData];
-            
         }else
         {
-            _btnCall = [[UIButton alloc]init];
-            [_btnCall addTarget:self action:@selector(btnCallClick) forControlEvents:UIControlEventTouchUpInside];
-            [_btnCall setImage:[[UIImage imageNamed:@"contactus_call"]imageWithColor:[[SimiGlobalVar sharedInstance]colorWithHexString:stringColor]] forState:UIControlStateNormal];
-            
-            _lblCall = [[UILabel alloc]init];
-            [_lblCall setFont:[UIFont fontWithName:THEME_FONT_NAME size:16]];
-            [_lblCall setText:SCLocalizedString(@"Call")];
-            [_lblCall setTextAlignment:NSTextAlignmentCenter];
-            
-            _btnEmail = [[UIButton alloc]init];
-            [_btnEmail addTarget:self action:@selector(btnEmailClick) forControlEvents:UIControlEventTouchUpInside];
-            [_btnEmail setImage:[[UIImage imageNamed:@"contactus_email"]imageWithColor:[[SimiGlobalVar sharedInstance]colorWithHexString:stringColor]] forState:UIControlStateNormal];
-            
-            _lblEmail = [[UILabel alloc]init];
-            [_lblEmail setFont:[UIFont fontWithName:THEME_FONT_NAME size:16]];
-            [_lblEmail setText:SCLocalizedString(@"Email")];
-            [_lblEmail setTextAlignment:NSTextAlignmentCenter];
-            
-            _btnWebsite = [[UIButton alloc]init];
-            [_btnWebsite addTarget:self action:@selector(btnWebsiteClick) forControlEvents:UIControlEventTouchUpInside];
-            [_btnWebsite setImage:[[UIImage imageNamed:@"contactus_web"]imageWithColor:[[SimiGlobalVar sharedInstance]colorWithHexString:stringColor]] forState:UIControlStateNormal];
-            
-            _lblWebsite = [[UILabel alloc]init];
-            [_lblWebsite setFont:[UIFont fontWithName:THEME_FONT_NAME size:16]];
-            [_lblWebsite setText:SCLocalizedString(@"Website")];
-            [_lblWebsite setTextAlignment:NSTextAlignmentCenter];
-            
-            _btnMessage = [[UIButton alloc]init];
-            [_btnMessage addTarget:self action:@selector(btnMessageClick) forControlEvents:UIControlEventTouchUpInside];
-            [_btnMessage setImage:[[UIImage imageNamed:@"contactus_message"]imageWithColor:[[SimiGlobalVar sharedInstance]colorWithHexString:stringColor]] forState:UIControlStateNormal];
-            
-            _lblMessage = [[UILabel alloc]init];
-            [_lblMessage setFont:[UIFont fontWithName:THEME_FONT_NAME size:16]];
-            [_lblMessage setText:SCLocalizedString(@"Message")];
-            [_lblMessage setTextAlignment:NSTextAlignmentCenter];
-            
-            if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-                int configLocationItem = 0;
-                if (arrayEmailCheck.count > 0) {
-                    configLocationItem += 1;
-                    [_btnEmail setFrame:[SimiGlobalVar scaleFrame:CGRectMake(40, 120, 68, 68)]];
-                    [_lblEmail setFrame:[SimiGlobalVar scaleFrame:CGRectMake(10, 188, 128, 30)]];
-                    
-                    [self.view addSubview:_btnEmail];
-                    [self.view addSubview:_lblEmail];
-                }
-                
-                if (arrayPhoneNumberAfterCheck.count > 0) {
-                    configLocationItem += 1;
-                    if (configLocationItem == 2) {
-                        [_btnCall setFrame:[SimiGlobalVar scaleFrame:CGRectMake(210, 120, 68, 68)]];
-                        [_lblCall setFrame:[SimiGlobalVar scaleFrame:CGRectMake(180, 188, 128, 30)]];
-                    }else if(configLocationItem == 1)
-                    {
-                        [_btnCall setFrame:[SimiGlobalVar scaleFrame:CGRectMake(40, 120, 68, 68)]];
-                        [_lblCall setFrame:[SimiGlobalVar scaleFrame:CGRectMake(10, 188, 128, 30)]];
-                    }
-                    
-                    [self.view addSubview:_btnCall];
-                    [self.view addSubview:_lblCall];
-                }
-                
-                if (arrayMessageNumberAfterCheck.count > 0) {
-                    configLocationItem += 1;
-                    if (configLocationItem == 3) {
-                        [_btnMessage setFrame:[SimiGlobalVar scaleFrame:CGRectMake(40, 260, 68, 68)]];
-                        [_lblMessage setFrame:[SimiGlobalVar scaleFrame:CGRectMake(10, 328, 128, 30)]];
-                    }else if(configLocationItem == 2)
-                    {
-                        [_btnMessage setFrame:[SimiGlobalVar scaleFrame:CGRectMake(210, 120, 68, 68)]];
-                        [_lblMessage setFrame:[SimiGlobalVar scaleFrame:CGRectMake(180, 188, 128, 30)]];
-                    }else if(configLocationItem == 1)
-                    {
-                        [_btnEmail setFrame:[SimiGlobalVar scaleFrame:CGRectMake(40, 120, 68, 68)]];
-                        [_lblEmail setFrame:[SimiGlobalVar scaleFrame:CGRectMake(10, 188, 128, 30)]];
-                    }
-                    [self.view addSubview:_btnMessage];
-                    [self.view addSubview:_lblMessage];
-                }
-                
-                if (![stringWebsite isEqualToString:@""]) {
-                    configLocationItem +=1;
-                    switch (configLocationItem) {
-                        case 1:
-                            [_btnWebsite setFrame:[SimiGlobalVar scaleFrame:CGRectMake(40, 120, 68, 68)]];
-                            [_lblWebsite setFrame:[SimiGlobalVar scaleFrame:CGRectMake(10, 188, 128, 30)]];
-                            break;
-                        case 2:
-                            [_btnWebsite setFrame:[SimiGlobalVar scaleFrame:CGRectMake(210, 120, 68, 68)]];
-                            [_lblWebsite setFrame:[SimiGlobalVar scaleFrame:CGRectMake(180, 188, 128, 30)]];
-                            break;
-                        case 3:
-                            [_btnWebsite setFrame:[SimiGlobalVar scaleFrame:CGRectMake(40, 260, 68, 68)]];
-                            [_lblWebsite setFrame:[SimiGlobalVar scaleFrame:CGRectMake(10, 328, 128, 30)]];
-                            break;
-                        case 4:
-                            [_btnWebsite setFrame:[SimiGlobalVar scaleFrame:CGRectMake(210, 260, 68, 68)]];
-                            [_lblWebsite setFrame:[SimiGlobalVar scaleFrame:CGRectMake(180, 328, 128, 30)]];
-                            break;
-                        default:
-                            break;
-                    }
-                    [self.view addSubview:_btnWebsite];
-                    [self.view addSubview:_lblWebsite];
-                }
-            }else
-            {
-                int configLocationItem = 0;
-                if (arrayEmailCheck.count > 0) {
-                    configLocationItem += 1;
-                    [_btnEmail setFrame:[SimiGlobalVar scaleFrame:CGRectMake(120, 120, 68, 68)]];
-                    [_lblEmail setFrame:[SimiGlobalVar scaleFrame:CGRectMake(90, 188, 128, 30)]];
-                    
-                    [self.view addSubview:_btnEmail];
-                    [self.view addSubview:_lblEmail];
-                }
-                
-                if (arrayMessageNumberAfterCheck.count > 0) {
-                    configLocationItem +=1;
-                    if (configLocationItem == 2) {
-                        [_btnMessage setFrame:[SimiGlobalVar scaleFrame:CGRectMake(450, 120, 68, 68)]];
-                        [_lblMessage setFrame:[SimiGlobalVar scaleFrame:CGRectMake(420, 188, 128, 30)]];
-                    }else if(configLocationItem == 1)
-                    {
-                        [_btnMessage setFrame:[SimiGlobalVar scaleFrame:CGRectMake(120, 120, 68, 68)]];
-                        [_lblMessage setFrame:[SimiGlobalVar scaleFrame:CGRectMake(90, 188, 128, 30)]];
-                    }
-                    [self.view addSubview:_btnMessage];
-                    [self.view addSubview:_lblMessage];
-                }
-                
-                if (![stringWebsite isEqualToString:@""])
-                {
-                    configLocationItem += 1;
-                    switch (configLocationItem) {
-                        case 1:
-                            [_btnWebsite setFrame:[SimiGlobalVar scaleFrame:CGRectMake(120, 120, 68, 68)]];
-                            [_lblWebsite setFrame:[SimiGlobalVar scaleFrame:CGRectMake(90, 188, 128, 30)]];
-                            break;
-                        case 2:
-                            [_btnWebsite setFrame:[SimiGlobalVar scaleFrame:CGRectMake(450, 120, 68, 68)]];
-                            [_lblWebsite setFrame:[SimiGlobalVar scaleFrame:CGRectMake(420, 188, 128, 30)]];
-                            break;
-                        case 3:
-                            [_btnWebsite setFrame:[SimiGlobalVar scaleFrame:CGRectMake(120, 260, 68, 68)]];
-                            [_lblWebsite setFrame:[SimiGlobalVar scaleFrame:CGRectMake(90, 328, 128, 30)]];
-                            break;
-                        default:
-                            break;
-                    }
-                    [self.view addSubview:_btnWebsite];
-                    [self.view addSubview:_lblWebsite];
-                }
-            }
+            UICollectionViewFlowLayout *flowLayout = [UICollectionViewFlowLayout new];
+            flowLayout.itemSize = CGSizeMake(itemWidth, itemHeight);
+            flowLayout.minimumLineSpacing =  [SimiGlobalVar scaleValue:20];
+            flowLayout.minimumInteritemSpacing = [SimiGlobalVar scaleValue:20];
+            _contactCollectionView = [[UICollectionView alloc]initWithFrame:self.view.bounds collectionViewLayout:flowLayout];
+            [_contactCollectionView setBackgroundColor:[UIColor whiteColor]];
+            _contactCollectionView.contentInset = UIEdgeInsetsMake([SimiGlobalVar scaleValue:40], [SimiGlobalVar scaleValue:20], 0, [SimiGlobalVar scaleValue:20]);
+            _contactCollectionView.delegate = self;
+            _contactCollectionView.dataSource = self;
+            [self.view addSubview:_contactCollectionView];
         }
     }
 }
@@ -487,59 +327,23 @@
     SimiSection *simiSection = [_cells objectAtIndex:indexPath.section];
     if ([simiSection.identifier isEqualToString:EMAILCONTACT_SECTIONMAIN]) {
         SimiRow *row = [simiSection objectAtIndex:indexPath.row];
-        if ([row.identifier isEqualToString:EMAILCONTACT_ROWEMAIL]) {
-            UIImageView *imageIcon = [[UIImageView alloc]initWithFrame:CGRectMake(15, 15, 33, 20)];
-            [imageIcon setImage:[[UIImage imageNamed:@"contactusemail_tbl"]imageWithColor:[[SimiGlobalVar sharedInstance]colorWithHexString:stringColor]]];
-            [cell addSubview:imageIcon];
-            
-            UILabel *lblName = [[UILabel alloc]initWithFrame:CGRectMake(70, 0, 200, 50)];
-            [lblName setFont:[UIFont fontWithName:THEME_FONT_NAME size:18]];
-            [lblName setText:SCLocalizedString(@"Email")];
-            [cell addSubview:lblName];
-        }
+        UIImageView *imageIcon = [[UIImageView alloc]initWithFrame:CGRectMake(15, 15, 33, 20)];
+        [imageIcon setImage:[[UIImage imageNamed:[row.data valueForKey:@"image_tbl"]]imageWithColor:[[SimiGlobalVar sharedInstance]colorWithHexString:stringColor]]];
+        [imageIcon setContentMode:UIViewContentModeScaleAspectFit];
+        [cell addSubview:imageIcon];
         
-        if ([row.identifier isEqualToString:EMAILCONTACT_ROWCALL]) {
-            UIImageView *imageIcon = [[UIImageView alloc]initWithFrame:CGRectMake(15, 11, 28 , 28)];
-            [imageIcon setImage:[[UIImage imageNamed:@"contactusphone_tbl"]imageWithColor:[[SimiGlobalVar sharedInstance]colorWithHexString:stringColor]]];
-            [cell addSubview:imageIcon];
-            
-            UILabel *lblName = [[UILabel alloc]initWithFrame:CGRectMake(70, 0, 200, 50)];
-            [lblName setFont:[UIFont fontWithName:THEME_FONT_NAME size:18]];
-            [lblName setText:SCLocalizedString(@"Call")];
-            [cell addSubview:lblName];
-        }
-        
-        if ([row.identifier isEqualToString:EMAILCONTACT_ROWMESSAGE]) {
-            UIImageView *imageIcon = [[UIImageView alloc]initWithFrame:CGRectMake(15, 15, 33, 20)];
-            [imageIcon setImage:[[UIImage imageNamed:@"contactusmessage_tbl"]imageWithColor:[[SimiGlobalVar sharedInstance]colorWithHexString:stringColor]]];
-            [cell addSubview:imageIcon];
-            
-            UILabel *lblName = [[UILabel alloc]initWithFrame:CGRectMake(70, 0, 200, 50)];
-            [lblName setFont:[UIFont fontWithName:THEME_FONT_NAME size:18]];
-            [lblName setText:SCLocalizedString(@"Message")];
-            [cell addSubview:lblName];
-        }
-        
-        if ([row.identifier isEqualToString:EMAILCONTACT_ROWWEBSITE]) {
-            UIImageView *imageIcon = [[UIImageView alloc]initWithFrame:CGRectMake(15, 15, 33, 20)];
-            [imageIcon setImage:[[UIImage imageNamed:@"contactusweb_tbl"]imageWithColor:[[SimiGlobalVar sharedInstance]colorWithHexString:stringColor]]];
-            [cell addSubview:imageIcon];
-            
-            UILabel *lblName = [[UILabel alloc]initWithFrame:CGRectMake(70, 0, 200, 50)];
-            [lblName setFont:[UIFont fontWithName:THEME_FONT_NAME size:18]];
-            [lblName setText:SCLocalizedString(@"Website")];
-            [cell addSubview:lblName];
-        }
+        UILabel *lblName = [[UILabel alloc]initWithFrame:CGRectMake(70, 0, 200, 50)];
+        [lblName setFont:[UIFont fontWithName:THEME_FONT_NAME size:18]];
+        [lblName setText:SCLocalizedString([row.data valueForKey:@"title"])];
+        [cell addSubview:lblName];
     }
     return cell;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        return numberItemPhone;
-    }else
-        return numberItemPad;
+    SimiSection *simiSection = [_cells objectAtIndex:section];
+    return simiSection.count;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -569,6 +373,56 @@
         }
     }
 }
+#pragma mark CollectionView Delegate & DataSource
+- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    SimiSection *simiSection = [_cells objectAtIndex:indexPath.section];
+    SimiRow *row = [simiSection objectAtIndex:indexPath.row];
+    [collectionView registerClass:[ContactCollectionViewCell class] forCellWithReuseIdentifier:row.identifier];
+    ContactCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:row.identifier forIndexPath:indexPath];
+    
+    float imageSize = 70;
+    cell.imageView = [[UIImageView alloc]initWithFrame:CGRectMake((itemWidth - imageSize)/2, 0, imageSize, imageSize)];
+    [cell.imageView setImage:[[UIImage imageNamed:[row.data valueForKey:@"image_collectionview"]]imageWithColor:[[SimiGlobalVar sharedInstance]colorWithHexString:stringColor]]];
+    [cell addSubview:cell.imageView];
+    
+    cell.titleLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, imageSize, itemWidth, itemHeight - imageSize)];
+    [cell.titleLabel setText:SCLocalizedString([row.data valueForKey:@"title"])];
+    [cell.titleLabel setFont:[UIFont fontWithName:THEME_FONT_NAME size:16]];
+    [cell.titleLabel setTextAlignment:NSTextAlignmentCenter];
+    [cell addSubview:cell.titleLabel];
+    return cell;
+}
+
+- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
+{
+    SimiSection *simiSection = [_cells objectAtIndex:section];
+    return simiSection.count;
+}
+
+- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    SimiSection *simiSection = [_cells objectAtIndex:indexPath.section];
+    if ([simiSection.identifier isEqualToString:EMAILCONTACT_SECTIONMAIN]) {
+        SimiRow *row = [simiSection objectAtIndex:indexPath.row];
+        if ([row.identifier isEqualToString:EMAILCONTACT_ROWEMAIL]) {
+            [self btnEmailClick];
+        }
+        
+        if ([row.identifier isEqualToString:EMAILCONTACT_ROWCALL]) {
+            [self btnCallClick];
+        }
+        
+        if ([row.identifier isEqualToString:EMAILCONTACT_ROWMESSAGE]) {
+            [self btnMessageClick];
+        }
+        
+        if ([row.identifier isEqualToString:EMAILCONTACT_ROWWEBSITE]) {
+            [self btnWebsiteClick];
+        }
+    }
+}
+
 #pragma mark ListPhone Delegate
 
 - (void)didSelectPhoneNumber:(NSString *)stringPhone
@@ -582,7 +436,6 @@
     }
 }
 
-//  Liam ADD 150504
 #pragma mark set Table
 
 - (void)setCells:(SimiTable *)cells_
@@ -597,28 +450,34 @@
         if (arrayEmailCheck.count > 0) {
             SimiRow *rowEmail = [SimiRow new];
             rowEmail.identifier = EMAILCONTACT_ROWEMAIL;
+            rowEmail.data = [[NSMutableDictionary alloc]initWithDictionary:@{@"title":@"Email",@"image_tbl":@"contactusemail_tbl",@"image_collectionview":@"contactus_email"}];
             [section addRow:rowEmail];
         }
         
         if (arrayPhoneNumberAfterCheck.count > 0 && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
             SimiRow *rowCall = [SimiRow new];
             rowCall.identifier = EMAILCONTACT_ROWCALL;
+            rowCall.data = [[NSMutableDictionary alloc]initWithDictionary:@{@"title":@"Call",@"image_tbl":@"contactusphone_tbl",@"image_collectionview":@"contactus_call"}];
             [section addRow:rowCall];
         }
         
         if (arrayMessageNumberAfterCheck.count > 0) {
             SimiRow *rowMessage = [SimiRow new];
             rowMessage.identifier = EMAILCONTACT_ROWMESSAGE;
+            rowMessage.data = [[NSMutableDictionary alloc]initWithDictionary:@{@"title":@"Message",@"image_tbl":@"contactusmessage_tbl",@"image_collectionview":@"contactus_message"}];
             [section addRow:rowMessage];
         }
         
         if (![stringWebsite isEqualToString:@""]) {
             SimiRow *rowWebsite = [SimiRow new];
             rowWebsite.identifier = EMAILCONTACT_ROWWEBSITE;
+            rowWebsite.data = [[NSMutableDictionary alloc]initWithDictionary:@{@"title":@"Website",@"image_tbl":@"contactusweb_tbl",@"image_collectionview":@"contactus_web"}];
             [section addRow:rowWebsite];
         }
         [_cells addObject:section];
     }
 }
-//  End 150504
+@end
+
+@implementation ContactCollectionViewCell
 @end

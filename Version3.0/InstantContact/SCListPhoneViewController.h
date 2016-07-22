@@ -13,5 +13,5 @@
 @interface SCListPhoneViewController : UITableViewController<UITableViewDataSource, UITableViewDelegate>
 
 @property (nonatomic, strong) NSMutableArray *arrayPhone;
-@property (nonatomic, strong) id<SCListPhoneViewController_Delegate> delegate;
+@property (nonatomic, weak) id<SCListPhoneViewController_Delegate> delegate;
 @end

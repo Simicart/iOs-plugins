@@ -24,7 +24,7 @@ static NSString *EMAILCONTACT_ROWCALL = @"EMAILCONTACT_ROWCALL";
 static NSString *EMAILCONTACT_ROWMESSAGE = @"EMAILCONTACT_ROWMESSAGE";
 static NSString *EMAILCONTACT_ROWEMAIL = @"EMAILCONTACT_ROWEMAIL";
 //  End 150504
-@interface SCEmailContactViewController : SimiViewController<MFMailComposeViewControllerDelegate, MFMessageComposeViewControllerDelegate, UITableViewDataSource, UITableViewDelegate, SCListPhoneViewController_Delegate>
+@interface SCEmailContactViewController : SimiViewController<MFMailComposeViewControllerDelegate, MFMessageComposeViewControllerDelegate, UITableViewDataSource, UITableViewDelegate, SCListPhoneViewController_Delegate, UICollectionViewDelegate, UICollectionViewDataSource>
 
 @property (nonatomic, strong) UIButton *btnCall;
 @property (nonatomic, strong) UIButton *btnEmail;
@@ -36,9 +36,15 @@ static NSString *EMAILCONTACT_ROWEMAIL = @"EMAILCONTACT_ROWEMAIL";
 @property (nonatomic, strong) UILabel *lblMessage;
 
 @property (nonatomic, strong) UITableView *tblViewContent;
+@property (nonatomic, strong) UICollectionView *contactCollectionView;
 @property (nonatomic) BOOL isCall;
 @property (nonatomic, strong) SimiTable *cells;
 
 @property (nonatomic, strong) SCEmailContactModel *contactModel;
 
+@end
+
+@interface ContactCollectionViewCell : UICollectionViewCell
+@property (nonatomic, strong) UIImageView *imageView;
+@property (nonatomic, strong) UILabel *titleLabel;
 @end
