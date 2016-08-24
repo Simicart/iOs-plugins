@@ -58,7 +58,7 @@
         if ([row.identifier isEqualToString:@"FacebookLoginCell"]) {
             UITableViewCell *cell = noti.object;
             FBSDKLoginButton *loginButton = [[FBSDKLoginButton alloc] init];
-            loginButton.readPermissions = @[@"email"];
+            loginButton.readPermissions = @[@"public_profile", @"email"];
             loginButton.publishPermissions = @[@"publish_actions"];
             float widthCell = 7 *SCREEN_WIDTH/8;
             float heightCell = SCREEN_HEIGHT/16.2142857143f;

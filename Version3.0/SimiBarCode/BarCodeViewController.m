@@ -156,7 +156,7 @@
                     }
                 }else
                 {
-                    if (code.bounds.origin.x > _imgCanvas.frame.origin.x/2 & code.bounds.origin.x < (_imgCanvas.frame.origin.x + _imgCanvas.frame.size.width/2) & code.bounds.origin.y > _imgCanvas.frame.origin.y & code.bounds.origin.y < (_imgCanvas.frame.origin.y + _imgCanvas.frame.size.height/2)) {
+//                    if (code.bounds.origin.x > _imgCanvas.frame.origin.x/2 & code.bounds.origin.x < (_imgCanvas.frame.origin.x + _imgCanvas.frame.size.width/2) & code.bounds.origin.y > _imgCanvas.frame.origin.y & code.bounds.origin.y < (_imgCanvas.frame.origin.y + _imgCanvas.frame.size.height/2)) {
                         if (code.stringValue) {
                             [self.uniqueCodes addObject:code.stringValue];
                             
@@ -170,7 +170,7 @@
                             [_activityIndicatorView startAnimating];
                             break;
                         }
-                    }
+//                    }
                 }
             }
         }

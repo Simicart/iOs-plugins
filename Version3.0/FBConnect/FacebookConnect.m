@@ -82,9 +82,13 @@
         iMoreView.frame = CGRectMake(0, 0, sizeLikeView, sizeLikeView);
         iMoreView.contentMode = UIViewContentModeScaleAspectFit;
         
+        if (fbLikeControl == nil) {
+            fbLikeControl = [[FBSDKLikeControl alloc]initWithFrame:CGRectMake(0,sizeLikeView/5,sizeLikeView, sizeLikeView)];
+            fbLikeControl.transform = CGAffineTransformMakeScale(0.7, 0.7);
+            fbLikeControl.likeControlStyle = FBSDKLikeControlStyleBoxCount;
+        }
+        fbLikeControl.objectID = [productModel valueForKey:@"product_url"];
         
-        fbLikeControl.likeControlHorizontalAlignment =
-        FBSDKLikeControlHorizontalAlignmentRight;
         if (fbLikeButton == nil) {
             fbLikeButton = [[FBSDKLikeButton alloc]initWithFrame:CGRectMake(sizeLikeView/6, sizeLikeView/4 + 3,2*sizeLikeView/3, sizeLikeView/4)];
         }
@@ -104,10 +108,10 @@
         imgLikeCount.contentMode = UIViewContentModeScaleToFill;
         
         [facebookLikeView addSubview:iMoreView];
-        [facebookLikeView addSubview:fbLikeButton];
-//        [facebookLikeView addSubview:fbLikeControl];
-        [facebookLikeView addSubview:imgLikeCount];
-        [facebookLikeView addSubview:lblLikeCount];
+//        [facebookLikeView addSubview:fbLikeButton];
+        [facebookLikeView addSubview:fbLikeControl];
+//        [facebookLikeView addSubview:imgLikeCount];
+//        [facebookLikeView addSubview:lblLikeCount];
         [facebookLikeView setBackgroundColor:[UIColor clearColor]];
         btnComment = [[UIButton alloc]initWithFrame:CGRectMake([SimiGlobalVar scaleValue:92], 5, sizeButton, sizeButton)];
         [btnComment setImage:[UIImage imageNamed:@"facebookconnect_comment"] forState:UIControlStateNormal];
@@ -146,7 +150,7 @@
         
         [productMoreVC.view addSubview:facebookView];
         facebookView.clipsToBounds = YES;
-        [self updateLikeLabel];
+//        [self updateLikeLabel];
         [productMoreVC.view addSubview:facebookView];
     }
     else if([noti.name isEqualToString:@"SCProductMoreViewController-BeforeTouchMoreAction"]){
@@ -184,7 +188,7 @@
         isProductMoreView = NO;
     }else if([noti.name isEqualToString:@"ApplicationDidBecomeActive"]){
         if(isProductMoreView){
-            [self updateLikeLabel];
+//            [self updateLikeLabel];
         }
     }
 }
@@ -434,32 +438,32 @@
     isShowFacebookView = !isShowFacebookView;
 }
 
--(void) updateLikeLabel{
-    if([productModel valueForKey:@"product_url"]){
-        [productMoreVC startLoadingData];
-        NSString* productURL = [NSString stringWithFormat:@"%@",[productModel valueForKey:@"product_url"]];
-        NSString* requestURL = [NSString stringWithFormat:@"https://graph.facebook.com/fql?q=SELECT like_count FROM link_stat WHERE url = \"%@\"",productURL];
-      
-        NSURL* url = [NSURL URLWithString:[requestURL stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
-        NSURLRequest *request = [NSURLRequest requestWithURL:url];
-        
-        NSURLResponse *response;
-        NSError *error;
-        //send it synchronous
-        NSData *responseData = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
-        
-        if(!error && responseData){
-            NSDictionary* data = [NSJSONSerialization JSONObjectWithData:responseData
-                                                                 options:kNilOptions
-                                                                   error:&error];
-            if(((NSDictionary*)[data objectForKey:@"data"]).count>0 && [[[data objectForKey:@"data"] objectAtIndex:0] objectForKey:@"like_count"]){
-                lblLikeCount.text = [NSString stringWithFormat:@"%@", [[[data objectForKey:@"data"] objectAtIndex:0] objectForKey:@"like_count"]];
-            }
-        }
-        [productMoreVC stopLoadingData];
-    }
-    
-}
+//-(void) updateLikeLabel{
+//    if([productModel valueForKey:@"product_url"]){
+//        [productMoreVC startLoadingData];
+//        NSString* productURL = [NSString stringWithFormat:@"%@",[productModel valueForKey:@"product_url"]];
+//        NSString* requestURL = [NSString stringWithFormat:@"https://graph.facebook.com/fql?q=SELECT like_count FROM link_stat WHERE url = \"%@\"",productURL];
+//      
+//        NSURL* url = [NSURL URLWithString:[requestURL stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+//        NSURLRequest *request = [NSURLRequest requestWithURL:url];
+//        
+//        NSURLResponse *response;
+//        NSError *error;
+//        //send it synchronous
+//        NSData *responseData = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
+//        
+//        if(!error && responseData){
+//            NSDictionary* data = [NSJSONSerialization JSONObjectWithData:responseData
+//                                                                 options:kNilOptions
+//                                                                   error:&error];
+//            if(((NSDictionary*)[data objectForKey:@"data"]).count>0 && [[[data objectForKey:@"data"] objectAtIndex:0] objectForKey:@"like_count"]){
+//                lblLikeCount.text = [NSString stringWithFormat:@"%@", [[[data objectForKey:@"data"] objectAtIndex:0] objectForKey:@"like_count"]];
+//            }
+//        }
+//        [productMoreVC stopLoadingData];
+//    }
+//    
+//}
 
 -(void) didClickLikeButton{
     
