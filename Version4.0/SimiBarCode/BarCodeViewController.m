@@ -50,7 +50,7 @@
     _activityIndicatorView.hidesWhenStopped = YES;
     
     _barCodeModel = [BarCodeModel new];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didGetProductID:) name:@"BarCode-DidGetProductID" object:_barCodeModel];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didGetProductID:) name:BarCodeDidGetProductID object:_barCodeModel];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"ApplicationWillResignActive" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"ApplicationDidBecomeActive" object:nil];
 }
@@ -147,7 +147,7 @@
                             [self hiddenCanvasScan:YES];
                             [_previewView setHidden:YES];
                             
-                            [_barCodeModel getProductIdWithParams:@{@"code":code.stringValue, @"type":@"1"}];
+                            [_barCodeModel getProductIdWithBarCode:code.stringValue type:@"1"];
                             isWaitingDataFromServer = YES;
                             [self.view addSubview:_activityIndicatorView];
                             [_activityIndicatorView startAnimating];
@@ -164,7 +164,7 @@
                             [self hiddenCanvasScan:YES];
                             [_previewView setHidden:YES];
                             
-                            [_barCodeModel getProductIdWithParams:@{@"code":code.stringValue, @"type":@"0"}];
+                            [_barCodeModel getProductIdWithBarCode:code.stringValue type:@"0"];
                             isWaitingDataFromServer = YES;
                             [self.view addSubview:_activityIndicatorView];
                             [_activityIndicatorView startAnimating];
@@ -290,10 +290,10 @@
         NSLog(@"%@", sym.typeName);
         if([sym.typeName  isEqualToString:@"QR-Code"])
         {
-            [_barCodeModel getProductIdWithParams:@{@"code":sym.data, @"type":@"1"}];
+            [_barCodeModel getProductIdWithBarCode:sym.data type:@"1"];
         }else
         {
-            [_barCodeModel getProductIdWithParams:@{@"code":sym.data, @"type":@"0"}];
+            [_barCodeModel getProductIdWithBarCode:sym.data type:@"0"];
         }
         isWaitingDataFromServer = YES;
         isScanFromPhotoSuccess = YES;
@@ -330,13 +330,13 @@
         if ([[responder.status uppercaseString] isEqualToString:@"SUCCESS"]) {
             if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
                 SCProductViewController *productViewController = [SCProductViewController new];
-                productViewController.firstProductID = [_barCodeModel valueForKey:@"product_id"];
+                productViewController.firstProductID = [_barCodeModel valueForKey:@"product_entity_id"];
                 productViewController.arrayProductsID = [[NSMutableArray alloc]initWithArray: @[productViewController.firstProductID]];
                 [self.navigationController pushViewController:productViewController animated:YES];
             }else
             {
                 SCProductViewControllerPad *productViewController = [SCProductViewControllerPad new];
-                productViewController.firstProductID = [_barCodeModel valueForKey:@"product_id"];
+                productViewController.firstProductID = [_barCodeModel valueForKey:@"product_entity_id"];
                 productViewController.arrayProductsID = [[NSMutableArray alloc]initWithArray: @[productViewController.firstProductID]];
                 [self.navigationController pushViewController:productViewController animated:YES];
 

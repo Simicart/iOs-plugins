@@ -10,10 +10,11 @@
 #import "BarCodeAPI.h"
 
 @implementation BarCodeModel
-- (void)getProductIdWithParams:(NSDictionary *)params
+- (void)getProductIdWithBarCode:(NSString *)barCode type:(NSString *)type
 {
-    currentNotificationName = @"BarCode-DidGetProductID";
+    currentNotificationName = BarCodeDidGetProductID;
+    keyResponse = @"simibarcode";
     modelActionType = ModelActionTypeGet;
-    [(BarCodeAPI *)[self getAPI] getProductIdWithParams:params target:self selector:@selector(didFinishRequest:responder:)];
+    [(BarCodeAPI *)[self getAPI] getProductIdWithBarCode:barCode type:type target:self selector:@selector(didFinishRequest:responder:)];
 }
 @end

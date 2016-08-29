@@ -7,11 +7,11 @@
 //
 
 #import "BarCodeAPI.h"
-NSString *const kBarCodeGetProductID = @"simibarcode/index/checkCode/";
+NSString *const kBarCodeGetProductID = @"simiconnector/rest/v2/simibarcodes/";
 
 @implementation BarCodeAPI
-- (void)getProductIdWithParams:(NSDictionary *)params target:(id)target selector:(SEL)selector{
-    NSString *url = [NSString stringWithFormat:@"%@%@", kBaseURL, kBarCodeGetProductID];
-    [self requestWithURL:url params:params target:target selector:selector header:nil];
+- (void)getProductIdWithBarCode:(NSString *)barCode type:(NSString*) type target:(id)target selector:(SEL)selector{
+    NSString *url = [NSString stringWithFormat:@"%@%@%@", kBaseURL, kBarCodeGetProductID,barCode];
+    [self requestWithMethod:@"GET" URL:url params:@{@"type":type} target:target selector:selector header:nil];
 }
 @end

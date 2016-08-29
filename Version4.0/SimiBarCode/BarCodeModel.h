@@ -9,6 +9,8 @@
 #import <SimiCartBundle/SimiCartBundle.h>
 #import <SimiCartBundle/SimiModel.h>
 
+#define BarCodeDidGetProductID @"BarCode-DidGetProductID"
+
 @interface BarCodeModel : SimiModel
-- (void)getProductIdWithParams:(NSDictionary *)params;
+- (void)getProductIdWithBarCode:(NSString*) barCode type:(NSString*) type;
 @end
