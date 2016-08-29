@@ -102,42 +102,53 @@
 
 
 
-#pragma mark FB Login Button Delegates
+#pragma mark FBSDKLoginButtonDelegate
 -(void) loginButton:(FBSDKLoginButton *)loginButton didCompleteWithResult:(FBSDKLoginManagerLoginResult *)result error:(NSError *)error{
     
-    NSMutableDictionary* parameters = [NSMutableDictionary dictionary];
-    [parameters setValue:@"id,email,name" forKey:@"fields"];
-    if([FBSDKAccessToken currentAccessToken]){
-        
-        [[[FBSDKGraphRequest alloc] initWithGraphPath:@"me" parameters:parameters]
-         startWithCompletionHandler:^(FBSDKGraphRequestConnection *connection, id result, NSError *error) {
-             if (!error) {
-                 if([result isKindOfClass:[NSDictionary class]]){
-                     NSString *email = [result objectForKey:@"email"];
-                     NSString *name = SCLocalizedString([result objectForKey:@"name"]);
-                     if(customer == nil)
-                         customer = [[SimiCustomerModel alloc] init];
-                     if(email && name){
-                         [customer loginWithFacebookEmail:email name:name];
-                         NSDictionary *info = [[NSBundle mainBundle] infoDictionary];
-                         NSString *bundleIdentifier = [NSString stringWithFormat:@"%@", [info objectForKey:@"CFBundleIdentifier"]];
-                         KeychainItemWrapper *wrapper = [[KeychainItemWrapper alloc] initWithIdentifier:bundleIdentifier accessGroup:nil];
-                         [wrapper setObject:@"" forKey:(__bridge id)(kSecAttrDescription)];
-                         [wrapper setObject:email forKey:(__bridge id)(kSecAttrAccount)];
-                         
-                         [[NSNotificationCenter defaultCenter] postNotificationName:@"SimiFaceBookWorker_StartLoginWithFaceBook" object:nil];
-                         [viewController startLoadingData];
-                     }
-                 }
-             }
-         }];
+    if([[FBSDKAccessToken currentAccessToken] hasGranted:@"email"]){
+        [self loginWithFacebookInfo];
+    }else{
+        [[FBSDKLoginManager alloc] logInWithReadPermissions:@[@"email"] fromViewController:viewController handler:^(FBSDKLoginManagerLoginResult *result, NSError *error) {
+            if([[FBSDKAccessToken currentAccessToken] hasGranted:@"email"]){
+                [self loginWithFacebookInfo];
+            }else{
+                UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:SCLocalizedString(@"Opps") message:SCLocalizedString(@"Something went wrong") delegate:nil cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles:nil, nil];
+                [alertView show];
+                [[FBSDKLoginManager alloc] logOut];
+                [viewController.navigationController popViewControllerAnimated:YES];
+            }
+        }];
     }
 }
 
 -(void) loginButtonDidLogOut:(FBSDKLoginButton *)loginButton{
-    
+
 }
 
+-(void) loginWithFacebookInfo{
+    [[[FBSDKGraphRequest alloc] initWithGraphPath:@"/me?fields=email,name" parameters:nil]
+     startWithCompletionHandler:^(FBSDKGraphRequestConnection *connection, id result, NSError *error) {
+         if (!error) {
+             if([result isKindOfClass:[NSDictionary class]]){
+                 NSString *email = [result objectForKey:@"email"];
+                 NSString *name = [result objectForKey:@"name"];
+                 if(customer == nil)
+                     customer = [[SimiCustomerModel alloc] init];
+                 if(email && name){
+                     [customer loginWithFacebookEmail:email name:name];
+                     NSDictionary *info = [[NSBundle mainBundle] infoDictionary];
+                     NSString *bundleIdentifier = [NSString stringWithFormat:@"%@", [info objectForKey:@"CFBundleIdentifier"]];
+                     KeychainItemWrapper *wrapper = [[KeychainItemWrapper alloc] initWithIdentifier:bundleIdentifier accessGroup:nil];
+                     [wrapper setObject:@"" forKey:(__bridge id)(kSecAttrDescription)];
+                     [wrapper setObject:email forKey:(__bridge id)(kSecAttrAccount)];
+                     
+                     [[NSNotificationCenter defaultCenter] postNotificationName:@"SimiFaceBookWorker_StartLoginWithFaceBook" object:nil];
+                     [viewController startLoadingData];
+                 }
+             }
+         }
+     }];
+}
 
 #pragma mark Dead Log
 - (void)dealloc

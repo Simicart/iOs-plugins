@@ -6,6 +6,7 @@
 //  Copyright © 2015 Trueplus. All rights reserved.
 //
 @import PassKit;
+#import <PassKit/PKPaymentAuthorizationViewController.h>
 #import "BraintreeApplePay.h"
 #import "BTPaymentViewController.h"
 #import "BraintreeCard.h"
@@ -49,10 +50,15 @@
     NSString* identifier = [paymentList objectAtIndex:indexPath.row];
     if([identifier isEqualToString:@"braintree_applepay"]){
         PKPaymentRequest *paymentRequest = [self paymentRequest];
-        PKPaymentAuthorizationViewController *vc = [[PKPaymentAuthorizationViewController alloc] initWithPaymentRequest:paymentRequest];
-        vc.delegate = self;
-        if(vc)
-            [self presentViewController:vc animated:YES completion:nil];
+        if([PKPaymentAuthorizationViewController canMakePaymentsUsingNetworks:paymentRequest.supportedNetworks]){
+            PKPaymentAuthorizationViewController *vc = [[PKPaymentAuthorizationViewController alloc] initWithPaymentRequest:paymentRequest];
+            vc.delegate = self;
+            if(vc)
+                [self presentViewController:vc animated:YES completion:nil];
+        }else{
+            UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:@"Apple Pay" message:@"This device cannot make payments" delegate:nil cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles:nil, nil];
+            [alertView show];
+        }
     }else if([identifier isEqualToString:@"braintree_paypal"]){
         BTDropInViewController* dropInVC = [[BTDropInViewController alloc] initWithAPIClient:self.braintreeClient];
         dropInVC.delegate = self;
@@ -140,14 +146,20 @@
     [applePayClient tokenizeApplePayPayment:payment
                                  completion:^(BTApplePayCardNonce *tokenizedApplePayPayment,
                                               NSError *error) {
+                                     if(!error){
+                                         UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:@"Apple Pay" message:@"This device cannot make payments" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+                                         [alertView show];
+                                     }
                                      if (tokenizedApplePayPayment) {
                                          
                                          [self postNonceToServer:tokenizedApplePayPayment.nonce];
                                      
                                          completion(PKPaymentAuthorizationStatusSuccess);
                                      } else {
-                
                                          completion(PKPaymentAuthorizationStatusFailure);
+//                                         [self.navigationController popToRootViewControllerAnimated:YES];
+                                         UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:@"Apple Pay" message:@"This device cannot make payments" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+                                         [alertView show];
                                      }
                                  }];
 }
