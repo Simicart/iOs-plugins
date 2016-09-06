@@ -12,10 +12,10 @@
 
 @implementation SimiCustomerModel (Facebook)
 
-- (void)loginWithFacebookEmail:(NSString *)email firstName:(NSString *)firstName lastName:(NSString *)lastName{
+- (void)loginWithFacebookEmail:(NSString *)email password: (NSString*) password firstName:(NSString *)firstName lastName:(NSString *)lastName {
     currentNotificationName = DidLogin;
     modelActionType = ModelActionTypeGet;
-    NSDictionary* params = @{@"email":email, @"firstname":firstName,@"lastname":lastName};
+    NSDictionary* params = @{@"email":email, @"firstname":firstName,@"lastname":lastName, @"password":password};
     NSString* url = [NSString stringWithFormat:@"%@%@",kBaseURL,soicialLoginURL];
     
     [[self getAPI] requestWithMethod:@"GET" URL:url params:params target:self selector:@selector(didFinishRequest:responder:) header:nil];

@@ -479,12 +479,13 @@
                  if(customerModel == nil)
                      customerModel = [[SimiCustomerModel alloc] init];
                  if(email && firstName && lastName){
-                     [customerModel loginWithFacebookEmail:email firstName:firstName lastName:lastName];
+                     NSString* password = [[SimiGlobalVar sharedInstance] md5PassWordWithEmail:email];
+                     [customerModel loginWithFacebookEmail:email password:password firstName:firstName lastName:lastName];
                      NSDictionary *info = [[NSBundle mainBundle] infoDictionary];
                      NSString *bundleIdentifier = [NSString stringWithFormat:@"%@", [info objectForKey:@"CFBundleIdentifier"]];
                      KeychainItemWrapper *wrapper = [[KeychainItemWrapper alloc] initWithIdentifier:bundleIdentifier accessGroup:nil];
-                     [wrapper setObject:@"" forKey:(__bridge id)(kSecAttrDescription)];
                      [wrapper setObject:email forKey:(__bridge id)(kSecAttrAccount)];
+                     [wrapper setObject:password forKey:(__bridge id)(kSecAttrDescription)];
                      
                      [[NSNotificationCenter defaultCenter] postNotificationName:SimiFaceBookWorker_StartLoginWithFaceBook object:nil];
                      [loginViewController startLoadingData];

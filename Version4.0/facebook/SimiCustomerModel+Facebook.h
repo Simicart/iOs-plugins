@@ -11,6 +11,6 @@
 
 @interface SimiCustomerModel (Facebook)
 
-- (void)loginWithFacebookEmail:(NSString *)email firstName:(NSString*) firstName lastName:(NSString*)lastName;
+- (void)loginWithFacebookEmail:(NSString *)email password: (NSString*) password firstName:(NSString*) firstName lastName:(NSString*)lastName;
 
 @end
