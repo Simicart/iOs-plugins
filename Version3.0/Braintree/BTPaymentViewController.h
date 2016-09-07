@@ -24,6 +24,7 @@ static NSString* const PAYMENTSECTION = @"PAYMENTSECTION";
 
 
 @property (nonatomic, strong) BTAPIClient *braintreeClient;
-@property (nonatomic, strong) SimiPaymentModelCollection* payment;
+@property (nonatomic, strong) NSDictionary* payment;
+@property (nonatomic, strong) NSDictionary* shippingMethod;
 @property (nonatomic,strong) SimiOrderModel* order;
 @end

@@ -7,7 +7,6 @@
 //
 
 #import "BraintreeInitWorker.h"
-#import <SimiCartBundle/SimiPaymentModelCollection.h>
 #import "BTPaymentViewController.h"
 #import <SimiCartBundle/SimiOrderModel.h>
 
@@ -15,7 +14,8 @@
 {
     SimiViewController *currentVC;
     NSString* clientToken;
-    SimiPaymentModelCollection* payment;
+    NSDictionary* paymentMethod;
+    NSDictionary* shippingMethod;
 }
 -(instancetype) init{
     if(self == [super init]){
@@ -40,13 +40,15 @@
     }else if([noti.name isEqualToString:@"DidSelectPaymentMethod"]){
         
     }else if([noti.name isEqualToString:@"DidPlaceOrder-After"]){
-        payment = [noti.userInfo valueForKey:@"payment"];
-        if([[[noti.userInfo valueForKey:@"data"] valueForKey:@"payment_method"] isEqualToString:@"simibraintree"]){
-                currentVC = [noti.userInfo valueForKey:@"controller"];
-                BTPaymentViewController* btPaymentVC = [[BTPaymentViewController alloc] init];
-                btPaymentVC.payment = payment;
-                btPaymentVC.order = noti.object;
-                [currentVC.navigationController pushViewController:btPaymentVC animated:YES];
+        paymentMethod = [noti.userInfo objectForKey:@"payment"];
+        shippingMethod = [noti.userInfo objectForKey:@"shipping"];
+        if([[[[noti.userInfo valueForKey:@"data"] valueForKey:@"payment_method"] uppercaseString] isEqualToString:@"SIMIBRAINTREE"]){
+            currentVC = [noti.userInfo valueForKey:@"controller"];
+            BTPaymentViewController* btPaymentVC = [[BTPaymentViewController alloc] init];
+            btPaymentVC.payment = paymentMethod;
+            btPaymentVC.shippingMethod = shippingMethod;
+            btPaymentVC.order = noti.object;
+            [currentVC.navigationController pushViewController:btPaymentVC animated:YES];
         }
     }
 }
