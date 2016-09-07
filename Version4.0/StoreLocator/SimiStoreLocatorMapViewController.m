@@ -206,7 +206,7 @@
     currentLocations.tappable = YES;
     
     for (int i = 0; i < [sLModelCollectionAll count]; i++) {
-        SimiStoreLocatorModel *storeLocatorModel_ = [[SimiStoreLocatorModel alloc]init];
+        SimiModel *storeLocatorModel_ = [[SimiModel alloc]init];
         storeLocatorModel_ = [sLModelCollectionAll objectAtIndex:i];
         SimiStoreLocatorMaker * storeLocatorMaker_ = [[SimiStoreLocatorMaker alloc]init];
         float lat = (float)[[NSString stringWithFormat:@"%@",[storeLocatorModel_ valueForKey:@"latitude"]] floatValue];

@@ -7,7 +7,7 @@
 //
 
 #import "SimiStoreLocatorViewControllerPad.h"
-#import "SimiGlobalVar+StoreLocator.h"
+
 NSInteger const widthListView = 420;
 NSInteger const heightButtonSearch = 50;
 
@@ -191,7 +191,7 @@ NSInteger const heightButtonSearch = 50;
 }
 
 #pragma mark List View Controller Delegate
-- (void)showViewDetailControllerFromList:(SimiStoreLocatorModel *)sLModel_
+- (void)showViewDetailControllerFromList:(SimiModel *)sLModel_
 {
     isDetailViewController = YES;
     detailViewController = [SimiStoreLocatorDetailViewController new];
@@ -214,7 +214,7 @@ NSInteger const heightButtonSearch = 50;
 }
 
 #pragma mark Map View Controller Delegate
-- (void)showViewDetailControllerFromMap:(SimiStoreLocatorModel *)sLModel_
+- (void)showViewDetailControllerFromMap:(SimiModel *)sLModel_
 {
     isDetailViewController = YES;
     detailViewController = [SimiStoreLocatorDetailViewController new];
@@ -263,7 +263,7 @@ NSInteger const heightButtonSearch = 50;
     sLMapViewController.searchOption = SearchOptionSearched;
 }
 
-- (void)cacheDataWithstoreLocatorModelCollection:(SimiStoreLocatorModelCollection *)collection simiAddressStoreLocatorModelCollection:(SimiAddressStoreLocatorModelCollection *)addressCollection simiConfigSearchStoreLocatorModel:(SimiConfigSearchStoreLocatorModel *)configSearch simiTagModelCollection:(SimiTagModelCollection *)tagModelCollection tagChoise:(NSString *)tagString
+- (void)cacheDataWithstoreLocatorModelCollection:(SimiStoreLocatorModelCollection *)collection  simiTagModelCollection:(SimiTagModelCollection *)tagModelCollection tagChoise:(NSString *)tagString
 {
     [sLListViewControllerLandscape.sLModelCollection removeAllObjects];
     for (int i = 0; i < collection.count; i++) {
@@ -281,14 +281,5 @@ NSInteger const heightButtonSearch = 50;
     
     [sLMapViewController showMaker];
 }
-/*
-#pragma mark - Navigation
 
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
-{
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
 @end

@@ -8,16 +8,13 @@
 
 #import <SimiCartBundle/SimiCartBundle.h>
 #import <SimiCartBundle/SimiTabViewController.h>
+#import <SimiCartBundle/SimiModel.h>
 #import "SimiCLController.h"
 #import "SimiStoreLocatorListViewController.h"
 #import "SimiStoreLocatorMapViewController.h"
 #import "SimiStoreLocatorModelCollection.h"
 #import "SimiStoreLocatorDetailViewController.h"
-#import "SimiStoreLocatorModel.h"
 #import "SimiStoreLocatorSearchViewController.h"
-
-#import "SimiAddressStoreLocatorModelCollection.h"
-#import "SimiConfigSearchStoreLocatorModel.h"
 #import "SimiTagModelCollection.h"
 
 @interface SimiStoreLocatorViewController : SimiTabViewController<
@@ -34,9 +31,7 @@
 }
 
 @property (nonatomic, strong) SimiStoreLocatorModelCollection *storeLocatorModelCollection;
-@property (nonatomic, strong) SimiStoreLocatorModel *slModel;
-@property (nonatomic, strong) SimiAddressStoreLocatorModelCollection *simiAddressStoreLocatorModelCollection;
-@property (nonatomic, strong) SimiConfigSearchStoreLocatorModel *simiConfigSearchStoreLocatorModel;
+@property (nonatomic, strong) SimiModel *slModel;
 @property (nonatomic, strong) SimiTagModelCollection *simiTagModelCollection;
 @property (nonatomic, strong) NSString *tagChoise;
 @property (nonatomic, strong) UIBarButtonItem *searchButton;

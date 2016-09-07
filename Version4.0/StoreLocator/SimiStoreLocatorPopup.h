@@ -8,10 +8,10 @@
 
 #import <SimiCartBundle/SimiCartBundle.h>
 #import <SimiCartBundle/SimiView.h>
-#import "SimiStoreLocatorModel.h"
 #import <SimiCartBundle/UIImageView+WebCache.h>
-#import "UILabel+DynamicSizeMe.h"
+#import <SimiCartBundle/UILabelDynamicSize.h>
 #import <MapKit/MapKit.h>
+#import <SimiCartBundle/SimiModel.h>
 @protocol SimiStoreLocatorPopupDelegate <NSObject>
 
 @end
@@ -24,7 +24,7 @@
 @property (nonatomic, strong)   UIImageView *imagePopup;
 @property (nonatomic, strong)   UILabel* lblStoreName;
 @property (nonatomic, strong)   UILabel* lblStoreAddress;
-@property (nonatomic, strong) SimiStoreLocatorModel* storeLocatorModel;
+@property (nonatomic, strong) SimiModel* storeLocatorModel;
 
 
 - (void)setContentForPopup;

@@ -12,7 +12,7 @@
 @end
 
 @implementation SimiStoreLocatorViewController
-@synthesize storeLocatorModelCollection, searchButton,simiConfigSearchStoreLocatorModel,tagChoise, simiAddressStoreLocatorModelCollection, simiTagModelCollection;
+@synthesize storeLocatorModelCollection, searchButton,tagChoise, simiTagModelCollection;
 
 #pragma mark View Controller Cycle
 
@@ -125,7 +125,7 @@
 }
 
 #pragma mark Simi StoreLocatorMapViewController Delegate
--(void)showViewDetailControllerFromMap:(SimiStoreLocatorModel *)sLModel_
+-(void)showViewDetailControllerFromMap:(SimiModel *)sLModel_
 {
     SimiStoreLocatorDetailViewController *sLDetailViewController = [SimiStoreLocatorDetailViewController new];
     sLDetailViewController.sLModel = sLModel_;
@@ -147,7 +147,7 @@
     [self selectTabAtIndex:1];
 }
 
-- (void)showViewDetailControllerFromList:(SimiStoreLocatorModel *)sLModel_
+- (void)showViewDetailControllerFromList:(SimiModel *)sLModel_
 {
     SimiStoreLocatorDetailViewController *sLDetailViewController = [[SimiStoreLocatorDetailViewController alloc]init];
     sLDetailViewController.sLModel = sLModel_;
@@ -159,7 +159,7 @@
 }
 
 #pragma mark Simi StoreLocatorDetailView Controller Delegate
--(void)returnMapViewController:(SimiStoreLocatorModel*) sLModelParam
+-(void)returnMapViewController:(SimiModel*) sLModelParam
 {
     if (sLMapViewController == nil) {
         sLMapViewController = [[SimiStoreLocatorMapViewController alloc]init];
@@ -189,14 +189,6 @@
         sLSearchViewController.tagChoise = tagChoise;
     }
     
-    if (simiAddressStoreLocatorModelCollection != nil) {
-        sLSearchViewController.simiAddressStoreLocatorModelCollection = simiAddressStoreLocatorModelCollection;
-    }
-    
-    if (simiConfigSearchStoreLocatorModel != nil) {
-        sLSearchViewController.simiConfigSearchStoreLocatorModel = simiConfigSearchStoreLocatorModel;
-    }
-    
     if (simiTagModelCollection != nil) {
         sLSearchViewController.tagModelCollection = simiTagModelCollection;
     }
@@ -218,7 +210,7 @@
     sLMapViewController.searchOption = SearchOptionSearched;
 }
 
-- (void)cacheDataWithstoreLocatorModelCollection:(SimiStoreLocatorModelCollection *)collection simiAddressStoreLocatorModelCollection:(SimiAddressStoreLocatorModelCollection *)addressCollection simiConfigSearchStoreLocatorModel:(SimiConfigSearchStoreLocatorModel *)configSearch simiTagModelCollection:(SimiTagModelCollection *)tagModelCollection tagChoise:(NSString *)tagString
+- (void)cacheDataWithstoreLocatorModelCollection:(SimiStoreLocatorModelCollection *)collection simiTagModelCollection:(SimiTagModelCollection *)tagModelCollection tagChoise:(NSString *)tagString
 {
     [sLListViewController.sLModelCollection removeAllObjects];
     for (int i = 0; i < collection.count; i++) {
@@ -233,8 +225,6 @@
         [sLMapViewController.sLModelCollectionAll addObject:[collection objectAtIndex:i]];
     }
     
-    simiAddressStoreLocatorModelCollection = addressCollection;
-    simiConfigSearchStoreLocatorModel = configSearch;
     simiTagModelCollection = tagModelCollection;
     tagChoise = tagString;
 }

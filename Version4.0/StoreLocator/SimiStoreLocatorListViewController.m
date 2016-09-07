@@ -93,7 +93,7 @@
 
 - (SCStoreListTableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    SimiStoreLocatorModel *locatorModel = [sLModelCollection objectAtIndex:indexPath.row];
+    SimiModel *locatorModel = [sLModelCollection objectAtIndex:indexPath.row];
     NSString *cellIdentifier = [NSString stringWithFormat:@"%@_%@",@"CellIdentifier",[locatorModel valueForKey:@"storelocator_id"]];
     SCStoreListTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
     if (cell == nil) {
@@ -107,7 +107,7 @@
 #pragma mark Table View Delegate
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    SimiStoreLocatorModel *storeLocatorModel = [sLModelCollection objectAtIndex:indexPath.row];
+    SimiModel *storeLocatorModel = [sLModelCollection objectAtIndex:indexPath.row];
     NSString *stringAddress = @"";
     if ([storeLocatorModel valueForKey:@"address"]) {
         stringAddress = [NSString stringWithFormat:@"%@",[storeLocatorModel valueForKey:@"address"]];
@@ -264,11 +264,11 @@
 	}
 }
 
-- (void)choiceStoreLocatorWithStoreLocatorModel:(SimiStoreLocatorModel *)storeLM
+- (void)choiceStoreLocatorWithStoreLocatorModel:(SimiModel *)storeLM
 {
     if (storeLM !=nil) {
         if (self.sLModel == nil) {
-            self.sLModel = [[SimiStoreLocatorModel alloc]init];
+            self.sLModel = [[SimiModel alloc]init];
         }
         self.sLModel = storeLM;
     }

@@ -7,7 +7,7 @@
 //
 
 #import "SimiStoreLocatorSearchViewController.h"
-#import "SimiGlobalVar+StoreLocator.h"
+
 @interface SimiStoreLocatorSearchViewController ()
 
 @end
@@ -36,20 +36,11 @@
     
     BOOL didGetSearchConfig;
 }
-@synthesize simiConfigSearchStoreLocatorModel, sLModelCollection, tagModelCollection, stringCitySearch, stringCountrySearchCode,stringCountrySearchName, stringStateSearch, stringZipCodeSearch, delegate, simiAddressStoreLocatorModelCollection, currentLongitube, currentLatitube, stringTagSearch, tagChoise;
+@synthesize sLModelCollection, tagModelCollection, stringCitySearch, stringCountrySearchCode,stringCountrySearchName, stringStateSearch, stringZipCodeSearch, delegate, simiAddressStoreLocatorModelCollection, currentLongitube, currentLatitube, stringTagSearch, tagChoise;
 @synthesize lblZipcode,lblState,lblCity,lblCountry,lblContentCountry,lblSearchByArea,lblSearchByTag, collectionViewTagContent;
 @synthesize txtStateSearch,tblViewCountry,txtCitySearch,txtZipCode;
 @synthesize viewSearchByZipcode,viewSearchByState,viewSearchByCity,viewSearchByCountry, viewSearch, viewSearchByTag, scrView, activityIndicatorView;
 @synthesize btnSearch;
-
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
-{
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (self) {
-        // Custom initialization
-    }
-    return self;
-}
 
 - (void)viewDidLoadBefore
 {
@@ -68,17 +59,10 @@
     [self.view addSubview:scrView];
     isFirtsGetTagList = YES;
     
-    if (simiConfigSearchStoreLocatorModel != nil) {
-        [self setInterfaceSearchByArea];
-        
-        if (tagModelCollection.count > 0) {
-            [self setInterfaceSearchByTag];
-        }
-    }else
-    {
-        simiConfigSearchStoreLocatorModel = [[SimiConfigSearchStoreLocatorModel alloc]init];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didGetSearchConfig:) name:@"DidGetSearchConfig" object:simiConfigSearchStoreLocatorModel];
-        [simiConfigSearchStoreLocatorModel getSearchConfigWithParams:nil];
+    [self setInterfaceSearchByArea];
+    
+    if (tagModelCollection.count > 0) {
+        [self setInterfaceSearchByTag];
     }
     //  Get data for search tag
     __block __weak id weakSelf = self;
@@ -137,144 +121,133 @@
         topDistance = 13;
     }
     
-    NSMutableArray *arrayConfig = (NSMutableArray*)[simiConfigSearchStoreLocatorModel valueForKey:@"config"];
-    if (![arrayConfig containsObject:[NSString stringWithFormat:@"5"]]) {
-        lblSearchByArea = [[UILabel alloc]initWithFrame:CGRectMake(labelMainTitleX, heightContent, widthContent - 100, heightLabel)];
-        [lblSearchByArea setTextColor:[[SimiGlobalVar sharedInstance] colorWithHexString:@"#393939"]];
-        [lblSearchByArea setFont:[UIFont fontWithName:[NSString stringWithFormat:@"%@-%@",THEME_FONT_NAME,@"Bold"] size:THEME_FONT_SIZE + 3]];
-        [lblSearchByArea setText: SCLocalizedString(@"Search By Area")];
-        [scrView addSubview:lblSearchByArea];
-        
-        btnSearch = [[UIButton alloc]initWithFrame:CGRectMake(widthContent - 100, heightContent, 80, heightLabel)];
-        [btnSearch addTarget:self action:@selector(btnSearch_Click:) forControlEvents:UIControlEventTouchUpInside];
-        [btnSearch setTitle:SCLocalizedString(@"Clear") forState:UIControlStateNormal];
-        [btnSearch setTitleColor:[[SimiGlobalVar sharedInstance] colorWithHexString:@"#ff9900"] forState:UIControlStateNormal];
-        [btnSearch.titleLabel setFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE - 2]];
-        
-        [btnSearch setImage:[UIImage imageNamed:@"storelocator__search_iphone"] forState:UIControlStateNormal];
-        [btnSearch setTitleEdgeInsets:UIEdgeInsetsMake(0, 5, 0, 0)];
-        [scrView addSubview:btnSearch];
-        heightContent += heightLabel;
+    lblSearchByArea = [[UILabel alloc]initWithFrame:CGRectMake(labelMainTitleX, heightContent, widthContent - 100, heightLabel)];
+    [lblSearchByArea setTextColor:[[SimiGlobalVar sharedInstance] colorWithHexString:@"#393939"]];
+    [lblSearchByArea setFont:[UIFont fontWithName:[NSString stringWithFormat:@"%@-%@",THEME_FONT_NAME,@"Bold"] size:THEME_FONT_SIZE + 3]];
+    [lblSearchByArea setText: SCLocalizedString(@"Search By Area")];
+    [scrView addSubview:lblSearchByArea];
+    
+    btnSearch = [[UIButton alloc]initWithFrame:CGRectMake(widthContent - 100, heightContent, 80, heightLabel)];
+    [btnSearch addTarget:self action:@selector(btnSearch_Click:) forControlEvents:UIControlEventTouchUpInside];
+    [btnSearch setTitle:SCLocalizedString(@"Clear") forState:UIControlStateNormal];
+    [btnSearch setTitleColor:[[SimiGlobalVar sharedInstance] colorWithHexString:@"#ff9900"] forState:UIControlStateNormal];
+    [btnSearch.titleLabel setFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE - 2]];
+    
+    [btnSearch setImage:[UIImage imageNamed:@"storelocator__search_iphone"] forState:UIControlStateNormal];
+    [btnSearch setTitleEdgeInsets:UIEdgeInsetsMake(0, 5, 0, 0)];
+    [scrView addSubview:btnSearch];
+    heightContent += heightLabel;
+    
 #pragma mark Search by Country
-        if ([arrayConfig containsObject:[NSString stringWithFormat:@"1"]]) {
-            if (simiAddressStoreLocatorModelCollection == nil) {
-                simiAddressStoreLocatorModelCollection = [[SimiAddressStoreLocatorModelCollection alloc]init];
-                [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didGetCountry:) name:@"DidGetCountryCollection" object:simiAddressStoreLocatorModelCollection];
-                [simiAddressStoreLocatorModelCollection getCountryListWithParams:nil];
-            }
-            viewSearchByCountry = [[UIControl alloc]initWithFrame:CGRectMake(0, heightContent, widthContent, heightViewControl)];
-            [viewSearchByCountry addTarget:self action:@selector(btnTouchOutLayer_Click:) forControlEvents:UIControlEventTouchUpInside];
-            [scrView addSubview:viewSearchByCountry];
-            
-            lblCountry = [[UILabel  alloc]initWithFrame:CGRectMake(labelTitleX, topDistance, widthTitle, heightLabel)];
-            [lblCountry setTextColor:[[SimiGlobalVar sharedInstance] colorWithHexString:@"#393939"]];
-            [lblCountry setFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE - 2]];
-            [lblCountry setText:[NSString stringWithFormat:@"%@:", SCLocalizedString(@"Country")]];
-            [viewSearchByCountry addSubview:lblCountry];
-            
-            _imgCountry = [[UIImageView alloc]initWithFrame:CGRectMake(textFieldX, topDistance, widthTextField, heightLabel)];
-            [_imgCountry setImage:[UIImage imageNamed:@"storelocator_searchdropbox"]];
-            [viewSearchByCountry addSubview:_imgCountry];
-            
-            lblContentCountry = [[UILabel alloc]initWithFrame:CGRectMake(textFieldX + leftDistance, 8.5, widthTextField - leftDistance, heightLabel)];
-            [lblContentCountry setTextColor:[[SimiGlobalVar sharedInstance] colorWithHexString:@"#393939"]];
-            [lblContentCountry setFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE - 2]];
-            if (stringCountrySearchName == nil|| [stringCountrySearchName isEqualToString:@""]) {
-                stringCountrySearchName = @"None";
-            }
-            lblContentCountry.text = SCLocalizedString(stringCountrySearchName);
-            [viewSearchByCountry addSubview:lblContentCountry];
-            
-            _btnCountry = [[UIButton alloc]initWithFrame:CGRectMake(textFieldX, topDistance, widthTextField, heightLabel)];
-            [_btnCountry addTarget:self action:@selector(btnDropDownList_Click:) forControlEvents:UIControlEventTouchUpInside];
-            [_btnCountry setBackgroundColor:[UIColor clearColor]];
-            [viewSearchByCountry addSubview:_btnCountry];
-            heightContent +=  CGRectGetHeight(viewSearchByCountry.frame);
-        }
-#pragma mark Search by City
-        if ([arrayConfig containsObject:[NSString stringWithFormat:@"2"]]) {
-            viewSearchByCity = [[UIControl alloc]initWithFrame:CGRectMake(0, heightContent, widthContent, heightViewControl)];
-            [viewSearchByCity addTarget:self action:@selector(btnTouchOutLayer_Click:) forControlEvents:UIControlEventTouchUpInside];
-            [scrView addSubview:viewSearchByCity];
-            
-            lblCity = [[UILabel alloc]initWithFrame:CGRectMake(labelTitleX, topDistance, widthTitle, heightLabel)];
-            [lblCity setTextColor:[[SimiGlobalVar sharedInstance] colorWithHexString:@"#393939"]];
-            [lblCity setFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE - 2]];
-            [lblCity setText:[NSString stringWithFormat:@"%@:", SCLocalizedString(@"City")]];
-            [viewSearchByCity addSubview:lblCity];
-            
-            _imgCity = [[UIImageView alloc]initWithFrame:CGRectMake(textFieldX, topDistance, widthTextField, heightLabel)];
-            [_imgCity setImage:[UIImage imageNamed:@"storelocator_search_text_field"]];
-            [viewSearchByCity addSubview:_imgCity];
-            
-            txtCitySearch = [[UITextField alloc]initWithFrame:CGRectMake(textFieldX + leftDistance, topDistance, widthTextField - leftDistance, heightLabel)];
-            txtCitySearch.textColor = [[SimiGlobalVar sharedInstance] colorWithHexString:@"#393939"];
-            [txtCitySearch setFont: [UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE]];
-            txtCitySearch.text = stringCitySearch;
-            [viewSearchByCity addSubview:txtCitySearch];
-            
-            heightContent += CGRectGetHeight(viewSearchByCity.frame);
-        }
-#pragma mark Search By State
-        if ([arrayConfig containsObject:[NSString stringWithFormat:@"3"]]) {
-            viewSearchByState = [[UIControl alloc]initWithFrame:CGRectMake(0, heightContent, widthContent, heightViewControl)];
-            [viewSearchByState addTarget:self action:@selector(btnTouchOutLayer_Click:) forControlEvents:UIControlEventTouchUpInside];
-            [scrView addSubview:viewSearchByState];
-            
-            lblState = [[UILabel alloc]initWithFrame:CGRectMake(labelTitleX, topDistance, widthTitle, heightLabel)];
-            [lblState setTextColor:[[SimiGlobalVar sharedInstance] colorWithHexString:@"#393939"]];
-            [lblState setFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE - 2]];
-            [lblState setText:[NSString stringWithFormat:@"%@:", SCLocalizedString(@"State")]];
-            [viewSearchByState addSubview:lblState];
-            
-            _imgState = [[UIImageView alloc]initWithFrame:CGRectMake(textFieldX, topDistance, widthTextField, heightLabel)];
-            [_imgState setImage:[UIImage imageNamed:@"storelocator_search_text_field"]];
-            [viewSearchByState addSubview:_imgState];
-            
-            txtStateSearch = [[UITextField alloc]initWithFrame:CGRectMake(textFieldX + leftDistance, topDistance, widthTextField - leftDistance, heightLabel)];
-            txtStateSearch.textColor = [[SimiGlobalVar sharedInstance] colorWithHexString:@"#393939"];
-            [txtStateSearch setFont: [UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE]];
-            txtStateSearch.text = stringStateSearch;
-            [viewSearchByState addSubview:txtStateSearch];
-            
-            heightContent += CGRectGetHeight(viewSearchByState.frame);
-        }
-#pragma mark Search By Zipcode
-        if ([arrayConfig containsObject:[NSString stringWithFormat:@"4"]]) {
-            viewSearchByZipcode = [[UIControl alloc]initWithFrame:CGRectMake(0, heightContent, widthContent, heightViewControl)];
-            [viewSearchByZipcode addTarget:self action:@selector(btnTouchOutLayer_Click:) forControlEvents:UIControlEventTouchUpInside];
-            [scrView addSubview:viewSearchByZipcode];
-            
-            lblZipcode = [[UILabel alloc]initWithFrame:CGRectMake(labelTitleX, topDistance, widthTitle, heightLabel)];
-            [lblZipcode setTextColor:[[SimiGlobalVar sharedInstance] colorWithHexString:@"#393939"]];
-            [lblZipcode setFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE - 2]];
-            [lblZipcode setText:[NSString stringWithFormat:@"%@:", SCLocalizedString(@"Zip Code")]];
-            [viewSearchByZipcode addSubview:lblZipcode];
-            
-            _imgZipCode = [[UIImageView alloc]initWithFrame:CGRectMake(textFieldX, topDistance, widthTextField, heightLabel)];
-            [_imgZipCode setImage:[UIImage imageNamed:@"storelocator_search_text_field"]];
-            [viewSearchByZipcode addSubview:_imgZipCode];
-            
-            txtZipCode = [[UITextField alloc]initWithFrame:CGRectMake(textFieldX + leftDistance, topDistance, widthTextField - leftDistance, heightLabel)];
-            txtZipCode.textColor = [[SimiGlobalVar sharedInstance] colorWithHexString:@"#393939"];
-            [txtZipCode setFont: [UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE]];
-            txtZipCode.text = stringZipCodeSearch;
-            [viewSearchByZipcode addSubview:txtZipCode];
-            
-            heightContent += CGRectGetHeight(viewSearchByZipcode.frame);
-        }
-#pragma mark Button Search
-        viewSearch = [[UIView alloc]initWithFrame:CGRectMake(0, heightContent, widthContent, heightViewControl)];
-        [viewSearch setBackgroundColor:[UIColor clearColor]];
-        [scrView addSubview:viewSearch];
-        
-        btnSearch = [[UIButton alloc]initWithFrame:CGRectMake(textFieldX, topDistance, widthTextField, heightLabel)];
-        [btnSearch addTarget:self action:@selector(btnSearch_Click:) forControlEvents:UIControlEventTouchUpInside];
-        [btnSearch setBackgroundImage:[UIImage imageNamed:@"storelocator_bt_search"] forState:UIControlStateNormal];
-        [btnSearch setTitle:SCLocalizedString(@"Search") forState:UIControlStateNormal];
-        [viewSearch addSubview:btnSearch];
-        heightContent += heightViewControl;
+    viewSearchByCountry = [[UIControl alloc]initWithFrame:CGRectMake(0, heightContent, widthContent, heightViewControl)];
+    [viewSearchByCountry addTarget:self action:@selector(btnTouchOutLayer_Click:) forControlEvents:UIControlEventTouchUpInside];
+    [scrView addSubview:viewSearchByCountry];
+    
+    lblCountry = [[UILabel  alloc]initWithFrame:CGRectMake(labelTitleX, topDistance, widthTitle, heightLabel)];
+    [lblCountry setTextColor:[[SimiGlobalVar sharedInstance] colorWithHexString:@"#393939"]];
+    [lblCountry setFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE - 2]];
+    [lblCountry setText:[NSString stringWithFormat:@"%@:", SCLocalizedString(@"Country")]];
+    [viewSearchByCountry addSubview:lblCountry];
+    
+    _imgCountry = [[UIImageView alloc]initWithFrame:CGRectMake(textFieldX, topDistance, widthTextField, heightLabel)];
+    [_imgCountry setImage:[UIImage imageNamed:@"storelocator_searchdropbox"]];
+    [viewSearchByCountry addSubview:_imgCountry];
+    
+    lblContentCountry = [[UILabel alloc]initWithFrame:CGRectMake(textFieldX + leftDistance, 8.5, widthTextField - leftDistance, heightLabel)];
+    [lblContentCountry setTextColor:[[SimiGlobalVar sharedInstance] colorWithHexString:@"#393939"]];
+    [lblContentCountry setFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE - 2]];
+    if (stringCountrySearchName == nil|| [stringCountrySearchName isEqualToString:@""]) {
+        stringCountrySearchName = @"None";
     }
+    lblContentCountry.text = SCLocalizedString(stringCountrySearchName);
+    [viewSearchByCountry addSubview:lblContentCountry];
+    
+    _btnCountry = [[UIButton alloc]initWithFrame:CGRectMake(textFieldX, topDistance, widthTextField, heightLabel)];
+    [_btnCountry addTarget:self action:@selector(btnDropDownList_Click:) forControlEvents:UIControlEventTouchUpInside];
+    [_btnCountry setBackgroundColor:[UIColor clearColor]];
+    [viewSearchByCountry addSubview:_btnCountry];
+    heightContent +=  CGRectGetHeight(viewSearchByCountry.frame);
+    
+#pragma mark Search by City
+    viewSearchByCity = [[UIControl alloc]initWithFrame:CGRectMake(0, heightContent, widthContent, heightViewControl)];
+    [viewSearchByCity addTarget:self action:@selector(btnTouchOutLayer_Click:) forControlEvents:UIControlEventTouchUpInside];
+    [scrView addSubview:viewSearchByCity];
+    
+    lblCity = [[UILabel alloc]initWithFrame:CGRectMake(labelTitleX, topDistance, widthTitle, heightLabel)];
+    [lblCity setTextColor:[[SimiGlobalVar sharedInstance] colorWithHexString:@"#393939"]];
+    [lblCity setFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE - 2]];
+    [lblCity setText:[NSString stringWithFormat:@"%@:", SCLocalizedString(@"City")]];
+    [viewSearchByCity addSubview:lblCity];
+    
+    _imgCity = [[UIImageView alloc]initWithFrame:CGRectMake(textFieldX, topDistance, widthTextField, heightLabel)];
+    [_imgCity setImage:[UIImage imageNamed:@"storelocator_search_text_field"]];
+    [viewSearchByCity addSubview:_imgCity];
+    
+    txtCitySearch = [[UITextField alloc]initWithFrame:CGRectMake(textFieldX + leftDistance, topDistance, widthTextField - leftDistance, heightLabel)];
+    txtCitySearch.textColor = [[SimiGlobalVar sharedInstance] colorWithHexString:@"#393939"];
+    [txtCitySearch setFont: [UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE]];
+    txtCitySearch.text = stringCitySearch;
+    [viewSearchByCity addSubview:txtCitySearch];
+    
+    heightContent += CGRectGetHeight(viewSearchByCity.frame);
+    
+#pragma mark Search By State
+    viewSearchByState = [[UIControl alloc]initWithFrame:CGRectMake(0, heightContent, widthContent, heightViewControl)];
+    [viewSearchByState addTarget:self action:@selector(btnTouchOutLayer_Click:) forControlEvents:UIControlEventTouchUpInside];
+    [scrView addSubview:viewSearchByState];
+    
+    lblState = [[UILabel alloc]initWithFrame:CGRectMake(labelTitleX, topDistance, widthTitle, heightLabel)];
+    [lblState setTextColor:[[SimiGlobalVar sharedInstance] colorWithHexString:@"#393939"]];
+    [lblState setFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE - 2]];
+    [lblState setText:[NSString stringWithFormat:@"%@:", SCLocalizedString(@"State")]];
+    [viewSearchByState addSubview:lblState];
+    
+    _imgState = [[UIImageView alloc]initWithFrame:CGRectMake(textFieldX, topDistance, widthTextField, heightLabel)];
+    [_imgState setImage:[UIImage imageNamed:@"storelocator_search_text_field"]];
+    [viewSearchByState addSubview:_imgState];
+    
+    txtStateSearch = [[UITextField alloc]initWithFrame:CGRectMake(textFieldX + leftDistance, topDistance, widthTextField - leftDistance, heightLabel)];
+    txtStateSearch.textColor = [[SimiGlobalVar sharedInstance] colorWithHexString:@"#393939"];
+    [txtStateSearch setFont: [UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE]];
+    txtStateSearch.text = stringStateSearch;
+    [viewSearchByState addSubview:txtStateSearch];
+    
+    heightContent += CGRectGetHeight(viewSearchByState.frame);
+    
+#pragma mark Search By Zipcode
+    viewSearchByZipcode = [[UIControl alloc]initWithFrame:CGRectMake(0, heightContent, widthContent, heightViewControl)];
+    [viewSearchByZipcode addTarget:self action:@selector(btnTouchOutLayer_Click:) forControlEvents:UIControlEventTouchUpInside];
+    [scrView addSubview:viewSearchByZipcode];
+    
+    lblZipcode = [[UILabel alloc]initWithFrame:CGRectMake(labelTitleX, topDistance, widthTitle, heightLabel)];
+    [lblZipcode setTextColor:[[SimiGlobalVar sharedInstance] colorWithHexString:@"#393939"]];
+    [lblZipcode setFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE - 2]];
+    [lblZipcode setText:[NSString stringWithFormat:@"%@:", SCLocalizedString(@"Zip Code")]];
+    [viewSearchByZipcode addSubview:lblZipcode];
+    
+    _imgZipCode = [[UIImageView alloc]initWithFrame:CGRectMake(textFieldX, topDistance, widthTextField, heightLabel)];
+    [_imgZipCode setImage:[UIImage imageNamed:@"storelocator_search_text_field"]];
+    [viewSearchByZipcode addSubview:_imgZipCode];
+    
+    txtZipCode = [[UITextField alloc]initWithFrame:CGRectMake(textFieldX + leftDistance, topDistance, widthTextField - leftDistance, heightLabel)];
+    txtZipCode.textColor = [[SimiGlobalVar sharedInstance] colorWithHexString:@"#393939"];
+    [txtZipCode setFont: [UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE]];
+    txtZipCode.text = stringZipCodeSearch;
+    [viewSearchByZipcode addSubview:txtZipCode];
+    
+    heightContent += CGRectGetHeight(viewSearchByZipcode.frame);
+    
+#pragma mark Button Search
+    viewSearch = [[UIView alloc]initWithFrame:CGRectMake(0, heightContent, widthContent, heightViewControl)];
+    [viewSearch setBackgroundColor:[UIColor clearColor]];
+    [scrView addSubview:viewSearch];
+    
+    btnSearch = [[UIButton alloc]initWithFrame:CGRectMake(textFieldX, topDistance, widthTextField, heightLabel)];
+    [btnSearch addTarget:self action:@selector(btnSearch_Click:) forControlEvents:UIControlEventTouchUpInside];
+    [btnSearch setBackgroundImage:[UIImage imageNamed:@"storelocator_bt_search"] forState:UIControlStateNormal];
+    [btnSearch setTitle:SCLocalizedString(@"Search") forState:UIControlStateNormal];
+    [viewSearch addSubview:btnSearch];
+    heightContent += heightViewControl;
 }
 
 - (void)setInterfaceSearchByTag
@@ -321,34 +294,6 @@
     CGSize scrollSize = scrView.contentSize;
     scrollSize.height = heightContent + CGRectGetHeight(collectionViewTagContent.frame);
     [scrView setContentSize:scrollSize];
-}
-
-#pragma mark
-#pragma  mark Notification Country, Config
--(void)didGetCountry:(NSNotification*)noti
-{
-    SimiResponder* responder = [noti.userInfo valueForKey:@"responder"];
-    if ([[responder.status uppercaseString] isEqualToString:@"SUCCESS"])
-    {
-        [tblViewCountry reloadData];
-    }
-}
-
-- (void)didGetSearchConfig:(NSNotification*)noti
-{
-    didGetSearchConfig = YES;
-    SimiResponder* responder = [noti.userInfo valueForKey:@"responder"];
-    if ([[responder.status uppercaseString] isEqualToString:@"SUCCESS"])
-    {
-        NSMutableArray *arrayConfig = (NSMutableArray*)[simiConfigSearchStoreLocatorModel valueForKey:@"config"];
-        if (![arrayConfig containsObject:[NSString stringWithFormat:@"5"]]) {
-            [self setInterfaceSearchByArea];
-        }
-    }
-    
-    if (tagModelCollection.count > 0) {
-        [self setInterfaceSearchByTag];
-    }
 }
 
 #pragma mark
@@ -625,7 +570,7 @@
         
         if (sLModelCollection.count > 0) {
             [self.delegate searchStoreLocatorWithCountryName:stringCountrySearchName countryCode:stringCountrySearchCode city:stringCitySearch state:stringStateSearch zipcode:stringZipCodeSearch tag:stringTagSearch];
-            [self.delegate cacheDataWithstoreLocatorModelCollection:sLModelCollection simiAddressStoreLocatorModelCollection:simiAddressStoreLocatorModelCollection simiConfigSearchStoreLocatorModel:simiConfigSearchStoreLocatorModel simiTagModelCollection:tagModelCollection tagChoise:tagChoise];
+            [self.delegate cacheDataWithstoreLocatorModelCollection:sLModelCollection simiTagModelCollection:tagModelCollection tagChoise:tagChoise];
             [self.navigationController popViewControllerAnimated:YES];
         }else
         {
@@ -653,7 +598,7 @@
 {
     SimiResponder* responder = [noti.userInfo valueForKey:@"responder"];
     if ([[responder.status uppercaseString] isEqualToString:@"SUCCESS"]) {
-        if (simiConfigSearchStoreLocatorModel != nil && didGetSearchConfig && tagModelCollection.count >  0) {
+        if (tagModelCollection.count >  0) {
             [self setInterfaceSearchByTag];
         }
     }

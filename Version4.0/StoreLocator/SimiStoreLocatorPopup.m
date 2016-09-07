@@ -7,7 +7,6 @@
 //
 
 #import "SimiStoreLocatorPopup.h"
-#import "SimiGlobalVar+StoreLocator.h"
 
 @implementation SimiStoreLocatorPopup
 @synthesize delegate, lblStoreAddress, lblStoreName, imageStore, storeLocatorModel, imageBackGround;
@@ -57,7 +56,7 @@
     lblStoreName.text = SCLocalizedString([storeLocatorModel valueForKey:@"name"]);
     
     lblStoreAddress.text = [NSString stringWithFormat:@"%@, %@, %@",[storeLocatorModel valueForKey:@"address"],[storeLocatorModel valueForKey:@"city"],[storeLocatorModel valueForKey:@"country"]];
-    [lblStoreAddress resizeToFit];
+    [lblStoreAddress resizLabelToFit];
     
     if (lblStoreAddress.frame.size.height > 40 ) {
         CGRect frame = lblStoreAddress.frame;

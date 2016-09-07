@@ -8,6 +8,7 @@
 
 #import "SCStoreListTableViewCell.h"
 #import <SimiCartBundle/UIImageView+WebCache.h>
+#import <SimiCartBundle/UILabelDynamicSize.h>
 
 @implementation SCStoreListTableViewCell
 {
@@ -36,7 +37,7 @@
     // Configure the view for the selected state
 }
 
-- (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier andStoreData:(SimiStoreLocatorModel*)storeLocatorModel_;
+- (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier andStoreData:(SimiModel*)storeLocatorModel_;
 {
     cellWidth = SCREEN_WIDTH;
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
@@ -81,7 +82,7 @@
             stringAddress = [NSString stringWithFormat:@"%@, %@", stringAddress, [storeLocatorModel valueForKey:@"country_name"]];
         }
         [lblStoreAddress setText:stringAddress];
-        float heightContent = [lblStoreAddress resizeToFit];
+        float heightContent = [lblStoreAddress resizLabelToFit];
         [self addSubview:lblStoreAddress];
         
         lblStoreDistance = [[UILabel alloc]initWithFrame:CGRectMake(cellWidth - labelDistanceWidth, 5, labelDistanceWidth, labelHeight)];

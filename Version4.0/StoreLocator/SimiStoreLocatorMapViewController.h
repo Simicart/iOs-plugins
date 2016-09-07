@@ -9,8 +9,8 @@
 #import <SimiCartBundle/SimiCartBundle.h>
 #import <SimiCartBundle/SimiViewController.h>
 #import <GoogleMaps/GoogleMaps.h>
+#import <SimiCartBundle/SimiModel.h>
 #import "SimiStoreLocatorModelCollection.h"
-#import "SimiStoreLocatorModel.h"
 #import "SimiStoreLocatorMaker.h"
 #import "SimiStoreLocatorPopup.h"
 
@@ -26,7 +26,7 @@ typedef NS_ENUM(NSInteger, SearchOption){
 
 @protocol SimiStoreLocatorMapViewControllerDelegate <NSObject>
 @optional
-- (void)showViewDetailControllerFromMap:(SimiStoreLocatorModel*) sLModel_;
+- (void)showViewDetailControllerFromMap:(SimiModel*) sLModel_;
 
 @end
 @interface SimiStoreLocatorMapViewController : SimiViewController<GMSMapViewDelegate, SimiStoreLocatorPopupDelegate >
@@ -37,7 +37,7 @@ typedef NS_ENUM(NSInteger, SearchOption){
 @property (nonatomic, strong) SimiStoreLocatorModelCollection *sLModelCollectionSyncList;
 @property (nonatomic, strong) SimiStoreLocatorModelCollection *sLModelCollectionUpdate;
 @property (nonatomic, strong) SimiStoreLocatorModelCollection *sLModelCollectionAll;
-@property (nonatomic, strong) SimiStoreLocatorModel *sLModel;
+@property (nonatomic, strong) SimiModel *sLModel;
 @property (nonatomic, strong) NSDictionary *dictSearch;
 @property (nonatomic) float currentLatitube;
 @property (nonatomic) float currentLongitube;

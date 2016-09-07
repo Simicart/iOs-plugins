@@ -7,8 +7,9 @@
 //
 
 #import "SimiStoreLocatorDetailViewController.h"
-#import "UILabel+DynamicSizeMe.h"
+#import <SimiCartBundle/UILabelDynamicSize.h>
 #import <SimiCartBundle/UIImageView+WebCache.h>
+
 @interface SimiStoreLocatorDetailViewController ()
 
 @end
@@ -94,7 +95,7 @@
     [lblStoreName setLineBreakMode:NSLineBreakByWordWrapping];
     if ([sLModel valueForKey:@"name"]) {
         [lblStoreName setText:[sLModel valueForKey:@"name"]];
-        [lblStoreName resizeToFit];
+        [lblStoreName resizLabelToFit];
         [scrView addSubview:lblStoreName];
         heightScrViewContentSize += CGRectGetHeight(lblStoreName.frame) + space;
     }
@@ -155,7 +156,7 @@
         stringAddress = [NSString stringWithFormat:@"%@, %@", stringAddress, [sLModel valueForKey:@"country_name"]];
     }
     [lblStoreAddress setText:stringAddress];
-    [lblStoreAddress resizeToFit];
+    [lblStoreAddress resizLabelToFit];
     heightScrViewContentSize += CGRectGetHeight(lblStoreAddress.frame) + space;
     [scrView addSubview:lblStoreAddress];
 }
@@ -246,19 +247,18 @@
         [lblInfomationContents setText:[self flattenHTML:[sLModel valueForKey:@"description"]]];
         [lblInfomationContents setLineBreakMode:NSLineBreakByWordWrapping];
         [viewInfomation addSubview:lblInfomationContents];
-        NSLog(@"%f",lblInfomationContents.expectedHeight);
-        if (lblInfomationContents.expectedHeight > (heightLabel*2)) {
+        if (lblInfomationContents.labelHeight > (heightLabel*2)) {
             btnShowMoreLess = [[UIButton alloc]initWithFrame:CGRectMake(CGRectGetWidth(viewInfomation.frame) - 100, heightLabel*2, 100, 20)];
             [btnShowMoreLess addTarget:self action:@selector(btnShowMoreLess_Click:) forControlEvents:UIControlEventTouchUpInside];
             [btnShowMoreLess setTitle:SCLocalizedString(@"Show more") forState:UIControlStateNormal];
             [btnShowMoreLess.titleLabel setFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE]];
             isShowMore = YES;
             [btnShowMoreLess setTitleColor:[UIColor darkGrayColor] forState:UIControlStateNormal];
-            heightLableInformationRaise = lblInfomationContents.expectedHeight - heightLabel*2;
+            heightLableInformationRaise = lblInfomationContents.labelHeight - heightLabel*2;
             [viewInfomation addSubview:btnShowMoreLess];
         }else
         {
-            [lblInfomationContents resizeToFit];
+            [lblInfomationContents resizLabelToFit];
         }
         heightScrViewContentSize += heightButton * 2  + space;
     }
@@ -465,7 +465,7 @@
         lblSpecialsDayContent.textColor = [[SimiGlobalVar sharedInstance] colorWithHexString:@"#4d535e"];
         [viewSpecialsDay addSubview:lblSpecialsDayContent];
         
-        float heightViewSpecialDays = [lblSpecialsDayContent resizeToFit];
+        float heightViewSpecialDays = [lblSpecialsDayContent resizLabelToFit];
         [viewSpecialsDay setFrame:CGRectMake(edgeSpace, heightScrViewContentSize, CGRectGetWidth(viewSpecialsDay.frame), heightViewSpecialDays)];
         
         heightScrViewContentSize += heightViewSpecialDays;
@@ -503,7 +503,7 @@
         [lblHolidaysContent setTextColor:[[SimiGlobalVar sharedInstance] colorWithHexString:@"#4d535e"]];
         [viewHolidays addSubview:lblHolidaysContent];
         
-        float heightViewHolidays = [lblHolidaysContent resizeToFit];
+        float heightViewHolidays = [lblHolidaysContent resizLabelToFit];
         [viewHolidays setFrame:CGRectMake(edgeSpace, heightScrViewContentSize, CGRectGetWidth(viewHolidays.frame), heightViewHolidays)];
         
         heightScrViewContentSize += heightViewHolidays;
@@ -557,7 +557,7 @@
     {
         isShowMore = NO;
         [btnShowMoreLess setTitle:SCLocalizedString(@"Show less") forState:UIControlStateNormal];
-        [lblInfomationContents resizeToFit];
+        [lblInfomationContents resizLabelToFit];
         
         CGRect frame = btnShowMoreLess.frame;
         frame.origin.y += heightLableInformationRaise;

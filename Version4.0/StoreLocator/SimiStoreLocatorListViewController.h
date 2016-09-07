@@ -9,11 +9,12 @@
 #import <UIKit/UIKit.h>
 #import <MessageUI/MessageUI.h>
 #import <SimiCartBundle/UIScrollView+SVInfiniteScrolling.h>
+#import <SimiCartBundle/UILabelDynamicSize.h>
+#import <SimiCartBundle/SimiModel.h>
+
 #import "SimiCLController.h"
 #import "SimiStoreLocatorModelCollection.h"
-#import "SimiStoreLocatorModel.h"
 #import "SCStoreListTableViewCell.h"
-#import "UILabel+DynamicSizeMe.h"
 
 typedef NS_ENUM(NSInteger, ListViewOption){
     ListViewOptionNoneSearch,
@@ -23,7 +24,7 @@ typedef NS_ENUM(NSInteger, ListViewOption){
 @protocol SimiStoreLocatorListViewControllerDelegate<NSObject>
 @optional
 - (void)didChoiseStoreFromListToMap;
-- (void)showViewDetailControllerFromList:(SimiStoreLocatorModel*) sLModel_;
+- (void)showViewDetailControllerFromList:(SimiModel*) sLModel_;
 @end
 
 
@@ -33,7 +34,7 @@ typedef NS_ENUM(NSInteger, ListViewOption){
 }
 @property (nonatomic, weak) id<SimiStoreLocatorListViewControllerDelegate> delegate;
 @property (nonatomic, strong) SimiStoreLocatorModelCollection *sLModelCollection;
-@property (nonatomic, strong) SimiStoreLocatorModel *sLModel;
+@property (nonatomic, strong) SimiModel *sLModel;
 @property (nonatomic) ListViewOption listViewOption;
 @property (nonatomic) float currentLatitube;
 @property (nonatomic) float currentLongitube;

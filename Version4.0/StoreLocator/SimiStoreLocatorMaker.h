@@ -7,7 +7,7 @@
 //
 
 #import <GoogleMaps/GoogleMaps.h>
-#import "SimiStoreLocatorModel.h"
+#import "SimiModel.h"
 @interface SimiStoreLocatorMaker : GMSMarker
-@property (nonatomic, strong) SimiStoreLocatorModel *storeLocatorModel;
+@property (nonatomic, strong) SimiModel *storeLocatorModel;
 @end

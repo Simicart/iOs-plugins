@@ -7,7 +7,6 @@
 //
 
 #import "SimiTagModelCollection.h"
-#import "SimiGlobalVar+StoreLocator.h"
 #import "SimiTagAPI.h"
 
 @implementation SimiTagModelCollection

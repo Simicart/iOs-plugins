@@ -7,13 +7,12 @@
 //
 
 #import "SimiStoreLocatorAPI.h"
-#import "SimiGlobalVar+StoreLocator.h"
+
 @implementation SimiStoreLocatorAPI
 - (void)getStoreListWithParams:(NSDictionary *)params target:(id)target selector:(SEL)selector
 {
-    NSString *url = [NSString stringWithFormat:@"%@%@", kBaseURL, kSimiGetStoreLocatorList];
-    NSLog(@"%@%@%@",kBaseURL, kSimiGetStoreLocatorList, params);
-    [self requestWithURL:url params:params target:target selector:selector header:nil];
+    NSString *url = [NSString stringWithFormat:@"%@%@%@", kBaseURL, kSimiConnectorURL,@"storelocations"];
+    [self requestWithMethod:GET URL:url params:params target:target selector:selector header:nil];
 }
 
 @end

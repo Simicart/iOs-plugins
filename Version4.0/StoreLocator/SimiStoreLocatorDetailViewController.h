@@ -8,19 +8,19 @@
 
 #import <SimiCartBundle/SimiCartBundle.h>
 #import <SimiCartBundle/SimiViewController.h>
-#import "SimiStoreLocatorModel.h"
+#import <SimiCartBundle/SimiModel.h>
 #import <MessageUI/MessageUI.h>
 
 #define SIZE_SCROLL_VIEW_DETAIL ((UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) ? 320 : 680)
 @protocol SimiStoreLocatorDetailViewControllerDelegate <NSObject>
 @optional
-- (void)returnMapViewController:(SimiStoreLocatorModel*)sLModelParam;
+- (void)returnMapViewController:(SimiModel*)sLModelParam;
 @end
 
 @interface SimiStoreLocatorDetailViewController : SimiViewController<MFMailComposeViewControllerDelegate>
 
 
-@property (nonatomic, strong) SimiStoreLocatorModel *sLModel;
+@property (nonatomic, strong) SimiModel *sLModel;
 @property (nonatomic) float currentLatitude;
 @property (nonatomic) float currentLongitude;
 
