@@ -34,13 +34,14 @@
     float topDistance;
     float leftDistance;
     
-    BOOL didGetSearchConfig;
+    NSMutableArray *countryNameArray;
+    int selectedCountryIndex;
 }
 @synthesize sLModelCollection, tagModelCollection, stringCitySearch, stringCountrySearchCode,stringCountrySearchName, stringStateSearch, stringZipCodeSearch, delegate, simiAddressStoreLocatorModelCollection, currentLongitube, currentLatitube, stringTagSearch, tagChoise;
 @synthesize lblZipcode,lblState,lblCity,lblCountry,lblContentCountry,lblSearchByArea,lblSearchByTag, collectionViewTagContent;
 @synthesize txtStateSearch,tblViewCountry,txtCitySearch,txtZipCode;
 @synthesize viewSearchByZipcode,viewSearchByState,viewSearchByCity,viewSearchByCountry, viewSearch, viewSearchByTag, scrView, activityIndicatorView;
-@synthesize btnSearch;
+@synthesize btnSearch, btnClearAll;
 
 - (void)viewDidLoadBefore
 {
@@ -73,6 +74,15 @@
         [self getTagList];
     }
     stringTagSearch = @"";
+    
+    simiAddressStoreLocatorModelCollection = [SimiGlobalVar sharedInstance].countryColllection;
+    countryNameArray = [NSMutableArray new];
+    [countryNameArray addObject:@"None"];
+    for (int i = 0; i < simiAddressStoreLocatorModelCollection.count; i++) {
+        NSDictionary *countryUnit = [simiAddressStoreLocatorModelCollection objectAtIndex:i];
+        [countryNameArray addObject:[countryUnit objectForKey:@"country_name"]];
+    }
+    selectedCountryIndex = 0;
 }
 
 - (void)viewWillAppearBefore:(BOOL)animated
@@ -83,12 +93,6 @@
     {
         self.preferredContentSize = CGSizeMake(500, 700);
     }
-}
-
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 #pragma mark
@@ -127,15 +131,15 @@
     [lblSearchByArea setText: SCLocalizedString(@"Search By Area")];
     [scrView addSubview:lblSearchByArea];
     
-    btnSearch = [[UIButton alloc]initWithFrame:CGRectMake(widthContent - 100, heightContent, 80, heightLabel)];
-    [btnSearch addTarget:self action:@selector(btnSearch_Click:) forControlEvents:UIControlEventTouchUpInside];
-    [btnSearch setTitle:SCLocalizedString(@"Clear") forState:UIControlStateNormal];
-    [btnSearch setTitleColor:[[SimiGlobalVar sharedInstance] colorWithHexString:@"#ff9900"] forState:UIControlStateNormal];
-    [btnSearch.titleLabel setFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE - 2]];
+    btnClearAll = [[UIButton alloc]initWithFrame:CGRectMake(widthContent - 100, heightContent, 80, heightLabel)];
+    [btnClearAll addTarget:self action:@selector(btnClear:) forControlEvents:UIControlEventTouchUpInside];
+    [btnClearAll setTitle:SCLocalizedString(@"Clear") forState:UIControlStateNormal];
+    [btnClearAll setTitleColor:[[SimiGlobalVar sharedInstance] colorWithHexString:@"#ff9900"] forState:UIControlStateNormal];
+    [btnClearAll.titleLabel setFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE - 2]];
     
-    [btnSearch setImage:[UIImage imageNamed:@"storelocator__search_iphone"] forState:UIControlStateNormal];
-    [btnSearch setTitleEdgeInsets:UIEdgeInsetsMake(0, 5, 0, 0)];
-    [scrView addSubview:btnSearch];
+    [btnClearAll setImage:[UIImage imageNamed:@"storelocator__search_iphone"] forState:UIControlStateNormal];
+    [btnClearAll setTitleEdgeInsets:UIEdgeInsetsMake(0, 5, 0, 0)];
+    [scrView addSubview:btnClearAll];
     heightContent += heightLabel;
     
 #pragma mark Search by Country
@@ -297,60 +301,6 @@
 }
 
 #pragma mark
-#pragma mark Table Datasource
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    NSString *cellIdentifier = @"SimiStoreLocatorCellCountry";
-    SimiStoreLocatorCellCountry *cell = (SimiStoreLocatorCellCountry *)[tableView dequeueReusableCellWithIdentifier:cellIdentifier];
-    if (cell == nil) {
-        cell = [[SimiStoreLocatorCellCountry alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier];
-    }
-    if (indexPath.row == 0) {
-        cell.lblCellContent.text = SCLocalizedString(@"None");
-    }else
-    {
-        cell.simiAddressModel = [simiAddressStoreLocatorModelCollection objectAtIndex:indexPath.row - 1];
-        cell.lblCellContent.text = [cell.simiAddressModel valueForKey:@"country_name"];
-    }
-    cell.lblCellContent.font = lblContentCountry.font;
-    cell.lblCellContent.textColor = lblContentCountry.textColor;
-    return cell;
-}
-
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
-{
-    return simiAddressStoreLocatorModelCollection.count + 1;
-}
-
-#pragma mark
-#pragma mark Table Delegate
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    return 44;
-}
-
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    SimiStoreLocatorCellCountry *cell = (SimiStoreLocatorCellCountry*) [tableView cellForRowAtIndexPath:indexPath];
-    if (indexPath.row == 0) {
-        stringCountrySearchCode = @"";
-        stringCountrySearchName = SCLocalizedString(@"None");
-    }else
-    {
-        stringCountrySearchName = [cell.simiAddressModel valueForKey:@"country_name"];
-        stringCountrySearchCode = [cell.simiAddressModel valueForKey:@"country_code"];
-    }
-    lblContentCountry.text = stringCountrySearchName;
-    
-    CGRect frame = tblViewCountry.frame;
-    frame.size.height = 0;
-    [UIView animateWithDuration:0.3 animations:^{
-        [tblViewCountry setFrame:frame];
-    }];
-    isShowTableCountry = NO;
-}
-
-#pragma mark
 #pragma mark Collection DataSource
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
@@ -456,42 +406,31 @@
 
 - (void)btnDropDownList_Click:(id)sender
 {
-    if (!isShowTableCountry) {
-        if (tblViewCountry == nil) {
-            tblViewCountry = [UITableView new];
-            [tblViewCountry setBackgroundColor:[UIColor whiteColor]];
-            if(isiPhone)
-                [tblViewCountry setFrame:CGRectMake(110, 82.5, 180, 0)];
-            else
-                [tblViewCountry setFrame:CGRectMake(150, 112, 271, 0)];
-            [scrView addSubview:tblViewCountry];
-        }
-        tblViewCountry.dataSource = self;
-        tblViewCountry.delegate = self;
-        
-        if (isiPhone) {
-            [UIView animateWithDuration:0.3 animations:^{
-                [tblViewCountry setFrame:CGRectMake(110, 82.5, 180, 300)];
-            }];
-        }else
-        {
-            [UIView animateWithDuration:0.3 animations:^{
-                [tblViewCountry setFrame:CGRectMake(150, 112, 271, 440)];
-            }];
-        }
-        
-        tblViewCountry.layer.borderColor = [UIColor blackColor].CGColor;
-        tblViewCountry.layer.borderWidth = 1;
-        [tblViewCountry reloadData];
+    ActionSheetStringPicker *picker = [[ActionSheetStringPicker alloc]initWithTitle:@"Select Country" rows:countryNameArray initialSelection:selectedCountryIndex target:self successAction:@selector(didSelectValue:element:) cancelAction:@selector(cancelActionSheet:) origin:self.view];
+    if (PADDEVICE) {
+        picker = [[ActionSheetStringPicker alloc]initWithTitle:@"Select Country" rows:countryNameArray initialSelection:selectedCountryIndex target:self successAction:@selector(didSelectValue:element:) cancelAction:@selector(cancelActionSheet:) origin:lblContentCountry];
+    }
+    [picker showActionSheetPicker];
+}
+
+- (void)didSelectValue:(NSNumber *)selectedIndex element:(id)element
+{
+    selectedCountryIndex = [selectedIndex intValue];
+    if (selectedCountryIndex == 0) {
+        stringCountrySearchCode = @"";
+        stringCountrySearchName = SCLocalizedString(@"None");
     }else
     {
-        CGRect frame = tblViewCountry.frame;
-        frame.size.height = 0;
-        [UIView animateWithDuration:0.3 animations:^{
-            [tblViewCountry setFrame:frame];
-        }];
+        NSDictionary *countryUnit = [simiAddressStoreLocatorModelCollection objectAtIndex:(selectedCountryIndex - 1)];
+        stringCountrySearchName = [countryUnit valueForKey:@"country_name"];
+        stringCountrySearchCode = [countryUnit valueForKey:@"country_code"];
     }
-    isShowTableCountry = !isShowTableCountry;
+    lblContentCountry.text = stringCountrySearchName;
+}
+
+- (void)cancelActionSheet:(id)sender
+{
+    
 }
 
 - (void)btnSearch_Click:(id)sender

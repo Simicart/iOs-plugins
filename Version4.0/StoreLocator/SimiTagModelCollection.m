@@ -14,9 +14,8 @@
 {
     currentNotificationName = @"DidFinishGetTagList";
     modelActionType = ModelActionTypeInsert;
-    //Gin edit
+    keyResponse = @"storelocatortags";
     [self preDoRequest];
-    //end
     [(SimiTagAPI *)[self getAPI] getTagListWithParams:@{@"offset":offset,@"limit":limit} target:self selector:@selector(didFinishRequest:responder:)];
 }
 @end
