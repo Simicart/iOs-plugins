@@ -38,7 +38,7 @@
     SimiResponder *responder = [noti.userInfo valueForKey:@"responder"];
     if ([responder.status isEqualToString:@"SUCCESS"]) {
         if ([addressModel valueForKey:@"country_id"]) {
-            [newAddressViewController.form setValue:[addressModel valueForKey:@"country_id"] forKey:@"country_id"];
+            [newAddressViewController.country updateFormData:[NSString stringWithFormat:@"%@",[addressModel valueForKey:@"country_id"]]];
         }
         if ([addressModel valueForKey:@"country_name"]) {
             [newAddressViewController.form setValue:[addressModel valueForKey:@"country_name"] forKey:@"country_name"];
