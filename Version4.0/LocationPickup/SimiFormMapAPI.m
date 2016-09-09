@@ -11,10 +11,10 @@
 
 @implementation SimiFormMapAPI
 {
-
     GMSMapView *mapView_;
     CLLocation *myLocationChange;
     CLLocationManager *_locationAuthorizationManager;
+    UILabel *guideSelectAddressLabel;
 }
 @synthesize form = _form, children = _children;
 @synthesize title = _title, required = _required, sortOrder = _sortOrder, height = _height;
@@ -29,11 +29,19 @@
         GMSCameraPosition *camera = [GMSCameraPosition cameraWithLatitude:5.111111
                                                                 longitude:1.2223645
                                                                     zoom:6];
+
         float mapWidth = SCREEN_WIDTH;
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             mapWidth = 2* SCREEN_WIDTH/3;
         }
-        mapView_ = [GMSMapView mapWithFrame:CGRectMake(0, 0, mapWidth,[SimiGlobalVar scaleValue:200]) camera:camera];
+        guideSelectAddressLabel = [[UILabel alloc]initWithFrame:CGRectMake(15, 5, mapWidth - 30, 25)];
+        [guideSelectAddressLabel setFont:[UIFont fontWithName:THEME_FONT_NAME size:14]];
+        [guideSelectAddressLabel setTextColor:THEME_CONTENT_PLACEHOLDER_COLOR];
+        [guideSelectAddressLabel setText:SCLocalizedString(@"Please press and hold to select the address you want to fill")];
+        float heightTitle = [guideSelectAddressLabel resizLabelToFit];
+        [self addSubview:guideSelectAddressLabel];
+        
+        mapView_ = [GMSMapView mapWithFrame:CGRectMake(15, 30, mapWidth - 15, self.height - heightTitle) camera:camera];
         mapView_.delegate = self;
         mapView_.settings.myLocationButton = YES;
         mapView_.settings.compassButton = YES;
@@ -48,55 +56,9 @@
         dispatch_async(dispatch_get_main_queue(), ^{
             mapView_.myLocationEnabled = YES;
         });
-//        [self start];
-        geocoder = [[CLGeocoder alloc] init];
         [self addSubview: mapView_];
     }
     return self;
-}
-
-- (void)start
-{
-    geocoder = [[CLGeocoder alloc] init];
- 
-    //Block address
-    [geocoder reverseGeocodeLocation: locationManager.location completionHandler:
-     ^(NSArray *placemarks, NSError *error) {
-         if (error==nil) {
-             //Get address
-             CLPlacemark *placemark = [placemarks objectAtIndex:0];
-             if (SIMI_DEBUG_ENABLE) {
-                 NSLog(@"Placemark array: %@",[placemark.addressDictionary valueForKey:@"lat"]);
-
-                 //String to address
-                 NSString *locatedaddress = [[placemark.addressDictionary valueForKey:@"FormattedAddressLines"] componentsJoinedByString:@", "];
-                 
-                 //Print the location in the console
-                 NSLog(@"Currently address is: %@",locatedaddress);
-             }
-             
-         } else {
-             CLAuthorizationStatus status = [CLLocationManager authorizationStatus];
-             
-             // If the status is denied or only granted for when in use, display an alert
-             if (status == kCLAuthorizationStatusAuthorizedWhenInUse || status == kCLAuthorizationStatusDenied) {
-                 NSString *title;
-                 title = (status == kCLAuthorizationStatusDenied) ? @"Location services are off" : @"Background location is not enabled";
-                 NSString *message = @"To use your current location, you must turn to \"Always\" in Location settings";
-                 
-                 UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:title
-                                                                     message:message
-                                                                    delegate:self
-                                                           cancelButtonTitle:@"Cancel"
-                                                           otherButtonTitles:@"Settings", nil];
-                 [alertView show];
-             }
-             // The user has not enabled any location services. Request background authorization.
-             else if (status == kCLAuthorizationStatusNotDetermined) {
-                 [locationManager requestAlwaysAuthorization];
-             }
-         }
-     }];
 }
 
 -(void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error{
@@ -145,23 +107,8 @@
     _marker.position = coordinate;
     NSString *myLocation = [NSString stringWithFormat:@"%.4f,%.4f",coordinate.latitude, coordinate.longitude];
     [self updateFormData:myLocation];
-    CLLocation *location = [[CLLocation alloc]initWithLatitude:coordinate.latitude longitude:coordinate.longitude];
-    [geocoder reverseGeocodeLocation: location completionHandler:
-     ^(NSArray *placemarks, NSError *error) {
-         
-         //Get address
-         CLPlacemark *placemark = [placemarks objectAtIndex:0];
-         
-         NSLog(@"Placemark array: %@",placemark.addressDictionary );
-         
-         //String to address
-         NSString *locatedaddress = [[placemark.addressDictionary valueForKey:@"FormattedAddressLines"] componentsJoinedByString:@", "];
-         
-         //Print the location in the console
-         NSLog(@"Currently address is: %@",locatedaddress);
-         [[NSNotificationCenter defaultCenter]postNotificationName:@"SimiFormMapAPI_DidGetAddress" object:placemark];
-     }];
-    
+    NSDictionary *params = @{@"longitude":[NSString stringWithFormat:@"%f",coordinate.longitude], @"latitude":[NSString stringWithFormat:@"%f",coordinate.latitude]};
+    [[NSNotificationCenter defaultCenter]postNotificationName:@"SimiFormMapAPI_DidGetAddress" object:params];
 }
 - (void)dealloc
 {

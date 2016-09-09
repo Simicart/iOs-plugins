@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-
+#import "SimiAddressAutofillModel.h"
 @interface LocationPickupWorker : NSObject
 
 @end

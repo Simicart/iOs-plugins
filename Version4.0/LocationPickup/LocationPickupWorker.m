@@ -12,6 +12,7 @@
 @implementation LocationPickupWorker
 {
     SCNewAddressViewController *newAddressViewController;
+    SimiAddressAutofillModel *addressModel;
 }
 - (id)init
 {
@@ -23,6 +24,55 @@
     return self;
 }
 
+- (void)getAddressWithParams:(NSDictionary*)params
+{
+    if (addressModel == nil) {
+        addressModel = [SimiAddressAutofillModel new];
+    }
+    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(didGetAddress:) name:@"DidGetAddress" object:addressModel];
+    [addressModel getAddressWithParams:params];
+}
+
+- (void)didGetAddress:(NSNotification*)noti
+{
+    SimiResponder *responder = [noti.userInfo valueForKey:@"responder"];
+    if ([responder.status isEqualToString:@"SUCCESS"]) {
+        if ([addressModel valueForKey:@"country_id"]) {
+            [newAddressViewController.form setValue:[addressModel valueForKey:@"country_id"] forKey:@"country_id"];
+        }
+        if ([addressModel valueForKey:@"country_name"]) {
+            [newAddressViewController.form setValue:[addressModel valueForKey:@"country_name"] forKey:@"country_name"];
+        }
+        if ([addressModel valueForKey:@"region"]) {
+            [newAddressViewController.form setValue:[addressModel valueForKey:@"region"] forKey:@"region"];
+        }
+        if ([addressModel valueForKey:@"region_id"]) {
+            NSString *regionID = [addressModel valueForKey:@"region_id"];
+            [newAddressViewController.form setValue:regionID forKey:@"region_id"];
+            if (newAddressViewController.stateId.dataSource.count > 0 && [newAddressViewController.form.fields containsObject:newAddressViewController.stateId]) {
+                for (NSDictionary *state in newAddressViewController.stateId.dataSource) {
+                    if ([[NSString stringWithFormat:@"%@",[state valueForKey:@"state_code"]] isEqualToString:regionID]) {
+                        [newAddressViewController.form setValue:[state valueForKey:@"state_id"] forKey:@"region_id"];
+                        break;
+                    }
+                }
+            }
+        }
+        if ([addressModel valueForKey:@"city"]) {
+            [newAddressViewController.form setValue:[addressModel valueForKey:@"city"] forKey:@"city"];
+        }
+        if ([addressModel valueForKey:@"street"]) {
+            [newAddressViewController.form setValue:[addressModel valueForKey:@"street"] forKey:@"street"];
+        }
+        if ([addressModel valueForKey:@"postcode"]) {
+            [newAddressViewController.form setValue:[addressModel valueForKey:@"postcode"] forKey:@"postcode"];
+        }
+        [newAddressViewController.form sortFormFields];
+        [newAddressViewController.tableViewAddress reloadData];
+    }
+    [self removeObserverForNotification:noti];
+}
+
 - (void)didReceiveNotification:(NSNotification *)noti
 {
     if ([noti.name isEqualToString:@"DidCreateAddressAutofill"]) {
@@ -30,89 +80,11 @@
         [newAddressViewController.form addField:@"MapAPI" config:@{@"name": @"latlng",
                                                                   @"title": SCLocalizedString(@"Country"),
                                                                    @"sort_order":@10000,
-                                                                   @"height":[NSNumber numberWithFloat:[SimiGlobalVar scaleValue:200]]}];
+                                                                   @"height":[NSNumber numberWithFloat:[SimiGlobalVar scaleValue:250]]}];
     }else if([noti.name isEqualToString:@"SimiFormMapAPI_DidGetAddress"])
     {
-        CLPlacemark *place = noti.object;
-        if (place != nil)
-        {
-            if (newAddressViewController.countries != nil && [place.addressDictionary valueForKey:@"CountryCode"]) {
-                for (SimiAddressModel *country in newAddressViewController.countries) {
-                    if ([[country valueForKey:@"country_code"] isEqualToString:[place.addressDictionary valueForKey:@"CountryCode"]]) {
-                        [newAddressViewController.form setValue:[country valueForKey:@"country_code"] forKey:@"country_code"];
-                        [newAddressViewController.form setValue:[country valueForKey:@"country_name"] forKey:@"country_name"];
-                        newAddressViewController.states = [country valueForKey:@"states"];
-                        if (newAddressViewController.stateId == nil) {
-                            // NOTHING
-                        } else if ([newAddressViewController.states isKindOfClass:[NSNull class]] || newAddressViewController.states.count == 0) {
-                            if ([newAddressViewController.form.fields indexOfObject:newAddressViewController.stateId] != NSNotFound) {
-                                [newAddressViewController.form.fields removeObject:newAddressViewController.stateId];
-                                [newAddressViewController.form.fields addObject:newAddressViewController.stateName];
-                            }
-                            if ([place.addressDictionary valueForKey:@"State"]) {
-                                [newAddressViewController.form setValue:[place.addressDictionary valueForKey:@"State"] forKey:@"state_name"];
-                            } else {
-                                [newAddressViewController.form removeObjectForKey:@"state_name"];
-                            }
-                        } else {
-                            if ([newAddressViewController.form.fields indexOfObject:newAddressViewController.stateName] != NSNotFound) {
-                                [newAddressViewController.form.fields removeObject:newAddressViewController.stateName];
-                                [newAddressViewController.form.fields addObject:newAddressViewController.stateId];
-                            }
-                            [newAddressViewController.stateId setDataSource:newAddressViewController.states];
-                            if ([place.addressDictionary valueForKey:@"State"]) {
-                                BOOL stateExisted = NO;
-                                for (SimiAddressModel *state in newAddressViewController.states) {
-                                    if ([[state objectForKey:@"state_name"] isEqualToString:[place.addressDictionary valueForKey:@"State"]] || [[state objectForKey:@"state_code"] isEqualToString:[place.addressDictionary valueForKey:@"State"]]) {
-                                        [newAddressViewController.form setValue:[state objectForKey:@"state_id"] forKey:@"state_id"];
-                                        [newAddressViewController.form setValue:[state objectForKey:@"state_code"] forKey:@"state_code"];
-                                        [newAddressViewController.form setValue:[state objectForKey:@"state_name"] forKey:@"state_name"];
-                                        stateExisted = YES;
-                                        break;
-                                    }
-                                }
-                                if (!stateExisted) {
-                                    [newAddressViewController.form setValue:[place.addressDictionary valueForKey:@"State"] forKey:@"state_name"];
-                                    [newAddressViewController.form removeObjectForKey:@"state_id"];
-                                }
-                            } else {
-                                [newAddressViewController.form removeObjectForKey:@"state_id"];
-                            }
-                        }
-                        [newAddressViewController.form sortFormFields];
-                        break;
-                    }
-                }
-            }
-            
-            if ([place.addressDictionary valueForKey:@"City"]) {
-                [newAddressViewController.form setValue:[place.addressDictionary valueForKey:@"City"] forKey:@"city"];
-            }
-            
-            NSString *street = @"";
-            if ([place.addressDictionary valueForKey:@"Street"]) {
-                street = [place.addressDictionary valueForKey:@"Street"];
-            }
-            if ([place.addressDictionary valueForKey:@"SubLocality"]) {
-                if(street.length > 0) {
-                    street = [street stringByAppendingString:@", "];
-                }
-                street = [street stringByAppendingString:[place.addressDictionary valueForKey:@"SubLocality"]];
-            }
-            if ([place.addressDictionary valueForKey:@"SubAdministrativeArea"]) {
-                if(street.length > 0) {
-                    street = [street stringByAppendingString:@", "];
-                }
-                street = [street stringByAppendingString:[place.addressDictionary valueForKey:@"SubAdministrativeArea"]];
-            }
-            [newAddressViewController.form setValue:street forKey:@"street"];
-            
-            if (place.postalCode && place.postalCode.length > 0) {
-                [newAddressViewController.form setValue:place.postalCode forKey:@"zip"];
-            }
-        }
-        
-        [newAddressViewController.tableViewAddress reloadData];
+        NSDictionary *params = noti.object;
+        [self getAddressWithParams:params];
     }
 }
 @end
