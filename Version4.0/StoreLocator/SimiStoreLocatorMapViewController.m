@@ -137,7 +137,7 @@
         for (int i = 0; i < sLModelCollectionUpdateCount; i++) {
             BOOL isNewStoreLocatorModel = YES;
             for (int j = 0; j < sLModelCollectionAllCount; j++) {
-                if ([[[sLModelCollectionAll objectAtIndex:j] valueForKey:@"storelocator_id"]intValue] == [[[sLModelCollectionUpdate objectAtIndex:i] valueForKey:@"storelocator_id"]intValue])
+                if ([[[sLModelCollectionAll objectAtIndex:j] valueForKey:@"simistorelocator_id"]intValue] == [[[sLModelCollectionUpdate objectAtIndex:i] valueForKey:@"simistorelocator_id"]intValue])
                 {
                     isNewStoreLocatorModel = NO;
                     break;
@@ -184,7 +184,7 @@
             for (int i = 0; i < storeLocatorModelCollectionSyncListCount; i++) {
                 BOOL isNewStoreLocatorModel = YES;
                 for (int j = 0; j < sLModelCollectionAllCount; j++) {
-                    if ([[[sLModelCollectionSyncList objectAtIndex:i] valueForKey:@"mgstorelocator_id"] isEqualToString:[[sLModelCollectionAll objectAtIndex:j] valueForKey:@"mgstorelocator_id"]]) {
+                    if ([[[sLModelCollectionSyncList objectAtIndex:i] valueForKey:@"simistorelocator_id"] isEqualToString:[[sLModelCollectionAll objectAtIndex:j] valueForKey:@"simistorelocator_id"]]) {
                         isNewStoreLocatorModel = NO;
                     }
                 }
@@ -215,7 +215,7 @@
         storeLocatorMaker_.storeLocatorModel = [sLModelCollectionAll objectAtIndex:i];
         
         if (mapViewOption == MapViewSelectedMarker) {
-            if ([[storeLocatorMaker_.storeLocatorModel valueForKey:@"storelocator_id"] isEqualToString:[sLModel valueForKey:@"storelocator_id"]])
+            if ([[storeLocatorMaker_.storeLocatorModel valueForKey:@"simistorelocator_id"] isEqualToString:[sLModel valueForKey:@"simistorelocator_id"]])
             {
                 [mapView_ setSelectedMarker:storeLocatorMaker_];
             }

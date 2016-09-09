@@ -94,7 +94,7 @@
 - (SCStoreListTableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     SimiModel *locatorModel = [sLModelCollection objectAtIndex:indexPath.row];
-    NSString *cellIdentifier = [NSString stringWithFormat:@"%@_%@",@"CellIdentifier",[locatorModel valueForKey:@"storelocator_id"]];
+    NSString *cellIdentifier = [NSString stringWithFormat:@"%@_%@",@"CellIdentifier",[locatorModel valueForKey:@"simistorelocator_id"]];
     SCStoreListTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
     if (cell == nil) {
         cell = [[SCStoreListTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier andStoreData:locatorModel];
