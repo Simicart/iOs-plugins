@@ -7,22 +7,17 @@
 //
 
 #import "SCHiddenAddressWorker.h"
-#import "SCHiddenAddressModel.h"
-#import "SCHiddenAddressKey.h"
 #import <SimiCartBundle/SCNewAddressViewController.h>
 @implementation SCHiddenAddressWorker
 {
     SCNewAddressViewController *newAddressController;
-    SCHiddenAddressModel *hiddenAddressModel;
+    SimiModel *hiddenAddressModel;
 }
 - (instancetype)init
 {
     self = [super init];
     if (self) {
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"SCNewAddressViewControllerViewDidLoad" object:nil];
-        hiddenAddressModel = [[SCHiddenAddressModel alloc]init];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"SCHiddenAddress_DidGetAddressHide" object:nil];
-        [hiddenAddressModel getAddressHideWithParams:@{}];
     }
     return self;
 }
@@ -44,6 +39,12 @@
 {
     if ([noti.name isEqualToString:@"SCNewAddressViewControllerViewDidLoad"]) {
         newAddressController = noti.object;
+        if ([[SimiGlobalVar sharedInstance].customerConfig valueForKey:@"address_fields_config"]) {
+            hiddenAddressModel = [[SimiModel alloc]initWithDictionary:[[SimiGlobalVar sharedInstance].customerConfig valueForKey:@"address_fields_config"]];
+            if (hiddenAddressModel.count > 0) {
+                self.available = YES;
+            }
+        }
         if (self.available) {
             SimiFormBlock *form = newAddressController.form;
             newAddressController.country = nil;
@@ -51,30 +52,54 @@
             newAddressController.stateName = nil;
             [form.fields removeAllObjects];
             SimiGlobalVar *config = [SimiGlobalVar sharedInstance];
-            if ([self hasField:[hiddenAddressModel valueForKey:scHiddenAddress_prefix]]) {
+            if ([self hasField:[hiddenAddressModel valueForKey:@"prefix"]]) {
                 [form addField:@"Text"
                         config:@{
                                  @"name" : @"prefix",
                                  @"title": SCLocalizedString(@"Prefix"),
-                                 @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:scHiddenAddress_prefix] isEqualToString:@"req"]]
+                                 @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:@"prefix"] isEqualToString:@"req"]]
                                  }];
             }
             
             [form addField:@"Name"
                     config:@{
-                             @"name": @"name",
-                             @"title": SCLocalizedString(@"Full Name"),
+                             @"name": @"firstname",
+                             @"title": SCLocalizedString(@"First Name"),
+                             @"required": @1
+                             }];
+            if (![[config middleNameShow] isEqualToString:@""]) {
+                [form addField:@"Name"
+                        config:@{
+                                 @"name": @"middlename",
+                                 @"title": SCLocalizedString(@"Middle Name"),
+                                 @"required": @0
+                                 }];
+            }
+            
+            [form addField:@"Name"
+                    config:@{
+                             @"name": @"lastname",
+                             @"title": SCLocalizedString(@"Last Name"),
                              @"required": @1
                              }];
             
-            if ([self hasField:[hiddenAddressModel valueForKey:scHiddenAddress_suffix]]) {
+            if ([self hasField:[hiddenAddressModel valueForKey:@"suffix"]]) {
                 [form addField:@"Text"
                         config:@{
                                  @"name" : @"suffix",
                                  @"title": SCLocalizedString(@"Suffix"),
-                                 @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:scHiddenAddress_suffix] isEqualToString:@"req"]]
+                                 @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:@"suffix"] isEqualToString:@"req"]]
                                  }];
             }
+            if ([self hasField:[hiddenAddressModel valueForKey:@"company"]]) {
+                [form addField:@"Text"
+                        config:@{
+                                 @"name" : @"company",
+                                 @"title": SCLocalizedString(@"Company"),
+                                 @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:@"company"] isEqualToString:@"req"]]
+                                 }];
+            }
+            
             if (![[SimiGlobalVar sharedInstance] isLogin]) {
                 [form addField:@"Email"
                         config:@{
@@ -84,67 +109,29 @@
                                  }];
             }
             
-            if ([self hasField:[hiddenAddressModel valueForKey:scHiddenAddress_company]]) {
-                [form addField:@"Text"
-                        config:@{
-                                 @"name" : @"company",
-                                 @"title": SCLocalizedString(@"Company"),
-                                 @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:scHiddenAddress_company] isEqualToString:@"req"]]
-                                 }];
-            }
-            
-            if ([self hasField:[hiddenAddressModel valueForKey:scHiddenAddress_street]]) {
+            if ([self hasField:[hiddenAddressModel valueForKey:@"street"]]) {
                 [form addField:@"Text"
                         config:@{
                                  @"name" : @"street",
                                  @"title": SCLocalizedString(@"Street"),
-                                 @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:scHiddenAddress_street] isEqualToString:@"req"]]
-                                 }];
-            }
-            if ([self hasField:[hiddenAddressModel valueForKey:scHiddenAddress_taxvat]]) {
-                [form addField:@"Text"
-                        config:@{
-                                 @"name": @"vat_id",
-                                 @"title": SCLocalizedString(@"VAT Number"),
-                                 @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:scHiddenAddress_taxvat] isEqualToString:@"req"]]
+                                 @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:@"street"] isEqualToString:@"req"]]
                                  }];
             }
             
             
-            if ([self hasField:[hiddenAddressModel valueForKey:scHiddenAddress_city]]) {
+            if ([self hasField:[hiddenAddressModel valueForKey:@"city"]]) {
                 [form addField:@"Text"
                         config:@{
                                  @"name" : @"city",
                                  @"title": SCLocalizedString(@"City"),
-                                 @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:scHiddenAddress_city] isEqualToString:@"req"]]
+                                 @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:@"city"] isEqualToString:@"req"]]
                                  }];
             }
             
-            if ([self hasField:[hiddenAddressModel valueForKey:scHiddenAddress_state]]) {
-                newAddressController.stateName = (SimiFormText *)[form addField:@"Text"
-                                                                         config:@{
-                                                                                  @"name": @"state_name",
-                                                                                  @"title": SCLocalizedString(@"State"),
-                                                                                  @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:scHiddenAddress_state] isEqualToString:@"req"]]
-                                                                                  }];
-                newAddressController.stateId = (SimiFormSelect *)[form addField:@"Select"
-                                                                         config:@{
-                                                                                  @"name": @"state_id",
-                                                                                  @"title": SCLocalizedString(@"State"),
-                                                                                  @"option_type": SimiFormOptionNavigation,
-                                                                                  @"nav_controller": newAddressController.navigationController,
-                                                                                  @"value_field": @"state_id",
-                                                                                  @"label_field": @"state_name",
-                                                                                  @"index_titles": @1,
-                                                                                  @"searchable": @1,
-                                                                                  @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:scHiddenAddress_state] isEqualToString:@"req"]]
-                                                                                  }];
-            }
-            
-            if ([self hasField:[hiddenAddressModel valueForKey:scHiddenAddress_country]]) {
+            if ([self hasField:[hiddenAddressModel valueForKey:@"country_id"]]) {
                 newAddressController.country = (SimiFormSelect *)[form addField:@"Select"
                                                                          config:@{
-                                                                                  @"name": @"country_code",
+                                                                                  @"name": @"country_id",
                                                                                   @"title": SCLocalizedString(@"Country"),
                                                                                   @"option_type": SimiFormOptionNavigation,
                                                                                   @"nav_controller": newAddressController.navigationController,
@@ -152,64 +139,88 @@
                                                                                   @"label_field": @"country_name",
                                                                                   @"index_titles": @1,
                                                                                   @"searchable": @1,
-                                                                                  @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:scHiddenAddress_country] isEqualToString:@"req"]]
+                                                                                  @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:@"country_id"] isEqualToString:@"req"]]
+                                                                                  }];
+            }
+
+            
+            if ([self hasField:[hiddenAddressModel valueForKey:@"region_id"]]) {
+                newAddressController.stateName = (SimiFormText *)[form addField:@"Text"
+                                                                         config:@{
+                                                                                  @"name": @"region",
+                                                                                  @"title": SCLocalizedString(@"State"),
+                                                                                  @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:@"region_id"] isEqualToString:@"req"]]
+                                                                                  }];
+                newAddressController.stateId = (SimiFormSelect *)[form addField:@"Select"
+                                                                         config:@{
+                                                                                  @"name": @"region_id",
+                                                                                  @"title": SCLocalizedString(@"State"),
+                                                                                  @"option_type": SimiFormOptionNavigation,
+                                                                                  @"nav_controller": newAddressController.navigationController,
+                                                                                  @"value_field": @"state_id",
+                                                                                  @"label_field": @"state_name",
+                                                                                  @"index_titles": @1,
+                                                                                  @"searchable": @1,
+                                                                                  @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:@"region_id"] isEqualToString:@"req"]]
                                                                                   }];
             }
             
-            if ([self hasField:[hiddenAddressModel valueForKey:scHiddenAddress_zipcode]]) {
+            
+            if ([self hasField:[hiddenAddressModel valueForKey:@"zipcode"]]) {
                 [form addField:@"Text"
                         config:@{
-                                 @"name": @"zip",
+                                 @"name": @"postcode",
                                  @"title": SCLocalizedString(@"Post/Zip Code"),
-                                 @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:scHiddenAddress_zipcode] isEqualToString:@"req"]]
+                                 @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:@"zipcode"] isEqualToString:@"req"]]
                                  }];
             }
             
-            if ([self hasField:[hiddenAddressModel valueForKey:scHiddenAddress_telephone]]) {
+            if ([self hasField:[hiddenAddressModel valueForKey:@"telephone"]]) {
                 [form addField:@"Phone"
                         config:@{
-                                 @"name": @"phone",
+                                 @"name": @"telephone",
                                  @"title": SCLocalizedString(@"Phone"),
-                                 @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:scHiddenAddress_telephone] isEqualToString:@"req"]]
+                                 @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:@"telephone"] isEqualToString:@"req"]]
                                  }];
             }
             
-            if ([self hasField:[hiddenAddressModel valueForKey:scHiddenAddress_fax]]) {
+            if ([self hasField:[hiddenAddressModel valueForKey:@"fax"]]) {
                 [form addField:@"Text"
                         config:@{
                                  @"name" : @"fax",
                                  @"title": SCLocalizedString(@"Fax"),
-                                 @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:scHiddenAddress_fax] isEqualToString:@"req"]]
+                                 @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:@"fax"] isEqualToString:@"req"]]
                                  }];
             }
-            
-            if ([self hasField:[hiddenAddressModel valueForKey:scHiddenAddress_birthday]] && ![[SimiGlobalVar sharedInstance]isLogin]) {
-                [form addField:@"Date"
-                        config:@{
-                                 @"name": @"dob",
-                                 @"title": SCLocalizedString(@"Date of Birth"),
-                                 @"date_type": @"date",
-                                 @"date_format": @"yyyy-MM-dd",
-                                 @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:scHiddenAddress_birthday] isEqualToString:@"req"]]
-                                 }];
-            }
-            NSMutableArray *genderValues = [[NSMutableArray alloc]initWithArray:[[[[SimiGlobalVar sharedInstance]store]valueForKey:@"customer_address_config"]valueForKey:@"gender_value"]];
-            if (genderValues.count == 2) {
-                NSDictionary *dict01 = [[NSDictionary alloc]initWithDictionary:[genderValues objectAtIndex:0]];
-                NSDictionary *dict02 = [[NSDictionary alloc]initWithDictionary:[genderValues objectAtIndex:1]];
-                if ([self hasField:[hiddenAddressModel valueForKey:scHiddenAddress_gender]] && ![[SimiGlobalVar sharedInstance]isLogin]) {
-                    [form addField:@"Select"
+            if (![SimiGlobalVar sharedInstance].isLogin) {
+                if ([self hasField:[hiddenAddressModel valueForKey:@"dob"]]) {
+                    [form addField:@"Date"
                             config:@{
-                                     @"name": @"gender",
-                                     @"title": SCLocalizedString(@"Gender"),
-                                     @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:scHiddenAddress_gender] isEqualToString:@"req"]],
-                                     @"source": @[@{@"value":[dict01 valueForKey:@"value"],@"label":SCLocalizedString([dict01 valueForKey:@"label"])},@{@"value":[dict02 valueForKey:@"value"] ,@"label":SCLocalizedString([dict02 valueForKey:@"label"])}]
+                                     @"name": @"dob",
+                                     @"title": SCLocalizedString(@"Date of Birth"),
+                                     @"date_type": @"date",
+                                     @"date_format": @"yyyy-MM-dd",
+                                     @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:@"dob"] isEqualToString:@"req"]]
                                      }];
                 }
-            }
-            
-            if (newAddressController.isNewCustomer) {
-                if (![[config taxvatShow] isEqualToString:@""]) {
+                
+                NSMutableArray *genderValues = [[NSMutableArray alloc]initWithArray:[[[[SimiGlobalVar sharedInstance]customerConfig]valueForKey:@"address_option"]valueForKey:@"gender_value"]];
+                
+                if (genderValues.count == 2) {
+                    NSDictionary *dict01 = [[NSDictionary alloc]initWithDictionary:[genderValues objectAtIndex:0]];
+                    NSDictionary *dict02 = [[NSDictionary alloc]initWithDictionary:[genderValues objectAtIndex:1]];
+                    if ([self hasField:[hiddenAddressModel valueForKey:@"gender"]]) {
+                        [form addField:@"Select"
+                                config:@{
+                                         @"name": @"gender",
+                                         @"title": SCLocalizedString(@"Gender"),
+                                         @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:@"gender"] isEqualToString:@"req"]],
+                                         @"source": @[@{@"value":[dict01 valueForKey:@"value"],@"label":SCLocalizedString([dict01 valueForKey:@"label"])},@{@"value":[dict02 valueForKey:@"value"] ,@"label":SCLocalizedString([dict02 valueForKey:@"label"])}]
+                                         }];
+                    }
+                }
+                
+                if ([self hasField:[hiddenAddressModel valueForKey:@"taxvat"]]) {
                     [form addField:@"Text"
                             config:@{
                                      @"name": @"taxvat",
@@ -218,6 +229,10 @@
                                      }];
                 }
                 
+            }
+            
+            
+            if (newAddressController.isNewCustomer) {
                 [form addField:@"Password"
                         config:@{
                                  @"name": @"customer_password",
@@ -237,17 +252,6 @@
             [form.fields removeObject:newAddressController.stateName];
             [[NSNotificationCenter defaultCenter] removeObserver:self name:@"SCHiddenAddress_DidGetAddressHide" object:nil];
             
-            // Reload Fields
-            [newAddressController.tableViewAddress reloadData];
-            //  Liam ADD 150402
-            [newAddressController didGetCountries];
-            //  Liam 150402
-
-        }
-    } else if ([noti.name isEqualToString:@"SCHiddenAddress_DidGetAddressHide"]) {
-        SimiResponder *responder = [noti.userInfo valueForKey:@"responder"];
-        if ([[responder.status uppercaseString]isEqualToString:@"SUCCESS"]) {
-            self.available = YES;
         }
     }
 }
