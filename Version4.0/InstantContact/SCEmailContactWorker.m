@@ -37,7 +37,11 @@
         cells = noti.object;
         for (int i = 0; i < cells.count; i++) {
             SimiSection *section = [cells objectAtIndex:i];
-            if ([section.identifier isEqualToString:LEFTMENU_SECTION_MORE]) {
+            NSDictionary *instantContact = nil;
+            if ([[SimiGlobalVar sharedInstance].allConfig valueForKey:@"instant_contact"]) {
+                instantContact = [[SimiGlobalVar sharedInstance].allConfig valueForKey:@"instant_contact"];
+            }
+            if ([section.identifier isEqualToString:LEFTMENU_SECTION_MORE] && instantContact.count > 0) {
                 SimiRow *row = [[SimiRow alloc]initWithIdentifier:LEFTMENU_ROW_CONTACTUS height:50 sortOrder:70];
                 row.image = [UIImage imageNamed:@"ic_contact"];
                 row.title = SCLocalizedString(@"Contact Us");
@@ -58,13 +62,15 @@
                 [(UINavigationController*)currentVC pushViewController:emailViewController animated:YES];
             }else
             {
-                SCNavigationBarPad *navi = noti.object;
-                navi.popController = nil;
-                navi.popController = [[UIPopoverController alloc] initWithContentViewController:[[UINavigationController alloc] initWithRootViewController:emailViewController]];
-                emailViewController.isInPopover = YES;
-                emailViewController.popover = navi.popController;
-                [navi.popController presentPopoverFromRect:CGRectMake(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 1, 1) inView:currentVC.view permittedArrowDirections:0 animated:YES];
-                navi.isDiscontinue = YES;
+                SCNavigationBarPad *navigationBarPad = noti.object;
+                UINavigationController *navi = [[UINavigationController alloc]initWithRootViewController:emailViewController];
+                navi.modalPresentationStyle = UIModalPresentationPopover;
+                UIPopoverPresentationController *popover = navi.popoverPresentationController;
+                popover.sourceRect = CGRectMake(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 1, 1);
+                popover.sourceView = currentVC.view;
+                popover.permittedArrowDirections = 0;
+                [currentVC presentViewController:navi animated:YES completion:nil];
+                navigationBarPad.isDiscontinue = YES;
             }
         }
     }

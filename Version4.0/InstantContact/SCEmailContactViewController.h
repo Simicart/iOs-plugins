@@ -14,33 +14,22 @@
 #import <SimiCartBundle/SimiTable.h>
 #import <SimiCartBundle/SimiSection.h>
 #import <SimiCartBundle/SimiRow.h>
-#import "SCEmailContactModel.h"
 #import "SCListPhoneViewController.h"
 
-//  Liam ADD 150504
 static NSString *EMAILCONTACT_SECTIONMAIN = @"EMAILCONTACT_SECTIONMAIN";
 static NSString *EMAILCONTACT_ROWWEBSITE = @"EMAILCONTACT_ROWWEBSITE";
 static NSString *EMAILCONTACT_ROWCALL = @"EMAILCONTACT_ROWCALL";
 static NSString *EMAILCONTACT_ROWMESSAGE = @"EMAILCONTACT_ROWMESSAGE";
 static NSString *EMAILCONTACT_ROWEMAIL = @"EMAILCONTACT_ROWEMAIL";
-//  End 150504
-@interface SCEmailContactViewController : SimiViewController<MFMailComposeViewControllerDelegate, MFMessageComposeViewControllerDelegate, UITableViewDataSource, UITableViewDelegate, SCListPhoneViewController_Delegate, UICollectionViewDelegate, UICollectionViewDataSource>
 
-@property (nonatomic, strong) UIButton *btnCall;
-@property (nonatomic, strong) UIButton *btnEmail;
-@property (nonatomic, strong) UIButton *btnWebsite;
-@property (nonatomic, strong) UIButton *btnMessage;
-@property (nonatomic, strong) UILabel *lblCall;
-@property (nonatomic, strong) UILabel *lblEmail;
-@property (nonatomic, strong) UILabel *lblWebsite;
-@property (nonatomic, strong) UILabel *lblMessage;
+@interface SCEmailContactViewController : SimiViewController<MFMailComposeViewControllerDelegate, MFMessageComposeViewControllerDelegate, UITableViewDataSource, UITableViewDelegate, SCListPhoneViewController_Delegate, UICollectionViewDelegate, UICollectionViewDataSource>
 
 @property (nonatomic, strong) UITableView *tblViewContent;
 @property (nonatomic, strong) UICollectionView *contactCollectionView;
 @property (nonatomic) BOOL isCall;
 @property (nonatomic, strong) SimiTable *cells;
 
-@property (nonatomic, strong) SCEmailContactModel *contactModel;
+@property (nonatomic, strong) SimiModel *contactModel;
 
 @end
 

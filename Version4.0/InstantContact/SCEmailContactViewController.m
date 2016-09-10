@@ -24,18 +24,75 @@
     NSString *stringWebsite;
     NSString *stringStyle;
     NSString *stringColor;
-    UIActivityIndicatorView *indicatorView;
-    BOOL isFirstLoad;
+    
     float itemWidth;
     float itemHeight;
 }
 
 - (void)viewDidLoadBefore {
-    isFirstLoad = YES;
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         [super viewDidLoadBefore];
     }
     self.navigationItem.title = SCLocalizedString(@"Contact Us");
+    _contactModel = [[SimiModel alloc]initWithDictionary:[[SimiGlobalVar sharedInstance].allConfig valueForKey:@"instant_contact"]];
+    if ([[_contactModel valueForKey:@"phone"] isKindOfClass:[NSArray class]]) {
+        arrayPhoneNumber = [[NSMutableArray alloc]initWithArray:[_contactModel valueForKey:@"phone"]];
+        arrayPhoneNumberAfterCheck = [[NSMutableArray alloc]init];
+        for (int i = 0; i < arrayPhoneNumber.count; i++) {
+            NSString *stringPhone = [NSString stringWithFormat:@"%@",[arrayPhoneNumber objectAtIndex:i]];
+            stringPhone = [stringPhone stringByReplacingOccurrencesOfString:@" " withString:@""];
+            if (![stringPhone isEqualToString:@""]) {
+                [arrayPhoneNumberAfterCheck addObject:stringPhone];
+            }
+        }
+    }
+    
+    if ([[_contactModel valueForKey:@"message"]isKindOfClass:[NSArray class]]) {
+        arrayMessageNumber = [[NSMutableArray alloc]initWithArray:[_contactModel valueForKey:@"message"]];
+        arrayMessageNumberAfterCheck = [[NSMutableArray alloc]init];
+        for (int i = 0; i < arrayMessageNumber.count; i++) {
+            NSString *stringPhone = [NSString stringWithFormat:@"%@",[arrayMessageNumber objectAtIndex:i]];
+            stringPhone = [stringPhone stringByReplacingOccurrencesOfString:@" " withString:@""];
+            if (![stringPhone isEqualToString:@""]) {
+                [arrayMessageNumberAfterCheck addObject:stringPhone];
+            }
+        }
+    }
+    
+    
+    if ([_contactModel valueForKey:@"email"]) {
+        arrayEmail = [[NSMutableArray alloc]initWithArray:[_contactModel valueForKey:@"email"]];
+        arrayEmailCheck = [[NSMutableArray alloc]init];
+        for (int i = 0; i < arrayEmail.count; i++) {
+            NSString *stringEmail = [NSString stringWithFormat:@"%@", [arrayEmail objectAtIndex:i]];
+            stringEmail = [stringEmail stringByReplacingOccurrencesOfString:@" " withString:@""];
+            if (![stringEmail isEqualToString:@""]) {
+                [arrayEmailCheck addObject:stringEmail];
+            }
+        }
+    }
+    
+    if ([_contactModel valueForKey:@"website"]) {
+        stringWebsite = [NSString stringWithFormat:@"%@",[_contactModel valueForKey:@"website"]];
+        stringWebsite = [stringWebsite stringByReplacingOccurrencesOfString:@" " withString:@""];
+    }
+    
+    if ([_contactModel valueForKey:@"style"]) {
+        stringStyle = [NSString stringWithFormat:@"%@",[_contactModel valueForKey:@"style"]];
+    }else
+    {
+        stringStyle = @"0";
+    }
+    
+    if ([_contactModel valueForKey:@"activecolor"]) {
+        if([stringColor containsString:@"#"])
+            stringColor = [NSString stringWithFormat:@"%@",[_contactModel valueForKey:@"activecolor"]];
+        else
+            stringColor = [NSString stringWithFormat:@"#%@",[_contactModel valueForKey:@"activecolor"]];
+        stringColor = [stringColor stringByReplacingOccurrencesOfString:@" " withString:@""];
+    }
+    
+    [self setCells:nil];
     // Do any additional setup after loading the view.
 }
 
@@ -48,25 +105,29 @@
     itemHeight = [SimiGlobalVar scaleValue:100];
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
-
-- (void)viewDidAppear:(BOOL)animated
+- (void)viewDidAppearBefore:(BOOL)animated
 {
-    [super viewDidAppear:YES];
-    if (isFirstLoad) {
-        isFirstLoad = NO;
-        indicatorView = [[UIActivityIndicatorView alloc]initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
-        [indicatorView setFrame:self.view.bounds];
-        [self.view addSubview:indicatorView];
-        indicatorView.hidesWhenStopped = YES;
-        [indicatorView startAnimating];
-        
-        _contactModel = [[SCEmailContactModel alloc]init];
-        [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(didGetEmailContact:) name:@"DidGetEmailContactConfig" object:_contactModel];
-        [_contactModel getEmailContactWithParams:@{}];
+    if (_tblViewContent == nil && _contactCollectionView == nil) {        
+        if ([stringStyle isEqualToString:@"0"]) {
+            _tblViewContent = [[UITableView alloc]initWithFrame:self.view.bounds];
+            [_tblViewContent setContentInset:UIEdgeInsetsMake(0, 0, 0, 0)];
+            _tblViewContent.dataSource = self;
+            _tblViewContent.delegate = self;
+            [self.view addSubview:_tblViewContent];
+            [_tblViewContent reloadData];
+        }else
+        {
+            UICollectionViewFlowLayout *flowLayout = [UICollectionViewFlowLayout new];
+            flowLayout.itemSize = CGSizeMake(itemWidth, itemHeight);
+            flowLayout.minimumLineSpacing =  [SimiGlobalVar scaleValue:20];
+            flowLayout.minimumInteritemSpacing = [SimiGlobalVar scaleValue:20];
+            _contactCollectionView = [[UICollectionView alloc]initWithFrame:self.view.bounds collectionViewLayout:flowLayout];
+            [_contactCollectionView setBackgroundColor:[UIColor whiteColor]];
+            _contactCollectionView.contentInset = UIEdgeInsetsMake([SimiGlobalVar scaleValue:40], [SimiGlobalVar scaleValue:20], 0, [SimiGlobalVar scaleValue:20]);
+            _contactCollectionView.delegate = self;
+            _contactCollectionView.dataSource = self;
+            [self.view addSubview:_contactCollectionView];
+        }
     }
 }
 
@@ -237,65 +298,7 @@
 {
     SimiResponder *responder = [noti.userInfo valueForKey:@"responder"];
     if ([[responder.status uppercaseString]isEqualToString:@"SUCCESS"]) {
-        [indicatorView stopAnimating];
-        if ([_contactModel valueForKey:@"phone"]) {
-            arrayPhoneNumber = (NSMutableArray *)[_contactModel valueForKey:@"phone"];
-            arrayPhoneNumberAfterCheck = [[NSMutableArray alloc]init];
-            for (int i = 0; i < arrayPhoneNumber.count; i++) {
-                NSString *stringPhone = [NSString stringWithFormat:@"%@",[arrayPhoneNumber objectAtIndex:i]];
-                stringPhone = [stringPhone stringByReplacingOccurrencesOfString:@" " withString:@""];
-                if (![stringPhone isEqualToString:@""]) {
-                    [arrayPhoneNumberAfterCheck addObject:stringPhone];
-                }
-            }
-        }
         
-        if ([_contactModel valueForKey:@"message"]) {
-            arrayMessageNumber = (NSMutableArray *)[_contactModel valueForKey:@"message"];
-            arrayMessageNumberAfterCheck = [[NSMutableArray alloc]init];
-            for (int i = 0; i < arrayMessageNumber.count; i++) {
-                NSString *stringPhone = [NSString stringWithFormat:@"%@",[arrayMessageNumber objectAtIndex:i]];
-                stringPhone = [stringPhone stringByReplacingOccurrencesOfString:@" " withString:@""];
-                if (![stringPhone isEqualToString:@""]) {
-                    [arrayMessageNumberAfterCheck addObject:stringPhone];
-                }
-            }
-        }
-        
-        
-        if ([_contactModel valueForKey:@"email"]) {
-            arrayEmail = (NSMutableArray*)[_contactModel valueForKey:@"email"];
-            arrayEmailCheck = [[NSMutableArray alloc]init];
-            for (int i = 0; i < arrayEmail.count; i++) {
-                NSString *stringEmail = [NSString stringWithFormat:@"%@", [arrayEmail objectAtIndex:i]];
-                stringEmail = [stringEmail stringByReplacingOccurrencesOfString:@" " withString:@""];
-                if (![stringEmail isEqualToString:@""]) {
-                    [arrayEmailCheck addObject:stringEmail];
-                }
-            }
-        }
-        
-        if ([_contactModel valueForKey:@"website"]) {
-            stringWebsite = [NSString stringWithFormat:@"%@",[_contactModel valueForKey:@"website"]];
-            stringWebsite = [stringWebsite stringByReplacingOccurrencesOfString:@" " withString:@""];
-        }
-        
-        if ([_contactModel valueForKey:@"style"]) {
-            stringStyle = [NSString stringWithFormat:@"%@",[_contactModel valueForKey:@"style"]];
-        }else
-        {
-            stringStyle = @"1";
-        }
-        
-        if ([_contactModel valueForKey:@"activecolor"]) {
-            if([stringColor containsString:@"#"])
-                stringColor = [NSString stringWithFormat:@"%@",[_contactModel valueForKey:@"activecolor"]];
-            else
-                stringColor = [NSString stringWithFormat:@"#%@",[_contactModel valueForKey:@"activecolor"]];
-            stringColor = [stringColor stringByReplacingOccurrencesOfString:@" " withString:@""];
-        }
-        
-        [self setCells:nil];
         if ([stringStyle isEqualToString:@"1"]) {
             _tblViewContent = [[UITableView alloc]initWithFrame:self.view.bounds];
             [_tblViewContent setContentInset:UIEdgeInsetsMake(0, 0, 0, 0)];
