@@ -90,7 +90,7 @@ static NSString *LEFTMENU_REWARDS_ROW     = @"leftmenu_rewards";
         if (PADDEVICE) {
             orderTable = [(SCOrderViewControllerPad *)self.orderViewController orderTableRight];
         }
-        NSArray *rules = [order.loyaltyData objectForKey:@"loyalty_rules"];
+        NSArray *rules = [[order valueForKey:@"loyalty"] objectForKey:@"loyalty_rules"];
         if ([rules count]) {
             NSDictionary *rule = [rules objectAtIndex:0];
             if ([orderTable getSectionIndexByIdentifier:LOYALTY_CHECKOUT] == NSNotFound) {
@@ -215,10 +215,10 @@ static NSString *LEFTMENU_REWARDS_ROW     = @"leftmenu_rewards";
     slider.value = (float)pointValue;
     
     SimiOrderModel *order = [self.orderViewController order];
-    if ([[order.loyaltyData objectForKey:@"loyalty_spend"] integerValue] == pointValue) {
+    if ([[[order valueForKey:@"loyalty"] objectForKey:@"loyalty_spend"] integerValue] == pointValue) {
         return;
     }
-    NSDictionary *rule = [[order.loyaltyData objectForKey:@"loyalty_rules"] objectAtIndex:0];
+    NSDictionary *rule = [[[order valueForKey:@"loyalty"] objectForKey:@"loyalty_rules"] objectAtIndex:0];
     
     [[NSNotificationCenter defaultCenter] addObserver:self.orderViewController selector:@selector(didReceiveNotification:) name:@"DidSpendPointsOrder" object:order];
     [order spendPoints:pointValue ruleId:[rule objectForKey:@"id"]];
@@ -379,7 +379,7 @@ static NSString *LEFTMENU_REWARDS_ROW     = @"leftmenu_rewards";
             return;
         }
         SimiOrderModel *order = [self.orderViewController order];
-        NSArray *rules = [order.loyaltyData objectForKey:@"loyalty_rules"];
+        NSArray *rules = [[order valueForKey:@"loyalty"] objectForKey:@"loyalty_rules"];
         if ([rules count]) {
             NSDictionary *rule = [rules objectAtIndex:0];
             if ([[rule objectForKey:@"optionType"] isEqualToString:@"slider"]) {
@@ -396,8 +396,8 @@ static NSString *LEFTMENU_REWARDS_ROW     = @"leftmenu_rewards";
                 UISlider *slider = [[UISlider alloc] initWithFrame:CGRectMake(15, 44, width, 28)];
                 slider.minimumValue = [[rule objectForKey:@"minPoints"] floatValue];
                 slider.maximumValue = [[rule objectForKey:@"maxPoints"] floatValue];
-                if ([order.loyaltyData objectForKey:@"loyalty_spend"]) {
-                    slider.value = [[order.loyaltyData objectForKey:@"loyalty_spend"] floatValue];
+                if ([[order valueForKey:@"loyalty"] objectForKey:@"loyalty_spend"]) {
+                    slider.value = [[[order valueForKey:@"loyalty"] objectForKey:@"loyalty_spend"] floatValue];
                 }else
                     slider.value = 0;
                 [slider addTarget:self action:@selector(changeSpendingPoints:) forControlEvents:UIControlEventValueChanged];
@@ -408,8 +408,8 @@ static NSString *LEFTMENU_REWARDS_ROW     = @"leftmenu_rewards";
                 points.font = [UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE];
                 points.textAlignment = NSTextAlignmentCenter;
                 points.frame = CGRectMake(15, 72, width, 22);
-                if ([order.loyaltyData objectForKey:@"loyalty_spend"]) {
-                    points.text = [[SCLocalizedString(@"Spending") stringByAppendingString:@": "] stringByAppendingString:[[order.loyaltyData objectForKey:@"loyalty_spend"] stringValue]];
+                if ([[order valueForKey:@"loyalty"] objectForKey:@"loyalty_spend"]) {
+                    points.text = [[SCLocalizedString(@"Spending") stringByAppendingString:@": "] stringByAppendingString:[[[order valueForKey:@"loyalty"] objectForKey:@"loyalty_spend"] stringValue]];
                 }
                 [cell addSubview:points];
                 slider.simiObjectIdentifier = points;
