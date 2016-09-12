@@ -11,5 +11,5 @@ static NSString *LEFTMENU_ROW_CHAT = @"LEFTMENU_ROW_CHAT";
 @interface SimizopimWorker : NSObject<UIPopoverControllerDelegate>
 @property (nonatomic, strong) UIPopoverController *popController;
 @property (nonatomic, strong) UIButton *messageButton;
-@property (nonatomic, strong) NSMutableArray *zoPimConfig;
+@property (nonatomic, strong) NSDictionary *zoPimConfig;
 @end
