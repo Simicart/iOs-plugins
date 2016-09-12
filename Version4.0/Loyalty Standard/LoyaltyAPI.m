@@ -12,26 +12,26 @@
 
 - (void)loadProgramOverviewWithTarget:(id)target selector:(SEL)selector
 {
-    NSString *url = [NSString stringWithFormat:@"%@loyalty/point/home", kBaseURL];
-    [self requestWithURL:url params:nil target:target selector:selector header:nil];
+    NSString *url = [NSString stringWithFormat:@"%@%@simirewardpoints/home", kBaseURL, kSimiConnectorURL];
+    [self requestWithMethod:GET URL:url params:nil target:target selector:selector header:nil];
 }
 
 - (void)loadTransactionWithParams:(NSDictionary *)params target:(id)target selector:(SEL)selector
 {
-    NSString *url = [NSString stringWithFormat:@"%@loyalty/point/history", kBaseURL];
-    [self requestWithURL:url params:params target:target selector:selector header:nil];
+    NSString *url = [NSString stringWithFormat:@"%@%@simirewardpointstransactions", kBaseURL, kSimiConnectorURL];
+    [self requestWithMethod:GET URL:url params:params target:target selector:selector header:nil];
 }
 
 - (void)spendPointsWithParams:(NSDictionary *)params target:(id)target selector:(SEL)selector
 {
-    NSString *url = [NSString stringWithFormat:@"%@loyalty/point/spend", kBaseURL];
-    [self requestWithURL:url params:params target:target selector:selector header:nil];
+    NSString *url = [NSString stringWithFormat:@"%@%@simirewardpoints/spend", kBaseURL,kSimiConnectorURL];
+    [self requestWithMethod:PUT URL:url params:params target:target selector:selector header:nil];
 }
 
 - (void)saveSettings:(NSDictionary *)target selector:(SEL)selector
 {
-     NSString *url = [NSString stringWithFormat:@"%@loyalty/point/settings", kBaseURL];
-    [self requestWithURL:url params:target target:target selector:selector header:nil];
+     NSString *url = [NSString stringWithFormat:@"%@%@simirewardpoints/savesetting", kBaseURL, kSimiConnectorURL];
+    [self requestWithMethod:PUT URL:url params:target target:target selector:selector header:nil];
 }
 
 @end

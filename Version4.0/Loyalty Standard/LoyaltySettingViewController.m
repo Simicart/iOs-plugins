@@ -32,7 +32,9 @@
     
     // Init Table View Data
     _tableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStyleGrouped];
-    _tableView.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin;
+    if (SIMI_SYSTEM_IOS >= 9) {
+        _tableView.cellLayoutMarginsFollowReadableWidth = NO;
+    }
     _tableView.dataSource = self;
     _tableView.delegate = self;
     [self.view addSubview:_tableView];
@@ -49,14 +51,12 @@
 
 - (void)viewWillAppearBefore:(BOOL)animated
 {
-    //Ravi
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        _tableView.frame = CGRectMake(0, SCREEN_HEIGHT/3, SCREEN_WIDTH*2/3, SCREEN_HEIGHT*2/3);
-    }else{
-        _tableView.frame = self.view.bounds;
-        [super viewWillAppearBefore:YES];
-    }
-    //End
+    
+}
+
+- (void)viewDidAppearBefore:(BOOL)animated
+{
+    [_tableView setFrame:self.view.bounds];
 }
 
 - (void)dealloc

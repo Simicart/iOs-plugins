@@ -15,6 +15,7 @@
 {
     modelActionType = ModelActionTypeEdit;
     currentNotificationName = @"DidSpendPointsOrder";
+    keyResponse = @"order";
     [self preDoRequest];
     [[LoyaltyAPI new] spendPointsWithParams:@{@"ruleid":ruleId, @"usepoint": [NSNumber numberWithInteger:points]} target:self selector:@selector(didFinishRequest:responder:)];
 }

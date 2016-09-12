@@ -27,38 +27,36 @@
         [super viewDidLoadBefore];
     }
     self.title = SCLocalizedString(@"Rewards History");
-    
-    // Start load transactions
-    _tableView = [[UITableView alloc] initWithFrame:self.view.frame style:UITableViewStyleGrouped];
-    _tableView.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin;
-    _tableView.dataSource = self;
-    _tableView.delegate = self;
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        _tableView.rowHeight = 108;
-    } else {
-        _tableView.rowHeight = 130;
-    }
-    [self.view addSubview:_tableView];
-    
-    __block __weak id weakSelf = self;
-    [_tableView addInfiniteScrollingWithActionHandler:^{
-        [weakSelf loadTransactions];
-    }];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didLoadTransactions:) name:@"DidGetLoyaltyTransactions" object:nil];
-    
-    [self startLoadingData];
-    [self loadTransactions];
 }
 
 - (void)viewWillAppearBefore:(BOOL)animated
 {
-    _tableView.frame = self.view.frame;
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        [super viewWillAppearBefore:animated];
-    }else{
-        if (SIMI_SYSTEM_IOS >= 9.0) {
-            _tableView.frame = CGRectMake(SCREEN_WIDTH/3, SCREEN_HEIGHT/3, SCREEN_WIDTH*2/3, SCREEN_HEIGHT*2/3);
+    
+}
+
+- (void)viewDidAppearBefore:(BOOL)animated
+{
+    if (_tableView == nil) {
+        // Start load transactions
+        _tableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStyleGrouped];
+        _tableView.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin;
+        _tableView.dataSource = self;
+        _tableView.delegate = self;
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            _tableView.rowHeight = 108;
+        } else {
+            _tableView.rowHeight = 130;
         }
+        [self.view addSubview:_tableView];
+        
+        __block __weak id weakSelf = self;
+        [_tableView addInfiniteScrollingWithActionHandler:^{
+            [weakSelf loadTransactions];
+        }];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didLoadTransactions:) name:@"DidGetLoyaltyTransactions" object:nil];
+        
+        [self startLoadingData];
+        [self loadTransactions];
     }
 }
 

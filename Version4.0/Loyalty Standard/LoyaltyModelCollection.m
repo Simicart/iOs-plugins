@@ -16,6 +16,7 @@
     currentNotificationName = @"DidGetLoyaltyTransactions";
     [self preDoRequest];
     modelActionType = ModelActionTypeInsert;
+    keyResponse = @"simirewardpointstransactions";
     
     NSMutableDictionary *params = [NSMutableDictionary new];
     [params setValue:[NSNumber numberWithInteger:offset] forKey:@"offset"];

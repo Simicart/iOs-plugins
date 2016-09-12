@@ -87,10 +87,10 @@ static NSString *LEFTMENU_REWARDS_ROW     = @"leftmenu_rewards";
     if (([noti.name isEqualToString:@"DidGetOrderConfig"] || [noti.name isEqualToString:@"DidSpendPointsOrder"] || [noti.name isEqualToString:@"DidSetCouponCode"] || [noti.name isEqualToString:@"DidSaveShippingMethod"] || [noti.name isEqualToString:@"SCOrderViewController-InitTableBefore"] || [noti.name isEqualToString:@"SCOrderViewController-InitTableAfter"]||[noti.name isEqualToString:@"SCOrderViewController-InitRightTableAfter"]) && self.orderViewController) {
         SimiOrderModel *order = [self.orderViewController order];
         SimiTable *orderTable = [self.orderViewController orderTable];
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        if (PADDEVICE) {
             orderTable = [(SCOrderViewControllerPad *)self.orderViewController orderTableRight];
         }
-        NSArray *rules = [[order objectForKey:@"fee"] objectForKey:@"loyalty_rules"];
+        NSArray *rules = [order.loyaltyData objectForKey:@"loyalty_rules"];
         if ([rules count]) {
             NSDictionary *rule = [rules objectAtIndex:0];
             if ([orderTable getSectionIndexByIdentifier:LOYALTY_CHECKOUT] == NSNotFound) {
@@ -111,38 +111,8 @@ static NSString *LEFTMENU_REWARDS_ROW     = @"leftmenu_rewards";
                 break;
             }
         }
-        
-        NSDictionary *fee = [order objectForKey:@"fee"];
-        NSMutableDictionary *v2 = [fee valueForKey:@"v2"];
-        if (![v2 isKindOfClass:[NSMutableDictionary class]]) {
-            v2 = [[NSMutableDictionary alloc] initWithDictionary:v2];
-            [fee setValue:v2 forKey:@"v2"];
-        }
-        if ([[fee objectForKey:@"loyalty_spend"] integerValue]) {
-            [v2 setValue:[fee objectForKey:@"loyalty_spending"] forKey:@"loyalty_spend"];
-            [v2 setValue:[fee objectForKey:@"loyalty_discount"] forKey:@"loyalty_discount"];
-            totalRow.height += 25;
-        } else {
-            [v2 removeObjectForKey:@"loyalty_spend"];
-            [v2 removeObjectForKey:@"loyalty_discount"];
-        }
-        if ([[fee objectForKey:@"loyalty_earn"] integerValue]) {
-            [v2 setValue:[fee objectForKey:@"loyalty_earning"] forKey:@"loyalty_earn"];
-            totalRow.height += 25;
-        } else {
-            [v2 removeObjectForKey:@"loyalty_earn"];
-        }
         if ([noti.name isEqualToString:@"DidSpendPointsOrder"]) {
-            if([[order valueForKey:@"payment_method_list"] isKindOfClass:[NSArray class]])
-            {
-                self.orderViewController.paymentCollection = [[SimiPaymentModelCollection alloc]initWithArray:[order valueForKey:@"payment_method_list"]];
-                self.orderViewController.orderTable = nil;
-                if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-                    [(SCOrderViewControllerPad *)self.orderViewController configOrderTableLeft];
-                    [[(SCOrderViewControllerPad *)self.orderViewController tableLeft] reloadData];
-                }
-            }
-            [[self.orderViewController tableViewOrder]reloadData];
+            [self.orderViewController didGetOrderConfig:noti];
         }
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             [[(SCOrderViewControllerPad *)self.orderViewController tableRight] reloadData];
@@ -150,7 +120,7 @@ static NSString *LEFTMENU_REWARDS_ROW     = @"leftmenu_rewards";
 #pragma mark init Cart Cell
     } else if ([noti.name isEqualToString:@"InitCartCell-Before"]) {
         SimiCartModelCollection *cart = [[SimiGlobalVar sharedInstance] cart];
-        if (cart.count && [[cart objectAtIndex:0] objectForKey:@"loyalty_label"]) {
+        if (cart.count && cart.loyaltyData.count > 0) {
             // Add Row to show Loyalty Labels
             SimiTable *cartCells = (SimiTable *)noti.object;
             SimiSection *loyaltySection = [cartCells addSectionWithIdentifier:LOYALTY_CART];
@@ -195,8 +165,8 @@ static NSString *LEFTMENU_REWARDS_ROW     = @"leftmenu_rewards";
             UIImageView *imageView = (UIImageView *)[loyalty viewWithTag:3821];
             UILabel *label = (UILabel *)[loyalty viewWithTag:3822];
             
-            [imageView sd_setImageWithURL:[NSURL URLWithString:[[cart objectAtIndex:0] objectForKey:@"loyalty_image"]] placeholderImage:nil options:SDWebImageRetryFailed];
-            label.text = [[cart objectAtIndex:0] objectForKey:@"loyalty_label"];
+            [imageView sd_setImageWithURL:[NSURL URLWithString:[cart.loyaltyData objectForKey:@"loyalty_image"]] placeholderImage:nil options:SDWebImageRetryFailed];
+            label.text = [cart.loyaltyData objectForKey:@"loyalty_label"];
             
             // Center label and image
             CGFloat textWidth = [label textRectForBounds:CGRectMake(24, 0, loyalty.frame.size.width - 24, 40) limitedToNumberOfLines:2].size.width;
@@ -245,10 +215,10 @@ static NSString *LEFTMENU_REWARDS_ROW     = @"leftmenu_rewards";
     slider.value = (float)pointValue;
     
     SimiOrderModel *order = [self.orderViewController order];
-    if ([[[order objectForKey:@"fee"] objectForKey:@"loyalty_spend"] integerValue] == pointValue) {
+    if ([[order.loyaltyData objectForKey:@"loyalty_spend"] integerValue] == pointValue) {
         return;
     }
-    NSDictionary *rule = [[[order objectForKey:@"fee"] objectForKey:@"loyalty_rules"] objectAtIndex:0];
+    NSDictionary *rule = [[order.loyaltyData objectForKey:@"loyalty_rules"] objectAtIndex:0];
     
     [[NSNotificationCenter defaultCenter] addObserver:self.orderViewController selector:@selector(didReceiveNotification:) name:@"DidSpendPointsOrder" object:order];
     [order spendPoints:pointValue ruleId:[rule objectForKey:@"id"]];
@@ -331,10 +301,13 @@ static NSString *LEFTMENU_REWARDS_ROW     = @"leftmenu_rewards";
         UIViewController *currentVC = [(UITabBarController *)[[(SCAppDelegate *)[[UIApplication sharedApplication]delegate] window] rootViewController] selectedViewController];
         LoyaltyViewController *loyalty = [LoyaltyViewController new];
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-            [[[SCThemeWorker sharedInstance] navigationBarPad].popController  dismissPopoverAnimated:NO];
-            [[SCThemeWorker sharedInstance] navigationBarPad].popController = [[UIPopoverController alloc] initWithContentViewController:[[UINavigationController alloc] initWithRootViewController:loyalty]];
-            [[[SCThemeWorker sharedInstance] navigationBarPad].popController presentPopoverFromRect:CGRectMake(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 1, 1)  inView:currentVC.view  permittedArrowDirections:0 animated:YES];
-            loyalty.isInPopover = YES;
+            UINavigationController *navi = [[UINavigationController alloc]initWithRootViewController:loyalty];
+            navi.modalPresentationStyle = UIModalPresentationPopover;
+            UIPopoverPresentationController *popover = navi.popoverPresentationController;
+            popover.sourceRect = CGRectMake(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 1, 1);
+            popover.sourceView = currentVC.view;
+            popover.permittedArrowDirections = 0;
+            [currentVC presentViewController:navi animated:YES completion:nil];
         }
         else
             [(UINavigationController *)currentVC pushViewController:loyalty animated:YES];
@@ -406,7 +379,7 @@ static NSString *LEFTMENU_REWARDS_ROW     = @"leftmenu_rewards";
             return;
         }
         SimiOrderModel *order = [self.orderViewController order];
-        NSArray *rules = [[order objectForKey:@"fee"] objectForKey:@"loyalty_rules"];
+        NSArray *rules = [order.loyaltyData objectForKey:@"loyalty_rules"];
         if ([rules count]) {
             NSDictionary *rule = [rules objectAtIndex:0];
             if ([[rule objectForKey:@"optionType"] isEqualToString:@"slider"]) {
@@ -423,7 +396,10 @@ static NSString *LEFTMENU_REWARDS_ROW     = @"leftmenu_rewards";
                 UISlider *slider = [[UISlider alloc] initWithFrame:CGRectMake(15, 44, width, 28)];
                 slider.minimumValue = [[rule objectForKey:@"minPoints"] floatValue];
                 slider.maximumValue = [[rule objectForKey:@"maxPoints"] floatValue];
-                slider.value = [[[order objectForKey:@"fee"] objectForKey:@"loyalty_spend"] floatValue];
+                if ([order.loyaltyData objectForKey:@"loyalty_spend"]) {
+                    slider.value = [[order.loyaltyData objectForKey:@"loyalty_spend"] floatValue];
+                }else
+                    slider.value = 0;
                 [slider addTarget:self action:@selector(changeSpendingPoints:) forControlEvents:UIControlEventValueChanged];
                 [slider addTarget:self action:@selector(stopSpendingPointsSlide:) forControlEvents:UIControlEventTouchUpInside | UIControlEventTouchUpOutside];
                 [cell addSubview:slider];
@@ -432,7 +408,9 @@ static NSString *LEFTMENU_REWARDS_ROW     = @"leftmenu_rewards";
                 points.font = [UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE];
                 points.textAlignment = NSTextAlignmentCenter;
                 points.frame = CGRectMake(15, 72, width, 22);
-                points.text = [[SCLocalizedString(@"Spending") stringByAppendingString:@": "] stringByAppendingString:[[[order objectForKey:@"fee"] objectForKey:@"loyalty_spend"] stringValue]];
+                if ([order.loyaltyData objectForKey:@"loyalty_spend"]) {
+                    points.text = [[SCLocalizedString(@"Spending") stringByAppendingString:@": "] stringByAppendingString:[[order.loyaltyData objectForKey:@"loyalty_spend"] stringValue]];
+                }
                 [cell addSubview:points];
                 slider.simiObjectIdentifier = points;
                 points.simiObjectIdentifier = [rule objectForKey:@"pointStep"];
@@ -455,108 +433,6 @@ static NSString *LEFTMENU_REWARDS_ROW     = @"leftmenu_rewards";
                 cell.textLabel.numberOfLines = 2;
                 cell.textLabel.text = [NSString stringWithFormat:SCLocalizedString(@"You need to earn more %@ to use this rule."), [rule objectForKey:@"needPointLabel"]];
             }
-        }
-    }
-    SCOrderFeeCell *cell = [noti.userInfo objectForKey:@"cell"];
-    NSDictionary *fee    = [[[self.orderViewController order] objectForKey:@"fee"] objectForKey:@"v2"];
-    if ([cell isKindOfClass:[SCOrderFeeCell class]] && fee) {
-        for (UIView *subView in cell.subviews) {
-            [subView removeFromSuperview];
-        }
-        [cell setData:(NSMutableArray *)fee];
-        float heightCell = 5;
-        float widthTitle = [SimiGlobalVar scaleValue:190];
-        float widthValue = [SimiGlobalVar scaleValue:97];
-        float origionTitleX = [SimiGlobalVar scaleValue:16];
-        float origionValueX = [SimiGlobalVar scaleValue:206];
-        float heightLabel = 22;
-        float heightLabelWithDistance = 25;
-        
-        
-        if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
-        {
-            heightCell = 30;
-            origionValueX = cell.frame.size.width - 120;
-            widthValue = 100;
-            origionTitleX = 10;
-            widthTitle = cell.frame.size.width - 130;
-            heightLabel = 22;
-            heightLabelWithDistance = 25;
-        }
-        if ([[SimiGlobalVar sharedInstance]isReverseLanguage]) {
-            origionTitleX = 115;
-            widthTitle = 195;
-            origionValueX = 15;
-            widthValue = 120;
-            if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-                origionTitleX = 460;
-                widthTitle = 195;
-                origionValueX = 320;
-                widthValue = 120;
-            }
-        }
-        
-        
-        UILabel *earn, *earnValue, *spend, *spendValue, *discount, *discountValue;
-        CGFloat marginTop     = 0;
-        if ([fee objectForKey:@"loyalty_earn"]) {
-            earn = [[UILabel alloc] initWithFrame:CGRectMake(origionTitleX, 5, widthTitle, 22)];
-            earn.text = [SCLocalizedString(@"You will earn") stringByAppendingString:@":"];
-            earn.font = [UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE];
-            earn.textAlignment = NSTextAlignmentRight;
-            earnValue = [[UILabel alloc] initWithFrame:CGRectMake(origionValueX, 5, widthValue, 22)];
-            earnValue.text = [fee objectForKey:@"loyalty_earn"];
-            earnValue.font = earn.font;
-            earnValue.textColor = THEME_PRICE_COLOR;
-            earnValue.textAlignment = NSTextAlignmentRight;
-            marginTop += 25;
-        }
-        CGFloat subThreshold   = 0;
-        CGFloat subTotalMargin = marginTop;
-        if ([fee objectForKey:@"loyalty_spend"]) {
-            for (UIView *view in cell.subviews) {
-                if ([view isEqual:cell.subTotalExclLabel] || [view isEqual:cell.subTotalLabel] || [view isEqual:cell.subTotalInclLabel]) {
-                    subThreshold = MAX(subThreshold, view.frame.origin.y);
-                }
-            }
-            spend = [[UILabel alloc] initWithFrame:CGRectMake(origionTitleX, marginTop + 5, widthTitle, 22)];
-            spend.text = [SCLocalizedString(@"You will spend") stringByAppendingString:@":"];
-            spend.font = [UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE];
-            spend.textAlignment = NSTextAlignmentRight;
-            spendValue = [[UILabel alloc] initWithFrame:CGRectMake(origionValueX, marginTop + 5, widthValue, 22)];
-            spendValue.text = [fee objectForKey:@"loyalty_spend"];
-            spendValue.font = spend.font;
-            spendValue.textColor = THEME_PRICE_COLOR;
-            spendValue.textAlignment = NSTextAlignmentRight;
-            marginTop += 25;
-            subTotalMargin = marginTop + 25;
-            discount = [spend clone];
-            discountValue = [spendValue clone];
-            discount.frame = CGRectMake(origionTitleX, subThreshold + subTotalMargin, widthTitle, 22);
-            discount.text = [[[[fee objectForKey:@"loyalty_spend"] stringByAppendingString:@" "] stringByAppendingString:SCLocalizedString(@"Discount")] stringByAppendingString:@":"];
-            discountValue.frame = CGRectMake(origionValueX, subThreshold + subTotalMargin, widthValue, 22);
-            discountValue.text = [[SimiFormatter sharedInstance] priceByLocalizeNumber:[fee objectForKey:@"loyalty_discount"]];
-        }
-        if (marginTop > 1) {
-            for (UIView *view in cell.subviews) {
-                CGRect frame = view.frame;
-                if (frame.origin.y > subThreshold) {
-                    frame.origin.y += subTotalMargin;
-                } else {
-                    frame.origin.y += marginTop;
-                }
-                view.frame = frame;
-            }
-        }
-        if (earnValue) {
-            [cell addSubview:earn];
-            [cell addSubview:earnValue];
-        }
-        if (spendValue) {
-            [cell addSubview:spend];
-            [cell addSubview:spendValue];
-            [cell addSubview:discount];
-            [cell addSubview:discountValue];
         }
     }
 }

@@ -14,6 +14,7 @@
 - (void)loadProgramOverview
 {
     currentNotificationName = @"LoadedProgramOverview";
+    keyResponse = @"simirewardpoint";
     modelActionType = ModelActionTypeGet;
     [self preDoRequest];
     [(LoyaltyAPI *)[self getAPI] loadProgramOverviewWithTarget:self selector:@selector(didFinishRequest:responder:)];
@@ -22,6 +23,7 @@
 - (void)saveSettings
 {
     currentNotificationName = @"SavedLoyaltySettings";
+    keyResponse = @"simirewardpoint";
     modelActionType = ModelActionTypeEdit;
     [self preDoRequest];
     [(LoyaltyAPI *)[self getAPI] saveSettings:self selector:@selector(didFinishRequest:responder:)];
