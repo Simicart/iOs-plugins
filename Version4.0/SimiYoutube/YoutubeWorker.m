@@ -16,41 +16,48 @@ static NSString *PRODUCT_ROW_YOUTUBE = @"PRODUCT_ROW_YOUTUBE";
 @implementation YoutubeWorker
 {
     NSMutableArray *cells;
+    SimiProductModel *product;
     SCProductMoreViewController *productMoreViewController;
-    SCVideoModelCollection* videoCollection;
-    NSMutableArray* videoArray;
-    UITableView* tableVideo;
+    NSMutableArray *youtubeArray;
+    NSMutableArray *youtubeVideoArray;
+    MoreActionView* moreActionView;
 }
 - (instancetype)init
 {
     self = [super init];
     if (self) {
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(productMoreViewControllerInitTab:) name:@"SCProductMoreViewController_InitTab" object:nil];
+        [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(initTab:) name:@"SCProductMoreViewController_InitTab" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(afterInitViewMore:) name:@"SCProductMoreViewController-AfterInitViewMore" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initViewMoreAction:) name:@"SCProductMoreViewController_InitViewMoreAction" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(productMoreViewControllerViewWillDisappear:) name:@"SCProductMoreViewControllerViewWillDisappear" object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(productMoreViewControllerViewDidAppear:)name:@"SCProductMoreViewController-viewDidAppear" object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didGetVideosForProduct:) name:DidGetVideosForProduct object:nil];
     }
     return self;
 }
 
-//Init video tab
--(void) productMoreViewControllerInitTab: (NSNotification*) noti{
+- (void)initTab:(NSNotification*)noti
+{
     productMoreViewController = noti.object;
-    tableVideo = [[UITableView alloc]initWithFrame:productMoreViewController.pageScrollView.bounds style:UITableViewStylePlain];
-    tableVideo.delegate = self;
-    tableVideo.dataSource = self;
-    [productMoreViewController.pageScrollView addTab:SCLocalizedString(@"Video") View:tableVideo Info:nil];
+    if ([productMoreViewController.productModel valueForKey:@"youtube"]) {
+        product = productMoreViewController.productModel;
+        youtubeArray = (NSMutableArray*)[product valueForKey:@"youtube"];
+        CGRect frame = productMoreViewController.pageScrollView.bounds;
+        UITableView* tableVideo = [[UITableView alloc]initWithFrame:frame style:UITableViewStylePlain];
+        tableVideo.delegate = self;
+        tableVideo.dataSource = self;
+        [productMoreViewController.pageScrollView addTab:SCLocalizedString(@"Video") View:tableVideo Info:nil];
+    }
 }
 
--(void) productMoreViewControllerViewDidAppear: (NSNotification*) noti{
-    productMoreViewController = noti.object;
-    videoCollection = [SCVideoModelCollection new];
-    [videoCollection getVideosForProductWithID:[productMoreViewController.productModel objectForKey:@"entity_id"]];
+- (void)afterInitViewMore:(NSNotification*) noti
+{
+    
 }
 
--(void) didGetVideosForProduct: (NSNotification*) noti{
-    if(videoCollection.count > 0){
+- (void)initViewMoreAction:(NSNotification*) noti
+{
+    if(youtubeArray.count > 0){
         float sizeButton = 50;
+        moreActionView = noti.object;
         if(!_buttonSimiVideo ){
             _buttonSimiVideo = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, sizeButton, sizeButton)];
             [_buttonSimiVideo setImage:[UIImage imageNamed:@"ic_simivideo"] forState:UIControlStateNormal];
@@ -62,22 +69,8 @@ static NSString *PRODUCT_ROW_YOUTUBE = @"PRODUCT_ROW_YOUTUBE";
             [_buttonSimiVideo setBackgroundColor:[UIColor whiteColor]];
             [_buttonSimiVideo addTarget:self action:@selector(didTouchSimiVideo:) forControlEvents:UIControlEventTouchUpInside];
         }
-
-        productMoreViewController.viewMoreAction.numberIcon += 1;
-        [productMoreViewController.viewMoreAction.arrayIcon addObject:_buttonSimiVideo];
-        float paddingIcon = 20;
-        productMoreViewController.viewMoreAction.heightMoreView = (paddingIcon + sizeButton) * (productMoreViewController.viewMoreAction.arrayIcon.count) + paddingIcon;
-        for(UIView* view in productMoreViewController.viewMoreAction.subviews){
-            [view removeFromSuperview];
-        }
-        [productMoreViewController setInterFaceViewMore];
-        if(productMoreViewController.viewMoreAction.isShowViewMoreAction){
-            CGRect frame = productMoreViewController.viewMoreAction.frame;
-            frame.size.height = productMoreViewController.viewMoreAction.heightMoreView;
-            frame.origin.y -= paddingIcon + sizeButton;
-            [productMoreViewController.viewMoreAction setFrame:frame];
-        }
-        [tableVideo reloadData];
+        moreActionView.numberIcon += 1;
+        [moreActionView.arrayIcon addObject:_buttonSimiVideo];
     }
 }
 
@@ -90,26 +83,26 @@ static NSString *PRODUCT_ROW_YOUTUBE = @"PRODUCT_ROW_YOUTUBE";
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSDictionary *youtubeUnit = [videoCollection objectAtIndex:indexPath.row];
-    NSString *stringIdentifier = [youtubeUnit valueForKey:@"video_key"];
+    NSDictionary *youtubeUnit = [youtubeArray objectAtIndex:indexPath.row];
+    NSString *stringIdentifier = [youtubeUnit valueForKey:@"key"];
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:stringIdentifier];
     float cellWidth = SCREEN_WIDTH;
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         cellWidth = SCREEN_WIDTH *2/3;
     }
+    if (youtubeVideoArray == nil) {
+        youtubeVideoArray = [NSMutableArray new];
+    }
     if (cell == nil) {
         cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:stringIdentifier];
         YTPlayerView *video = [[YTPlayerView alloc]initWithFrame:CGRectMake(0, 40, cellWidth, 260)];
-        [video loadWithVideoId:[youtubeUnit valueForKey:@"video_key"]];
+        [video loadWithVideoId:[youtubeUnit valueForKey:@"key"]];
+        [youtubeVideoArray addObject:video];
         [cell addSubview:video];
         
-        if(!videoArray){
-            videoArray = [[NSMutableArray alloc] initWithCapacity:0];
-        }
-        [videoArray addObject:video];
         UILabel *labelTitle = [[UILabel alloc]initWithFrame:CGRectMake(20, 15, cellWidth - 20, 20)];
         [labelTitle setFont:[UIFont fontWithName:THEME_FONT_NAME_REGULAR size:18]];
-        [labelTitle setText:[youtubeUnit valueForKey:@"video_title"]];
+        [labelTitle setText:[youtubeUnit valueForKey:@"title"]];
         [cell addSubview:labelTitle];
     }
     return cell;
@@ -117,7 +110,7 @@ static NSString *PRODUCT_ROW_YOUTUBE = @"PRODUCT_ROW_YOUTUBE";
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return videoCollection.count;
+    return youtubeArray.count;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -144,8 +137,8 @@ static NSString *PRODUCT_ROW_YOUTUBE = @"PRODUCT_ROW_YOUTUBE";
 - (void)productMoreViewControllerViewWillDisappear:(NSNotification*)noti
 {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {        
-        for (int i = 0; i < videoArray.count; i++) {
-            YTPlayerView *video = [videoArray objectAtIndex:i];
+        for (int i = 0; i < youtubeVideoArray.count; i++) {
+            YTPlayerView *video = [youtubeVideoArray objectAtIndex:i];
             [video stopVideo];
         }
     }

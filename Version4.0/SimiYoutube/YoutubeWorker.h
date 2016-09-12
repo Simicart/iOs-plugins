@@ -7,8 +7,6 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "SCVideoModelCollection.h"
-
 @interface YoutubeWorker : NSObject<UITableViewDataSource, UITableViewDelegate>
 @property (nonatomic, strong) UIButton* buttonSimiVideo;
 @end
