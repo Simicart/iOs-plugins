@@ -42,7 +42,9 @@
         if([paymentList containsObject:@"braintree_applepay"]){
             if (![PKPaymentAuthorizationViewController class] || ![PKPaymentAuthorizationViewController canMakePayments] || ![PKPaymentAuthorizationViewController canMakePaymentsUsingNetworks:@[PKPaymentNetworkAmex, PKPaymentNetworkMasterCard, PKPaymentNetworkVisa]]) {
                 [paymentList removeObject:@"braintree_applepay"];
-                [self showSimpleAlertWithTitle:@"Apple Pay" message:@"This device cannot make payments with Apple Pay" delegate:nil];
+//                [self showSimpleAlertWithTitle:@"Apple Pay" message:@"This device cannot make payments with Apple Pay" delegate:nil];
+                UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:@"Apple Pay" message:@"This device cannot make payments with Apple Pay" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+                [alertView show];
             }
     
         }
@@ -113,7 +115,9 @@
     if(vc){
         [self presentViewController:vc animated:YES completion:nil];
     }else{
-        [self showSimpleAlertWithTitle:@"Apple Pay" message:@"This device cannot make payments with Apple Pay" delegate:nil];
+//        [self showSimpleAlertWithTitle:@"Apple Pay" message:@"This device cannot make payments with Apple Pay" delegate:nil];
+        UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:@"Apple Pay" message:@"This device cannot make payments with Apple Pay" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+        [alertView show];
     }
 }
 
