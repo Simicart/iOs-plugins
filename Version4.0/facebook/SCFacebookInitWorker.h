@@ -12,7 +12,7 @@
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
 #import <SimiCartBundle/SimiSection.h>
 #import <SimiCartBundle/SimiViewController.h>
-#import "SimiCustomerModel+Facebook.h"
+#import <SimiCartBundle/SimiCustomerModel.h>
 #import <SimiCartBundle/KeychainItemWrapper.h>
 #import <SimiCartBundle/SCProductMoreViewController.h>
 

@@ -95,6 +95,8 @@
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:SCLoginViewController_InitCellAfter object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:SCProductMoreViewController_InitViewMoreAction object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:SCProductMoreViewController_BeforeTouchMoreAction object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didLogin:) name:DidLogin object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didLogout:) name:DidLogout object:nil];
         
         facebookAppID = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"FacebookAppID"];
         fbButtonSize = 50;
@@ -109,7 +111,7 @@
         cells = noti.object;
         loginViewController = (SimiViewController*)[noti.userInfo valueForKey:@"controller"];
         SimiSection *section = [cells objectAtIndex:0];
-        SimiRow *row = [[SimiRow alloc] initWithIdentifier:FacebookLoginCell height:60];
+        SimiRow *row = [[SimiRow alloc] initWithIdentifier:FacebookLoginCell height:[SimiGlobalVar scaleValue:50]];
         [section addRow:row];
     }else if([noti.name isEqualToString:ApplicationOpenURL]){
         BOOL numberBool = [[noti object] boolValue];
@@ -121,29 +123,22 @@
         
         if ([row.identifier isEqualToString:FacebookLoginCell]) {
             UITableViewCell *cell = noti.object;
-            float widthCell = [SimiGlobalVar scaleValue:280];
+            float loginViewWidth = CGRectGetWidth(loginViewController.view.frame);
             float heightCell = [SimiGlobalVar scaleValue:35];
             float paddingY = [SimiGlobalVar scaleValue:7.5];
             float paddingX = [SimiGlobalVar scaleValue:20];
             
-            if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-                float widthTable = [SimiGlobalVar scaleValue:210];
-                widthCell = 7 *widthTable/8;
-                heightCell = widthTable/16.2142857143f;
-                paddingY = widthTable/37.8333333333f/2;
-                paddingX = widthTable/16;
-            }
+            float widthCell = loginViewWidth - 2* paddingX;
+            
             FBSDKLoginButton *loginButton = [[FBSDKLoginButton alloc] initWithFrame:CGRectMake(paddingX, paddingY, widthCell, heightCell)];
             loginButton.readPermissions = @[@"email"];
             loginButton.publishPermissions = @[@"publish_actions"];
             loginButton.delegate = self;
-            loginButton.frame = CGRectMake(paddingX, paddingY , widthCell, heightCell);
             cell.backgroundColor = [UIColor clearColor];
             [cell addSubview:loginButton];
             [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
         }
-    }if([noti.name isEqualToString:SCProductMoreViewController_InitViewMoreAction])
-    {
+    }else if([noti.name isEqualToString:SCProductMoreViewController_InitViewMoreAction]){
         moreActionView = noti.object;
         if(!fbButton ){
             fbButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, fbButtonSize, fbButtonSize)];
@@ -480,7 +475,7 @@
                      customerModel = [[SimiCustomerModel alloc] init];
                  if(email && firstName && lastName){
                      NSString* password = [[SimiGlobalVar sharedInstance] md5PassWordWithEmail:email];
-                     [customerModel loginWithFacebookEmail:email password:password firstName:firstName lastName:lastName];
+                     [customerModel loginWithSocialEmail:email password:password firstName:firstName lastName:lastName];
                      NSDictionary *info = [[NSBundle mainBundle] infoDictionary];
                      NSString *bundleIdentifier = [NSString stringWithFormat:@"%@", [info objectForKey:@"CFBundleIdentifier"]];
                      KeychainItemWrapper *wrapper = [[KeychainItemWrapper alloc] initWithIdentifier:bundleIdentifier accessGroup:nil];
@@ -493,6 +488,17 @@
              }
          }
      }];
+}
+
+//login and logout notification
+-(void) didLogin:(NSNotification*) noti{
+    [loginViewController stopLoadingData];
+}
+
+-(void) didLogout: (NSNotification* )noti{
+    if([FBSDKAccessToken currentAccessToken]){
+        [[FBSDKLoginManager alloc] logOut];
+    }
 }
 
 - (void)dealloc
