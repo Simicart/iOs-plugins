@@ -120,6 +120,22 @@
                                  }];
             }
             
+            if ([self hasField:[hiddenAddressModel valueForKey:scHiddenAddress_country]]) {
+                newAddressController.country = (SimiFormSelect *)[form addField:@"Select"
+                                                                         config:@{
+                                                                                  @"name": @"country_code",
+                                                                                  @"title": SCLocalizedString(@"Country"),
+                                                                                  @"option_type": SimiFormOptionNavigation,
+                                                                                  @"nav_controller": newAddressController.navigationController,
+                                                                                  @"value_field": @"country_code",
+                                                                                  @"label_field": @"country_name",
+                                                                                  @"index_titles": @1,
+                                                                                  @"searchable": @1,
+                                                                                  @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:scHiddenAddress_country] isEqualToString:@"req"]]
+                                                                                  }];
+            }
+            
+            
             if ([self hasField:[hiddenAddressModel valueForKey:scHiddenAddress_state]]) {
                 newAddressController.stateName = (SimiFormText *)[form addField:@"Text"
                                                                          config:@{
@@ -141,21 +157,7 @@
                                                                                   }];
             }
             
-            if ([self hasField:[hiddenAddressModel valueForKey:scHiddenAddress_country]]) {
-                newAddressController.country = (SimiFormSelect *)[form addField:@"Select"
-                                                                         config:@{
-                                                                                  @"name": @"country_code",
-                                                                                  @"title": SCLocalizedString(@"Country"),
-                                                                                  @"option_type": SimiFormOptionNavigation,
-                                                                                  @"nav_controller": newAddressController.navigationController,
-                                                                                  @"value_field": @"country_code",
-                                                                                  @"label_field": @"country_name",
-                                                                                  @"index_titles": @1,
-                                                                                  @"searchable": @1,
-                                                                                  @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:scHiddenAddress_country] isEqualToString:@"req"]]
-                                                                                  }];
-            }
-            
+           
             if ([self hasField:[hiddenAddressModel valueForKey:scHiddenAddress_zipcode]]) {
                 [form addField:@"Text"
                         config:@{
