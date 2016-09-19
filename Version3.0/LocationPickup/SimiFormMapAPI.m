@@ -8,13 +8,14 @@
 
 #import "SimiFormMapAPI.h"
 #import <GoogleMaps/GoogleMaps.h>
+#import <SimiCartBundle/UILabelDynamicSize.h>
 
 @implementation SimiFormMapAPI
 {
-
     GMSMapView *mapView_;
     CLLocation *myLocationChange;
     CLLocationManager *_locationAuthorizationManager;
+    UILabel *guideLabel;
 }
 @synthesize form = _form, children = _children;
 @synthesize title = _title, required = _required, sortOrder = _sortOrder, height = _height;
@@ -22,7 +23,7 @@
 
 - (instancetype)initWithConfig:(NSDictionary *)config
 {
-     [GMSServices provideAPIKey:@"AIzaSyDh-R-4SO0lAeWa-2Dkfe7YPMQIa75GR5c"];
+    [GMSServices provideAPIKey:@"AIzaSyDh-R-4SO0lAeWa-2Dkfe7YPMQIa75GR5c"];
     self = [super initWithConfig:config];
     if(self)
     {
@@ -33,7 +34,15 @@
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             mapWidth = 2* SCREEN_WIDTH/3;
         }
-        mapView_ = [GMSMapView mapWithFrame:CGRectMake(0, 0, mapWidth,[SimiGlobalVar scaleValue:200]) camera:camera];
+        float padding = 15;
+        guideLabel = [[UILabel alloc]initWithFrame:CGRectMake(padding, 0, mapWidth - padding*2, 20)];
+        [guideLabel setFont:[UIFont fontWithName:THEME_FONT_NAME size:15]];
+        [guideLabel setTextColor:THEME_CONTENT_PLACEHOLDER_COLOR];
+        [guideLabel setText:SCLocalizedString(@"Please press and hold to select the address you want to fill")];
+        float mapPaddingTop = [guideLabel resizLabelToFit];
+        [self addSubview:guideLabel];
+        
+        mapView_ = [GMSMapView mapWithFrame:CGRectMake(padding, mapPaddingTop, mapWidth - padding,self.height - mapPaddingTop) camera:camera];
         mapView_.delegate = self;
         mapView_.settings.myLocationButton = YES;
         mapView_.settings.compassButton = YES;
