@@ -27,7 +27,6 @@
     if (self) {
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didTapChatButton) name:@"tapToChatButton" object:nil];
         self.zoPimConfig = [[[[SimiGlobalVar sharedInstance] store] valueForKeyPath:@"store_config"] valueForKeyPath:@"zopim_config"];
-        NSLog(@"zopim config : %@", self.zoPimConfig);
         NSString *enable = [self.zoPimConfig valueForKey:@"enable"];
         if ([enable isEqualToString:@"1"]) {
             [SimiGlobalVar sharedInstance].isZopimChat = YES;
@@ -97,53 +96,24 @@
 
 - (void)startZopimChat:(NSString *)accountKey showProfile:(NSString *)showProfile name:(NSString *)name email:(NSString *)email phone:(NSString *)phone
 {
-    [self styleApp];
-//    [ChatStyling applyStyling];
-    [ZDCChat configure:^(ZDCConfig *defaults) {
-        defaults.accountKey = accountKey;
-        defaults.preChatDataRequirements.name = [name integerValue];
-        defaults.preChatDataRequirements.email = [email integerValue];
-        defaults.preChatDataRequirements.phone = [phone integerValue];
-        defaults.preChatDataRequirements.department = [showProfile integerValue];
-        defaults.preChatDataRequirements.message = ZDCPreChatDataOptional;
-        defaults.emailTranscriptAction = ZDCEmailTranscriptActionNeverSend;
-
+    [ZDCChat initializeWithAccountKey:accountKey];
+    [ZDCChat startChat:^(ZDCConfig *config) {
+        config.preChatDataRequirements.name = [name integerValue];;
+        config.preChatDataRequirements.email = [email integerValue];
+        config.preChatDataRequirements.phone = [phone integerValue];
+        config.preChatDataRequirements.department = [showProfile integerValue];
+        config.preChatDataRequirements.message = ZDCPreChatDataOptionalEditable;
     }];
+    [self styleApp];
+    
     [ZDCLog enable:YES];
     [ZDCLog setLogLevel:ZDCLogLevelWarn];
-    
-    // start a chat in a new modal
-    // Lần click thứ 2 thì nó k call vào đây.
-    [ZDCChat startChat:nil];
 }
 
 - (void) styleApp
 {
-    if ([ZDUUtil isVersionOrNewer:@(7)]) {
-        // status bar
-        [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
-        // nav bar
-        NSDictionary *navbarAttributes = [NSDictionary dictionaryWithObjectsAndKeys:[UIColor whiteColor] ,UITextAttributeTextColor, nil];
-        [[UINavigationBar appearance] setTintColor:[UIColor whiteColor]];
-        [[UINavigationBar appearance] setTitleTextAttributes:navbarAttributes];
-//        [[UINavigationBar appearance] setBarTintColor:THEME_COLOR];
-        [[UINavigationBar appearance] setBarTintColor:[UIColor colorWithRed:0.9 green:0.45 blue:0 alpha:1]];
-        UIButton *cartButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 32, 32)];
-        [cartButton setImage:[[UIImage imageNamed:@"ic_cart"] imageWithColor:THEME_NAVIGATION_ICON_COLOR] forState:UIControlStateNormal];
-//        [[ZDCChatOverlay appearance] setOverlayTintColor:THEME_BUTTON_BACKGROUND_COLOR];
-        [[ZDCChatOverlay appearance] setOverlayTintColor:[UIColor colorWithRed:0.9 green:0.45 blue:0 alpha:1]];
-        [[ZDCChatOverlay appearance] setMessageCountColor:THEME_BUTTON_TEXT_COLOR];
-        if ([ZDUUtil isVersionOrNewer:@(8)]) {
-            // For translucent nav bars set YES
-            [[UINavigationBar appearance] setTranslucent:NO];
-        }
-    } else {
-//        [[UINavigationBar appearance] setTintColor:THEME_COLOR];
-        [[UINavigationBar appearance] setBarTintColor:[UIColor colorWithRed:0.9 green:0.45 blue:0 alpha:1]];
-//        [[ZDCChatOverlay appearance] setOverlayTintColor:THEME_BUTTON_BACKGROUND_COLOR];
-        [[ZDCChatOverlay appearance] setOverlayTintColor:[UIColor colorWithRed:0.9 green:0.45 blue:0 alpha:1]];
-        [[ZDCChatOverlay appearance] setMessageCountColor:THEME_BUTTON_TEXT_COLOR];
-    }
+    [[ZDCChatOverlay appearance] setOverlayTintColor:[UIColor colorWithRed:0.9 green:0.45 blue:0 alpha:1]];
+    [[ZDCChatOverlay appearance] setMessageCountColor:THEME_BUTTON_TEXT_COLOR];
 }
 
 - (void)dealloc

@@ -5,7 +5,7 @@
  *
  *  Created by Zendesk on 03/12/2014.
  *
- *  Copyright (c) 2015 Zendesk. All rights reserved.
+ *  Copyright (c) 2016 Zendesk. All rights reserved.
  *
  *  By downloading or using the Zopim Chat SDK, You agree to the Zendesk Terms
  *  of Service https://www.zendesk.com/company/terms and Application Developer and API License
@@ -23,7 +23,6 @@
 
 + (void) applyStyling
 {
-    /*
     UIEdgeInsets insets;
     
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -113,11 +112,11 @@
     [[ZDCVisitorChatCell appearance] setBubbleInsets:[NSValue valueWithUIEdgeInsets:insets]];
     insets = UIEdgeInsetsMake(12.0f, 15.0f, 12.0f, 15.0f);
     [[ZDCVisitorChatCell appearance] setTextInsets:[NSValue valueWithUIEdgeInsets:insets]];
-    [[ZDCVisitorChatCell appearance] setBubbleBorderColor:[ZDUUtil darkerColorForColor:[ZDUUtil navBarTintColor] by:0.2f]];
-    [[ZDCVisitorChatCell appearance] setBubbleColor:[ZDUUtil navBarTintColor]];
+    [[ZDCVisitorChatCell appearance] setBubbleBorderColor:[ChatStyling darkerColorForColor:[ChatStyling navBarTintColor] by:0.2f]];
+    [[ZDCVisitorChatCell appearance] setBubbleColor:[ChatStyling navBarTintColor]];
     [[ZDCVisitorChatCell appearance] setBubbleCornerRadius:@(3.0f)];
     [[ZDCVisitorChatCell appearance] setTextAlignment:@(NSTextAlignmentLeft)];
-    [[ZDCVisitorChatCell appearance] setTextColor:THEME_TEXT_COLOR];
+    [[ZDCVisitorChatCell appearance] setTextColor:[ChatStyling navTintColor]];
     [[ZDCVisitorChatCell appearance] setTextFont:[UIFont systemFontOfSize:14.0f]];
     [[ZDCVisitorChatCell appearance] setUnsentTextColor:[UIColor colorWithWhite:0.26f alpha:1.0f]];
     [[ZDCVisitorChatCell appearance] setUnsentTextFont:[UIFont systemFontOfSize:12.0f]];
@@ -210,7 +209,6 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(chatLoaded:) name:ZDC_CHAT_UI_DID_LOAD object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(chatLayout:) name:ZDC_CHAT_UI_DID_LAYOUT object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(chatUnloaded:) name:ZDC_CHAT_UI_WILL_UNLOAD object:nil];
-    */
 }
 
 
@@ -250,6 +248,31 @@
     // The Chat UI has been dismissed
 }
 
++ (UIColor *)darkerColorForColor:(UIColor *)color by:(float)diff
+{
+  CGFloat r, g, b, a;
+  if ([color getRed:&r green:&g blue:&b alpha:&a])
+    return [UIColor colorWithRed:MAX(r - diff, 0.0)
+                           green:MAX(g - diff, 0.0)
+                            blue:MAX(b - diff, 0.0)
+                           alpha:a];
+  return nil;
+}
+
++ (UIColor*) navBarTintColor
+{
+  return [UINavigationBar appearance].barTintColor;
+}
+
++ (UIColor*) navTintColor
+{
+  return [UINavigationBar appearance].tintColor;
+}
+
++ (BOOL) isVersionOrNewer:(NSString*)majorVersionNumber
+{
+  return [[[UIDevice currentDevice] systemVersion] compare:majorVersionNumber options:NSNumericSearch] != NSOrderedAscending;
+}
 
 @end
 
