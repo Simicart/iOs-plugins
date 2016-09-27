@@ -156,21 +156,19 @@
                     }
                 }else
                 {
-//                    if (code.bounds.origin.x > _imgCanvas.frame.origin.x/2 & code.bounds.origin.x < (_imgCanvas.frame.origin.x + _imgCanvas.frame.size.width/2) & code.bounds.origin.y > _imgCanvas.frame.origin.y & code.bounds.origin.y < (_imgCanvas.frame.origin.y + _imgCanvas.frame.size.height/2)) {
-                        if (code.stringValue) {
-                            [self.uniqueCodes addObject:code.stringValue];
-                            
-                            AudioServicesPlayAlertSound(kSystemSoundID_Vibrate);
-                            [self hiddenCanvasScan:YES];
-                            [_previewView setHidden:YES];
-                            
-                            [_barCodeModel getProductIdWithBarCode:code.stringValue type:@"0"];
-                            isWaitingDataFromServer = YES;
-                            [self.view addSubview:_activityIndicatorView];
-                            [_activityIndicatorView startAnimating];
-                            break;
-                        }
-//                    }
+                    if (code.stringValue) {
+                        [self.uniqueCodes addObject:code.stringValue];
+                        
+                        AudioServicesPlayAlertSound(kSystemSoundID_Vibrate);
+                        [self hiddenCanvasScan:YES];
+                        [_previewView setHidden:YES];
+                        
+                        [_barCodeModel getProductIdWithBarCode:code.stringValue type:@"0"];
+                        isWaitingDataFromServer = YES;
+                        [self.view addSubview:_activityIndicatorView];
+                        [_activityIndicatorView startAnimating];
+                        break;
+                    }
                 }
             }
         }
@@ -269,10 +267,9 @@
     
     ZBarReaderController *imageReader = [ZBarReaderController new];
     
-    [imageReader.scanner setSymbology: ZBAR_I25
+    [imageReader.scanner setSymbology: ZBAR_I25|ZBAR_EAN2|ZBAR_EAN5|ZBAR_EAN8|ZBAR_EAN13|ZBAR_UPCE|ZBAR_ISBN10|ZBAR_UPCA|ZBAR_EAN13|ZBAR_COMPOSITE|ZBAR_I25|ZBAR_CODE39|ZBAR_PDF417|ZBAR_QRCODE|ZBAR_CODE93|ZBAR_CODE128
                                config: ZBAR_CFG_ENABLE
                                    to: 0];
-    
     id <NSFastEnumeration> results = [imageReader scanImage:resultImage.CGImage];
     // Get only last symbol
     ZBarSymbol *sym = nil;

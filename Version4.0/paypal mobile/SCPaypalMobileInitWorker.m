@@ -73,7 +73,7 @@
         
     }
     order = [noti.userInfo valueForKey:@"data"];
-    SimiModel *fee = [order valueForKey:@"fee"];
+    SimiModel *fee = [order valueForKey:@"total"];
     
     payPalAppKey = [payment valueForKey:@"client_id"];
     payPalReceiverEmail = [payment valueForKey:@"email"];
@@ -92,7 +92,7 @@
         _payPalConfig.languageOrLocale = LOCALE_IDENTIFIER;
         
         PayPalPayment *pay = [[PayPalPayment alloc] init];
-        pay.amount = [[NSDecimalNumber alloc] initWithString:[NSString stringWithFormat:@"%.2f", [[fee valueForKey:@"grand_total"] floatValue]]];
+        pay.amount = [[NSDecimalNumber alloc] initWithString:[NSString stringWithFormat:@"%.2f", [[fee valueForKey:@"grand_total_incl_tax"] floatValue]]];
         pay.currencyCode = [[SimiGlobalVar sharedInstance] currencyCode];
         pay.bnCode = bnCode;
         pay.shortDescription = [NSString stringWithFormat:@"%@ #: %@", SCLocalizedString(@"Invoice"), [order valueForKey:@"invoice_number"]];
@@ -167,7 +167,7 @@
 #pragma mark Proof of payment validation
 - (void)sendCompletedPaymentToServer:(PayPalPayment *)completedPayment {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdatePaymentStatus:) name:DidSavePaypalPayment object:order];
-    [order savePaymentWithStatus:[NSString stringWithFormat:@"%ld",(long)PaymentStatusApproved] invoiceNumber:@"" proof:completedPayment.confirmation];
+    [order savePaymentWithStatus:[NSString stringWithFormat:@"%ld",(long)PaymentStatusApproved] invoiceNumber:[NSString stringWithFormat:@"%@",[order valueForKey:@"invoice_number"]] proof:completedPayment.confirmation];
     [viewController dismissViewControllerAnimated:YES completion:^{
         [[UINavigationBar appearance] setTintColor:[UIColor whiteColor]];
     }];
