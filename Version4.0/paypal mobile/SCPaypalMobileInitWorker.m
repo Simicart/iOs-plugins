@@ -22,6 +22,7 @@
     NSString *bnCode;
     SimiViewController *viewController;
     SimiOrderModel *order;
+    SimiOrderModel *paypalOrder;
 }
 
 - (id)init
@@ -68,7 +69,7 @@
 - (void)didPlaceOrder:(NSNotification *)noti{
     viewController = [noti.userInfo valueForKey:@"controller"];
     if (!viewController) {
-        UINavigationController *navi = (UINavigationController *)[(UITabBarController *)[[(SCAppDelegate *)[[UIApplication sharedApplication] delegate] window] rootViewController] selectedViewController];
+        UINavigationController *navi = [SimiGlobalVar sharedInstance].currentlyNavigationController;
         viewController = [navi.viewControllers lastObject];
         
     }
@@ -136,7 +137,7 @@
 
 - (void)didUpdatePaymentStatus:(NSNotification *)noti{
     SimiResponder *responder = [noti.userInfo valueForKey:@"responder"];
-    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:SCLocalizedString(responder.status) message:SCLocalizedString(responder.responseMessage) delegate:nil cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles: nil];
+    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:SCLocalizedString(responder.status) message:SCLocalizedString([paypalOrder valueForKey:@"message"]) delegate:nil cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles: nil];
     [alertView show];
     [self removeObserverForNotification:noti];
     [viewController stopLoadingData];
@@ -156,8 +157,11 @@
     if (SIMI_DEBUG_ENABLE) {
         NSLog(@"PayPal Payment Canceled");
     }
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdatePaymentStatus:) name:DidSavePaypalPayment object:order];
-    [order savePaymentWithStatus:[NSString stringWithFormat:@"%ld",(long)PaymentStatusCancelled] invoiceNumber:nil proof:nil];
+    if (paypalOrder == nil) {
+        paypalOrder = [SimiOrderModel new];
+    }
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdatePaymentStatus:) name:DidSavePaypalPayment object:paypalOrder];
+    [paypalOrder savePaymentWithStatus:[NSString stringWithFormat:@"%ld",(long)PaymentStatusCancelled] invoiceNumber:nil proof:nil];
     [viewController dismissViewControllerAnimated:YES completion:^{
         [[UINavigationBar appearance] setTintColor:[UIColor whiteColor]];
     }];
@@ -166,8 +170,11 @@
 
 #pragma mark Proof of payment validation
 - (void)sendCompletedPaymentToServer:(PayPalPayment *)completedPayment {
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdatePaymentStatus:) name:DidSavePaypalPayment object:order];
-    [order savePaymentWithStatus:[NSString stringWithFormat:@"%ld",(long)PaymentStatusApproved] invoiceNumber:[NSString stringWithFormat:@"%@",[order valueForKey:@"invoice_number"]] proof:completedPayment.confirmation];
+    if (paypalOrder == nil) {
+        paypalOrder = [SimiOrderModel new];
+    }
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdatePaymentStatus:) name:DidSavePaypalPayment object:paypalOrder];
+    [paypalOrder savePaymentWithStatus:[NSString stringWithFormat:@"%ld",(long)PaymentStatusApproved] invoiceNumber:[NSString stringWithFormat:@"%@",[order valueForKey:@"invoice_number"]] proof:completedPayment.confirmation];
     [viewController dismissViewControllerAnimated:YES completion:^{
         [[UINavigationBar appearance] setTintColor:[UIColor whiteColor]];
     }];
@@ -177,7 +184,15 @@
 #pragma mark Alert View Delegate
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex{
     if (alertView.tag == ALERT_VIEW_ERROR) {
-        [self payPalPaymentDidCancel:nil];
+        if (paypalOrder == nil) {
+            paypalOrder = [SimiOrderModel new];
+        }
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdatePaymentStatus:) name:DidSavePaypalPayment object:paypalOrder];
+        [paypalOrder savePaymentWithStatus:[NSString stringWithFormat:@"%ld",(long)PaymentStatusCancelled] invoiceNumber:nil proof:nil];
+        [viewController dismissViewControllerAnimated:YES completion:^{
+            [[UINavigationBar appearance] setTintColor:[UIColor whiteColor]];
+        }];
+        [viewController startLoadingData];
     }
 }
 

@@ -15,6 +15,7 @@
 
 -(void) savePaymentWithStatus:(NSString *)paymentStatus invoiceNumber:(NSString *)invoiceNumber proof:(NSDictionary *)proof{
     currentNotificationName = DidSavePaypalPayment;
+    keyResponse = @"paypalmobile";
     if(!proof){
         proof = @{};
     }
