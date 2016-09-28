@@ -35,10 +35,8 @@
     paypalExpCheckOutWebView = [[UIWebView alloc]initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, self.view.frame.size.height - TASK_BAR_HEIGH)];
     paypalExpCheckOutWebView.delegate = self;
     [paypalExpCheckOutWebView setBackgroundColor:[UIColor whiteColor]];
-    //Axe added 251215
     [paypalExpCheckOutWebView setContentMode:UIViewContentModeScaleAspectFill];
     paypalExpCheckOutWebView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin ;
-    //
     [self.view addSubview:paypalExpCheckOutWebView];
     [self startLoadingData];
 }
@@ -91,8 +89,6 @@
 
 - (void)webViewDidFinishLoad:(UIWebView *)webView
 {
-   // NSString *html = [webView stringByEvaluatingJavaScriptFromString:@"document.documentElement.outerHTML"];
-   // NSString *currentURL = paypalExpCheckOutWebView.request.URL.absoluteString;
     [self stopLoadingData];
 }
 

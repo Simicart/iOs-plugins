@@ -156,8 +156,7 @@
         [[UIApplication sharedApplication] openURL:phoneUrl];
     } else
     {
-        UIAlertView* calert = [[UIAlertView alloc]initWithTitle:@"Alert" message:SCLocalizedString(@"Call facility is not available!!!") delegate:nil cancelButtonTitle:SCLocalizedString(@"Ok") otherButtonTitles:nil, nil];
-        [calert show];
+        [self showAlertWithTitle:@"Error" message:@"Call facility is not available"];
     }
 }
 
@@ -232,14 +231,13 @@
         [controller dismissViewControllerAnimated:YES completion:NULL];
     }
     if(result==MFMailComposeResultSent)
-    {  UIAlertView *sent=[[UIAlertView alloc]initWithTitle:SCLocalizedString(@"Your Email was sent succesfully.") message:nil delegate:nil cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles:nil];
-        [sent show];
+    {
+        [self showAlertWithTitle:@"Success" message:@"Your Email was sent succesfully."];
         [controller dismissViewControllerAnimated:YES completion:NULL];
     }
     if(result==MFMailComposeResultFailed)
-    {UIAlertView *sent=[[UIAlertView alloc]initWithTitle:SCLocalizedString(@"Failed") message:SCLocalizedString(@"Your mail was not sent") delegate:nil cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles:nil];
-        [sent show];
-        
+    {
+        [self showAlertWithTitle:@"Failed" message:@"Your mail was not sent"];
         [controller dismissViewControllerAnimated:YES completion:NULL];
         
     }
@@ -249,8 +247,7 @@
 - (void)sendMessageToStoreWithPhone:(NSString *)phone andMessageContent:(NSString *)messageContent
 {
     if(![MFMessageComposeViewController canSendText]) {
-        UIAlertView *warningAlert = [[UIAlertView alloc] initWithTitle:@"Error" message:@"Your device doesn't support SMS!" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-        [warningAlert show];
+        [self showAlertWithTitle:@"Error" message:@"Your device doesn't support SMS"];
         return;
     }
     
@@ -271,21 +268,10 @@
     switch (result) {
         case MessageComposeResultCancelled:
             break;
-            
         case MessageComposeResultFailed:
-        {
-//            UIAlertView *warningAlert = [[UIAlertView alloc] initWithTitle:@"Error" message:@"Failed to send SMS!" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-//            [warningAlert show];
-        }
             break;
-            
         case MessageComposeResultSent:
-        {
-//            UIAlertView *warningAlert = [[UIAlertView alloc] initWithTitle:@"Success" message:@"Send message success" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-//            [warningAlert show];
-        }
             break;
-            
         default:
             break;
     }

@@ -82,8 +82,7 @@
         back.skipReloadData = NO;
         [self.navigationController popViewControllerAnimated:YES];
     } else {
-        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:SCLocalizedString(responder.status) message:responder.responseMessage delegate:nil cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles: nil];
-        [alertView show];
+        [self showAlertWithTitle:responder.status message:responder.responseMessage];
     }
     [self removeObserverForNotification:noti];
 }

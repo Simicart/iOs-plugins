@@ -10,11 +10,11 @@
 
 
 
-NSString *const kSimiPaypalExpressStartURL = @"paypalexpress/api/start";
-NSString *const kSimiPaypalExpressReviewAddress = @"paypalexpress/api/review_address";
-NSString *const kSimiPaypalExpressUpdateAddress = @"paypalexpress/api/update_address";
-NSString *const kSimiPaypalExpressGetShippingMethods = @"paypalexpress/api/get_shipping_methods";
-NSString *const kSimiPaypalExpressPlaceOrder = @"paypalexpress/api/place";
+NSString *const kSimiPaypalExpressStartURL = @"ppexpressapis/start";
+NSString *const kSimiPaypalExpressReviewAddress = @"ppexpressapis/checkout_address";
+NSString *const kSimiPaypalExpressUpdateAddress = @"ppexpressapis/checkout_address";
+NSString *const kSimiPaypalExpressGetShippingMethods = @"ppexpressapis/shipping_methods";
+NSString *const kSimiPaypalExpressPlaceOrder = @"ppexpressapis/place";
 
 
 @implementation SCPaypalExpressAPI
@@ -22,40 +22,30 @@ NSString *const kSimiPaypalExpressPlaceOrder = @"paypalexpress/api/place";
 
 - (void) startPaypalExpress:(id)target selector:(SEL)selector
 {
-    NSString *urlPath = [NSString stringWithFormat:@"%@%@", kBaseURL, kSimiPaypalExpressStartURL];
-    [self requestWithURL:urlPath params:nil target:target selector:selector header:nil];
+    NSString *urlPath = [NSString stringWithFormat:@"%@%@%@", kBaseURL, kSimiConnectorURL,kSimiPaypalExpressStartURL];
+    [self requestWithMethod:GET URL:urlPath params:nil target:target selector:selector header:nil];
 }
 
 
 - (void) reviewAddress:(id)target selector:(SEL)selector
 {
-    NSString *urlPath = [NSString stringWithFormat:@"%@%@", kBaseURL, kSimiPaypalExpressReviewAddress];
-    [self requestWithURL:urlPath params:nil target:target selector:selector header:nil];
+    NSString *urlPath = [NSString stringWithFormat:@"%@%@%@", kBaseURL, kSimiConnectorURL, kSimiPaypalExpressReviewAddress];
+    [self requestWithMethod:GET URL:urlPath params:nil target:target selector:selector header:nil];
 }
 
 - (void) updateAddressWithParam:(NSDictionary *)params target:(id)target selector:(SEL)selector{
-    NSString *url = [NSString stringWithFormat:@"%@%@", kBaseURL, kSimiPaypalExpressUpdateAddress];
-    [self requestWithURL:url params:params target:target selector:selector header:nil];
+    NSString *url = [NSString stringWithFormat:@"%@%@%@", kBaseURL, kSimiConnectorURL, kSimiPaypalExpressUpdateAddress];
+    [self requestWithMethod:PUT URL:url params:params target:target selector:selector header:nil];
 }
 
 - (void) getShippingMethod:(id)target selector:(SEL)selector
 {
-    NSString *urlPath = [NSString stringWithFormat:@"%@%@", kBaseURL, kSimiPaypalExpressGetShippingMethods];
-    [self requestWithURL:urlPath params:nil target:target selector:selector header:nil];
+    NSString *urlPath = [NSString stringWithFormat:@"%@%@%@", kBaseURL,kSimiConnectorURL,kSimiPaypalExpressGetShippingMethods];
+    [self requestWithMethod:GET URL:urlPath params:nil target:target selector:selector header:nil];
 }
 
 - (void) placeOrderWithParam:(NSDictionary *)params target:(id)target selector:(SEL)selector{
-    NSString *url = [NSString stringWithFormat:@"%@%@", kBaseURL, kSimiPaypalExpressPlaceOrder];
-    [self requestWithURL:url params:params target:target selector:selector header:nil];
+    NSString *url = [NSString stringWithFormat:@"%@%@%@", kBaseURL, kSimiConnectorURL,kSimiPaypalExpressPlaceOrder];
+    [self requestWithMethod:POST URL:url params:params target:target selector:selector header:nil];
 }
-
-/*
-
--(void) addWishlistProductToCartWithParams:(NSDictionary *)params target:(id)target selector:(SEL)selector{
-    NSString *urlPath = [NSString stringWithFormat:@"%@%@%@", kBaseURL, kSimiAppwishlistURL, kSimiAddWishlistProductToCart];
-    [self requestWithURL:urlPath params:params target:target selector:selector header:nil];
-}
- */
-
-
 @end

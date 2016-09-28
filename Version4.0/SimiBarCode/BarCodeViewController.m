@@ -212,12 +212,7 @@
     } else {
         message = SCLocalizedString(@"An unknown error occurred.");
     }
-    
-    [[[UIAlertView alloc] initWithTitle:SCLocalizedString(@"Scanning Unavailable")
-                                message:message
-                               delegate:nil
-                      cancelButtonTitle:@"Ok"
-                      otherButtonTitles:nil] show];
+    [self showAlertWithTitle:SCLocalizedString(@"Scanning Unavailable") message:message];
 }
 
 #pragma mark - Action

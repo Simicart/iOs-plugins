@@ -7,7 +7,6 @@
 //
 
 #import "SCPaypalExpressShippingMethodViewController.h"
-#import <SimiCartBundle/SimiShippingModel.h>
 #import <SimiCartBundle/SimiFormatter.h>
 
 @interface SCPaypalExpressShippingMethodViewController ()
@@ -100,13 +99,13 @@
         cell.accessoryType = UITableViewCellAccessoryCheckmark;
     if (paypalModelCollection!=nil) {
         if (indexPath.section == 0) {
-            
             UILabel * methodName = [[UILabel alloc]initWithFrame:CGRectMake(10, 5, self.view.frame.size.width *2/3 , 30)];
             UILabel * methodPrice = [[UILabel alloc]initWithFrame:CGRectMake(self.view.frame.size.width -  200 , 5, 150 , 30)];
             [methodPrice setTextColor:[UIColor redColor]];
-            [methodName setText: [(SCPaypalExpressModel *)[paypalModelCollection objectAtIndex:indexPath.row] objectForKey:@"s_method_title"]];
-            NSNumber * fee = (NSNumber *)[(SCPaypalExpressModel *)[paypalModelCollection objectAtIndex:indexPath.row] objectForKey:@"s_method_fee"];
-            NSString * price = [[SimiFormatter sharedInstance] priceByLocalizeNumber:fee] ;
+            SimiModel *shippingMethodModel = [paypalModelCollection objectAtIndex:indexPath.row];
+            [methodName setText: [NSString stringWithFormat:@"%@",[shippingMethodModel objectForKey:@"s_method_title"]]];
+            NSString *fee = [NSString stringWithFormat:@"%@",[shippingMethodModel objectForKey:@"s_method_fee"]];
+            NSString * price = [[SimiFormatter sharedInstance] priceWithPrice:fee];
             [methodPrice setText:price];
             [methodPrice setTextAlignment:NSTextAlignmentRight];
             
@@ -118,11 +117,8 @@
                 placeOrderView = [[UIView alloc]init];
                 placeOrderView.frame = CGRectMake(0, 0, self.view.frame.size.width, 500);
                 placeOrderButton = [[UIButton alloc]initWithFrame:CGRectMake(30,5 , 250, 40)];
-                //Ravi fix color
-//                [placeOrderButton setBackgroundColor:THEME_COLOR];
                 [placeOrderButton setBackgroundColor:THEME_BUTTON_BACKGROUND_COLOR];
                 placeOrderButton.tintColor = THEME_BUTTON_TEXT_COLOR;
-                //End
                 [placeOrderButton setTitle:SCLocalizedString(@"Place Order") forState:UIControlStateNormal];
                 [placeOrderButton.layer setCornerRadius:5.0f];
                 [placeOrderButton addTarget:self action:@selector(placeOrder:) forControlEvents:UIControlEventTouchUpInside];
@@ -160,7 +156,7 @@
         paypalModel = [[SCPaypalExpressModel alloc]init];
     }
     
-    SimiShippingModel *method = [[SimiShippingModel alloc]init];
+    SimiModel *method = [SimiModel new];
     SCPaypalExpressModel *selected;
     if (checkedData == nil) {
         selected = [paypalModelCollection objectAtIndex:0];
@@ -191,13 +187,4 @@
     }
     [self.navigationController popToRootViewControllerAnimated:YES];
 }
-
-
-#pragma mark Dealloc
-
-- (void)dealloc
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
 @end

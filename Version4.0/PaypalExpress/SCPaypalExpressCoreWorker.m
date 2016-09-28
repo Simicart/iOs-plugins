@@ -23,6 +23,7 @@
         
         //add button to cart
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didChangeCart:) name:@"DidChangeCart" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didChangeCart:) name:@"SCCartViewControllerViewDidAppearBeforeComplete" object:nil];
         
         //open webview after placed Order
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didPlaceOrderBefore:) name:@"DidPlaceOrder-Before" object:nil];
@@ -33,7 +34,7 @@
 #pragma mark Add Button to Product View Controller
 -(void)sCProductViewControllerViewWillAppear: (NSNotification *)noti
 {
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didGetProductWithProductId:) name:@"DidGetProductWithProductId" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didGetProductWithProductId:) name:@"DidGetProductWithID" object:nil];
     productViewController = (SCProductViewController *)noti.object;
     productActionView = productViewController.viewAction;
     if (CGRectEqualToRect(productActionViewFrame,CGRectZero)) {
@@ -44,38 +45,35 @@
 -(void)didGetProductWithProductId: (NSNotification *)noti
 {
     [self removeObserverForNotification:noti];
-    NSObject *showPaypalOnProduct = [(SimiProductModel *)noti.object objectForKey:@"is_paypal_express"];
-    if ((showPaypalOnProduct != nil)&&([(NSString *)showPaypalOnProduct boolValue])) {
-        if (btnPaypalProduct == nil) {
-            CGFloat buttonWidth = [SimiGlobalVar scaleValue:310];
-            CGFloat buttonHeight = 40;
-            CGFloat leftPadding = [SimiGlobalVar scaleValue:5];
-            CGFloat topPadding = [SimiGlobalVar scaleValue:10];
-            CGFloat cornerRadius = 4.0f;
-            
-            if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-                leftPadding = 300;
-                topPadding =15;
-                buttonWidth = 424;
-            }
-            
-            btnPaypalProduct = [[UIButton alloc]initWithFrame:CGRectMake(leftPadding,buttonHeight + topPadding,buttonWidth,buttonHeight)];
-            [btnPaypalProduct.layer setCornerRadius:cornerRadius];
-            [btnPaypalProduct setBackgroundColor:[[SimiGlobalVar sharedInstance] colorWithHexString:@"#ffc439"]];
-            [btnPaypalProduct setContentEdgeInsets:UIEdgeInsetsMake(0, buttonWidth/2 -75, 0, buttonWidth/2 -75)];
-            [btnPaypalProduct addTarget:self action:@selector(didClickProductPaypalButton:) forControlEvents:UIControlEventTouchUpInside];
-            [btnPaypalProduct setImage:[UIImage imageNamed:@"en_paypal_express_product_btn"] forState:UIControlStateNormal];
-        }
-        [btnPaypalProduct removeFromSuperview];
-        [productActionView setFrame:productActionViewFrame];
+    if (btnPaypalProduct == nil) {
+        CGFloat buttonWidth = [SimiGlobalVar scaleValue:310];
+        CGFloat buttonHeight = 40;
+        CGFloat leftPadding = [SimiGlobalVar scaleValue:5];
+        CGFloat topPadding = [SimiGlobalVar scaleValue:10];
+        CGFloat cornerRadius = 4.0f;
         
-        //Change the ActionView Frame
-        [productActionView addSubview:btnPaypalProduct];
-        CGRect newActionViewFrame = productActionViewFrame;
-        newActionViewFrame.origin.y -= btnPaypalProduct.frame.origin.y;
-        newActionViewFrame.size.height += btnPaypalProduct.frame.origin.y;
-        [productActionView setFrame:newActionViewFrame];
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            leftPadding = 300;
+            topPadding =15;
+            buttonWidth = 424;
+        }
+        
+        btnPaypalProduct = [[UIButton alloc]initWithFrame:CGRectMake(leftPadding,buttonHeight + topPadding,buttonWidth,buttonHeight)];
+        [btnPaypalProduct.layer setCornerRadius:cornerRadius];
+        [btnPaypalProduct setBackgroundColor:[[SimiGlobalVar sharedInstance] colorWithHexString:@"#ffc439"]];
+        [btnPaypalProduct setContentEdgeInsets:UIEdgeInsetsMake(0, buttonWidth/2 -75, 0, buttonWidth/2 -75)];
+        [btnPaypalProduct addTarget:self action:@selector(didClickProductPaypalButton:) forControlEvents:UIControlEventTouchUpInside];
+        [btnPaypalProduct setImage:[UIImage imageNamed:@"en_paypal_express_product_btn"] forState:UIControlStateNormal];
     }
+    [btnPaypalProduct removeFromSuperview];
+    [productActionView setFrame:productActionViewFrame];
+    
+    //Change the ActionView Frame
+    [productActionView addSubview:btnPaypalProduct];
+    CGRect newActionViewFrame = productActionViewFrame;
+    newActionViewFrame.origin.y -= btnPaypalProduct.frame.origin.y;
+    newActionViewFrame.size.height += btnPaypalProduct.frame.origin.y;
+    [productActionView setFrame:newActionViewFrame];
 }
 
 
@@ -84,12 +82,12 @@
 {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         SCCartViewController * cartVC = [[SCThemeWorker sharedInstance].navigationBarPhone cartViewController];
-        if ((cartVC.cart == nil) || (cartVC.cart.count == 0) || (![[(NSDictionary *)cartVC.cartPrices objectForKey:@"is_paypal_express"] boolValue])) {
+        if ((cartVC.cart == nil) || (cartVC.cart.count == 0)) {
             btnPaypalCart.hidden = YES;
             return;
         }
         
-        if (btnPaypalCart == nil) {
+        if (btnPaypalCart == nil && cartVC.btnCheckout != nil) {
             CGFloat padding = [SimiGlobalVar scaleValue:5];
             CGFloat buttonHeight = [SimiGlobalVar scaleValue:40];
             CGFloat buttonWidth = [SimiGlobalVar scaleValue:150];
@@ -107,7 +105,7 @@
     }
     else {
         SCCartViewController * cartVC = [[SCThemeWorker sharedInstance].navigationBarPad cartViewControllerPad];
-        if ((cartVC.cart == nil) || (cartVC.cart.count == 0) || (![[(NSDictionary *)cartVC.cartPrices objectForKey:@"is_paypal_express"] boolValue])){
+        if ((cartVC.cart == nil) || (cartVC.cart.count == 0)){
             btnPaypalCart.hidden = YES;
             return;
         }

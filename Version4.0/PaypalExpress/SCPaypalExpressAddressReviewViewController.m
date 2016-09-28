@@ -79,9 +79,7 @@
             address = shippingAddress;
         
         cell.textLabel.text = [address formatAddress];
-        CGSize labelSize = [cell.textLabel.text sizeWithFont:cell.textLabel.font
-                                           constrainedToSize:cell.textLabel.frame.size
-                                               lineBreakMode:cell.textLabel.lineBreakMode];
+        CGSize labelSize = [cell.textLabel.text sizeWithAttributes:@{NSFontAttributeName:cell.textLabel.font}];
         cell.textLabel.frame = CGRectMake(cell.textLabel.frame.origin.x, cell.textLabel.frame.origin.y, 320.0f, labelSize.height);
         cell.textLabel.numberOfLines = 0;
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
@@ -91,11 +89,8 @@
             updateAddressView = [[UIView alloc]init];
             updateAddressView.frame = CGRectMake(0, 0, SCREEN_WIDTH, 40);
             updateButton = [[UIButton alloc]initWithFrame:CGRectMake(20,0 , 200, 40)];
-            //Ravi fix color
-//            [updateButton setBackgroundColor:THEME_COLOR];
             [updateButton setBackgroundColor:THEME_BUTTON_BACKGROUND_COLOR];
             updateButton.tintColor = THEME_BUTTON_TEXT_COLOR;
-            //End
             [updateButton setTitle:SCLocalizedString(@"Confirm Address") forState:UIControlStateNormal];
             [updateButton.layer setCornerRadius:5.0f];
             [updateButton addTarget:self action:@selector(updateAddressInformation:) forControlEvents:UIControlEventTouchUpInside];

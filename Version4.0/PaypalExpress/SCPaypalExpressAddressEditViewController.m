@@ -14,25 +14,6 @@
 
 @implementation SCPaypalExpressAddressEditViewController
 
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    // Do any additional setup after loading the view.
-}
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-}
-
-
-- (void)viewDidLoadBefore
-{
-    [super viewDidLoadBefore];
-    UIBarButtonItem *button = [[UIBarButtonItem alloc]initWithTitle:SCLocalizedString(@"Save") style:UIBarButtonItemStyleDone target:self action:@selector(saveAddressPaypalRewrite)];
-    self.navigationItem.rightBarButtonItem = button;
-    
-    //self.navigationController.navigationBar.barTintColor = [UIColor blackColor];
-    self.navigationController.navigationBar.tintColor = [UIColor blackColor];
-}
 
 // actually like the parrent but without the post data to server
 - (void)saveAddressPaypalRewrite{
@@ -40,15 +21,13 @@
         NSString *password = [self.form objectForKey:@"customer_password"];
         NSString *confirm  = [self.form objectForKey:@"confirm_password"];
         if (![password isEqualToString:confirm]) {
-            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"" message:SCLocalizedString(@"Password and Confirm password don't match.") delegate:nil cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles: nil];
-            [alertView show];
+            [self showAlertWithTitle:@"Error" message:@"Password and Confirm password don't match."];
             return;
         }
     }
     // Valid Form
     if (![self.form isDataValid]) {
-        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"" message:SCLocalizedString(@"Please select all (*) fields") delegate:nil cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles: nil];
-        [alertView show];
+        [self showAlertWithTitle:@"Warning" message:@"Please select all (*) fields"];
         return;
     }
     [self.address removeAllObjects];
