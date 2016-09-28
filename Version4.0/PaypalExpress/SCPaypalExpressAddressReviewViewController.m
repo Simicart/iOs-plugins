@@ -16,15 +16,24 @@
 
 @implementation SCPaypalExpressAddressReviewViewController
 
-@synthesize addressTableView, shippingAddress, billingAddress, paypalModelCollection, paypalModel, updateButton, updateAddressView
+@synthesize addressTableView, shippingAddress, billingAddress, paypalModel, updateButton, updateAddressView
 ;
 
 #pragma mark TableView Datasource
 
+- (void)viewWillAppearBefore:(BOOL)animated
+{
+    
+}
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
     return 3;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return 120;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
@@ -60,8 +69,8 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
 {
-    if (section<2) {
-        return 25;
+    if (section < 2) {
+        return 40;
     }
     return 1;
 }
@@ -77,12 +86,15 @@
             address = billingAddress;
         else
             address = shippingAddress;
-        
-        cell.textLabel.text = [address formatAddress];
-        CGSize labelSize = [cell.textLabel.text sizeWithAttributes:@{NSFontAttributeName:cell.textLabel.font}];
-        cell.textLabel.frame = CGRectMake(cell.textLabel.frame.origin.x, cell.textLabel.frame.origin.y, 320.0f, labelSize.height);
-        cell.textLabel.numberOfLines = 0;
+        float padding = 20;
+        UILabel *addressLabel = [[UILabel alloc]initWithFrame:CGRectMake(padding, 0, SCREEN_WIDTH - padding*3, 120)];
+        [addressLabel setFont:[UIFont fontWithName:THEME_FONT_NAME size:15]];
+        [addressLabel setTextColor:THEME_CONTENT_COLOR];
+        [addressLabel setNumberOfLines:0];
+        [addressLabel setText:[address formatAddress]];
+        [cell addSubview:addressLabel];
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
     }
     else if (indexPath.section == 2) {
         if (updateAddressView == nil) {
@@ -103,6 +115,7 @@
         [cell addSubview:updateAddressView];
         [cell setBackgroundColor:[UIColor clearColor]];
         cell.frame = CGRectMake(0, 0, SCREEN_WIDTH, 40);
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
     }
     
     return cell;
@@ -133,7 +146,6 @@
 {
     [self startLoadingData];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didGetPaypalAdressInformation:) name:@"DidGetPaypalAdressInformation" object:nil];
-    paypalModelCollection = [SCPaypalExpressModelCollection new];
     paypalModel = [SCPaypalExpressModel new];
     [paypalModel reviewAddress];
 }
@@ -151,10 +163,9 @@
         shippingAddress = [SimiAddressModel new];
         [shippingAddress addEntriesFromDictionary:[paypalModel objectForKey:@"shipping_address"]];
         
-        addressTableView = [[SimiTableView alloc] initWithFrame:CGRectMake(0, 0, 0, 0) style:UITableViewStyleGrouped];
+        addressTableView = [[SimiTableView alloc] initWithFrame:self.view.bounds style:UITableViewStyleGrouped];
         addressTableView.dataSource = self;
         addressTableView.delegate = self;
-        addressTableView.frame = CGRectMake(0, 15, self.view.frame.size.width, self.view.frame.size.height);
         addressTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
         [self.view addSubview:addressTableView];
     }
@@ -166,7 +177,7 @@
 
 #pragma mark Update Address Information
 
-- (IBAction)updateAddressInformation :(id)sender
+- (void)updateAddressInformation :(id)sender
 {
     [self startLoadingData];
     NSMutableDictionary *params = [[NSMutableDictionary alloc] init];
@@ -175,7 +186,7 @@
     [params setValue:[billingAddress valueForKey:@"customer_password"] forKey:@"customer_password"];
     [params setValue:[billingAddress valueForKey:@"confirm_password"] forKey:@"confirm_password"];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(paypalDidCompleteReviewAddress:) name:@"DidUpdatePaypalCheckoutAddress" object:nil];
-    [paypalModelCollection updateAddressWithParam:params];
+    [paypalModel updateAddressWithParam:params];
 }
 
 -(void)paypalDidCompleteReviewAddress:(NSNotification *)noti
@@ -191,15 +202,6 @@
         UIAlertView * alert = [[UIAlertView alloc]initWithTitle:@"" message:responder.responseMessage delegate:self cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles: nil];
         [alert show];
     }
-}
-
-
-#pragma mark -
-#pragma mark dealloc
-
-- (void)dealloc
-{
-    [[NSNotificationCenter defaultCenter]removeObserver:self];
 }
 
 @end

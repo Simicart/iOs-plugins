@@ -20,9 +20,12 @@
     SCPaypalExpressModel * paypalModel;
 }
 
-@synthesize paypalExpCheckOutWebView
-;
+@synthesize paypalExpCheckOutWebView;
 
+- (void)viewWillAppearBefore:(BOOL)animated
+{
+    
+}
 
 - (void)viewDidLoadAfter
 {

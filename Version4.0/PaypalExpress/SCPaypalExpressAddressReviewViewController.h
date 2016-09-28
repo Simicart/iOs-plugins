@@ -12,7 +12,6 @@
 #import <SimiCartBundle/SimiViewController.h>
 
 #import "SCPaypalExpressModel.h"
-#import "SCPaypalExpressModelCollection.h"
 
 @protocol SCPaypalExpressAddressReviewViewController_Delegate <NSObject>
 @optional
@@ -23,7 +22,6 @@
 @interface SCPaypalExpressAddressReviewViewController : SimiViewController <UITableViewDataSource, UITableViewDelegate>
 
 @property (strong, nonatomic) SCPaypalExpressModel * paypalModel;
-@property (strong, nonatomic) SCPaypalExpressModelCollection * paypalModelCollection;
 
 @property (strong, nonatomic) SimiTableView * addressTableView;
 @property (strong, nonatomic) SimiAddressModel * shippingAddress;
