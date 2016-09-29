@@ -25,7 +25,6 @@
 
 -(id) init{
     if(self == [super init]){
-//        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidFinishLaunching:) name:@"ApplicationDidFinishLaunching" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationOpenURL:) name:ApplicationOpenURL object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:SCLoginViewController_InitCellAfter object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:SCLoginViewController_InitCellsAfter object:nil];
@@ -90,11 +89,8 @@
 //GIDSigninDelegate
 -(void) signIn:(GIDSignIn *)signIn didSignInForUser:(GIDGoogleUser *)user withError:(NSError *)error{
     if(!error){
-    //    NSString *userId = user.userID;                  // For client-side use only!
-    //    NSString *idToken = user.authentication.idToken; // Safe to send to the server
         NSString *firstName = user.profile.givenName;
         NSString *lastName = user.profile.familyName;
-    //    NSString *fullName = user.profile.name;
         NSString *email = user.profile.email;
         if(!customerModel){
             customerModel = [SimiCustomerModel new];

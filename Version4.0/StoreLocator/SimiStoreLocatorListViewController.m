@@ -222,16 +222,17 @@
         [controller dismissViewControllerAnimated:YES completion:NULL];
 	}
 	if(result==MFMailComposeResultSent)
-	{  UIAlertView *sent=[[UIAlertView alloc]initWithTitle:@"Your Email was sent succesfully." message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+	{
+        UIAlertView *sent=[[UIAlertView alloc]initWithTitle:@"Your email was sent succesfully" message:nil delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
 		[sent show];
 		[controller dismissViewControllerAnimated:YES completion:NULL];
 	}
 	if(result==MFMailComposeResultFailed)
-	{UIAlertView *sent=[[UIAlertView alloc]initWithTitle:@"Failed" message:@"Your mail was not sent" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+	{
+        UIAlertView *sent=[[UIAlertView alloc]initWithTitle:@"Failed" message:@"Your mail was not sent" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
 		[sent show];
 		
 		[controller dismissViewControllerAnimated:YES completion:NULL];
-		
 	}
 }
 

@@ -91,13 +91,12 @@
                 break;
             
             default:
+                center = CGPointMake(imageView.frame.size.width/6, imageView.frame.size.height/6);
                 break;
         }
         
         labelView.center = center;
-        
         [imageView addSubview:labelView];
-//        }
     }else{
         for (UIView *view in imageView.subviews) {
             if ([view.simiObjectIdentifier isEqual:PRODUCT_LABEL_IDENTIFIER]) {
@@ -105,8 +104,6 @@
             }
         }
     }
-    
-//    [self removeObserverForNotification:noti];
 }
 
 - (void)dealloc

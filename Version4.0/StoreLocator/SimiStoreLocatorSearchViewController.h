@@ -14,7 +14,6 @@
 
 #import "SimiStoreLocatorModelCollection.h"
 #import "SimiTagModelCollection.h"
-#import "SimiStoreLocatorCellCountry.h"
 #import "SimiTagCollectionCell.h"
 
 @protocol SimiStoreLocatorSearchViewControllerDelegate  <NSObject>

@@ -216,7 +216,7 @@
         }
     }
     else{
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:SCLocalizedString(@"You haven’t setup email account") message:SCLocalizedString(@"You must go to Settings/ Mail, Contact, Calendars and choose Add Account.")
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:SCLocalizedString(@"You haven’t setup email account") message:SCLocalizedString(@"You must go to Settings/ Mail, Contact, Calendars and choose Add Account")
                                                        delegate:self cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles: nil];
         
         [alert show];
@@ -232,7 +232,7 @@
     }
     if(result==MFMailComposeResultSent)
     {
-        [self showAlertWithTitle:@"Success" message:@"Your Email was sent succesfully."];
+        [self showAlertWithTitle:@"Success" message:@"Your email was sent succesfully"];
         [controller dismissViewControllerAnimated:YES completion:NULL];
     }
     if(result==MFMailComposeResultFailed)
