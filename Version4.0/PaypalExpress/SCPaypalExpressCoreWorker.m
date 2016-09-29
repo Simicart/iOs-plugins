@@ -10,10 +10,12 @@
 #import <SimiCartBundle/SCCartViewControllerPad.h>
 
 @implementation SCPaypalExpressCoreWorker
-
+{
+    NSDictionary *paypalExpressConfig;
+}
 @synthesize btnPaypalCart, btnPaypalProduct;
 @synthesize productViewController, productActionView, productActionViewFrame;
-@synthesize webViewController, addressReviewViewController, shippingMethodViewController;
+@synthesize webViewController;
 
 - (id)init{
     self = [super init];
@@ -27,6 +29,7 @@
         
         //open webview after placed Order
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didPlaceOrderBefore:) name:@"DidPlaceOrder-Before" object:nil];
+        paypalExpressConfig = [[SimiGlobalVar sharedInstance].allConfig valueForKey:@"paypal_express_config"];
     }
     return self;
 }
@@ -45,44 +48,46 @@
 -(void)didGetProductWithProductId: (NSNotification *)noti
 {
     [self removeObserverForNotification:noti];
-    if (btnPaypalProduct == nil) {
-        CGFloat buttonWidth = [SimiGlobalVar scaleValue:310];
-        CGFloat buttonHeight = 40;
-        CGFloat leftPadding = [SimiGlobalVar scaleValue:5];
-        CGFloat topPadding = [SimiGlobalVar scaleValue:10];
-        CGFloat cornerRadius = 4.0f;
-        
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-            leftPadding = 300;
-            topPadding =15;
-            buttonWidth = 424;
+    if ([[paypalExpressConfig valueForKey:@"show_on_product_detail"]boolValue]) {
+        if (btnPaypalProduct == nil) {
+            CGFloat buttonWidth = [SimiGlobalVar scaleValue:310];
+            CGFloat buttonHeight = 40;
+            CGFloat leftPadding = [SimiGlobalVar scaleValue:5];
+            CGFloat topPadding = [SimiGlobalVar scaleValue:10];
+            CGFloat cornerRadius = 4.0f;
+            
+            if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+                leftPadding = 300;
+                topPadding =15;
+                buttonWidth = 424;
+            }
+            
+            btnPaypalProduct = [[UIButton alloc]initWithFrame:CGRectMake(leftPadding,buttonHeight + topPadding,buttonWidth,buttonHeight)];
+            [btnPaypalProduct.layer setCornerRadius:cornerRadius];
+            [btnPaypalProduct setBackgroundColor:[[SimiGlobalVar sharedInstance] colorWithHexString:@"#ffc439"]];
+            [btnPaypalProduct setContentEdgeInsets:UIEdgeInsetsMake(0, buttonWidth/2 -75, 0, buttonWidth/2 -75)];
+            [btnPaypalProduct addTarget:self action:@selector(didClickProductPaypalButton:) forControlEvents:UIControlEventTouchUpInside];
+            [btnPaypalProduct setImage:[UIImage imageNamed:@"en_paypal_express_product_btn"] forState:UIControlStateNormal];
         }
+        [btnPaypalProduct removeFromSuperview];
+        [productActionView setFrame:productActionViewFrame];
         
-        btnPaypalProduct = [[UIButton alloc]initWithFrame:CGRectMake(leftPadding,buttonHeight + topPadding,buttonWidth,buttonHeight)];
-        [btnPaypalProduct.layer setCornerRadius:cornerRadius];
-        [btnPaypalProduct setBackgroundColor:[[SimiGlobalVar sharedInstance] colorWithHexString:@"#ffc439"]];
-        [btnPaypalProduct setContentEdgeInsets:UIEdgeInsetsMake(0, buttonWidth/2 -75, 0, buttonWidth/2 -75)];
-        [btnPaypalProduct addTarget:self action:@selector(didClickProductPaypalButton:) forControlEvents:UIControlEventTouchUpInside];
-        [btnPaypalProduct setImage:[UIImage imageNamed:@"en_paypal_express_product_btn"] forState:UIControlStateNormal];
+        //Change the ActionView Frame
+        [productActionView addSubview:btnPaypalProduct];
+        CGRect newActionViewFrame = productActionViewFrame;
+        newActionViewFrame.origin.y -= btnPaypalProduct.frame.origin.y;
+        newActionViewFrame.size.height += btnPaypalProduct.frame.origin.y;
+        [productActionView setFrame:newActionViewFrame];
     }
-    [btnPaypalProduct removeFromSuperview];
-    [productActionView setFrame:productActionViewFrame];
-    
-    //Change the ActionView Frame
-    [productActionView addSubview:btnPaypalProduct];
-    CGRect newActionViewFrame = productActionViewFrame;
-    newActionViewFrame.origin.y -= btnPaypalProduct.frame.origin.y;
-    newActionViewFrame.size.height += btnPaypalProduct.frame.origin.y;
-    [productActionView setFrame:newActionViewFrame];
 }
 
 
 #pragma mark Add Button to Cart View Controller
 -(void)didChangeCart: (NSNotification *)noti
 {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+    if (PHONEDEVICE) {
         SCCartViewController * cartVC = [[SCThemeWorker sharedInstance].navigationBarPhone cartViewController];
-        if ((cartVC.cart == nil) || (cartVC.cart.count == 0)) {
+        if ((cartVC.cart == nil) || (cartVC.cart.count == 0)|| ![[paypalExpressConfig valueForKey:@"show_on_cart"]boolValue]) {
             btnPaypalCart.hidden = YES;
             return;
         }
@@ -105,7 +110,7 @@
     }
     else {
         SCCartViewController * cartVC = [[SCThemeWorker sharedInstance].navigationBarPad cartViewControllerPad];
-        if ((cartVC.cart == nil) || (cartVC.cart.count == 0)){
+        if ((cartVC.cart == nil) || (cartVC.cart.count == 0) || ![[paypalExpressConfig valueForKey:@"show_on_cart"]boolValue]){
             btnPaypalCart.hidden = YES;
             return;
         }
@@ -138,9 +143,7 @@
 }
 
 #pragma mark Open Webview After placed Order
-
 //while paypal checkout runs like normall offline payments
-
 - (void)didPlaceOrderBefore:(NSNotification *)noti
 {
     SimiModel *payment = [noti.userInfo valueForKey:@"payment"];
@@ -152,7 +155,6 @@
     }
 }
 
-#pragma mark -
 #pragma mark Paypal Checkout Actions
 -(void)didClickProductPaypalButton:(id)sender
 {
@@ -174,38 +176,9 @@
 {
     UIViewController *currentVC = [(UITabBarController *)[[(SCAppDelegate *)[[UIApplication sharedApplication]delegate] window] rootViewController] selectedViewController];
     webViewController = [SCPaypalExpressWebViewController new];
-    webViewController.delgate = self;
     [(UINavigationController *)currentVC pushViewController:webViewController animated:YES];
 }
 
-#pragma mark -
-#pragma mark WebView Delegate
-- (void)completedWebviewCheckout:(BOOL)needToReviewAddress
-{
-    UINavigationController *navi =  webViewController.navigationController;
-    [webViewController.navigationController popViewControllerAnimated:NO];
-    if (needToReviewAddress) {
-        addressReviewViewController = [SCPaypalExpressAddressReviewViewController new];
-        addressReviewViewController.delegate = self;
-        [addressReviewViewController getAddresses];
-        [navi pushViewController:addressReviewViewController animated:NO];
-    }
-    else{
-        shippingMethodViewController = [[SCPaypalExpressShippingMethodViewController alloc]init];
-        [shippingMethodViewController getShippingMethod];
-        [navi pushViewController:shippingMethodViewController animated:NO];
-    }
-}
-#pragma mark -
-#pragma mark Address Review Delegate
--(void)completedReviewAddress
-{
-    UINavigationController *navi =  addressReviewViewController.navigationController;
-    [navi popViewControllerAnimated:NO];
-    shippingMethodViewController = [[SCPaypalExpressShippingMethodViewController alloc]init];
-    [shippingMethodViewController getShippingMethod];
-    [navi pushViewController:shippingMethodViewController animated:NO];
-}
 
 #pragma mark -
 #pragma mark dealloc

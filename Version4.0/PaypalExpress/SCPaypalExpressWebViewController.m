@@ -27,11 +27,10 @@
     
 }
 
-- (void)viewDidLoadAfter
+- (void)viewDidLoadBefore
 {
-    [super viewDidLoadAfter];
     [self paypalStart];
-    self.reviewAddress = YES;
+    self.needReviewAddress = YES;
     
     self.title = SCLocalizedString(@"Paypal Checkout");
     [self.view setBackgroundColor:[UIColor whiteColor]];
@@ -42,6 +41,12 @@
     paypalExpCheckOutWebView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin ;
     [self.view addSubview:paypalExpCheckOutWebView];
     [self startLoadingData];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(completeCheckOut:) name:@"DidCompleteCheckOutWithPaypalExpress" object:nil];
+}
+
+- (void)completeCheckOut:(NSNotification*)noti
+{
+    [self.navigationController popToRootViewControllerAnimated:YES];
 }
 
 - (void)paypalStart
@@ -60,9 +65,8 @@
 
     SimiResponder *responder = [noti.userInfo valueForKey:@"responder"];
     if ([responder.status isEqualToString:@"SUCCESS"]) {
-        self.reviewAddress = [(NSNumber *)[paypalModel objectForKey:@"review_address"] boolValue];
+        self.needReviewAddress = [(NSNumber *)[paypalModel objectForKey:@"review_address"] boolValue];
         NSURL * url = [NSURL URLWithString:(NSString *)[paypalModel objectForKey:@"url"]];
-        
         NSURLRequest * requestObj = [NSURLRequest requestWithURL:url];
         [paypalExpCheckOutWebView loadRequest:requestObj];
     }
@@ -79,7 +83,28 @@
 {
     NSString *urlRequest = request.URL.absoluteString;
     if ((!([urlRequest rangeOfString:@"return"].location == NSNotFound)) && ([urlRequest rangeOfString:@"stsRedirectUri"].location == NSNotFound)){
-        [self.delgate completedWebviewCheckout:self.reviewAddress];
+        if (self.needReviewAddress) {
+            SCPaypalExpressAddressReviewViewController *addressReviewViewController = [SCPaypalExpressAddressReviewViewController new];
+            UINavigationController *naviPresent = [[UINavigationController alloc]initWithRootViewController:addressReviewViewController];
+            if (PHONEDEVICE) {
+                [self presentViewController:naviPresent animated:YES completion:nil];
+            }else
+            {
+                naviPresent.modalPresentationStyle = UIModalPresentationFormSheet;
+                [self presentViewController:naviPresent animated:YES completion:nil];
+            }
+        }
+        else{
+            SCPaypalExpressShippingMethodViewController *shippingMethodViewController = [[SCPaypalExpressShippingMethodViewController alloc]init];
+            UINavigationController *naviPresent = [[UINavigationController alloc]initWithRootViewController:shippingMethodViewController];
+            if (PHONEDEVICE) {
+                [self presentViewController:naviPresent animated:YES completion:nil];
+            }else
+            {
+                naviPresent.modalPresentationStyle = UIModalPresentationFormSheet;
+                [self presentViewController:naviPresent animated:YES completion:nil];
+            }
+        }
         return NO;
     }
     if (!([urlRequest rangeOfString:@"cancel"].location == NSNotFound)) {
@@ -88,24 +113,8 @@
     return YES;
 }
 
-
-
 - (void)webViewDidFinishLoad:(UIWebView *)webView
 {
     [self stopLoadingData];
 }
-
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-}
-
-- (void)dealloc
-{
-    paypalExpCheckOutWebView = nil;
-    paypalModel = nil;
-    [[NSNotificationCenter defaultCenter]removeObserver:self name:@"DidStartPaypalExpress" object:nil];
-}
-
-
 @end

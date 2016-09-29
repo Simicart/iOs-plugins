@@ -8,6 +8,8 @@
 
 #import "SCPaypalExpressShippingMethodViewController.h"
 #import <SimiCartBundle/SimiFormatter.h>
+#import <SimiCartBundle/SCCartViewControllerPad.h>
+#import <SimiCartBundle/SCThemeWorker.h>
 
 @interface SCPaypalExpressShippingMethodViewController ()
 {
@@ -22,10 +24,29 @@
 }
 @synthesize paypalModel,paypalShippingModel,shippingMethodTableView;
 
+
+- (void)viewDidLoadBefore
+{
+    self.navigationItem.title = SCLocalizedString(@"Shipping Method");
+}
+
 - (void)viewWillAppearBefore:(BOOL)animated
 {
     
 }
+
+- (void)viewDidAppearBefore:(BOOL)animated
+{
+    if (shippingMethodTableView == nil) {
+        shippingMethodTableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStyleGrouped];
+        shippingMethodTableView.dataSource = self;
+        shippingMethodTableView.delegate = self;
+        shippingMethodTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+        [self.view addSubview:shippingMethodTableView];
+        [self getShippingMethod];
+    }
+}
+
 #pragma mark Get Shipping Methods
 - (void)getShippingMethod
 {
@@ -42,12 +63,7 @@
     [self stopLoadingData];
     if ([responder.status isEqualToString:@"SUCCESS"]) {
         listShippingMethods = [[NSMutableArray alloc]initWithArray:[paypalShippingModel valueForKey:@"methods"]];
-        self.title = SCLocalizedString(@"Shipping Method");
-        shippingMethodTableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStyleGrouped];
-        shippingMethodTableView.dataSource = self;
-        shippingMethodTableView.delegate = self;
-        shippingMethodTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-        [self.view addSubview:shippingMethodTableView];
+        [shippingMethodTableView reloadData];
     }
     else {
         UIAlertView * alert = [[UIAlertView alloc]initWithTitle:SCLocalizedString(@"Error") message:responder.responseMessage delegate:self cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles: nil];
@@ -58,6 +74,8 @@
 #pragma mark TableView Datasource
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
+    if(listShippingMethods == nil)
+        return 0;
     return 2;
 }
 
@@ -161,7 +179,7 @@
         selected = [listShippingMethods objectAtIndex:checkedData.row];
     }
     SimiModel *method = [SimiModel new];
-    [method setValue:@{@"method":[NSString stringWithFormat:@"%@",[selected objectForKey:@"s_method_code"]]}forKey:@"s_method_code"];
+    [method setValue:@{@"method":[NSString stringWithFormat:@"%@",[selected objectForKey:@"s_method_code"]]}forKey:@"s_method"];
     [paypalModel placeOrderWithParam:method];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didPlaceOrder:) name:@"PaypalExpressDidPlaceOrder" object:nil];
 }
@@ -170,6 +188,14 @@
 {
     [self stopLoadingData];
     SimiResponder *responder = [noti.userInfo valueForKey:@"responder"];
+    if (PHONEDEVICE) {
+        SCCartViewController * cartVC = [[SCThemeWorker sharedInstance].navigationBarPhone cartViewController];
+        [cartVC getCart];
+    }else
+    {
+        SCCartViewControllerPad * cartVC = [[SCThemeWorker sharedInstance].navigationBarPad cartViewControllerPad];
+        [cartVC getCart];
+    }
     if ([responder.status isEqualToString:@"SUCCESS"]) {
         UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:SCLocalizedString(responder.status) message:SCLocalizedString(@"Thank you for your purchase") delegate:nil cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles: nil];
         [alertView show];
@@ -178,6 +204,7 @@
         UIAlertView * alert = [[UIAlertView alloc]initWithTitle:@"" message:responder.responseMessage delegate:self cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles: nil];
         [alert show];
     }
-    [self.navigationController popToRootViewControllerAnimated:YES];
+    [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+    [[NSNotificationCenter defaultCenter]postNotificationName:@"DidCompleteCheckOutWithPaypalExpress" object:nil];
 }
 @end

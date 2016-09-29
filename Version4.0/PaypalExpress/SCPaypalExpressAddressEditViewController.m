@@ -13,31 +13,32 @@
 @end
 
 @implementation SCPaypalExpressAddressEditViewController
-
-
-// actually like the parrent but without the post data to server
-- (void)saveAddressPaypalRewrite{
+- (void)saveAddress{
     if (self.isNewCustomer) {
         NSString *password = [self.form objectForKey:@"customer_password"];
         NSString *confirm  = [self.form objectForKey:@"confirm_password"];
+        
+        if ([password length] < 6) {
+            [self showAlertWithTitle:@"" message:@"Please enter 6 or more characters."];
+            return;
+        }
         if (![password isEqualToString:confirm]) {
-            [self showAlertWithTitle:@"Error" message:@"Password and Confirm password don't match."];
+            [self showAlertWithTitle:@"" message:@"Password and Confirm password don't match."];
             return;
         }
     }
     // Valid Form
     if (![self.form isDataValid]) {
-        [self showAlertWithTitle:@"Warning" message:@"Please select all (*) fields"];
+        [self showAlertWithTitle:@"" message:@"Please select all (*) fields"];
         return;
     }
     [self.address removeAllObjects];
     [self.address addData:self.form];
-    if ([self.form objectForKey:@"name"]) {
-        [self.address setValue:[[self.form objectForKey:@"name"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] forKey:@"name"];
-    }
-    [self.address saveToLocal];
+    if(SIMI_SYSTEM_IOS >=8.0)
+        [self.navigationController popViewControllerAnimated:YES];
+    else
+        [self.navigationController popViewControllerAnimated:NO];
     [self.delegate didSaveAddress:self.address];
-    [self.navigationController popViewControllerAnimated:YES];
 }
 
 @end

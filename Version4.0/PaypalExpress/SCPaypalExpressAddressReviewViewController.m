@@ -7,11 +7,11 @@
 //
 
 #import "SCPaypalExpressAddressReviewViewController.h"
-#import "SCPaypalExpressAddressEditViewController.h"
-
 
 @interface SCPaypalExpressAddressReviewViewController ()
-
+{
+    BOOL isBillingAddress;
+}
 @end
 
 @implementation SCPaypalExpressAddressReviewViewController
@@ -21,13 +21,34 @@
 
 #pragma mark TableView Datasource
 
+- (void)viewDidLoadBefore
+{
+    self.navigationItem.title = SCLocalizedString(@"Address Confirmation");
+}
+
 - (void)viewWillAppearBefore:(BOOL)animated
 {
     
 }
 
+- (void)viewDidAppearBefore:(BOOL)animated
+{
+    if (addressTableView == nil) {
+        addressTableView = [[SimiTableView alloc] initWithFrame:self.view.bounds style:UITableViewStyleGrouped];
+        addressTableView.dataSource = self;
+        addressTableView.delegate = self;
+        addressTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+        [self.view addSubview:addressTableView];
+        
+        [self getAddresses];
+    }
+}
+
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
+    if (billingAddress == nil) {
+        return 0;
+    }
     return 3;
 }
 
@@ -124,20 +145,24 @@
 #pragma mark Table View Delegate
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-
     if (indexPath.section < 2) {
         SCPaypalExpressAddressEditViewController *nextController = [[SCPaypalExpressAddressEditViewController alloc]init];
+        nextController.delegate = self;
         SimiAddressModel *address;
         if (indexPath.section == 0)
+        {
             address = billingAddress;
+            isBillingAddress = YES;
+        }
         else
+        {
             address = shippingAddress;
+            isBillingAddress = NO;
+        }
         
         nextController.address = address;
         nextController.isEditing = YES;
         [self.navigationController pushViewController:nextController animated:YES];
-        UIBarButtonItem *button = [[UIBarButtonItem alloc]initWithTitle:SCLocalizedString(@"Save") style:UIBarButtonItemStyleDone target:self action:@selector(saveAddress)];
-        self.navigationItem.rightBarButtonItem = button;
     }
 }
 
@@ -156,18 +181,11 @@
     [self removeObserverForNotification:noti];
     SimiResponder *responder = [noti.userInfo valueForKey:@"responder"];
     if ([responder.status isEqualToString:@"SUCCESS"]) {
-        self.title = SCLocalizedString(@"Address Confirmation");
-        
         billingAddress = [SimiAddressModel new];
         [billingAddress addEntriesFromDictionary:[paypalModel objectForKey:@"billing_address"]];
         shippingAddress = [SimiAddressModel new];
         [shippingAddress addEntriesFromDictionary:[paypalModel objectForKey:@"shipping_address"]];
-        
-        addressTableView = [[SimiTableView alloc] initWithFrame:self.view.bounds style:UITableViewStyleGrouped];
-        addressTableView.dataSource = self;
-        addressTableView.delegate = self;
-        addressTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-        [self.view addSubview:addressTableView];
+        [addressTableView reloadData];
     }
     else {
         UIAlertView * a = [[UIAlertView alloc]initWithTitle:@"" message:responder.responseMessage delegate:self cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles: nil];
@@ -196,12 +214,22 @@
     [self removeObserverForNotification:noti];
     [self stopLoadingData];
     if ([responder.status isEqualToString:@"SUCCESS"]) {
-        [self.delegate completedReviewAddress];
+        SCPaypalExpressShippingMethodViewController *shippingMethodViewController = [[SCPaypalExpressShippingMethodViewController alloc]init];
+        [self.navigationController pushViewController:shippingMethodViewController animated:NO];
     }
     else {
         UIAlertView * alert = [[UIAlertView alloc]initWithTitle:@"" message:responder.responseMessage delegate:self cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles: nil];
         [alert show];
     }
+}
+#pragma  mark Edit Adress
+- (void)didSaveAddress:(SimiAddressModel *)address
+{
+    if (isBillingAddress) {
+        billingAddress = address;
+    }else
+        shippingAddress = address;
+    [addressTableView reloadData];
 }
 
 @end
