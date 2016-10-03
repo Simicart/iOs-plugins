@@ -196,6 +196,9 @@
         [[[[SCThemeWorker sharedInstance] navigationBarPhone] cartViewController] getCart];
     else if(PADDEVICE)
         [[[[SCThemeWorker sharedInstance] navigationBarPad] cartViewControllerPad] getCart];
+    // get wishlist again
+    [wishlistModelCollection getWishlistItems];
+    [self startLoadingData];
 }
 -(void) didDeleteWishlistItem: (NSNotification*) noti{
     [self stopLoadingData];

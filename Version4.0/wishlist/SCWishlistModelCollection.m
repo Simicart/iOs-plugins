@@ -36,7 +36,7 @@
 -(void) addProductToCartWithWishlistID: (NSString*) wishlistItemID{
     currentNotificationName = DidAddProductFromWishlistToCart;
     keyResponse = @"wishlistitems";
-    NSString* url = [NSString stringWithFormat:@"%@%@%@",kBaseURL,kRemoveWishlistItemURL,wishlistItemID];
+    NSString* url = [NSString stringWithFormat:@"%@%@%@",kBaseURL,kAddProductFromWishlistToCartURL,wishlistItemID];
     NSDictionary* params = @{@"add_to_cart":@"1"};
     [[SimiAPI new] requestWithMethod:@"GET" URL:url params:params target:self selector:@selector(didFinishRequest:responder:) header:nil];
 }
