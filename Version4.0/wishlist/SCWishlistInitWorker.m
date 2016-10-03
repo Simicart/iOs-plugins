@@ -162,7 +162,7 @@
 #pragma mark Add to My Account Screen
 -(void)initializedAccountCellAfter:(NSNotification *)noti
 {
-    SimiTable* cells = noti.object;
+    SimiTable* cells = [[SimiTable alloc] initWithArray:noti.object];
     SimiSection* section = [cells getSectionByIdentifier:ACCOUNT_MAIN_SECTION];
     SimiRow *wishlistRow = [[SimiRow alloc]initWithIdentifier:ACCOUNT_WISHLIST_ROW height:45 sortOrder:310];
     wishlistRow.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
@@ -197,7 +197,7 @@
 #pragma mark Add to Left Menu
 -(void)listMenuInitCellsAfter:(NSNotification *)noti
 {
-    SimiTable * cells = noti.object;
+    SimiTable * cells = [[SimiTable alloc] initWithArray:noti.object];
     SimiSection* section = [cells getSectionByIdentifier:LEFTMENU_SECTION_MAIN];
     SimiRow *wishlistRow = [[SimiRow alloc]initWithIdentifier:LEFTMENU_WISHLIST_ROW height:45 sortOrder:310];
     wishlistRow.title = SCLocalizedString(@"My Wishlist");
