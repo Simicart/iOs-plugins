@@ -9,13 +9,12 @@
 #import <SimiCartBundle/SimiCartBundle.h>
 #import <SimiCartBundle/SimiViewController.h>
 #import "SCPaypalExpressModel.h"
-#import "SCPaypalExpressModelCollection.h"
 
 @interface SCPaypalExpressShippingMethodViewController : SimiViewController <UITableViewDataSource, UITableViewDelegate>
 
 @property (strong, nonatomic) UITableView * shippingMethodTableView;
 @property (strong, nonatomic) SCPaypalExpressModel * paypalModel;
-@property (strong, nonatomic) SCPaypalExpressModelCollection * paypalModelCollection;
+@property (strong, nonatomic) SCPaypalExpressModel * paypalShippingModel;
 
 -(void)getShippingMethod;
 

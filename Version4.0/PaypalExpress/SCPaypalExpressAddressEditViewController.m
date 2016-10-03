@@ -13,52 +13,32 @@
 @end
 
 @implementation SCPaypalExpressAddressEditViewController
-
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    // Do any additional setup after loading the view.
-}
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-}
-
-
-- (void)viewDidLoadBefore
-{
-    [super viewDidLoadBefore];
-    UIBarButtonItem *button = [[UIBarButtonItem alloc]initWithTitle:SCLocalizedString(@"Save") style:UIBarButtonItemStyleDone target:self action:@selector(saveAddressPaypalRewrite)];
-    self.navigationItem.rightBarButtonItem = button;
-    
-    //self.navigationController.navigationBar.barTintColor = [UIColor blackColor];
-    self.navigationController.navigationBar.tintColor = [UIColor blackColor];
-}
-
-// actually like the parrent but without the post data to server
-- (void)saveAddressPaypalRewrite{
+- (void)saveAddress{
     if (self.isNewCustomer) {
         NSString *password = [self.form objectForKey:@"customer_password"];
         NSString *confirm  = [self.form objectForKey:@"confirm_password"];
+        
+        if ([password length] < 6) {
+            [self showAlertWithTitle:@"" message:@"Please enter 6 or more characters."];
+            return;
+        }
         if (![password isEqualToString:confirm]) {
-            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"" message:SCLocalizedString(@"Password and Confirm password don't match.") delegate:nil cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles: nil];
-            [alertView show];
+            [self showAlertWithTitle:@"" message:@"Password and Confirm password don't match."];
             return;
         }
     }
     // Valid Form
     if (![self.form isDataValid]) {
-        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"" message:SCLocalizedString(@"Please select all (*) fields") delegate:nil cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles: nil];
-        [alertView show];
+        [self showAlertWithTitle:@"" message:@"Please select all (*) fields"];
         return;
     }
     [self.address removeAllObjects];
     [self.address addData:self.form];
-    if ([self.form objectForKey:@"name"]) {
-        [self.address setValue:[[self.form objectForKey:@"name"] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] forKey:@"name"];
-    }
-    [self.address saveToLocal];
+    if(SIMI_SYSTEM_IOS >=8.0)
+        [self.navigationController popViewControllerAnimated:YES];
+    else
+        [self.navigationController popViewControllerAnimated:NO];
     [self.delegate didSaveAddress:self.address];
-    [self.navigationController popViewControllerAnimated:YES];
 }
 
 @end

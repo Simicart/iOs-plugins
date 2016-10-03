@@ -19,11 +19,8 @@
 
 - (void)updateAddressWithParam:(NSDictionary *)params target:(id)target selector:(SEL)selector;
 
-- (void) getShippingMethod:(id)target selector:(SEL)selector;
+- (void)getShippingMethod:(id)target selector:(SEL)selector;
 
-- (void) placeOrderWithParam:(NSDictionary *)params target:(id)target selector:(SEL)selector;
-/*
-- (void)addWishlistProductToCartWithParams:(NSDictionary *)params target:(id)target selector:(SEL)selector;
-*/
+- (void)placeOrderWithParam:(NSDictionary *)params target:(id)target selector:(SEL)selector;
 
 @end

@@ -10,9 +10,9 @@
 #import <SimiCartBundle/SimiTableView.h>
 #import <SimiCartBundle/SimiAddressModel.h>
 #import <SimiCartBundle/SimiViewController.h>
-
+#import "SCPaypalExpressShippingMethodViewController.h"
+#import "SCPaypalExpressAddressEditViewController.h"
 #import "SCPaypalExpressModel.h"
-#import "SCPaypalExpressModelCollection.h"
 
 @protocol SCPaypalExpressAddressReviewViewController_Delegate <NSObject>
 @optional
@@ -20,10 +20,9 @@
 @end
 
 
-@interface SCPaypalExpressAddressReviewViewController : SimiViewController <UITableViewDataSource, UITableViewDelegate>
+@interface SCPaypalExpressAddressReviewViewController : SimiViewController <UITableViewDataSource, UITableViewDelegate, SCNewAddressDelegate>
 
 @property (strong, nonatomic) SCPaypalExpressModel * paypalModel;
-@property (strong, nonatomic) SCPaypalExpressModelCollection * paypalModelCollection;
 
 @property (strong, nonatomic) SimiTableView * addressTableView;
 @property (strong, nonatomic) SimiAddressModel * shippingAddress;

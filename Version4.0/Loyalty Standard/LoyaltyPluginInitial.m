@@ -431,7 +431,7 @@ static NSString *LEFTMENU_REWARDS_ROW     = @"leftmenu_rewards";
                 // Need Points
                 cell.textLabel.font = [UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE];
                 cell.textLabel.numberOfLines = 2;
-                cell.textLabel.text = [NSString stringWithFormat:SCLocalizedString(@"You need to earn more %@ to use this rule."), [rule objectForKey:@"needPointLabel"]];
+                cell.textLabel.text = [NSString stringWithFormat:SCLocalizedString(@"You need to earn more %@ to use this rule"), [rule objectForKey:@"needPointLabel"]];
             }
         }
     }

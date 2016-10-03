@@ -20,27 +20,33 @@
     SCPaypalExpressModel * paypalModel;
 }
 
-@synthesize paypalExpCheckOutWebView
-;
+@synthesize paypalExpCheckOutWebView;
 
-
-- (void)viewDidLoadAfter
+- (void)viewWillAppearBefore:(BOOL)animated
 {
-    [super viewDidLoadAfter];
+    
+}
+
+- (void)viewDidLoadBefore
+{
     [self paypalStart];
-    self.reviewAddress = YES;
+    self.needReviewAddress = YES;
     
     self.title = SCLocalizedString(@"Paypal Checkout");
     [self.view setBackgroundColor:[UIColor whiteColor]];
     paypalExpCheckOutWebView = [[UIWebView alloc]initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, self.view.frame.size.height - TASK_BAR_HEIGH)];
     paypalExpCheckOutWebView.delegate = self;
     [paypalExpCheckOutWebView setBackgroundColor:[UIColor whiteColor]];
-    //Axe added 251215
     [paypalExpCheckOutWebView setContentMode:UIViewContentModeScaleAspectFill];
     paypalExpCheckOutWebView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin ;
-    //
     [self.view addSubview:paypalExpCheckOutWebView];
     [self startLoadingData];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(completeCheckOut:) name:@"DidCompleteCheckOutWithPaypalExpress" object:nil];
+}
+
+- (void)completeCheckOut:(NSNotification*)noti
+{
+    [self.navigationController popToRootViewControllerAnimated:YES];
 }
 
 - (void)paypalStart
@@ -59,9 +65,8 @@
 
     SimiResponder *responder = [noti.userInfo valueForKey:@"responder"];
     if ([responder.status isEqualToString:@"SUCCESS"]) {
-        self.reviewAddress = [(NSNumber *)[paypalModel objectForKey:@"review_address"] boolValue];
+        self.needReviewAddress = [(NSNumber *)[paypalModel objectForKey:@"review_address"] boolValue];
         NSURL * url = [NSURL URLWithString:(NSString *)[paypalModel objectForKey:@"url"]];
-        
         NSURLRequest * requestObj = [NSURLRequest requestWithURL:url];
         [paypalExpCheckOutWebView loadRequest:requestObj];
     }
@@ -78,7 +83,28 @@
 {
     NSString *urlRequest = request.URL.absoluteString;
     if ((!([urlRequest rangeOfString:@"return"].location == NSNotFound)) && ([urlRequest rangeOfString:@"stsRedirectUri"].location == NSNotFound)){
-        [self.delgate completedWebviewCheckout:self.reviewAddress];
+        if (self.needReviewAddress) {
+            SCPaypalExpressAddressReviewViewController *addressReviewViewController = [SCPaypalExpressAddressReviewViewController new];
+            UINavigationController *naviPresent = [[UINavigationController alloc]initWithRootViewController:addressReviewViewController];
+            if (PHONEDEVICE) {
+                [self presentViewController:naviPresent animated:YES completion:nil];
+            }else
+            {
+                naviPresent.modalPresentationStyle = UIModalPresentationFormSheet;
+                [self presentViewController:naviPresent animated:YES completion:nil];
+            }
+        }
+        else{
+            SCPaypalExpressShippingMethodViewController *shippingMethodViewController = [[SCPaypalExpressShippingMethodViewController alloc]init];
+            UINavigationController *naviPresent = [[UINavigationController alloc]initWithRootViewController:shippingMethodViewController];
+            if (PHONEDEVICE) {
+                [self presentViewController:naviPresent animated:YES completion:nil];
+            }else
+            {
+                naviPresent.modalPresentationStyle = UIModalPresentationFormSheet;
+                [self presentViewController:naviPresent animated:YES completion:nil];
+            }
+        }
         return NO;
     }
     if (!([urlRequest rangeOfString:@"cancel"].location == NSNotFound)) {
@@ -87,26 +113,8 @@
     return YES;
 }
 
-
-
 - (void)webViewDidFinishLoad:(UIWebView *)webView
 {
-   // NSString *html = [webView stringByEvaluatingJavaScriptFromString:@"document.documentElement.outerHTML"];
-   // NSString *currentURL = paypalExpCheckOutWebView.request.URL.absoluteString;
     [self stopLoadingData];
 }
-
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-}
-
-- (void)dealloc
-{
-    paypalExpCheckOutWebView = nil;
-    paypalModel = nil;
-    [[NSNotificationCenter defaultCenter]removeObserver:self name:@"DidStartPaypalExpress" object:nil];
-}
-
-
 @end

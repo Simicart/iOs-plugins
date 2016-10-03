@@ -537,8 +537,7 @@
         [[UIApplication sharedApplication] openURL:phoneUrl];
     } else
     {
-        UIAlertView* calert = [[UIAlertView alloc]initWithTitle:@"Alert" message:SCLocalizedString(@"Call facility is not available!!!") delegate:nil cancelButtonTitle:SCLocalizedString(@"Ok") otherButtonTitles:nil, nil];
-        [calert show];
+        [self showAlertWithTitle:@"Warning" message:@"Call facility is not available"];
     }
 }
 - (void)btnStoreEmail_Click:(id)sender
@@ -671,16 +670,14 @@
         [controller dismissViewControllerAnimated:YES completion:NULL];
 	}
 	if(result==MFMailComposeResultSent)
-	{  UIAlertView *sent=[[UIAlertView alloc]initWithTitle:SCLocalizedString(@"Your Email was sent succesfully.") message:nil delegate:nil cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles:nil];
-		[sent show];
+	{
+        [self showAlertWithTitle:@"Success" message:@"Your email was sent succesfully"];
 		[controller dismissViewControllerAnimated:YES completion:NULL];
 	}
 	if(result==MFMailComposeResultFailed)
-	{UIAlertView *sent=[[UIAlertView alloc]initWithTitle:SCLocalizedString(@"Failed") message:SCLocalizedString(@"Your mail was not sent") delegate:nil cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles:nil];
-		[sent show];
-		
+	{
+        [self showAlertWithTitle:@"Failed" message:@"Your mail was not sent"];
 		[controller dismissViewControllerAnimated:YES completion:NULL];
-		
 	}
 }
 #pragma mark Convert HTML to String
@@ -698,7 +695,6 @@
         
         html = [html stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"%@>", text] withString:@""];
     }
-    //
     html = [html stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
     
     return html;

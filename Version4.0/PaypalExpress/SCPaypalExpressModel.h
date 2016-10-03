@@ -28,4 +28,14 @@
  */
 - (void)placeOrderWithParam:(NSDictionary *)params;
 
+/*
+ Notification name: DidUpdatePaypalCheckoutAddress
+ */
+- (void)updateAddressWithParam:(NSDictionary *)params;
+
+
+/*
+ Notification name: DidGetPaypalCheckoutShippingMethods
+ */
+- (void)getShippingMethods;
 @end

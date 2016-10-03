@@ -8,7 +8,8 @@
 
 #import <SimiCartBundle/SimiCartBundle.h>
 #import <SimiCartBundle/SimiViewController.h>
-
+#import "SCPaypalExpressAddressReviewViewController.h"
+#import "SCPaypalExpressShippingMethodViewController.h"
 @protocol SCPaypalExpressWebViewController_Delegate <NSObject>
 @optional
 - (void)completedWebviewCheckout:(BOOL)needToReviewAddress;
@@ -18,6 +19,6 @@
 
 @property (strong, nonatomic) id<SCPaypalExpressWebViewController_Delegate> delgate;
 @property (strong, nonatomic) UIWebView * paypalExpCheckOutWebView;
-@property (nonatomic) BOOL reviewAddress;
+@property (nonatomic) BOOL needReviewAddress;
 
 @end

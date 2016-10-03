@@ -34,9 +34,8 @@
             }
         }
     } else {
-        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:SCLocalizedString(responder.status) message:responder.responseMessage delegate:nil cancelButtonTitle:SCLocalizedString(@"OK" ) otherButtonTitles: nil];
+        [self showAlertWithTitle:SCLocalizedString(responder.status) message:responder.responseMessage];
         self.textFieldPassword.text = @"";
-        [alertView show];
     }
     [self stopLoadingData];
 }

@@ -229,7 +229,7 @@
         [[UIApplication sharedApplication] openURL:phoneUrl];
     } else
     {
-        UIAlertView* calert = [[UIAlertView alloc]initWithTitle:SCLocalizedString(@"Alert") message:SCLocalizedString(@"Call facility is not available.") delegate:nil cancelButtonTitle:SCLocalizedString(@"Ok") otherButtonTitles:nil, nil];
+        UIAlertView* calert = [[UIAlertView alloc]initWithTitle:SCLocalizedString(@"Alert") message:SCLocalizedString(@"Call facility is not available") delegate:nil cancelButtonTitle:SCLocalizedString(@"Ok") otherButtonTitles:nil, nil];
         [calert show];
     }
 }
