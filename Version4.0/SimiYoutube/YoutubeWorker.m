@@ -37,14 +37,16 @@ static NSString *PRODUCT_ROW_YOUTUBE = @"PRODUCT_ROW_YOUTUBE";
 - (void)initTab:(NSNotification*)noti
 {
     productMoreViewController = noti.object;
-    if ([productMoreViewController.productModel valueForKey:@"youtube"]) {
+    if ([productMoreViewController.productModel valueForKey:@"product_video"]) {
         product = productMoreViewController.productModel;
-        youtubeArray = (NSMutableArray*)[product valueForKey:@"youtube"];
-        CGRect frame = productMoreViewController.pageScrollView.bounds;
-        UITableView* tableVideo = [[UITableView alloc]initWithFrame:frame style:UITableViewStylePlain];
-        tableVideo.delegate = self;
-        tableVideo.dataSource = self;
-        [productMoreViewController.pageScrollView addTab:SCLocalizedString(@"Video") View:tableVideo Info:nil];
+        youtubeArray = (NSMutableArray*)[product valueForKey:@"product_video"];
+        if(youtubeArray.count > 0){
+            CGRect frame = productMoreViewController.pageScrollView.bounds;
+            UITableView* tableVideo = [[UITableView alloc]initWithFrame:frame style:UITableViewStylePlain];
+            tableVideo.delegate = self;
+            tableVideo.dataSource = self;
+            [productMoreViewController.pageScrollView addTab:SCLocalizedString(@"Video") View:tableVideo Info:nil];
+        }
     }
 }
 
@@ -84,7 +86,7 @@ static NSString *PRODUCT_ROW_YOUTUBE = @"PRODUCT_ROW_YOUTUBE";
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     NSDictionary *youtubeUnit = [youtubeArray objectAtIndex:indexPath.row];
-    NSString *stringIdentifier = [youtubeUnit valueForKey:@"key"];
+    NSString *stringIdentifier = [youtubeUnit valueForKey:@"video_key"];
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:stringIdentifier];
     float cellWidth = SCREEN_WIDTH;
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
@@ -96,13 +98,13 @@ static NSString *PRODUCT_ROW_YOUTUBE = @"PRODUCT_ROW_YOUTUBE";
     if (cell == nil) {
         cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:stringIdentifier];
         YTPlayerView *video = [[YTPlayerView alloc]initWithFrame:CGRectMake(0, 40, cellWidth, 260)];
-        [video loadWithVideoId:[youtubeUnit valueForKey:@"key"]];
+        [video loadWithVideoId:[youtubeUnit valueForKey:@"video_key"]];
         [youtubeVideoArray addObject:video];
         [cell addSubview:video];
         
         UILabel *labelTitle = [[UILabel alloc]initWithFrame:CGRectMake(20, 15, cellWidth - 20, 20)];
         [labelTitle setFont:[UIFont fontWithName:THEME_FONT_NAME_REGULAR size:18]];
-        [labelTitle setText:[youtubeUnit valueForKey:@"title"]];
+        [labelTitle setText:[youtubeUnit valueForKey:@"video_title"]];
         [cell addSubview:labelTitle];
     }
     return cell;
