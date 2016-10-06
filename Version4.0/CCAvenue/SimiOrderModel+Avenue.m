@@ -13,6 +13,7 @@
 
 - (void)updateAvenueOrderWithParams:(NSDictionary *)params{
     modelActionType = ModelActionTypeGet;
+    keyResponse = @"twoutapi";
     currentNotificationName = @"DidUpdateAvenuePayment";
     [self preDoRequest];
     [(SimiOrderAPI *)[self getAPI] updateAvenueOrderWithParams:params target:self selector:@selector(didFinishRequest:responder:)];

@@ -27,12 +27,12 @@
 {
     self = [super init];
     if (self) {
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"DidPlaceOrder-Before" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didPlaceOrderBefore:) name:@"DidPlaceOrder-Before" object:nil];
     }
     return self;
 }
 
-- (void)didReceiveNotification:(NSNotification *)noti
+- (void)didPlaceOrderBefore:(NSNotification *)noti
 {
     if ([noti.name isEqualToString:@"DidPlaceOrder-Before"]){
         payment = [noti.userInfo valueForKey:@"payment"];
@@ -44,18 +44,19 @@
 
 - (void)didPlaceOrder:(NSNotification *)noti
 {
-    UIViewController *currentVC = [(UITabBarController *)[[(SCAppDelegate *)[[UIApplication sharedApplication]delegate] window] rootViewController] selectedViewController];
+    UINavigationController *currentVC = [SimiGlobalVar sharedInstance].currentlyNavigationController;
     order = [noti.userInfo valueForKey:@"data"];
     cart = [noti.userInfo valueForKey:@"cart"];
     @try {
-        if([order valueForKey:@"invoice_number"] && [order valueForKey:@"params"]){
-            NSString *url = [order valueForKey:@"params"];
+        if([order valueForKey:@"invoice_number"] && [order valueForKey:@"url_action"]){
+            NSString *url = [order valueForKey:@"url_action"];
             SimiAvenueWebView *nextController = [[SimiAvenueWebView alloc] init];
             url = [url stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
             [nextController setUrlPath:url];
             nextController.title =  SCLocalizedString(@"CCAvenue");
             nextController.webTitle = SCLocalizedString(@"CCAvenue");
-            [(UINavigationController *)currentVC pushViewController:nextController animated:YES];
+            UINavigationController *navi  = [[UINavigationController alloc]initWithRootViewController:nextController];
+            [currentVC presentViewController:navi animated:YES completion:nil];
         }else{
             UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:SCLocalizedString(@"Error") message:SCLocalizedString(@"Sorry, CCAvenue is not now available. Please try again later.") delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil];
             alertView.tag = ALERT_VIEW_ERROR;

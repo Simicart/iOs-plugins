@@ -21,22 +21,22 @@
 
 @synthesize webTitle, urlPath, content;
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
+- (void)viewDidLoadBefore
 {
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (self) {
-        // Custom initialization
-    }
-    return self;
+    
 }
+
 - (void)viewDidLoadAfter
 {
     [self setToSimiView];
-    self.navigationItem.title = SCLocalizedString(self.navigationItem.title);
+    self.navigationItem.title = SCLocalizedString(@"CCAvenue");
     _webView = [[UIWebView alloc] initWithFrame:self.view.frame];
     _webView.scalesPageToFit = YES;
     _webView.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     [self.view addSubview:_webView];
+    
+    UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc]initWithTitle:SCLocalizedString(@"Cancel") style:UIBarButtonItemStylePlain target:self action:@selector(cancelPayment:)];
+    self.navigationItem.rightBarButtonItem = cancelButton;
     
     if (!content) {
         _webView.delegate = self;
@@ -46,13 +46,16 @@
     }else{
         [_webView loadHTMLString:content baseURL:nil];
     }
-    [self setContentSizeForViewInPopover:CGSizeMake(3*SCREEN_WIDTH/4, 3*SCREEN_HEIGHT/4)];
 }
 
-- (void)didReceiveMemoryWarning
+- (void)viewWillAppearBefore:(BOOL)animated
 {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+    
+}
+
+- (void)cancelPayment:(UIButton*)sender
+{
+    
 }
 
 - (void)setUrlPath:(NSString *)path{
