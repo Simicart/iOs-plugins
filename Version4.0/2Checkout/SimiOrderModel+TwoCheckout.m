@@ -13,6 +13,7 @@
 
 - (void)updateTwoutOrderWithParams:(NSDictionary *)params{
     modelActionType = ModelActionTypeGet;
+    keyResponse = @"twoutapi";
     currentNotificationName = @"DidUpdate2CheckoutPayment";
     [self preDoRequest];
     [(SimiOrderAPI *)[self getAPI] updateTwoutOrderWithParams:params target:self selector:@selector(didFinishRequest:responder:)];

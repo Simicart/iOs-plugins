@@ -26,32 +26,41 @@
     return self;
 }
 
-- (void)viewDidLoad
+- (void)viewDidLoadBefore
 {
     [self setToSimiView];
-    self.navigationItem.title = SCLocalizedString(self.navigationItem.title);
-    _webView = [[UIWebView alloc] initWithFrame:self.view.frame];
-    _webView.scalesPageToFit = YES;
-    _webView.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    [self.view addSubview:_webView];
-    
-    if (!content) {
-        _webView.delegate = self;
-        NSMutableURLRequest *request = [[NSMutableURLRequest alloc]initWithURL:url];
-        [request addValue:@"YES" forHTTPHeaderField:@"Mobile-App"];
-        [_webView loadRequest:request];
-    }else{
-        [_webView loadHTMLString:content baseURL:nil];
-    }
-	
-    [super viewDidLoad];
-    [self setContentSizeForViewInPopover:CGSizeMake(3*SCREEN_WIDTH/4, 3*SCREEN_HEIGHT/4)];
+    self.navigationItem.title = SCLocalizedString(@"2Checkout");
+    UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc]initWithTitle:SCLocalizedString(@"Cancel") style:UIBarButtonItemStylePlain target:self action:@selector(cancelPayment:)];
+    self.navigationItem.rightBarButtonItem = cancelButton;
 }
 
-- (void)didReceiveMemoryWarning
+- (void)cancelPayment:(UIButton*)sender
 {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+    [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)viewWillAppearBefore:(BOOL)animated
+{
+    
+}
+
+- (void)viewDidAppearBefore:(BOOL)animated
+{
+    if (_webView == nil) {
+        _webView = [[UIWebView alloc] initWithFrame:self.view.bounds];
+        _webView.scalesPageToFit = NO;
+        _webView.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+        [self.view addSubview:_webView];
+        
+        if (!content) {
+            _webView.delegate = self;
+            NSMutableURLRequest *request = [[NSMutableURLRequest alloc]initWithURL:url];
+            [request addValue:@"YES" forHTTPHeaderField:@"Mobile-App"];
+            [_webView loadRequest:request];
+        }else{
+            [_webView loadHTMLString:content baseURL:nil];
+        }
+    }
 }
 
 - (void)setUrlPath:(NSString *)path{
@@ -88,19 +97,16 @@
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
 {
     NSString *requestURL = [NSString stringWithFormat:@"%@",request];
-        if(urlCallBack != nil && [requestURL rangeOfString:urlCallBack].location != NSNotFound){
-            if([requestURL rangeOfString:@"order_number="].location != NSNotFound){
-                NSArray *params = [requestURL componentsSeparatedByString:@"order_number="];
-                NSArray *orderNumberParam = [params[1] componentsSeparatedByString:@"&"];
-                NSString *orderNumber = orderNumberParam[0];
-                [self updateTwoCheckoutPayment:orderNumber];
-                return NO;
-            }
-        }
+    if([requestURL rangeOfString:@"jsessionid="].location != NSNotFound){
+        NSArray *params = [requestURL componentsSeparatedByString:@"jsessionid="];
+        NSString *orderNumber = params[1];
+        [self updateTwoCheckoutPayment:orderNumber];
+        return NO;
+    }
     return YES;
 }
 
-- (void)updateTwoCheckoutPayment: (NSString *) orderNumber
+- (void)updateTwoCheckoutPayment:(NSString *)orderNumber
 {
     SimiOrderModel *twoCheckoutModel = [[SimiOrderModel alloc]init];
     NSMutableDictionary *params = [[NSMutableDictionary alloc]init];
@@ -114,16 +120,16 @@
 
 - (void)didUpdatePayment:(NSNotification *)noti{
     SimiResponder *responder = [noti.userInfo valueForKey:@"responder"];
+    [self stopLoadingData];
     if ([responder.status isEqualToString:@"SUCCESS"]) {
         UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:SCLocalizedString(responder.status) message:SCLocalizedString(@"Thank you for your purchase") delegate:nil cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles: nil];
         [alertView show];
 
-        [self.navigationController popToRootViewControllerAnimated:YES];
+        [self.navigationController dismissViewControllerAnimated:YES completion:nil];
     }else{
         UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:SCLocalizedString(responder.status) message:responder.responseMessage delegate:nil cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles: nil];
         [alertView show];
     }
-    [self stopLoadingData];
     [self removeObserverForNotification:noti];
 }
 

@@ -10,7 +10,4 @@
 #import "SimiTwoCheckoutWebView.h"
 
 @interface SimiTwoCheckoutWorker : SimiViewController<UIWebViewDelegate,UIAlertViewDelegate>
-
-- (void)test;
-
 @end
