@@ -55,7 +55,8 @@
 
 - (void)cancelPayment:(UIButton*)sender
 {
-    
+    [self showAlertWithTitle:@"FAIL" message:@"Your order has been canceled"];
+    [self.navigationController dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)setUrlPath:(NSString *)path{
@@ -94,24 +95,20 @@
     NSString *requestURL = [NSString stringWithFormat:@"%@",request];
     NSLog(@"%@", requestURL);
     if([requestURL rangeOfString:@"success"].location != NSNotFound || ([requestURL rangeOfString:@"TransactionNo"].location != NSNotFound && [requestURL rangeOfString:@"AuthorizeId"].location != NSNotFound)){
-        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:SCLocalizedString(@"SUCCESS") message:SCLocalizedString(@"Thank your for purchase") delegate:nil cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles: nil];
-        [alertView show];
-        [self.navigationController popToRootViewControllerAnimated:YES];
+        [self showAlertWithTitle:@"SUCCESS" message:@"Thank your for purchase"];
+        [self.navigationController dismissViewControllerAnimated:YES completion:nil];
         return NO;
     }else if([requestURL rangeOfString:@"failure"].location != NSNotFound){
-        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:SCLocalizedString(@"FAIL") message:SCLocalizedString(@"Your order has been canceled") delegate:nil cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles: nil];
-        [alertView show];
-        [self.navigationController popToRootViewControllerAnimated:YES];
+        [self showAlertWithTitle:@"FAIL" message:@"Your order has been canceled"];
+        [self.navigationController dismissViewControllerAnimated:YES completion:nil];
         return NO;
     }else if([requestURL rangeOfString:@"review"].location != NSNotFound){
-        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[SCLocalizedString(@"SUCCESS") uppercaseString] message:SCLocalizedString(@"Your order is under review") delegate:nil cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles: nil];
-        [alertView show];
-        [self.navigationController popToRootViewControllerAnimated:YES];
+        [self showAlertWithTitle:@"SUCCESS" message:@"Your order is under review"];
+        [self.navigationController dismissViewControllerAnimated:YES completion:nil];
         return NO;
     }else if([requestURL rangeOfString:@"simiavenue/api/index"].location != NSNotFound || [requestURL rangeOfString:@"transaction.do;jsessionid"].location != NSNotFound){
-        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[SCLocalizedString(@"Error") uppercaseString] message:SCLocalizedString(@"Have some errors, please try again") delegate:nil cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles: nil];
-        [alertView show];
-        [self.navigationController popToRootViewControllerAnimated:YES];
+        [self showAlertWithTitle:@"ERROR" message:@"Have some errors, please try again"];
+        [self.navigationController dismissViewControllerAnimated:YES completion:nil];
         return NO;
     }
     return YES;
