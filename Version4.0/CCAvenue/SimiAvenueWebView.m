@@ -23,34 +23,39 @@
 
 - (void)viewDidLoadBefore
 {
-    
+    UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc]initWithTitle:SCLocalizedString(@"Cancel") style:UIBarButtonItemStylePlain target:self action:@selector(cancelPayment:)];
+    self.navigationItem.rightBarButtonItem = cancelButton;
 }
 
 - (void)viewDidLoadAfter
 {
     [self setToSimiView];
     self.navigationItem.title = SCLocalizedString(@"CCAvenue");
-    _webView = [[UIWebView alloc] initWithFrame:self.view.frame];
-    _webView.scalesPageToFit = YES;
-    _webView.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    [self.view addSubview:_webView];
     
-    UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc]initWithTitle:SCLocalizedString(@"Cancel") style:UIBarButtonItemStylePlain target:self action:@selector(cancelPayment:)];
-    self.navigationItem.rightBarButtonItem = cancelButton;
-    
-    if (!content) {
-        _webView.delegate = self;
-        NSMutableURLRequest *request = [[NSMutableURLRequest alloc]initWithURL:url];
-        [request addValue:@"YES" forHTTPHeaderField:@"Mobile-App"];
-        [_webView loadRequest:request];
-    }else{
-        [_webView loadHTMLString:content baseURL:nil];
-    }
 }
 
 - (void)viewWillAppearBefore:(BOOL)animated
 {
     
+}
+
+- (void)viewDidAppearBefore:(BOOL)animated
+{
+    if (_webView == nil) {
+        _webView = [[UIWebView alloc] initWithFrame:self.view.frame];
+        _webView.scalesPageToFit = YES;
+        _webView.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+        [self.view addSubview:_webView];
+        
+        if (!content) {
+            _webView.delegate = self;
+            NSMutableURLRequest *request = [[NSMutableURLRequest alloc]initWithURL:url];
+            [request addValue:@"YES" forHTTPHeaderField:@"Mobile-App"];
+            [_webView loadRequest:request];
+        }else{
+            [_webView loadHTMLString:content baseURL:nil];
+        }
+    }
 }
 
 - (void)cancelPayment:(UIButton*)sender

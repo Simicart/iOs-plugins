@@ -31,10 +31,10 @@
         payment = [noti.userInfo valueForKey:@"payment"];
         if ([[[payment valueForKey:@"payment_method"] uppercaseString] isEqualToString:@"SIMIPAYU"] &&[order valueForKey:@"invoice_number"]) {
             PayUViewController *viewController = [[PayUViewController alloc] init];
-            viewController.stringURL = [order valueForKey:@"params"];
-            UIViewController *currentVC = [(UITabBarController *)[[(SCAppDelegate *)[[UIApplication sharedApplication]delegate] window] rootViewController] selectedViewController];
-            [(UINavigationController *)currentVC pushViewController:viewController animated:YES];
-            viewController.navigationItem.title = @"PayU";
+            viewController.stringURL = [order valueForKey:@"url_action"];
+            UINavigationController *currentVC = [SimiGlobalVar sharedInstance].currentlyNavigationController;
+            UINavigationController *navi  = [[UINavigationController alloc]initWithRootViewController:viewController];
+            [currentVC presentViewController:navi animated:YES completion:nil];
         }
     }
 }

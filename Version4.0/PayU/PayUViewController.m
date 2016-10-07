@@ -14,36 +14,52 @@
 
 @implementation PayUViewController
 
-- (void)viewDidAppear:(BOOL)animated
+- (void)viewDidLoadBefore
 {
-    self.edgesForExtendedLayout = UIRectEdgeBottom;
-    _webView = [[UIWebView alloc]initWithFrame:CGRectInset(self.view.bounds, 0, 64)];
-    _webView.delegate = self;
-    NSURL *url = [[NSURL alloc]initWithString:[self.stringURL stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
-    NSURLRequest *request = [[NSURLRequest alloc]initWithURL:url];
-    [_webView loadRequest:request];
-    [self.view addSubview:_webView];
-    [self startLoadingData];
+    UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc]initWithTitle:SCLocalizedString(@"Cancel") style:UIBarButtonItemStylePlain target:self action:@selector(cancelPayment:)];
+    self.navigationItem.rightBarButtonItem = cancelButton;
+    self.navigationItem.title = SCLocalizedString(@"PayU");
+}
+
+- (void)cancelPayment:(UIButton*)sender
+{
+    [self showAlertWithTitle:@"FAIL" message:@"Your order has been canceled"];
+    [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)viewWillAppearBefore:(BOOL)animated
+{
+    
+}
+
+- (void)viewDidAppearBefore:(BOOL)animated
+{
+    if (_webView == nil) {
+        _webView = [[UIWebView alloc]initWithFrame:self.view.bounds];
+        _webView.delegate = self;
+        NSURL *url = [[NSURL alloc]initWithString:[self.stringURL stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+        NSURLRequest *request = [[NSURLRequest alloc]initWithURL:url];
+        [_webView loadRequest:request];
+        [self.view addSubview:_webView];
+        [self startLoadingData];
+    }
 }
 
 #pragma mark UIWebView Delegate
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
 {
-    NSLog(@"%@",request);
     NSString *stringRequest = [NSString stringWithFormat:@"%@",request];
     if ([stringRequest containsString:@"session_id"]) {
         [self stopLoadingData];
     }
     if ([stringRequest containsString:@"simipayu/index/success"]) {
-        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:SCLocalizedString(@"SUCCESS") message:SCLocalizedString(@"Thank your for purchase") delegate:nil cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles: nil];
-        [alertView show];
-        [self.navigationController popToRootViewControllerAnimated:YES];
+        [self showAlertWithTitle:@"SUCCESS" message:@"Thank your for purchase"];
+        [self.navigationController dismissViewControllerAnimated:YES completion:nil];
         return NO;
     }else if ([stringRequest containsString:@"simipayu/index/failure"])
     {
-        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[SCLocalizedString(@"Error") uppercaseString] message:SCLocalizedString(@"Have some errors, please try again") delegate:nil cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles: nil];
-        [alertView show];
-        [self.navigationController popToRootViewControllerAnimated:YES];
+        [self showAlertWithTitle:@"ERROR" message:@"Have some errors, please try again"];
+        [self.navigationController dismissViewControllerAnimated:YES completion:nil];
         return NO;
     }
     return  YES;
