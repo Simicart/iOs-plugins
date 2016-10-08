@@ -12,7 +12,7 @@
 #define kGetWishlistItemsURL @"simiconnector/rest/v2/wishlistitems"
 #define kGetWishlistProductDetailURL @"simiconnector/rest/v2/products/"
 #define kRemoveWishlistItemURL @"simiconnector/rest/v2/wishlistitems/"
-#define kAddProductFromWishlistToCartURL @"/simiconnector/rest/v2/wishlistitems/"
+#define kAddProductFromWishlistToCartURL @"simiconnector/rest/v2/wishlistitems/"
 
 @implementation SCWishlistModelCollection
 

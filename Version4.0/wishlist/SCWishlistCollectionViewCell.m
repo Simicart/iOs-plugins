@@ -49,16 +49,23 @@
         priceView = [[SCPriceView alloc] initWithFrame:CGRectMake(0, wishlistItemY, wishlistItemWidth, 0)];
         [wishlistItemInfoView addSubview:priceView];
         addToCartButton = [[UIButton alloc] init];
-        [addToCartButton setTitle:SCLocalizedString(@"Add To Cart") forState:UIControlStateNormal];
         [addToCartButton setBackgroundColor:THEME_BUTTON_BACKGROUND_COLOR];
         [addToCartButton setTitleColor:THEME_BUTTON_TEXT_COLOR forState:UIControlStateNormal];
         [addToCartButton addTarget:self action:@selector(addToCartButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
+        addToCartButton.layer.cornerRadius = 3;
         [wishlistItemInfoView addSubview:addToCartButton];
+        if([[wishlistItem objectForKey:@"stock_status"] boolValue])
+            [addToCartButton setTitle:SCLocalizedString(@"Add To Cart") forState:UIControlStateNormal];
+        else{
+            [addToCartButton setTitle:SCLocalizedString(@"Out Of Stock") forState:UIControlStateNormal];
+            addToCartButton.enabled = NO;
+            addToCartButton.alpha = 0.5f;
+        }
     }
     itemNameLabel.text = [wishlistItem objectForKey:@"product_name"];
     SimiProductModel* productModel = [[SimiProductModel alloc] initWithDictionary:wishlistItem];
     [priceView setProductModel:productModel andWidthView:CGRectGetWidth(wishlistItemInfoView.frame)];
-    [addToCartButton setFrame:CGRectMake(0, priceView.frame.origin.y + priceView.frame.size.height, CGRectGetWidth(wishlistItemInfoView.frame), 30)];
+    [addToCartButton setFrame:CGRectMake(0, priceView.frame.origin.y + priceView.frame.size.height + paddingTop, CGRectGetWidth(wishlistItemInfoView.frame), 30)];
     
     float rightButtonY = paddingTop;
     if(!deleteButton){
