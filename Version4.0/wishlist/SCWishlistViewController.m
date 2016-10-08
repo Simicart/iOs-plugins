@@ -65,7 +65,6 @@
     wishlistCollectionView.delegate = self;
     wishlistCollectionView.dataSource = self;
     [self.view addSubview:wishlistCollectionView];
-    [wishlistCollectionView registerClass:[SCWishlistCollectionViewCell class] forCellWithReuseIdentifier:WISHLISTCOLLECTIONVIEWCELL];
     emptyLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, paddingY, SCREEN_WIDTH, 30)];
     emptyLabel.text = SCLocalizedString(@"Your wishlist is empty");
     emptyLabel.textAlignment = NSTextAlignmentCenter;
@@ -99,8 +98,9 @@
             emptyLabel.hidden = NO;
         }
     }else{
-        UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:@"" message:responder.responseMessage delegate:nil cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles:nil, nil];
+        UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:SCLocalizedString(@"Sorry") message:responder.responseMessage delegate:nil cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles:nil, nil];
         [alertView show];
+        [self.navigationController popViewControllerAnimated:YES];
     }
 }
 
@@ -119,7 +119,9 @@
 }
 
 -(UICollectionViewCell* ) collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath{
-    SCWishlistCollectionViewCell* cell = [collectionView dequeueReusableCellWithReuseIdentifier:WISHLISTCOLLECTIONVIEWCELL forIndexPath:indexPath];
+    NSString* identifier = [NSString stringWithFormat:@"%@%ld",WISHLISTCOLLECTIONVIEWCELL,(long) indexPath.row];
+    [collectionView registerClass:[SCWishlistCollectionViewCell class] forCellWithReuseIdentifier:identifier];
+    SCWishlistCollectionViewCell* cell = [collectionView dequeueReusableCellWithReuseIdentifier:identifier forIndexPath:indexPath];
     cell.wishlistItem = [wishlistModelCollection objectAtIndex:indexPath.row];
     cell.delegate = self;
     return cell;
