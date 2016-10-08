@@ -32,9 +32,11 @@
         payment = [noti.userInfo valueForKey:@"payment"];
         if ([[payment valueForKey:@"payment_method"] isEqualToString:@"SIMIKLARNA"]) {
             orderViewController.isDiscontinue = YES;
+            [orderViewController.navigationController popToRootViewControllerAnimated:NO];
             KlarnaViewController *viewController = [[KlarnaViewController alloc] init];
-            [orderViewController.navigationController pushViewController:viewController animated:YES];
-            viewController.navigationItem.title = @"Klarna";
+            UINavigationController *currentVC = [SimiGlobalVar sharedInstance].currentlyNavigationController;
+            UINavigationController *navi  = [[UINavigationController alloc]initWithRootViewController:viewController];
+            [currentVC presentViewController:navi animated:YES completion:nil];
         }
     }
 }

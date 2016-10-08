@@ -9,9 +9,9 @@
 #import <SimiCartBundle/SimiCartBundle.h>
 #import <SimiCartBundle/SimiViewController.h>
 #import <SimiCartBundle/SimiResponder.h>
-#import "KlarnaModelCollection.h"
+#import "KlarnaModel.h"
 
 @interface KlarnaViewController : SimiViewController<UIWebViewDelegate>
 @property (nonatomic, strong) UIWebView *webView;
-@property (nonatomic, strong) KlarnaModelCollection *klarnaModelCollection;
+@property (nonatomic, strong) KlarnaModel *klarnaModel;
 @end

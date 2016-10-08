@@ -9,6 +9,6 @@
 #import <SimiCartBundle/SimiCartBundle.h>
 #import "KlarnaAPI.h"
 @interface KlarnaModel : SimiModel
-- (void)getParamsKlarnaWithParams:(NSDictionary *)params;
 - (void)checkoutKlarnaWithParams:(NSDictionary *)params;
+- (void)getParamsKlarnaWithParams:(NSDictionary *)params;
 @end
