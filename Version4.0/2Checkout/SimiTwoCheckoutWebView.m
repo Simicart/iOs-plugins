@@ -97,6 +97,7 @@
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
 {
     NSString *requestURL = [NSString stringWithFormat:@"%@",request];
+    NSError *error;
     if([requestURL rangeOfString:@"jsessionid="].location != NSNotFound){
         NSArray *params = [requestURL componentsSeparatedByString:@"jsessionid="];
         NSString *orderNumber = params[1];

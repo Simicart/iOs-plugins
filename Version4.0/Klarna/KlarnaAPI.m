@@ -7,17 +7,17 @@
 //
 
 #import "KlarnaAPI.h"
-NSString *const kSimiGetParamsKlarna = @"simiklarna/api/get_params";
-NSString *const kSimiCheckoutWithKlarna = @"simiklarna/api/push";
+NSString *const kSimiGetParamsKlarna = @"simiklarnaapis/get_params";
+NSString *const kSimiCheckoutWithKlarna = @"simiklarnaapis/push";
 @implementation KlarnaAPI
 - (void)getParamsKlarnaWithParams:(NSDictionary *)params target:(id)target selector:(SEL)selector
 {
-    NSString *url = [NSString stringWithFormat:@"%@%@", kBaseURL, kSimiGetParamsKlarna];
-    [self requestWithURL:url params:params target:target selector:selector header:nil];
+    NSString *url = [NSString stringWithFormat:@"%@%@%@", kBaseURL, kSimiConnectorURL, kSimiGetParamsKlarna];
+    [self requestWithMethod:GET URL:url params:params target:target selector:selector header:nil];
 }
 - (void)checkoutKlarnaWithParams:(NSDictionary *)params target:(id)target selector:(SEL)selector
 {
-    NSString *url = [NSString stringWithFormat:@"%@%@", kBaseURL, kSimiCheckoutWithKlarna];
-    [self requestWithURL:url params:params target:target selector:selector header:nil];
+    NSString *url = [NSString stringWithFormat:@"%@%@%@", kBaseURL, kSimiConnectorURL, kSimiCheckoutWithKlarna];
+    [self requestWithMethod:GET URL:url params:params target:target selector:selector header:nil];
 }
 @end

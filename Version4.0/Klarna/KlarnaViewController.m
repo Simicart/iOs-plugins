@@ -16,32 +16,47 @@
 -(void)viewDidLoadBefore
 {
     self.edgesForExtendedLayout = UIRectEdgeBottom;
+    UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc]initWithTitle:SCLocalizedString(@"Cancel") style:UIBarButtonItemStylePlain target:self action:@selector(cancelPayment:)];
+    self.navigationItem.rightBarButtonItem = cancelButton;
+    self.navigationItem.title = SCLocalizedString(@"Klarna");
 }
 
-- (void)viewDidAppear:(BOOL)animated
+- (void)cancelPayment:(UIButton*)sender
 {
-    _klarnaModelCollection = [[KlarnaModelCollection alloc]init];
-    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(didReceiveNotification:) name:@"DidGetKlarnaParam" object:_klarnaModelCollection];
+    [self showAlertWithTitle:@"FAIL" message:@"Your order has been canceled"];
+    [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)viewDidAppearBefore:(BOOL)animated
+{
+    _klarnaModel = [KlarnaModel new];
+    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(didReceiveNotification:) name:@"DidGetKlarnaParam" object:_klarnaModel];
     
     _webView = [[UIWebView alloc]initWithFrame:self.view.bounds];
     _webView.delegate = self;
     [self.view addSubview:_webView];
     [self startLoadingData];
-    [_klarnaModelCollection getParamsKlarnaWithParams:@{}];
+    [_klarnaModel getParamsKlarnaWithParams:@{}];
+}
+
+- (void)viewWillAppearBefore:(BOOL)animated
+{
+    
 }
 
 - (void)didReceiveNotification:(NSNotification *)noti
 {
     if ([noti.name isEqualToString:@"DidGetKlarnaParam"]) {
-        NSString *stringParams = @"[";
-        for (int i = 0; i < _klarnaModelCollection.count; i++) {
-            SimiModel *model = [_klarnaModelCollection objectAtIndex:i];
+        NSString *stringParams = @"{%22simiklarnaapi%22:[";
+        NSArray *dataParams = [_klarnaModel valueForKey:@"params"];
+        for (int i = 0; i < dataParams.count; i++) {
+            SimiModel *model = [dataParams objectAtIndex:i];
             NSData *data = [NSJSONSerialization dataWithJSONObject:model options:0 error:nil];
             NSString *string = [[NSString alloc] initWithBytes:[data bytes] length:[data length] encoding:NSUTF8StringEncoding];
-            if (i < (_klarnaModelCollection.count -1)) {
+            if (i < (dataParams.count -1)) {
                 stringParams = [NSString stringWithFormat:@"%@%@,", stringParams, string];
             }else
-                stringParams = [NSString stringWithFormat:@"%@%@]", stringParams, string];
+                stringParams = [NSString stringWithFormat:@"%@%@]}", stringParams, string];
         }
         NSString *stringURL = [NSString stringWithFormat:@"%@simiklarna/api/checkout/data/%@",kBaseURL,[stringParams stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
         NSURLRequest *request = [[NSURLRequest alloc]initWithURL:[[NSURL alloc]initWithString:stringURL]];
@@ -50,14 +65,12 @@
     {
         SimiResponder *responder = [noti.userInfo valueForKey:@"responder"];
         if ([responder.status isEqualToString:@"SUCCESS"]) {
-            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:SCLocalizedString(@"SUCCESS") message:SCLocalizedString(@"Thank your for purchase") delegate:nil cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles: nil];
-            [alertView show];
+            [self showAlertWithTitle:@"SUCCESS" message:@"Thank your for purchase"];
             [self.navigationController popToRootViewControllerAnimated:YES];
         }else
         {
-            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[SCLocalizedString(@"Error") uppercaseString] message:SCLocalizedString(@"Have some errors, please try again") delegate:nil cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles: nil];
-            [alertView show];
-            [self.navigationController popToRootViewControllerAnimated:YES];
+            [self showAlertWithTitle:@"Error" message:@"Have some errors, please try again"];
+            [self.navigationController dismissViewControllerAnimated:YES completion:nil];
         }
     }
 }
@@ -68,11 +81,10 @@
     NSString *stringRequest = [NSString stringWithFormat:@"%@",request];
     NSLog(@"%@",stringRequest);
     if ([stringRequest containsString:@"checkout/cart"]) {
-        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:SCLocalizedString(@"FAIL") message:SCLocalizedString(@"Your order has been canceled") delegate:nil cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles: nil];
-        [alertView show];
-        [self.navigationController popToRootViewControllerAnimated:YES];
+        [self showAlertWithTitle:@"FAIL" message:@"Your order has been canceled"];
+        [self.navigationController dismissViewControllerAnimated:YES completion:nil];
         return NO;
-    }else if([stringRequest containsString:@"/simiklarna/api/success"])
+    }else if([stringRequest containsString:@"simiklarnaapis/success/"])
     {
         NSError *error;
         NSString *klarnaContent = [NSString stringWithContentsOfURL:[request URL]
@@ -80,19 +92,18 @@
                                                            error:&error];
         NSData *data = [klarnaContent dataUsingEncoding:NSUTF8StringEncoding];
         NSDictionary *dictKlarnaContent = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&error];
-        if ([[dictKlarnaContent valueForKey:@"status"] isEqualToString:@"SUCCESS"]) {
-            NSDictionary *params = [dictKlarnaContent valueForKey:@"data"];
-            [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(didReceiveNotification:) name:@"DidCheckOutKlarna"object:_klarnaModelCollection];
-            [_klarnaModelCollection checkoutKlarnaWithParams:params];
+        if ([[dictKlarnaContent valueForKey:@"simiklarnaapi"] isKindOfClass:[NSDictionary class]]) {
+            NSDictionary *params = [dictKlarnaContent valueForKey:@"simiklarnaapi"];
+            [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(didReceiveNotification:) name:@"DidCheckOutKlarna"object:_klarnaModel];
+            [_klarnaModel checkoutKlarnaWithParams:params];
             return NO;
         }else
         {
-            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:SCLocalizedString(@"FAIL") message:SCLocalizedString(@"Your order has been canceled") delegate:nil cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles: nil];
-            [alertView show];
-            [self.navigationController popToRootViewControllerAnimated:YES];
+            [self showAlertWithTitle:@"FAIL" message:@"Your order has been canceled"];
+            [self.navigationController dismissViewControllerAnimated:YES completion:nil];
             return NO;
         }
-    }else if ([stringRequest containsString:@"fullscreen_overlay"])
+    }else if ([stringRequest containsString:@"fullscreen.html"])
     {
         [self stopLoadingData];
     }
