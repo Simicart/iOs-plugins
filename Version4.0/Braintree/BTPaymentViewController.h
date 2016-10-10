@@ -10,7 +10,6 @@
 #import <SimiCartBundle/SimiCartBundle.h>
 #import "BraintreeUI.h"
 #import <SimiCartBundle/SimiOrderModel.h>
-#import <SimiCartBundle/SimiPaymentModelCollection.h>
 #import "BraintreeApplePay.h"
 #import <Foundation/Foundation.h>
 #import "BraintreeCore.h"
@@ -24,6 +23,7 @@ static NSString* const PAYMENTSECTION = @"PAYMENTSECTION";
 
 
 @property (nonatomic, strong) BTAPIClient *braintreeClient;
-@property (nonatomic, strong) SimiPaymentModelCollection* payment;
 @property (nonatomic,strong) SimiOrderModel* order;
+@property NSDictionary* payment;
+@property NSDictionary* shipping;
 @end

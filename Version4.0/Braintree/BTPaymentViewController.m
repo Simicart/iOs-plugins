@@ -6,12 +6,18 @@
 //  Copyright © 2015 Trueplus. All rights reserved.
 //
 @import PassKit;
+#import <PassKit/PKPaymentAuthorizationViewController.h>
 #import "BraintreeApplePay.h"
 #import "BTPaymentViewController.h"
 #import "BraintreeCard.h"
 #import "BraintreePayPal.h"
 #import "SimiBraintreeModel.h"
 #import <SimiCartBundle/SCThankyouPageViewController.h>
+
+#define BRAINTREE_APPLEPAY @"braintree_applepay"
+#define BRAINTREE_GOOGLEPAY @"braintree_googlepay"
+#define BRAINTREE_CREDITCARD @"braintree_creditcard"
+#define BRAINTREE_PAYPAL @"braintree_paypal"
 
 @interface BTPaymentViewController ()
 @end
@@ -22,61 +28,84 @@
 }
 @synthesize braintreeClient,order;
 
--(void) viewDidLoadBefore{
+
+-(void) viewWillAppearBefore:(BOOL)animated{
+    
+}
+
+-(void) configureLogo{
+    
+}
+
+
+-(void) viewDidLoad{
     NSString* clientToken = [_payment valueForKey:@"token"];
     self.braintreeClient = [[BTAPIClient alloc] initWithAuthorization:clientToken];
     if([_payment valueForKey:@"payment_list"]){
         paymentList = [_payment valueForKey:@"payment_list"];
     }
-    if([paymentList containsObject:@"braintree_googlepay"])
-        [paymentList removeObject:@"braintree_googlepay"];
-    if([paymentList containsObject:@"braintree_creditcard"])
-        [paymentList removeObject:@"braintree_creditcard"];
-    
-//    [paymentList addObject:@"dropin_payment"];
+    if([paymentList containsObject:BRAINTREE_APPLEPAY]){
+        //Remove for unsupporting
+        [paymentList removeObject:BRAINTREE_APPLEPAY];
+//        if (![PKPaymentAuthorizationViewController class] || ![PKPaymentAuthorizationViewController canMakePayments] || ![PKPaymentAuthorizationViewController canMakePaymentsUsingNetworks:@[PKPaymentNetworkAmex, PKPaymentNetworkMasterCard, PKPaymentNetworkVisa]]) {
+//            [paymentList removeObject:BRAINTREE_APPLEPAY];
+//            [self showAlertWithTitle:SCLocalizedString(@"Apple Pay") message:SCLocalizedString(@"This device cannot make payments with Apple Pay")];
+//        }
+        
+    }
+    if([paymentList containsObject:BRAINTREE_GOOGLEPAY])
+        [paymentList removeObject:BRAINTREE_GOOGLEPAY];
+    if([paymentList containsObject:BRAINTREE_CREDITCARD])
+        [paymentList removeObject:BRAINTREE_CREDITCARD];
     UITableView* tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)];
     tableView.delegate = self;
     tableView.dataSource = self;
-//    tableView.separatorColor = [UIColor clearColor];
     self.view = tableView;
     self.title = SCLocalizedString(@"Braintree");
-    [super viewDidLoadBefore];
+    [super viewDidLoad];
 }
 
 
 #pragma mark TableViewDelegate
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     NSString* identifier = [paymentList objectAtIndex:indexPath.row];
-    if([identifier isEqualToString:@"braintree_applepay"]){
-        PKPaymentRequest *paymentRequest = [self paymentRequest];
-        PKPaymentAuthorizationViewController *vc = [[PKPaymentAuthorizationViewController alloc] initWithPaymentRequest:paymentRequest];
-        vc.delegate = self;
-        if(vc)
-            [self presentViewController:vc animated:YES completion:nil];
-    }else if([identifier isEqualToString:@"braintree_paypal"]){
+    if([identifier isEqualToString:BRAINTREE_APPLEPAY]){
+        [self payWithApplePay];
+    }else if([identifier isEqualToString:BRAINTREE_PAYPAL]){
         BTDropInViewController* dropInVC = [[BTDropInViewController alloc] initWithAPIClient:self.braintreeClient];
         dropInVC.delegate = self;
         [self.navigationController pushViewController:dropInVC animated:YES];
     }
     else{
-    
+        
     }
 }
-- (PKPaymentRequest *)paymentRequest {
+- (PKPaymentRequest *)applePaymentRequest {
     PKPaymentRequest *paymentRequest = [[PKPaymentRequest alloc] init];
+    paymentRequest.requiredBillingAddressFields = PKAddressFieldName;
+    PKShippingMethod *shippingMethod = [PKShippingMethod summaryItemWithLabel:[_shipping valueForKey:@"s_method_title"] amount:[NSDecimalNumber decimalNumberWithString:[NSString stringWithFormat:@"%@",[_shipping valueForKey:@"s_method_fee"]]]];
+    shippingMethod.detail = [_shipping valueForKey:@"s_method_name"] ;
+    shippingMethod.identifier = [_shipping valueForKey:@"s_method_id"];
+    paymentRequest.shippingMethods = @[shippingMethod];
+    paymentRequest.requiredShippingAddressFields = PKAddressFieldAll;
+    
     paymentRequest.merchantIdentifier = [self.payment valueForKey:@"apple_merchant"];
-    paymentRequest.supportedNetworks = @[PKPaymentNetworkAmex, PKPaymentNetworkVisa, PKPaymentNetworkMasterCard];
+#ifdef __IPHONE_9_0
+    paymentRequest.supportedNetworks = @[PKPaymentNetworkVisa, PKPaymentNetworkMasterCard, PKPaymentNetworkAmex, PKPaymentNetworkDiscover];
+#else
+    paymentRequest.supportedNetworks = @[PKPaymentNetworkVisa, PKPaymentNetworkMasterCard, PKPaymentNetworkAmex];
+#endif
     paymentRequest.merchantCapabilities = PKMerchantCapability3DS;
-    paymentRequest.countryCode = [[[[SimiGlobalVar sharedInstance] store] objectForKey:@"store_config"] valueForKey:@"country_code"];
-    paymentRequest.currencyCode = [[[[SimiGlobalVar sharedInstance] store] objectForKey:@"store_config" ] valueForKey:@"currency_code"];
+    paymentRequest.countryCode = [[SimiGlobalVar sharedInstance] countryCode];
+    paymentRequest.currencyCode = [[SimiGlobalVar sharedInstance] currencyCode];
+    if ([paymentRequest respondsToSelector:@selector(setShippingType:)]) {
+        paymentRequest.shippingType = PKShippingTypeDelivery;
+    }
     NSMutableDictionary* fees = [order objectForKey:@"fee"];
     
-    NSDecimalNumber* subTotal = [NSDecimalNumber decimalNumberWithString:[NSString stringWithFormat:@"%@",[fees valueForKey:@"sub_total"]]];
+    NSDecimalNumber* subTotal = [NSDecimalNumber decimalNumberWithString:[NSString stringWithFormat:@"%.2f",[[fees valueForKey:@"sub_total"] floatValue]]];
+    NSDecimalNumber* grandTotal = [NSDecimalNumber decimalNumberWithString:[NSString stringWithFormat:@"%.2f",[[fees valueForKey:@"grand_total"] floatValue]]];
     
-    
-    
-    NSDecimalNumber* grandTotal = [NSDecimalNumber decimalNumberWithString:[NSString stringWithFormat:@"%@",[fees valueForKey:@"grand_total"]]];
-
     paymentRequest.paymentSummaryItems =
     @[
       [PKPaymentSummaryItem summaryItemWithLabel:@"Subtotal" amount:subTotal],
@@ -84,6 +113,17 @@
       ];
     return paymentRequest;
 }
+
+-(void) payWithApplePay{
+    PKPaymentAuthorizationViewController *vc = [[PKPaymentAuthorizationViewController alloc] initWithPaymentRequest:[self applePaymentRequest]];
+    vc.delegate = self;
+    if(vc){
+        [self presentViewController:vc animated:YES completion:nil];
+    }else{
+        [self showAlertWithTitle:SCLocalizedString(@"Apple Pay") message:SCLocalizedString(@"This device cannot make payments with Apple Pay")];
+    }
+}
+
 #pragma mark TableViewDatasource
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section_{
     return paymentList.count;
@@ -95,9 +135,12 @@
     UITableViewCell* cell = [tableView dequeueReusableCellWithIdentifier:identifier];
     if(!cell){
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier];
-        if([identifier isEqualToString:@"braintree_applepay"]){
-            cell.textLabel.text = @"Pay with Apple Pay";
-        }else if([identifier isEqualToString:@"braintree_paypal"]){
+        if([identifier isEqualToString:BRAINTREE_APPLEPAY]){
+            PKPaymentButton *applePayButton = [[PKPaymentButton alloc] initWithPaymentButtonType:PKPaymentButtonTypePlain paymentButtonStyle:PKPaymentButtonStyleBlack];
+            [applePayButton addTarget:self action:@selector(payWithApplePay) forControlEvents:UIControlEventTouchUpInside];
+            applePayButton.frame = CGRectMake((self.navigationController.view.frame.size.width - 100)/2, 10, 100, 30);
+            [cell addSubview:applePayButton];
+        }else if([identifier isEqualToString:BRAINTREE_PAYPAL]){
             cell.textLabel.text = @"Pay with Paypal and Card";
         }
         else{
@@ -125,7 +168,7 @@
 }
 
 - (void)userDidCancelPayment {
-        [self dismissViewControllerAnimated:YES completion:nil];
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 
@@ -133,21 +176,22 @@
 - (void)paymentAuthorizationViewController:(PKPaymentAuthorizationViewController *)controller
                        didAuthorizePayment:(PKPayment *)payment
                                 completion:(void (^)(PKPaymentAuthorizationStatus))completion {
-
+    
     // Example: Tokenize the Apple Pay payment
     BTApplePayClient *applePayClient = [[BTApplePayClient alloc]
                                         initWithAPIClient:self.braintreeClient];
     [applePayClient tokenizeApplePayPayment:payment
                                  completion:^(BTApplePayCardNonce *tokenizedApplePayPayment,
                                               NSError *error) {
+                                     if(!error){
+                                         [self showAlertWithTitle:SCLocalizedString(@"Apple Pay") message:[NSString stringWithFormat:@"Cannot make payments.Error: %@", error]];
+                                     }
                                      if (tokenizedApplePayPayment) {
-                                         
                                          [self postNonceToServer:tokenizedApplePayPayment.nonce];
-                                     
                                          completion(PKPaymentAuthorizationStatusSuccess);
                                      } else {
-                
                                          completion(PKPaymentAuthorizationStatusFailure);
+                                         [self showAlertWithTitle:SCLocalizedString(@"Apple Pay") message:SCLocalizedString(@"Something went wrong")];
                                      }
                                  }];
 }
@@ -155,13 +199,17 @@
 
 // Be sure to implement -paymentAuthorizationViewControllerDidFinish:
 - (void)paymentAuthorizationViewControllerDidFinish:(PKPaymentAuthorizationViewController *)controller {
-    [self dismissViewControllerAnimated:YES completion:nil];
+    [controller dismissViewControllerAnimated:YES completion:nil];
 }
+-(void) paymentAuthorizationViewControllerWillAuthorizePayment:(PKPaymentAuthorizationViewController *)controller{
+    
+}
+
 
 - (void)postNonceToServer:(NSString *)paymentMethodNonce {
     if(!braintreeModel)
         braintreeModel = [SimiBraintreeModel new];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"BRAINTREE-SENDNONCETOSERVER" object:braintreeModel];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:BRAINTREE_SENDNONCETOSERVER object:braintreeModel];
     [self startLoadingData];
     [braintreeModel sendNonceToServer:paymentMethodNonce andOrder:order];
 }
@@ -169,15 +217,14 @@
 -(void) didReceiveNotification:(NSNotification *)noti{
     SimiResponder* responder = [noti.userInfo valueForKey:@"responder"];
     if([responder.status isEqualToString:@"SUCCESS"]){
-        if([noti.name isEqualToString:@"BRAINTREE-SENDNONCETOSERVER"]){
+        if([noti.name isEqualToString:BRAINTREE_SENDNONCETOSERVER]){
             SCThankYouPageViewController* thankyouPage = [SCThankYouPageViewController new];
             thankyouPage.order = order;
             [thankyouPage.navigationItem setHidesBackButton:YES];
             [self.navigationController pushViewController:thankyouPage animated:YES];
         }
     }else{
-        UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:@"" message:responder.responseMessage delegate:nil cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles:nil, nil];
-        [alertView show];
+        [self showAlertWithTitle:SCLocalizedString(@"") message:responder.responseMessage];
         [self.navigationController popToRootViewControllerAnimated:YES];
     }
     [self removeObserverForNotification:noti];
@@ -245,5 +292,6 @@ requestsDismissalOfViewController:(UIViewController *)viewController {
 - (void)dropInViewControllerDidCancel:(BTDropInViewController *)viewController{
     NSLog(@"DIDCANCEL");
 }
+
 
 @end
