@@ -12,5 +12,4 @@
 
 @interface SimiPaymentWorker : SimiViewController<UIWebViewDelegate,UIAlertViewDelegate>
 @property (strong, nonatomic) CustomPaymentModelCollection* customPayment;
-
 @end

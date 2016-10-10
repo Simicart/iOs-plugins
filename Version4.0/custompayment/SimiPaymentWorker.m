@@ -7,10 +7,9 @@
 //
 
 #import <SimiCartBundle/SCAppDelegate.h>
-#import "SimiPaymentWorker.h"
 #import <SimiCartBundle/SimiOrderModel.h>
+#import "SimiPaymentWorker.h"
 
-//Axe need edit
 #define METHOD_PAYMENT @"SIMICUSTOMPAYMENT"
 #define ALERT_VIEW_ERROR 0
 
@@ -41,7 +40,6 @@
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"DidPlaceOrder-Before" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"DidGetCustomPayments" object:nil];
         [[self customPayment] getCustomPaymentsWithParams:nil];
-        
     }
     return self;
 }
@@ -57,18 +55,14 @@
             }
         }
     }else if([noti.name isEqualToString:@"DidGetCustomPayments"]){
-        if(noti.object)
-            _customPayment = noti.object;
+        
     }
 }
 
-
-
 - (void)didPlaceOrder:(NSNotification *)noti
 {
-    UIViewController *currentVC = [(UITabBarController *)[[(SCAppDelegate *)[[UIApplication sharedApplication]delegate] window] rootViewController] selectedViewController];
+    UINavigationController *currentVC = [SimiGlobalVar sharedInstance].currentlyNavigationController;
     order = [noti.userInfo valueForKey:@"data"];
-    
     @try {
         if([order valueForKey:@"invoice_number"] &&[order valueForKey:@"payment_method"] && [order valueForKey:@"url_action"] && [_customPayment count] > 0){
             NSString *url = [order valueForKey:@"url_action"];
@@ -82,9 +76,8 @@
             }
             [nextController setOrderID:[order valueForKey:@"invoice_number" ]];
             [nextController setUrlPath:url];
-            nextController.title =  SCLocalizedString([payment valueForKey:@"title"]);
-            nextController.webTitle = SCLocalizedString([payment valueForKey:@"title"]);
-            [(UINavigationController *)currentVC pushViewController:nextController animated:YES];
+            UINavigationController *navi = [[UINavigationController alloc]initWithRootViewController:nextController];
+            [currentVC presentViewController:navi animated:YES completion:nil];
         }else{
             UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:SCLocalizedString(@"Error") message:SCLocalizedString(@"Sorry, Credit Card Payments is not now available. Please try again later.") delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil];
             alertView.tag = ALERT_VIEW_ERROR;
@@ -101,7 +94,7 @@
     }
 }
 
--(CustomPaymentModelCollection*) customPayment{
+- (CustomPaymentModelCollection*) customPayment{
     if(_customPayment == nil){
         _customPayment = [CustomPaymentModelCollection new];
     }
