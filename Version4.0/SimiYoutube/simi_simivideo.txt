@@ -1,0 +1,1 @@
+{"header_files":["YoutubeWorker.h","YTPlayerView.h"],"compiler_files":["YoutubeWorker.m","YTPlayerView.m"],"resource_files":["ic_simivideo.png","plugin-simi_simivideo.plist","YTPlayerView-iframe-player.html"],"system_framework_files":[],"system_lib_files":[],"custom_framework_files":[],"custom_lib_files":[]}

@@ -41,11 +41,12 @@ static NSString *PRODUCT_ROW_YOUTUBE = @"PRODUCT_ROW_YOUTUBE";
         product = productMoreViewController.productModel;
         youtubeArray = (NSMutableArray*)[product valueForKey:@"product_video"];
         if(youtubeArray.count > 0){
-            CGRect frame = productMoreViewController.pageScrollView.bounds;
+            CGRect frame = productMoreViewController.contentScrollView.bounds;
             UITableView* tableVideo = [[UITableView alloc]initWithFrame:frame style:UITableViewStylePlain];
             tableVideo.delegate = self;
             tableVideo.dataSource = self;
-            [productMoreViewController.pageScrollView addTab:SCLocalizedString(@"Video") View:tableVideo Info:nil];
+            [productMoreViewController.horizontalTitleList addObject:SCLocalizedString(@"Video")];
+            [productMoreViewController.contentViewArray addObject:tableVideo];
         }
     }
 }
@@ -78,8 +79,16 @@ static NSString *PRODUCT_ROW_YOUTUBE = @"PRODUCT_ROW_YOUTUBE";
 
 - (void)didTouchSimiVideo:(id)sender
 {
-    [productMoreViewController.pageScrollView setSelectedIndex:[productMoreViewController.pageScrollView getTabCount] - 1];
-    [productMoreViewController.pageScrollView scrollToIndex: productMoreViewController.pageScrollView.viewScrollTop];
+    int index = 0;
+    for (int i = 0; i < productMoreViewController.horizontalTitleList.count; i++) {
+        NSString *tempString = [productMoreViewController.horizontalTitleList objectAtIndex:i];
+        if ([tempString isEqualToString:SCLocalizedString(@"Video")]) {
+            index = i;
+            break;
+        }
+    }
+    [productMoreViewController.horizontalSelectionList setSelectedButtonIndex:index animated:YES];
+    [productMoreViewController.contentScrollView setContentOffset:CGPointMake(index*CGRectGetWidth(productMoreViewController.contentScrollView.frame), 0) animated:YES];
     [productMoreViewController didTouchMoreAction];
 }
 
