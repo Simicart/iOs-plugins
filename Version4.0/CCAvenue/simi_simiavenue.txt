@@ -1,0 +1,1 @@
+{"header_files":["SimiAvenueWebView.h","SimiAvenueWorker.h","SimiOrderAPI+Avenue.h","SimiOrderModel+Avenue.h"],"compiler_files":["SimiAvenueWebView.m","SimiAvenueWorker.m","SimiOrderAPI+Avenue.m","SimiOrderModel+Avenue.m"],"resource_files":["plugin-simi_simiavenue.plist"],"system_framework_files":[],"system_lib_files":[],"custom_framework_files":[],"custom_lib_files":[]}

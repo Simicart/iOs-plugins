@@ -1,0 +1,1 @@
+{"header_files":["KlarnaAPI.h","KlarnaModel.h","KlarnaViewController.h","KlarnaWorker.h"],"compiler_files":["KlarnaAPI.m","KlarnaModel.m","KlarnaViewController.m","KlarnaWorker.m"],"resource_files":["plugin-simi_simiklarna.plist"],"system_framework_files":[],"system_lib_files":[],"custom_framework_files":[],"custom_lib_files":[]}
