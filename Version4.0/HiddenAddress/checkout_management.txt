@@ -1,0 +1,1 @@
+{"header_files":["SCHiddenAddressWorker.h"],"compiler_files":["SCHiddenAddressWorker.m"],"resource_files":["plugin-checkout_management.plist"],"system_framework_files":[],"system_lib_files":[],"custom_framework_files":[],"custom_lib_files":[]}
