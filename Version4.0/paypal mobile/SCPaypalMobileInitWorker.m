@@ -161,7 +161,7 @@
         paypalOrder = [SimiOrderModel new];
     }
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdatePaymentStatus:) name:DidSavePaypalPayment object:paypalOrder];
-    [paypalOrder savePaymentWithStatus:[NSString stringWithFormat:@"%ld",(long)PaymentStatusCancelled] invoiceNumber:nil proof:nil];
+    [paypalOrder savePaymentWithStatus:[NSString stringWithFormat:@"%ld",(long)PaymentStatusCancelled] invoiceNumber:[NSString stringWithFormat:@"%@",[order valueForKey:@"invoice_number"]] proof:nil];
     [viewController dismissViewControllerAnimated:YES completion:^{
         [[UINavigationBar appearance] setTintColor:[UIColor whiteColor]];
     }];

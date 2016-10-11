@@ -11,8 +11,6 @@
 #import "SimiPaymentWorker.h"
 
 #define METHOD_PAYMENT @"SIMICUSTOMPAYMENT"
-#define ALERT_VIEW_ERROR 0
-
 
 @implementation SimiPaymentWorker{
     SimiModel *payment;
@@ -79,15 +77,11 @@
             UINavigationController *navi = [[UINavigationController alloc]initWithRootViewController:nextController];
             [currentVC presentViewController:navi animated:YES completion:nil];
         }else{
-            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:SCLocalizedString(@"Error") message:SCLocalizedString(@"Sorry, Credit Card Payments is not now available. Please try again later.") delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil];
-            alertView.tag = ALERT_VIEW_ERROR;
-            [alertView show];
+            [self showAlertWithTitle:@"Error" message:@"Sorry, Credit Card Payments is not now available. Please try again later."];
         }
     }
     @catch (NSException *exception) {
-        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:SCLocalizedString(@"Error") message:SCLocalizedString(@"Sorry, Credit Card Payments is not now available. Please try again later.") delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil];
-        alertView.tag = ALERT_VIEW_ERROR;
-        [alertView show];
+        [self showAlertWithTitle:@"Error" message:@"Sorry, Credit Card Payments is not now available. Please try again later."];
     }
     @finally {
         

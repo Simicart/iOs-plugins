@@ -8,7 +8,6 @@
 
 #import "LoyaltyViewController.h"
 #import "LoyaltyLoginViewController.h"
-#import "LoyaltyCardViewController.h"
 #import "LoyaltyHistoryViewController.h"
 #import "LoyaltySettingViewController.h"
 
@@ -96,11 +95,6 @@
             }
             SimiRow *row = [section addRowWithIdentifier:LOYALTY_BALANCE height:height sortOrder:0];
             // More Menu Information
-            if ([_loyaltyPolicy objectForKey:@"loyalty_card"]) {
-                row = [section addRowWithIdentifier:LOYALTY_CARD height:44 sortOrder:0];
-                row.title = SCLocalizedString(@"Rewards Card");
-                row.image = [UIImage imageNamed:@"loyalty_card"];
-            }
             row = [section addRowWithIdentifier:LOYALTY_HISTORY height:44 sortOrder:0];
             row.title = SCLocalizedString(@"Rewards History");
             row.image = [UIImage imageNamed:@"loyalty_history"];
@@ -325,7 +319,7 @@
             cell.textLabel.adjustsFontSizeToFitWidth = YES;
             cell.textLabel.minimumScaleFactor = 0.5f;
         }
-        if ([row.identifier isEqualToString:LOYALTY_CARD] || [row.identifier isEqualToString:LOYALTY_HISTORY] || [row.identifier isEqualToString:LOYALTY_SETTING]) {
+        if ([row.identifier isEqualToString:LOYALTY_HISTORY] || [row.identifier isEqualToString:LOYALTY_SETTING]) {
             cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
             cell.selectionStyle = UITableViewCellSelectionStyleDefault;
         } else {
@@ -357,10 +351,6 @@
     _skipReloadData = YES;
     if ([section.identifier isEqualToString:LOYALTY_LOGIN]) {
         [self.navigationController pushViewController:[LoyaltyLoginViewController new] animated:YES];
-    } else if ([row.identifier isEqualToString:LOYALTY_CARD]) {
-        LoyaltyCardViewController *cards = [LoyaltyCardViewController new];
-        cards.model = _loyaltyPolicy;
-        [self.navigationController pushViewController:cards animated:YES];
     } else if ([row.identifier isEqualToString:LOYALTY_HISTORY]) {
         [self.navigationController pushViewController:[LoyaltyHistoryViewController new] animated:YES];
     } else if ([row.identifier isEqualToString:LOYALTY_SETTING]) {

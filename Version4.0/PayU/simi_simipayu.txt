@@ -1,0 +1,1 @@
+{"header_files":["PayUViewController.h","PayUWorker.h"],"compiler_files":["PayUViewController.m","PayUWorker.m"],"resource_files":["plugin-simi_simipayu.plist"],"system_framework_files":[],"system_lib_files":[],"custom_framework_files":[],"custom_lib_files":[]}

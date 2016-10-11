@@ -1,0 +1,1 @@
+{"header_files":["PayUIndiaViewController.h","PayUIndiaWorker.h"],"compiler_files":["PayUIndiaViewController.m","PayUIndiaWorker.m"],"resource_files":["plugin-simi_simipayuindia.plist"],"system_framework_files":[],"system_lib_files":[],"custom_framework_files":[],"custom_lib_files":[]}

@@ -1,0 +1,1 @@
+{"header_files":["SCProductLabel.h"],"compiler_files":["SCProductLabel.m"],"resource_files":["plugin-magestore_productlabel.plist"],"system_framework_files":[],"system_lib_files":[],"custom_framework_files":[],"custom_lib_files":[]}

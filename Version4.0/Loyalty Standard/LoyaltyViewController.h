@@ -15,7 +15,6 @@ static NSString *LOYALTY_BALANCE    = @"balance";
 static NSString *LOYALTY_EARN       = @"earn";
 static NSString *LOYALTY_SPEND      = @"spend";
 static NSString *LOYALTY_POLICY     = @"policy";
-static NSString *LOYALTY_CARD       = @"card";
 static NSString *LOYALTY_HISTORY    = @"history";
 static NSString *LOYALTY_SETTING    = @"setting";
 static NSString *LOYALTY_LOGIN      = @"login";
