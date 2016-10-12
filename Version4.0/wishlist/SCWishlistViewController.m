@@ -70,6 +70,7 @@
     emptyLabel.textAlignment = NSTextAlignmentCenter;
     emptyLabel.font = [UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE];
     [self.view addSubview:emptyLabel];
+    [SimiGlobalVar sortViewForRTL:self.view andWidth:SCREEN_WIDTH];
 }
 
 -(void) viewWillAppear:(BOOL)animated{
