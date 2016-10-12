@@ -58,7 +58,7 @@
 {
     scrView = [[UIScrollView alloc]initWithFrame:self.view.frame];
     widthContent = CGRectGetWidth(scrView.frame);
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if (PADDEVICE) {
         widthContent = 680;
     }
     [scrView setBackgroundColor:[UIColor whiteColor]];
@@ -83,7 +83,8 @@
     [self initStoreSpecialDays];
     [self initStoreHolidays];
     
-    [scrView setContentSize:CGSizeMake(SIZE_SCROLL_VIEW_DETAIL, heightScrViewContentSize)];
+    [scrView setContentSize:CGSizeMake(widthContent, heightScrViewContentSize)];
+    [SimiGlobalVar sortViewForRTL:scrView andWidth:widthContent];
     [super viewDidLoadBefore];
 }
 
@@ -177,7 +178,7 @@
         imgIconPhone = [[UIImageView alloc]initWithFrame:CGRectMake(0, 5, sizeIcon, sizeIcon)];
         [imgIconPhone setImage:[UIImage imageNamed:@"storelocator_7"]];
         [btnStorePhone addSubview:imgIconPhone];
-        
+        [SimiGlobalVar sortViewForRTL:btnStorePhone andWidth:CGRectGetWidth(btnStorePhone.frame)];
         heightScrViewContentSize += heightButton + space;
     }
 }
@@ -201,6 +202,7 @@
         [_btnStoreEmail addSubview:_imgIconEmail];
         
         heightScrViewContentSize += heightButton + space;
+        [SimiGlobalVar sortViewForRTL:_btnStoreEmail andWidth:CGRectGetWidth(_btnStoreEmail.frame)];
     }
     if (heightScrViewContentSize < (CGRectGetHeight(btnDirection.frame) + btnDirection.frame.origin.y)) {
         heightScrViewContentSize = CGRectGetHeight(btnDirection.frame) + btnDirection.frame.origin.y + space;
@@ -226,7 +228,7 @@
         _imgIconWebsite = [[UIImageView alloc]initWithFrame:CGRectMake(0, 5, sizeIcon, sizeIcon)];
         [_imgIconWebsite setImage:[UIImage imageNamed:@"storelocator_5"]];
         [_btnStoreWebsite addSubview:_imgIconWebsite];
-        
+        [SimiGlobalVar sortViewForRTL:_btnStoreWebsite andWidth:CGRectGetWidth(_btnStoreWebsite.frame)];
         heightScrViewContentSize += heightButton + space;
     }
 }
@@ -261,6 +263,7 @@
             [lblInfomationContents resizLabelToFit];
         }
         heightScrViewContentSize += heightButton * 2  + space;
+        [SimiGlobalVar sortViewForRTL:viewInfomation andWidth:CGRectGetWidth(viewInfomation.frame)];
     }
 }
 
@@ -432,6 +435,7 @@
             }
         }
     }
+    [SimiGlobalVar sortViewForRTL:viewOpenHours andWidth:CGRectGetWidth(viewOpenHours.frame)];
     heightScrViewContentSize += CGRectGetHeight(viewOpenHours.frame) + space;
 }
 
@@ -469,6 +473,7 @@
         [viewSpecialsDay setFrame:CGRectMake(edgeSpace, heightScrViewContentSize, CGRectGetWidth(viewSpecialsDay.frame), heightViewSpecialDays)];
         
         heightScrViewContentSize += heightViewSpecialDays;
+        [SimiGlobalVar sortViewForRTL:viewSpecialsDay andWidth:CGRectGetWidth(viewSpecialsDay.frame)];
     }
 }
 
@@ -507,13 +512,14 @@
         [viewHolidays setFrame:CGRectMake(edgeSpace, heightScrViewContentSize, CGRectGetWidth(viewHolidays.frame), heightViewHolidays)];
         
         heightScrViewContentSize += heightViewHolidays;
+        [SimiGlobalVar sortViewForRTL:viewHolidays andWidth:CGRectGetWidth(viewHolidays.frame)];
     }
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:YES];
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if (PADDEVICE) {
         [scrView setFrame:CGRectMake(0, 0, 680, 512)];
     }else
     {
@@ -580,7 +586,7 @@
             frame.origin.y += heightLableInformationRaise;
             [viewHolidays setFrame:frame];
         }
-        [scrView setContentSize:CGSizeMake(SIZE_SCROLL_VIEW_DETAIL, heightScrViewContentSize + heightLableInformationRaise)];
+        [scrView setContentSize:CGSizeMake(widthContent, heightScrViewContentSize + heightLableInformationRaise)];
     }else
     {
         isShowMore = YES;
@@ -613,7 +619,7 @@
             [viewHolidays setFrame:frame];
         }
         
-        [scrView setContentSize:CGSizeMake(SIZE_SCROLL_VIEW_DETAIL, heightScrViewContentSize)];
+        [scrView setContentSize:CGSizeMake(widthContent, heightScrViewContentSize)];
     }
 }
 
@@ -646,7 +652,7 @@
 		[controller setSubject:[NSString stringWithFormat:@""]];
 		[controller setMessageBody:emailContent isHTML:NO];
 		
-		if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
+		if(PADDEVICE)
 		{
             [self presentViewController:controller animated:YES completion:NULL];
 		}

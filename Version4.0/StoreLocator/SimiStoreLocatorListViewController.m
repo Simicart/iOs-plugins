@@ -125,7 +125,7 @@
         stringAddress = [NSString stringWithFormat:@"%@, %@", stringAddress, [storeLocatorModel valueForKey:@"country_name"]];
     }
     float cellWidth = SCREEN_WIDTH;
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if (PADDEVICE) {
         cellWidth = 320;
     }
     float labelWidth = cellWidth - 100;
@@ -249,7 +249,7 @@
 		[controller setSubject:[NSString stringWithFormat:@""]];
 		[controller setMessageBody:emailContent isHTML:NO];
 		
-		if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
+		if(PADDEVICE)
 		{
             [self presentViewController:controller animated:YES completion:NULL];
 		}

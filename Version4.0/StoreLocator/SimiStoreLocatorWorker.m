@@ -51,7 +51,7 @@
     SimiRow *row = [noti.userInfo valueForKey:@"simirow"];
     SCNavigationBarPhone *navi = noti.object;
     if ([row.identifier isEqualToString:LEFTMENU_ROW_STORELOCATOR]) {
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        if (PADDEVICE) {
             UIViewController *currentVC = [(UITabBarController *)[[(SCAppDelegate *)[[UIApplication sharedApplication] delegate] window] rootViewController] selectedViewController];
             SimiStoreLocatorViewControllerPad *storeLocatorViewController = [[SimiStoreLocatorViewControllerPad alloc]init];
             [(UINavigationController *)currentVC pushViewController:storeLocatorViewController animated:YES];

@@ -40,7 +40,7 @@
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier andStoreData:(SimiModel*)storeLocatorModel_;
 {
     cellWidth = SCREEN_WIDTH;
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if (PADDEVICE) {
         cellWidth = 420;
     }
     imageSize = 70;
@@ -119,7 +119,7 @@
         [lblCall setTextColor:[UIColor blackColor]];
         [lblCall setFont:[UIFont fontWithName:THEME_FONT_NAME size:12]];
         [lblCall setBackgroundColor:[UIColor clearColor]];
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        if (PHONEDEVICE) {
             [btnCall setFrame:CGRectMake(0, 0, 70, 34)];
             [lblCall setFrame:CGRectMake(35, 13, 35, 21)];
             [btnCall addSubview:lblCall];
@@ -138,7 +138,7 @@
         [lblMail setTextColor:[UIColor blackColor]];
         [lblMail setFont:[UIFont fontWithName:THEME_FONT_NAME size:12]];
         [lblMail setBackgroundColor:[UIColor clearColor]];
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        if (PHONEDEVICE) {
             [btnMail setFrame:CGRectMake(75, 0, 70, 34)];
             [lblMail setFrame:CGRectMake(35, 13, 35, 21)];
             [btnMail addSubview:lblMail];
@@ -167,7 +167,7 @@
         [lblMap setTextColor:[UIColor blackColor]];
         [lblMap setFont:[UIFont fontWithName:THEME_FONT_NAME size:12]];
         [lblMap setBackgroundColor:[UIColor clearColor]];
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        if (PHONEDEVICE) {
             [btnMap setFrame:CGRectMake(150, 0, 70, 34)];
             [lblMap setFrame:CGRectMake(35, 13, 35, 21)];
             [btnMap addSubview:lblMap];
@@ -180,46 +180,11 @@
             [_viewButton addSubview:btnMap];
         }
     }
+    [SimiGlobalVar sortViewForRTL:_viewButton andWidth:cellWidth - labelDistanceWidth];
+    [SimiGlobalVar sortViewForRTL:self andWidth:cellWidth];
     return self;
 }
 
-/*
-- (void)initStoreListCell
-{
-    lblStoreName.text = SCLocalizedString([storeLocatorModel valueForKey:@"name"]);
-    [lblStoreName setFont:[UIFont fontWithName:[NSString stringWithFormat:@"%@-%@",THEME_FONT_NAME,@"Bold"] size:THEME_FONT_SIZE]];
-    lblStoreName.textColor = [self colorWithStringHex:@"393939"];
-    
-    
-    NSString* stringlblStoreAddress = [NSString stringWithFormat:@"%@, %@, %@",[storeLocatorModel valueForKey:@"address"], [storeLocatorModel valueForKey:@"city"],[storeLocatorModel valueForKey:@"country"]];
-    lblStoreAddress.text = SCLocalizedString(stringlblStoreAddress);
-    [lblStoreAddress setFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE - 2]];
-    lblStoreAddress.textColor = [self colorWithStringHex:@"393939"];
-    
-    
-    float distance = [[NSString stringWithFormat:@"%@",[storeLocatorModel valueForKey:@"distance"]]floatValue]/1000;
-    NSString *stringlblStoreDistance = [NSString stringWithFormat:@"%0.2f %@",distance, SCLocalizedString(@"km")];
-    lblStoreDistance.text = SCLocalizedString(stringlblStoreDistance);
-    [lblStoreDistance setFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE - 2]];
-    lblStoreDistance.textColor = [self colorWithStringHex:@"393939"];
-    if (![[storeLocatorModel valueForKey:@"image"] isEqualToString:@""]) {
-        [imgStoreImage sd_setImageWithURL:[storeLocatorModel valueForKey:@"image"]];
-    }else
-    {
-        [imgStoreImage setImage:[UIImage imageNamed:@"storelocator_icon_store.png"]];
-        [imgBackground removeFromSuperview];
-    }
-    
-    
-    if ([storeLocatorModel valueForKey:@"phone"] == nil) {
-        [btnCall setEnabled:NO];
-    }
-    
-    if ([storeLocatorModel valueForKey:@"email"] == nil) {
-        [btnMail setEnabled:NO];
-    }
-}
-*/
 - (void)btnCall_Click:(id)sender
 {
     NSString *phNo = [NSString  stringWithFormat:@"telprompt:%@",[storeLocatorModel valueForKey:@"phone"]];

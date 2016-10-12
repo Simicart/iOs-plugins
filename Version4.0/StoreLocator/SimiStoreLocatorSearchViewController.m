@@ -46,11 +46,11 @@
 - (void)viewDidLoadBefore
 {
     self.navigationItem.title = SCLocalizedString(@"Search Store");
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+    if (PHONEDEVICE) {
         isiPhone = YES;
     }
     scrView = [UIScrollView new];
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+    if (PHONEDEVICE) {
         [scrView setFrame:self.view.frame];
     }else
     {
@@ -112,7 +112,7 @@
     
     topDistance = 7.5;
     leftDistance = 15;
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if (PADDEVICE) {
         labelMainTitleX = 20;
         labelTitleX = 50;
         textFieldX = 150;
@@ -252,6 +252,12 @@
     [btnSearch setTitle:SCLocalizedString(@"Search") forState:UIControlStateNormal];
     [viewSearch addSubview:btnSearch];
     heightContent += heightViewControl;
+    
+    [SimiGlobalVar sortViewForRTL:scrView andWidth:CGRectGetWidth(scrView.frame)];
+    [SimiGlobalVar sortViewForRTL:viewSearchByCountry andWidth:widthContent];
+    [SimiGlobalVar sortViewForRTL:viewSearchByState andWidth:widthContent];
+    [SimiGlobalVar sortViewForRTL:viewSearchByCity andWidth:widthContent];
+    [SimiGlobalVar sortViewForRTL:viewSearchByZipcode andWidth:widthContent];
 }
 
 - (void)setInterfaceSearchByTag
@@ -259,10 +265,13 @@
     int numberRowCollection = (int)(tagModelCollection.count+1)/3 + 1;
     if (isFirtsGetTagList) {
         isFirtsGetTagList =  NO;
-        lblSearchByTag = [[UILabel alloc]initWithFrame:CGRectMake(labelMainTitleX, heightContent, widthContent - labelMainTitleX, heightLabel)];
+        lblSearchByTag = [[UILabel alloc]initWithFrame:CGRectMake(labelMainTitleX, heightContent, widthContent - labelMainTitleX *2, heightLabel)];
         [lblSearchByTag setText:SCLocalizedString(@"Search By Tag")];
         [lblSearchByTag setTextColor:[[SimiGlobalVar sharedInstance] colorWithHexString:@"#393939"]];
         [lblSearchByTag setFont:[UIFont fontWithName:[NSString stringWithFormat:@"%@-%@",THEME_FONT_NAME,@"Bold"] size:THEME_FONT_SIZE + 3]];
+        if ([SimiGlobalVar sharedInstance].isReverseLanguage) {
+            [lblSearchByTag setTextAlignment:NSTextAlignmentRight];
+        }
         [scrView addSubview:lblSearchByTag];
         heightContent += heightLabel;
         

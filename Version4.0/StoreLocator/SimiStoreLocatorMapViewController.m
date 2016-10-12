@@ -59,7 +59,7 @@
     mapView_.myLocationEnabled = YES;
     mapView_.delegate = self;
     [self.view addSubview:mapView_];
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+    if (PHONEDEVICE) {
         storeLocatorPopup = [[SimiStoreLocatorPopup alloc]initWithFrame:CGRectMake(0, 0, 265, 76)];
     }else
         storeLocatorPopup = [[SimiStoreLocatorPopup alloc]initWithFrame:CGRectMake(0, 0, 300, 90)];

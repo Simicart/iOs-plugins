@@ -27,7 +27,7 @@
         
         lblTagName = [UILabel new];
         CGRect frame= imgTag.frame;
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        if (PHONEDEVICE) {
             frame.origin.x += 29;
             frame.size.width -= 29;
         }else

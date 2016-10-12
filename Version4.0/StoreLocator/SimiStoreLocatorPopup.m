@@ -15,6 +15,10 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
+        float width = 265;
+        if (PADDEVICE) {
+            width = 300;
+        }
         _imagePopup = [[UIImageView alloc]initWithFrame:self.bounds];
         [_imagePopup setImage:[UIImage imageNamed:@"storelocator_popup"]];
         [self addSubview:_imagePopup];
@@ -37,7 +41,7 @@
         lblStoreAddress = [UILabel new];
         lblStoreAddress.textColor = [[SimiGlobalVar sharedInstance]colorWithHexString:@"#393939"];
         [lblStoreAddress setFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE - 2]];
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        if (PHONEDEVICE) {
             [lblStoreName setFrame:CGRectMake(80, 5, 175, 20)];
             [lblStoreAddress setFrame:CGRectMake(85, 30, 170, 20)];
         }else
@@ -47,6 +51,7 @@
         }
         [self addSubview:lblStoreName];
         [self addSubview:lblStoreAddress];
+        [SimiGlobalVar sortViewForRTL:self andWidth:width];
     }
     return self;
 }

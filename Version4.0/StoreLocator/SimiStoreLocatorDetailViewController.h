@@ -11,7 +11,6 @@
 #import <SimiCartBundle/SimiModel.h>
 #import <MessageUI/MessageUI.h>
 
-#define SIZE_SCROLL_VIEW_DETAIL ((UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) ? 320 : 680)
 @protocol SimiStoreLocatorDetailViewControllerDelegate <NSObject>
 @optional
 - (void)returnMapViewController:(SimiModel*)sLModelParam;
