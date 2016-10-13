@@ -11,14 +11,6 @@
 
 @implementation SimiOrderModel (Ipay)
 
-//- (void)updateTwoutOrderWithParams:(PaymentStatus)paymentStatus proof:(NSDictionary *)proof{
-//    currentNotificationName = @"DidUpdatePaymentStatus";
-//    if (proof == nil) {
-//        proof = @{};
-//    }
-//    [(SimiOrderAPI *)[self getAPI] updateOrderWithParams:@{@"invoice_number": [self valueForKey:@"invoice_number"], @"payment_status": [NSString stringWithFormat:@"%ld", (long)paymentStatus], @"proof": proof} target:self selector:@selector(didFinishRequest:responder:)];
-//}
-
 - (void)updateIpayOrderWithParams:(NSMutableDictionary *)params{
     modelActionType = ModelActionTypeGet;
     currentNotificationName = @"DidUpdateIpayPayment";

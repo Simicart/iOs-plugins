@@ -27,10 +27,10 @@
     return self;
 }
 
-- (void)viewDidLoad
+- (void)viewDidLoadBefore
 {
     [self setToSimiView];
-    self.navigationItem.title = SCLocalizedString(self.navigationItem.title);
+    self.navigationItem.title = SCLocalizedString(@"Ipay88");
     paymentsdk = [[Ipay alloc] init];
     paymentsdk.delegate = self;
     IpayPayment *ipay = [[IpayPayment alloc] init];
@@ -56,22 +56,31 @@
     
     UIView *paymentView = [paymentsdk checkout:ipay];
     [self.view addSubview:paymentView];
-    [self setContentSizeForViewInPopover:CGSizeMake(3*SCREEN_WIDTH/4, 3*SCREEN_HEIGHT/4)];
+    
+    UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc]initWithTitle:SCLocalizedString(@"Cancel") style:UIBarButtonItemStylePlain target:self action:@selector(cancelPayment:)];
+    self.navigationItem.rightBarButtonItem = cancelButton;
+}
+
+- (void)cancelPayment:(UIButton*)sender
+{
+    [self cancelIpayCheckoutPayment:[NSString stringWithFormat:@"%@",[order valueForKey:@"invoice_number"]]];
+}
+
+- (void)viewWillAppearBefore:(BOOL)animated
+{
+    
 }
 
 - (void)didUpdatePayment:(NSNotification *)noti{
     SimiResponder *responder = [noti.userInfo valueForKey:@"responder"];
-    if ([responder.status isEqualToString:@"SUCCESS"]) {
-        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:SCLocalizedString(responder.status) message:SCLocalizedString(@"Thank you for your purchase") delegate:nil cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles: nil];
-        [alertView show];
-        
-        [self.navigationController popToRootViewControllerAnimated:YES];
-    }else{
-        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:SCLocalizedString(responder.status) message:responder.responseMessage delegate:nil cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles: nil];
-        [alertView show];
-    }
     [self stopLoadingData];
     [self removeObserverForNotification:noti];
+    if ([responder.status isEqualToString:@"SUCCESS"]) {
+        [self showAlertWithTitle:responder.status message:@"Thank you for your purchase"];
+    }else{
+        [self showAlertWithTitle:responder.status message:responder.responseMessage];
+    }
+    [self.navigationController dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)updateIpayCheckoutPayment: (NSMutableDictionary *) params
@@ -82,20 +91,18 @@
     [self startLoadingData];
 }
 
-- (void)cancelIpayCheckoutPayment: (NSMutableDictionary *) params
+- (void)cancelIpayCheckoutPayment: (NSString *)orderID
 {
     SimiOrderModel *ipayCheckoutModel = [[SimiOrderModel alloc]init];
-    [ipayCheckoutModel updateIpayOrderWithParams:params];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didCancelPayment:) name:@"DidUpdateIpayPayment" object:ipayCheckoutModel];
+    [ipayCheckoutModel cancelOrderWithId:orderID];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didCancelPayment:) name:@"DidCancelOrder" object:ipayCheckoutModel];
     [self startLoadingData];
 }
 
 - (void)didCancelPayment:(NSNotification *)noti{
-    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:SCLocalizedString(@"FAIL") message:SCLocalizedString(@"Your order has been canceled") delegate:nil cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles: nil];
-    [alertView show];
-    [self.navigationController popToRootViewControllerAnimated:YES];
     [self stopLoadingData];
     [self removeObserverForNotification:noti];
+    [self showAlertWithTitle:@"FAIL" message:@"Your order has been canceled"];
 }
 
 - (void)paymentSuccess:(NSString *)refNo withTransId:(NSString *)transId withAmount:(NSString *)amount withRemark:(NSString *)remark withAuthCode:(NSString *)authCode{
@@ -104,28 +111,16 @@
     [params setValue:authCode forKey:@"auth_code"];
     [params setValue:[order valueForKey:@"invoice_number"] forKey:@"ref_no"];
     [params setValue:[order valueForKey:@"invoice_number"] forKey:@"order_id"];
-    [params setValue:@"1" forKey:@"status"];
+    [params setValue:@"processing" forKey:@"status"];
     [self updateIpayCheckoutPayment:params];
 }
 
 - (void)paymentFailed:(NSString *)refNo withTransId:(NSString *)transId withAmount:(NSString *)amount withRemark:(NSString *)remark withErrDesc:(NSString *)errDesc{
-    NSMutableDictionary *params = [[NSMutableDictionary alloc]init];
-    [params setValue:transId forKey:@"transaction_id"];
-    [params setValue:errDesc forKey:@"auth_code"];
-    [params setValue:[order valueForKey:@"invoice_number"] forKey:@"ref_no"];
-    [params setValue:[order valueForKey:@"invoice_number"] forKey:@"order_id"];
-    [params setValue:@"2" forKey:@"status"];
-    [self cancelIpayCheckoutPayment:params];
+    [self cancelIpayCheckoutPayment:[NSString stringWithFormat:@"%@",[order valueForKey:@"invoice_number"]]];
 }
 
 - (void)paymentCancelled:(NSString *)refNo withTransId:(NSString *)transId withAmount:(NSString *)amount withRemark:(NSString *)remark withErrDesc:(NSString *)errDesc{
-    NSMutableDictionary *params = [[NSMutableDictionary alloc]init];
-    [params setValue:transId forKey:@"transaction_id"];
-    [params setValue:errDesc forKey:@"auth_code"];
-    [params setValue:[order valueForKey:@"invoice_number"] forKey:@"ref_no"];
-    [params setValue:[order valueForKey:@"invoice_number"] forKey:@"order_id"];
-    [params setValue:@"2" forKey:@"status"];
-    [self cancelIpayCheckoutPayment:params];
+    [self cancelIpayCheckoutPayment:[NSString stringWithFormat:@"%@",[order valueForKey:@"invoice_number"]]];
 }
 
 - (void)requerySuccess:(NSString *)refNo withMerchantCode:(NSString *)merchantCode withAmount:(NSString *)amount withResult:(NSString *)result{

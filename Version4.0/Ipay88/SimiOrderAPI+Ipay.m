@@ -7,13 +7,12 @@
 //
 
 #import "SimiOrderAPI+Ipay.h"
-#import "SimiGlobalVar+Ipay.h"
 
 @implementation SimiOrderAPI (Ipay)
 
 - (void)updateIpayOrderWithParams:(NSMutableDictionary *)params target:(id)target selector:(SEL)selector{
-    NSString *url = [NSString stringWithFormat:@"%@%@", kBaseURL, kSimiUpdateIpayPayment];
-    [self requestWithURL:url params:params target:target selector:selector header:nil];
+    NSString *url = [NSString stringWithFormat:@"%@%@", kBaseURL, @"simiipay88apis/update_payment"];
+    [self requestWithMethod:GET URL:url params:params target:target selector:selector header:nil];
 }
 
 @end

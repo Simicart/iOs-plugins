@@ -27,34 +27,32 @@
 {
     self = [super init];
     if (self) {
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"DidPlaceOrder-Before" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didPlaceOrderAfter:) name:@"DidPlaceOrder-After" object:nil];
     }
     return self;
 }
 
-- (void)didReceiveNotification:(NSNotification *)noti
+- (void)didPlaceOrderAfter:(NSNotification *)noti
 {
-    if ([noti.name isEqualToString:@"DidPlaceOrder-Before"]){
+    if ([noti.name isEqualToString:@"DidPlaceOrder-After"]){
         payment = [noti.userInfo valueForKey:@"payment"];
         if ([[payment valueForKey:@"payment_method"] isEqualToString:METHOD_IPAY]) {
             [self didPlaceOrder:noti];
-//            [self removeObserverForNotification:noti];
         }
     }
 }
 
 - (void)didPlaceOrder:(NSNotification *)noti
 {
-    UIViewController *currentVC = [(UITabBarController *)[[(SCAppDelegate *)[[UIApplication sharedApplication]delegate] window] rootViewController] selectedViewController];
+    UINavigationController *currentVC = [SimiGlobalVar sharedInstance].currentlyNavigationController;
     order = [noti.userInfo valueForKey:@"data"];
-//    NSLog(@"%@", order);
     @try {
         if([order valueForKey:@"invoice_number"]){
             SimiIpayViewController *nextController = [[SimiIpayViewController alloc] init];
-            nextController.title =  SCLocalizedString(@"Ipay88");
             nextController.order = order;
             nextController.payment = payment;
-            [(UINavigationController *)currentVC pushViewController:nextController animated:YES];
+            UINavigationController *navi  = [[UINavigationController alloc]initWithRootViewController:nextController];
+            [currentVC presentViewController:navi animated:YES completion:nil];
         }else{
             UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:SCLocalizedString(@"Error") message:SCLocalizedString(@"Sorry, Ipay88 is not now available. Please try again later.") delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil];
             alertView.tag = ALERT_VIEW_ERROR;
