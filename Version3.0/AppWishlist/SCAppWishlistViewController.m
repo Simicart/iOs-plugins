@@ -10,6 +10,7 @@
 #import <SimiCartBundle/SCProductViewControllerPad.h>
 #import <SimiCartBundle/MBProgressHUD.h>
 #import <SimiCartBundle/SCThemeWorker.h>
+#import <SimiCartBundle/UIScrollView+SVInfiniteScrolling.h>
 
 
 static NSString *WISHLIST_COLLECTION_VIEW_CELL = @"WishlistCollectionViewCell";
@@ -43,7 +44,8 @@ static NSString *WISHLIST_DELETE_CONFIRMATION_ALERT = @"WishlistDeleteConfirmati
         flowLayout.minimumInteritemSpacing =0;
         flowLayout.scrollDirection = UICollectionViewScrollDirectionVertical;
         
-        wishlistCollectionView = [[UICollectionView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height -64) collectionViewLayout:flowLayout];
+        wishlistCollectionView = [[UICollectionView alloc] initWithFrame:self.view.bounds collectionViewLayout:flowLayout];
+        wishlistCollectionView.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
         wishlistCollectionView.showsHorizontalScrollIndicator = NO;
         wishlistCollectionView.showsVerticalScrollIndicator = NO;
         [wishlistCollectionView setCollectionViewLayout:flowLayout animated:YES];
@@ -85,27 +87,32 @@ static NSString *WISHLIST_DELETE_CONFIRMATION_ALERT = @"WishlistDeleteConfirmati
         [self.view addSubview:emptyLabel];
     }
     
-    [self getWishlist];
+    //add loading more action for wishlist collection view
+    __weak SCAppWishlistViewController* weakSelf = self;
+    [wishlistCollectionView addInfiniteScrollingWithActionHandler:^{
+        [weakSelf getWishlist];
+    }];
 }
 
 -(void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    [wishlistModelCollection removeAllObjects];
     [self getWishlist];
+    [self startLoadingData];
 }
 
 #pragma mark Get Wishlist
 -(void)getWishlist
 {
-    [self startLoadingData];
-    [wishlistModelCollection removeAllObjects];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didGetWishlist:) name:@"DidGetWishlist" object:nil];
-    [wishlistModelCollection getWishlistProducts:0 limit:0 sortType:0 otherParams:nil];
+    [wishlistModelCollection getWishlistProducts:wishlistModelCollection.count limit:10 sortType:0 otherParams:nil];
 }
 
 -(void)didGetWishlist: (NSNotification *)noti
 {
     [self stopLoadingData];
+    [wishlistCollectionView.infiniteScrollingView stopAnimating];
     SimiResponder *responder = [noti.userInfo valueForKey:@"responder"];
     if ([responder.status isEqualToString:@"SUCCESS"]) {
         if (wishlistModelCollection.count > 0) {

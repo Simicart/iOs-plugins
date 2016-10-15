@@ -57,7 +57,7 @@
 
     currentNotificationName = @"DidGetWishlist";
     [self preDoRequest];
-    modelActionType = ModelActionTypeGet;
+    modelActionType = ModelActionTypeInsert;
     
     NSMutableDictionary *params = [NSMutableDictionary dictionaryWithDictionary:otherParams];
     [params setValue:[NSString stringWithFormat:@"%ld", (long)offset] forKey:@"offset"];
