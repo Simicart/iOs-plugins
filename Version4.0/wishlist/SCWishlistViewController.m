@@ -7,6 +7,7 @@
 //
 
 #import "SCWishlistViewController.h"
+#import <SimiCartBundle/UIScrollView+SVInfiniteScrolling.h>
 
 #define COLLECTIONVIEWCELLHEIGHT 150
 #define WISHLISTCOLLECTIONVIEWCELL @"WISHLISTCOLLECTIONVIEWCELL"
@@ -65,6 +66,11 @@
     wishlistCollectionView.delegate = self;
     wishlistCollectionView.dataSource = self;
     [self.view addSubview:wishlistCollectionView];
+    //Handle after scroll to bottom collection view
+    __block __weak id weakSelf = self;
+    [wishlistCollectionView addInfiniteScrollingWithActionHandler:^{
+        [weakSelf getWishlistItems];
+    }];
     emptyLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, paddingY, SCREEN_WIDTH, 30)];
     emptyLabel.text = SCLocalizedString(@"Your wishlist is empty");
     emptyLabel.textAlignment = NSTextAlignmentCenter;
@@ -79,14 +85,24 @@
     emptyLabel.hidden = YES;
     wishlistShareView.hidden = YES;
     wishlistCollectionView.hidden = YES;
-    [wishlistModelCollection getWishlistItems];
+    [self getWishlistItemsFromBegin];
+}
+
+-(void) getWishlistItemsFromBegin{
+    [wishlistModelCollection removeAllObjects];
+    [wishlistCollectionView scrollsToTop];
+    [wishlistModelCollection getWishlistItemsWithParams:@{@"offset":[NSString stringWithFormat:@"%ld",(long) wishlistModelCollection.count],@"limit":@"10"}];
     [self startLoadingData];
+}
+
+-(void) getWishlistItems{
+    [wishlistModelCollection getWishlistItemsWithParams:@{@"offset":[NSString stringWithFormat:@"%ld",(long) wishlistModelCollection.count],@"limit":@"10"}];
 }
 
 -(void) didGetWishlistItems: (NSNotification*) noti{
     [self stopLoadingData];
     SimiResponder* responder = [noti.userInfo objectForKey:@"responder"];
-    
+    [wishlistCollectionView.infiniteScrollingView stopAnimating];
     if([responder.status isEqualToString:@"SUCCESS"]){
         [wishlistCollectionView reloadData];
         if(wishlistModelCollection.count > 0){
@@ -200,8 +216,7 @@
     else if(PADDEVICE)
         [[[[SCThemeWorker sharedInstance] navigationBarPad] cartViewControllerPad] getCart];
     // get wishlist again
-    [wishlistModelCollection getWishlistItems];
-    [self startLoadingData];
+    [self getWishlistItemsFromBegin];
 }
 -(void) didDeleteWishlistItem: (NSNotification*) noti{
     [self stopLoadingData];

@@ -16,11 +16,12 @@
 
 @implementation SCWishlistModelCollection
 
--(void) getWishlistItems{
+-(void) getWishlistItemsWithParams: (NSDictionary*) params{
     currentNotificationName = DidGetWishlistItems;
+    modelActionType = ModelActionTypeInsert;
     keyResponse = @"wishlistitems";
     NSString* url = [NSString stringWithFormat:@"%@%@",kBaseURL,kGetWishlistItemsURL];
-    [[SimiAPI new] requestWithMethod:@"GET" URL:url params:nil target:self selector:@selector(didFinishRequest:responder:) header:nil];
+    [[SimiAPI new] requestWithMethod:@"GET" URL:url params:params target:self selector:@selector(didFinishRequest:responder:) header:nil];
 }
 -(void) getProductDetailWithProductID: (NSString*) productID{
     currentNotificationName = DidGetWishlistProductDetail;
