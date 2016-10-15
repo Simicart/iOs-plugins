@@ -10,7 +10,7 @@
 #import <SimiCartBundle/SimiViewController.h>
 #import <SimiCartBundle/UIScrollView+SVInfiniteScrolling.h>
 #import <SimiCartBundle/SimiAddressModelCollection.h>
-#import "ActionSheetPicker.h"
+#import <SimiCartBundle/ActionSheetPicker.h>
 
 #import "SimiStoreLocatorModelCollection.h"
 #import "SimiTagModelCollection.h"

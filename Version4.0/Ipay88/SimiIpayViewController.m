@@ -47,7 +47,7 @@
     [ipay setLang:@"UTF-8"];
     [ipay setCountry:[order valueForKey:@"country_id"]];
     [ipay setAmount:[order valueForKey:@"amount"]];
-    [ipay setBackendPostURL:@"http://merchant.com/backend.php"];
+    [ipay setBackendPostURL:@"https://www.mobile88.com/epayment/report/testsignature_response.asp"];
     if([[payment valueForKey:@"is_sandbox"] isEqualToString:@"1"]){
         [ipay setAmount:@"1.00"];
         [ipay setCurrency:@"MYR"];
@@ -103,6 +103,7 @@
     [self stopLoadingData];
     [self removeObserverForNotification:noti];
     [self showAlertWithTitle:@"FAIL" message:@"Your order has been canceled"];
+    [self.navigationController dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)paymentSuccess:(NSString *)refNo withTransId:(NSString *)transId withAmount:(NSString *)amount withRemark:(NSString *)remark withAuthCode:(NSString *)authCode{
