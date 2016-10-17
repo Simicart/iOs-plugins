@@ -90,7 +90,7 @@
 
 -(void) getWishlistItemsFromBegin{
     [wishlistModelCollection removeAllObjects];
-    [wishlistCollectionView scrollsToTop];
+    [wishlistCollectionView setContentOffset:CGPointZero animated:NO];
     [wishlistModelCollection getWishlistItemsWithParams:@{@"offset":[NSString stringWithFormat:@"%ld",(long) wishlistModelCollection.count],@"limit":@"10"}];
     [self startLoadingData];
 }
