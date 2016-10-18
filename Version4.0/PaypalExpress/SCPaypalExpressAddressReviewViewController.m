@@ -120,8 +120,12 @@
     else if (indexPath.section == 2) {
         if (updateAddressView == nil) {
             updateAddressView = [[UIView alloc]init];
-            updateAddressView.frame = CGRectMake(0, 0, SCREEN_WIDTH, 40);
-            updateButton = [[UIButton alloc]initWithFrame:CGRectMake(20,0 , 200, 40)];
+            float cellWidth = SCREEN_WIDTH;
+            if (PADDEVICE) {
+                cellWidth = 2*SCREEN_WIDTH/3;
+            }
+            updateAddressView.frame = CGRectMake(0, 0, cellWidth, 40);
+            updateButton = [[UIButton alloc]initWithFrame:CGRectMake(50, 0, cellWidth - 100, 40)];
             [updateButton setBackgroundColor:THEME_BUTTON_BACKGROUND_COLOR];
             updateButton.tintColor = THEME_BUTTON_TEXT_COLOR;
             [updateButton setTitle:SCLocalizedString(@"Confirm Address") forState:UIControlStateNormal];
@@ -199,8 +203,8 @@
 {
     [self startLoadingData];
     NSMutableDictionary *params = [[NSMutableDictionary alloc] init];
-    [params setValue:shippingAddress forKey:@"shippingAddress"];
-    [params setValue:billingAddress forKey:@"billingAddress"];
+    [params setValue:shippingAddress forKey:@"s_address"];
+    [params setValue:billingAddress forKey:@"b_address"];
     [params setValue:[billingAddress valueForKey:@"customer_password"] forKey:@"customer_password"];
     [params setValue:[billingAddress valueForKey:@"confirm_password"] forKey:@"confirm_password"];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(paypalDidCompleteReviewAddress:) name:@"DidUpdatePaypalCheckoutAddress" object:nil];

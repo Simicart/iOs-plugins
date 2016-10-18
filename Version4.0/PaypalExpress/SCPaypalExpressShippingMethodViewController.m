@@ -136,7 +136,11 @@
         }
         else {
             if (placeOrderButton == nil) {
-                placeOrderButton = [[UIButton alloc]initWithFrame:CGRectMake(30 , 5 , 250, 40)];
+                float cellWidth = SCREEN_WIDTH;
+                if (PADDEVICE) {
+                    cellWidth = 2*SCREEN_WIDTH/3;
+                }
+                placeOrderButton = [[UIButton alloc]initWithFrame:CGRectMake(50 , 5 , cellWidth - 100, 40)];
                 [placeOrderButton setBackgroundColor:THEME_BUTTON_BACKGROUND_COLOR];
                 placeOrderButton.tintColor = THEME_BUTTON_TEXT_COLOR;
                 [placeOrderButton setTitle:SCLocalizedString(@"Place Order") forState:UIControlStateNormal];
