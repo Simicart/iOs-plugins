@@ -8,8 +8,6 @@
 
 #import "SCSearchVoiceCoreWorker.h"
 #import <SimiCartBundle/SCHomeViewController.h>
-#import <SimiCartBundle/MatrixHomeViewController.h>
-#import <SimiCartBundle/ZaraHomeViewController.h>
 #import <SimiCartBundle/SCNavigationBarPad.h>
 #import "SCSearchVoiceViewController.h"
 #import "SCSearchVoicePadViewController.h"
@@ -29,8 +27,6 @@
         
         //Product More View
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(showSearchVoiceBtn:) name:@"SCHomeViewControllerViewWillAppear" object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(showSearchVoiceBtn:) name:@"MatrixHomeViewControllerViewWillAppear" object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(showSearchVoiceBtn:) name:@"ZaraHomeViewControllerViewWillAppear" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(showSearchVoiceBtn:) name:@"SCProductListViewControllerViewWillAppear" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(searchVoicePad:) name:@"showSearchVoiceOnPad" object:nil];
         [SimiGlobalVar sharedInstance].isSearchVoice = YES;
@@ -49,39 +45,9 @@
 -(void)showSearchVoiceBtn:(NSNotification *)noti
 {
     currentNoti = noti;
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-//        padNoti = noti;
-    } else {
+    if (PHONEDEVICE) {
         if ([noti.object isKindOfClass:[SCHomeViewController class]]) {
             SCHomeViewController *homeViewController = noti.object;
-            [homeViewController.searchBarHome setFrame:[SimiGlobalVar scaleFrame:CGRectMake(5, 5, 310 - 28 - 5, 28)]];
-            [homeViewController.searchBarBackground setFrame:homeViewController.searchBarHome.frame];
-            self.searchVoiceBtn = [[UIButton alloc] initWithFrame:[SimiGlobalVar scaleFrame:CGRectMake(282, 0, 38, 38)]];
-            self.searchVoiceBtn.backgroundColor = [UIColor clearColor];
-            self.searchVoiceBtn.imageView.backgroundColor = THEME_SEARCH_BOX_BACKGROUND_COLOR;
-            [self.searchVoiceBtn setAlpha:0.9f];
-            [self.searchVoiceBtn setImage:[UIImage imageNamed:@"ic_small_micro" ] forState:UIControlStateNormal];
-            [self.searchVoiceBtn setImageEdgeInsets:(UIEdgeInsetsMake(5, 5, 5, 5))];
-            self.searchVoiceBtn.imageView.clipsToBounds = YES;
-            self.searchVoiceBtn.enabled = YES;
-            [self.searchVoiceBtn addTarget:self action:@selector(searchVoiceBtnHandle) forControlEvents:(UIControlEventTouchUpInside)];
-            [homeViewController.view addSubview:self.searchVoiceBtn];
-        } else if ([noti.object isKindOfClass:[MatrixHomeViewController class]]) {
-            MatrixHomeViewController *homeViewController = noti.object;
-            [homeViewController.searchBarHome setFrame:[SimiGlobalVar scaleFrame:CGRectMake(5, 5, 310 - 28 - 5, 28)]];
-            [homeViewController.searchBarBackground setFrame:homeViewController.searchBarHome.frame];
-            self.searchVoiceBtn = [[UIButton alloc] initWithFrame:[SimiGlobalVar scaleFrame:CGRectMake(282, 0, 38, 38)]];
-            self.searchVoiceBtn.backgroundColor = [UIColor clearColor];
-            self.searchVoiceBtn.imageView.backgroundColor = THEME_SEARCH_BOX_BACKGROUND_COLOR;
-            [self.searchVoiceBtn setAlpha:0.9f];
-            [self.searchVoiceBtn setImage:[UIImage imageNamed:@"ic_small_micro" ] forState:UIControlStateNormal];
-            [self.searchVoiceBtn setImageEdgeInsets:(UIEdgeInsetsMake(5, 5, 5, 5))];
-            self.searchVoiceBtn.imageView.clipsToBounds = YES;
-            self.searchVoiceBtn.enabled = YES;
-            [self.searchVoiceBtn addTarget:self action:@selector(searchVoiceBtnHandle) forControlEvents:(UIControlEventTouchUpInside)];
-            [homeViewController.view addSubview:self.searchVoiceBtn];
-        } else if ([noti.object isKindOfClass:[ZaraHomeViewController class]]) {
-            ZaraHomeViewController *homeViewController = noti.object;
             [homeViewController.searchBarHome setFrame:[SimiGlobalVar scaleFrame:CGRectMake(5, 5, 310 - 28 - 5, 28)]];
             [homeViewController.searchBarBackground setFrame:homeViewController.searchBarHome.frame];
             self.searchVoiceBtn = [[UIButton alloc] initWithFrame:[SimiGlobalVar scaleFrame:CGRectMake(282, 0, 38, 38)]];
@@ -121,15 +87,7 @@
             SCHomeViewController *homeViewController = currentNoti.object;
             homeViewController.searchBarHome.text = result;
             [homeViewController searchBarSearchButtonClicked:homeViewController.searchBarHome];
-        } else if ([currentNoti.object isKindOfClass:[MatrixHomeViewController class]]) {
-            MatrixHomeViewController *homeViewController = currentNoti.object;
-            homeViewController.searchBarHome.text = result;
-            [homeViewController searchBarSearchButtonClicked:homeViewController.searchBarHome];
-        } else if ([currentNoti.object isKindOfClass:[ZaraHomeViewController class]]) {
-            ZaraHomeViewController *homeViewController = currentNoti.object;
-            homeViewController.searchBarHome.text = result;
-            [homeViewController searchBarSearchButtonClicked:homeViewController.searchBarHome];
-        } else if ([currentNoti.object isKindOfClass:[SCProductListViewController class]]) {
+        }else if ([currentNoti.object isKindOfClass:[SCProductListViewController class]]) {
             SCProductListViewController *homeViewController = currentNoti.object;
             homeViewController.searchProduct.text = result;
             [homeViewController searchBarSearchButtonClicked:homeViewController.searchProduct];
@@ -145,13 +103,6 @@
     } else {
         if ([currentNoti.object isKindOfClass:[SCHomeViewController class]]) {
             SCHomeViewController *homeViewController = currentNoti.object;
-            
-            [homeViewController.searchBarHome becomeFirstResponder];
-        } else if ([currentNoti.object isKindOfClass:[MatrixHomeViewController class]]) {
-            MatrixHomeViewController *homeViewController = currentNoti.object;
-            [homeViewController.searchBarHome becomeFirstResponder];
-        } else if ([currentNoti.object isKindOfClass:[ZaraHomeViewController class]]) {
-            ZaraHomeViewController *homeViewController = currentNoti.object;
             [homeViewController.searchBarHome becomeFirstResponder];
         } else if ([currentNoti.object isKindOfClass:[SCProductListViewController class]]) {
             SCProductListViewController *homeViewController = currentNoti.object;
@@ -171,7 +122,7 @@
 -(void)searchVoiceBtnHandle
 {
     // check pad or phone
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if (PADDEVICE) {
         if (self.searchVoicePadViewController == nil) {
             self.searchVoicePadViewController = [[SCSearchVoicePadViewController alloc] init];
         }
@@ -202,7 +153,6 @@
     if (naviPad.searchBar ==nil) {
         naviPad.searchBar = [UISearchBar new];
         naviPad.searchBar.placeholder = SCLocalizedString(@"Search");
-        //Gin edit
         for ( UIView * subview in [[naviPad.searchBar.subviews objectAtIndex:0] subviews] )
         {
             if ([subview isKindOfClass:NSClassFromString(@"UISearchBarTextField") ] ) {
@@ -212,18 +162,10 @@
                 }
             }
         }
-        //End
-//        naviPad.searchBar.delegate = self;
     }
-//    naviPad.searchBar.frame = CGRectMake(SCREEN_WIDTH - 320 - itemSpace.width, 0, 0, 45);
-//    [UIView animateWithDuration:0.3 animations:^{
-//        naviPad.searchBar.frame = CGRectMake(0, 0, SCREEN_WIDTH - 320 - itemSpace.width, 45);
-//    }];
     
     naviPad.searchBar.tintColor = THEME_SEARCH_TEXT_COLOR;
     naviPad.searchBar.text = result;
-    NSLog(@"search bar text : %@", naviPad.searchBar.text);
-//    [naviPad didSelectSearchButton:naviPad.searchBar];
     [naviPad searchBarSearchButtonClicked:naviPad.searchBar];
 }
 

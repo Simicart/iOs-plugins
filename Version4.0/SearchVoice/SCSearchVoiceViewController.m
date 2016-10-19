@@ -74,7 +74,6 @@
     // recording view
     // add backgroundView
     UIView *backGroundView = [[UIView alloc] initWithFrame:[SimiGlobalVar scaleFrame:CGRectMake(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)]];
-    NSLog(@"screen width : %f, screen height : %f", SCREEN_WIDTH, SCREEN_HEIGHT);
     backGroundView.backgroundColor = [UIColor blackColor];
     backGroundView.alpha = 0.9;
     [self.view addSubview:backGroundView];
@@ -168,7 +167,7 @@
 
 #pragma mark - AVAudioPlayerDelegate®
 
--(BOOL)didReceiveVoiceResponse:(NSData *)data {
+- (BOOL)didReceiveVoiceResponse:(NSData *)data {
     NSString *string = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
     NSRange needleRange = NSMakeRange(14,
                                       string.length - 14);
@@ -184,7 +183,6 @@
         NSArray *resultArray = [resultDic objectForKey:@"alternative"];
         NSNumber *resultIndex = [responseDict valueForKey:@"result_index"];
         NSString *stringResult = [[resultArray objectAtIndex:[resultIndex integerValue]] valueForKey:@"transcript"];
-        NSLog(@"result string : %@", stringResult);
         [self.delegate finishAction:stringResult];
     } else {
         self.recordStatusLb.text = @"We didn't quite get that";
@@ -196,21 +194,5 @@
     }
     return YES;
 }
-// end
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
-
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
 
 @end
