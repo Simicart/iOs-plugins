@@ -197,12 +197,14 @@
 #pragma mark Add to Left Menu
 -(void)listMenuInitCellsAfter:(NSNotification *)noti
 {
-    SimiTable * cells = [[SimiTable alloc] initWithArray:noti.object];
-    SimiSection* section = [cells getSectionByIdentifier:LEFTMENU_SECTION_MAIN];
-    SimiRow *wishlistRow = [[SimiRow alloc]initWithIdentifier:LEFTMENU_WISHLIST_ROW height:45 sortOrder:310];
-    wishlistRow.title = SCLocalizedString(@"My Wishlist");
-    wishlistRow.image = [UIImage imageNamed:@"wishlist_leftmenu_icon"];
-    [section addRow:wishlistRow];
+    if([SimiGlobalVar sharedInstance].isLogin){
+        SimiTable * cells = [[SimiTable alloc] initWithArray:noti.object];
+        SimiSection* section = [cells getSectionByIdentifier:LEFTMENU_SECTION_MAIN];
+        SimiRow *wishlistRow = [[SimiRow alloc]initWithIdentifier:LEFTMENU_WISHLIST_ROW height:45 sortOrder:310];
+        wishlistRow.title = SCLocalizedString(@"My Wishlist");
+        wishlistRow.image = [UIImage imageNamed:@"wishlist_leftmenu_icon"];
+        [section addRow:wishlistRow];
+    }
 }
 
 -(void)listMenuDidSelectRow:(NSNotification *)noti
