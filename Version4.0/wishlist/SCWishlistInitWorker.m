@@ -175,6 +175,9 @@
 {
     if ([[(SimiRow *)noti.object identifier] isEqualToString:ACCOUNT_WISHLIST_ROW]) {
         SCAccountViewController *accountVC = [noti.userInfo objectForKey:@"self"];
+        if (PADDEVICE) {
+            [accountVC dismissViewControllerAnimated:YES completion:nil];
+        }
         if (wishlistViewController == nil) {
             wishlistViewController = [SCWishlistViewController new];
         }
@@ -187,9 +190,6 @@
             }
         }
         [(UINavigationController *)currentVC pushViewController:wishlistViewController animated:YES];
-        if (accountVC.isInPopover) {
-            [accountVC.popover dismissPopoverAnimated:YES];
-        }
         accountVC.isDiscontinue = YES;
     }
 }
