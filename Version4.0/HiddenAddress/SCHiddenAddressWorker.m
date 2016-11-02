@@ -52,7 +52,7 @@
             newAddressController.stateName = nil;
             [form.fields removeAllObjects];
             SimiGlobalVar *config = [SimiGlobalVar sharedInstance];
-            if ([self hasField:[hiddenAddressModel valueForKey:@"prefix"]]) {
+            if ([self hasField:[hiddenAddressModel valueForKey:@"prefix_show"]]) {
                 [form addField:@"Text"
                         config:@{
                                  @"name" : @"prefix",
@@ -83,7 +83,7 @@
                              @"required": @1
                              }];
             
-            if ([self hasField:[hiddenAddressModel valueForKey:@"suffix"]]) {
+            if ([self hasField:[hiddenAddressModel valueForKey:@"suffix_show"]]) {
                 [form addField:@"Text"
                         config:@{
                                  @"name" : @"suffix",
@@ -91,7 +91,7 @@
                                  @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:@"suffix"] isEqualToString:@"req"]]
                                  }];
             }
-            if ([self hasField:[hiddenAddressModel valueForKey:@"company"]]) {
+            if ([self hasField:[hiddenAddressModel valueForKey:@"company_show"]]) {
                 [form addField:@"Text"
                         config:@{
                                  @"name" : @"company",
@@ -109,7 +109,7 @@
                                  }];
             }
             
-            if ([self hasField:[hiddenAddressModel valueForKey:@"street"]]) {
+            if ([self hasField:[hiddenAddressModel valueForKey:@"street_show"]]) {
                 [form addField:@"Text"
                         config:@{
                                  @"name" : @"street",
@@ -119,7 +119,7 @@
             }
             
             
-            if ([self hasField:[hiddenAddressModel valueForKey:@"city"]]) {
+            if ([self hasField:[hiddenAddressModel valueForKey:@"city_show"]]) {
                 [form addField:@"Text"
                         config:@{
                                  @"name" : @"city",
@@ -128,7 +128,7 @@
                                  }];
             }
             
-            if ([self hasField:[hiddenAddressModel valueForKey:@"country_id"]]) {
+            if ([self hasField:[hiddenAddressModel valueForKey:@"country_id_show"]]) {
                 newAddressController.country = (SimiFormSelect *)[form addField:@"Select"
                                                                          config:@{
                                                                                   @"name": @"country_id",
@@ -144,7 +144,7 @@
             }
 
             
-            if ([self hasField:[hiddenAddressModel valueForKey:@"region_id"]]) {
+            if ([self hasField:[hiddenAddressModel valueForKey:@"region_id_show"]]) {
                 newAddressController.stateName = (SimiFormText *)[form addField:@"Text"
                                                                          config:@{
                                                                                   @"name": @"region",
@@ -166,7 +166,7 @@
             }
             
             
-            if ([self hasField:[hiddenAddressModel valueForKey:@"zipcode"]]) {
+            if ([self hasField:[hiddenAddressModel valueForKey:@"zipcode_show"]]) {
                 [form addField:@"Text"
                         config:@{
                                  @"name": @"postcode",
@@ -175,7 +175,7 @@
                                  }];
             }
             
-            if ([self hasField:[hiddenAddressModel valueForKey:@"telephone"]]) {
+            if ([self hasField:[hiddenAddressModel valueForKey:@"telephone_show"]]) {
                 [form addField:@"Phone"
                         config:@{
                                  @"name": @"telephone",
@@ -184,7 +184,7 @@
                                  }];
             }
             
-            if ([self hasField:[hiddenAddressModel valueForKey:@"fax"]]) {
+            if ([self hasField:[hiddenAddressModel valueForKey:@"fax_show"]]) {
                 [form addField:@"Text"
                         config:@{
                                  @"name" : @"fax",
@@ -193,7 +193,7 @@
                                  }];
             }
             if (![SimiGlobalVar sharedInstance].isLogin) {
-                if ([self hasField:[hiddenAddressModel valueForKey:@"dob"]]) {
+                if ([self hasField:[hiddenAddressModel valueForKey:@"dob_show"]]) {
                     [form addField:@"Date"
                             config:@{
                                      @"name": @"dob",
@@ -209,7 +209,7 @@
                 if (genderValues.count == 2) {
                     NSDictionary *dict01 = [[NSDictionary alloc]initWithDictionary:[genderValues objectAtIndex:0]];
                     NSDictionary *dict02 = [[NSDictionary alloc]initWithDictionary:[genderValues objectAtIndex:1]];
-                    if ([self hasField:[hiddenAddressModel valueForKey:@"gender"]]) {
+                    if ([self hasField:[hiddenAddressModel valueForKey:@"gender_show"]]) {
                         [form addField:@"Select"
                                 config:@{
                                          @"name": @"gender",
@@ -220,7 +220,7 @@
                     }
                 }
                 
-                if ([self hasField:[hiddenAddressModel valueForKey:@"taxvat"]]) {
+                if ([self hasField:[hiddenAddressModel valueForKey:@"taxvat_show"]]) {
                     [form addField:@"Text"
                             config:@{
                                      @"name": @"taxvat",

@@ -29,7 +29,6 @@
         GMSCameraPosition *camera = [GMSCameraPosition cameraWithLatitude:5.111111
                                                                 longitude:1.2223645
                                                                     zoom:6];
-
         float mapWidth = SCREEN_WIDTH;
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             mapWidth = 2* SCREEN_WIDTH/3;
@@ -38,10 +37,10 @@
         [guideSelectAddressLabel setFont:[UIFont fontWithName:THEME_FONT_NAME size:14]];
         [guideSelectAddressLabel setTextColor:THEME_CONTENT_PLACEHOLDER_COLOR];
         [guideSelectAddressLabel setText:SCLocalizedString(@"Please press and hold to select the address you want to fill")];
-        float heightTitle = [guideSelectAddressLabel resizLabelToFit];
+        float heightTitle = [guideSelectAddressLabel resizLabelToFit] + 5;
         [self addSubview:guideSelectAddressLabel];
         
-        mapView_ = [GMSMapView mapWithFrame:CGRectMake(15, 30, mapWidth - 15, self.height - heightTitle) camera:camera];
+        mapView_ = [GMSMapView mapWithFrame:CGRectMake(15, guideSelectAddressLabel.frame.origin.y + heightTitle, mapWidth - 30, self.height - heightTitle - guideSelectAddressLabel.frame.origin.y) camera:camera];
         mapView_.delegate = self;
         mapView_.settings.myLocationButton = YES;
         mapView_.settings.compassButton = YES;
