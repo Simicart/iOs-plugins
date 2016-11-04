@@ -25,18 +25,21 @@
 }
 -(void) getProductDetailWithProductID: (NSString*) productID{
     currentNotificationName = DidGetWishlistProductDetail;
+    modelActionType = ModelActionTypeGet;
     NSString* url = [NSString stringWithFormat:@"%@%@%@",kBaseURL,kGetWishlistProductDetailURL,productID];
     [[SimiAPI new] requestWithMethod:@"GET" URL:url params:nil target:self selector:@selector(didFinishRequest:responder:) header:nil];
 }
 -(void) removeItemWithWishlistItemID: (NSString*) wishlistItemID{
     currentNotificationName = DidRemoveWishlistItem;
     keyResponse = @"wishlistitems";
+    modelActionType = ModelActionTypeGet;
     NSString* url = [NSString stringWithFormat:@"%@%@%@",kBaseURL,kRemoveWishlistItemURL,wishlistItemID];
     [[SimiAPI new] requestWithMethod:@"DELETE" URL:url params:nil target:self selector:@selector(didFinishRequest:responder:) header:nil];
 }
 -(void) addProductToCartWithWishlistID: (NSString*) wishlistItemID{
     currentNotificationName = DidAddProductFromWishlistToCart;
     keyResponse = @"wishlistitems";
+    modelActionType = ModelActionTypeGet;
     NSString* url = [NSString stringWithFormat:@"%@%@%@",kBaseURL,kAddProductFromWishlistToCartURL,wishlistItemID];
     NSDictionary* params = @{@"add_to_cart":@"1"};
     [[SimiAPI new] requestWithMethod:@"GET" URL:url params:params target:self selector:@selector(didFinishRequest:responder:) header:nil];

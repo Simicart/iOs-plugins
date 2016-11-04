@@ -50,6 +50,7 @@
         [wishlistItemInfoView addSubview:priceView];
         addToCartButton = [[UIButton alloc] init];
         [addToCartButton setBackgroundColor:THEME_BUTTON_BACKGROUND_COLOR];
+        addToCartButton.titleLabel.font = [UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE];
         [addToCartButton setTitleColor:THEME_BUTTON_TEXT_COLOR forState:UIControlStateNormal];
         [addToCartButton addTarget:self action:@selector(addToCartButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
         addToCartButton.layer.cornerRadius = 3;

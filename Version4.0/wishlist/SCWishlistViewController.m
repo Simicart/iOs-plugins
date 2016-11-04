@@ -88,6 +88,18 @@
     [self getWishlistItemsFromBegin];
 }
 
+-(void) handleWishlistItemsCount{
+    if(wishlistModelCollection.count > 0){
+        wishlistCollectionView.hidden = NO;
+        wishlistShareView.hidden = NO;
+        emptyLabel.hidden = YES;
+    }else{
+        wishlistCollectionView.hidden = YES;
+        wishlistShareView.hidden = YES;
+        emptyLabel.hidden = NO;
+    }
+}
+
 -(void) getWishlistItemsFromBegin{
     [wishlistModelCollection removeAllObjects];
     [wishlistCollectionView setContentOffset:CGPointZero animated:NO];
@@ -105,15 +117,7 @@
     [wishlistCollectionView.infiniteScrollingView stopAnimating];
     if([responder.status isEqualToString:@"SUCCESS"]){
         [wishlistCollectionView reloadData];
-        if(wishlistModelCollection.count > 0){
-            wishlistCollectionView.hidden = NO;
-            wishlistShareView.hidden = NO;
-            emptyLabel.hidden = YES;
-        }else{
-            wishlistCollectionView.hidden = YES;
-            wishlistShareView.hidden = YES;
-            emptyLabel.hidden = NO;
-        }
+        [self handleWishlistItemsCount];
     }else{
         UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:SCLocalizedString(@"Sorry") message:responder.responseMessage delegate:nil cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles:nil, nil];
         [alertView show];
@@ -221,6 +225,7 @@
 -(void) didDeleteWishlistItem: (NSNotification*) noti{
     [self stopLoadingData];
     [wishlistCollectionView reloadData];
+    [self handleWishlistItemsCount];
 }
 
 @end
