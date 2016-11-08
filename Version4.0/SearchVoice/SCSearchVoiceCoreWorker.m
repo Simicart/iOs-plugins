@@ -45,6 +45,7 @@
 -(void)showSearchVoiceBtn:(NSNotification *)noti
 {
     currentNoti = noti;
+    float insetPadding = [SimiGlobalVar scaleValue:5];
     if (PHONEDEVICE) {
         if ([noti.object isKindOfClass:[SCHomeViewController class]]) {
             SCHomeViewController *homeViewController = noti.object;
@@ -55,7 +56,7 @@
             self.searchVoiceBtn.imageView.backgroundColor = THEME_SEARCH_BOX_BACKGROUND_COLOR;
             [self.searchVoiceBtn setAlpha:0.9f];
             [self.searchVoiceBtn setImage:[UIImage imageNamed:@"ic_small_micro_phone"] forState:UIControlStateNormal];
-            [self.searchVoiceBtn setImageEdgeInsets:(UIEdgeInsetsMake(5, 5, 5, 5))];
+            [self.searchVoiceBtn setImageEdgeInsets:UIEdgeInsetsMake(insetPadding, insetPadding, insetPadding, insetPadding)];
             self.searchVoiceBtn.imageView.clipsToBounds = YES;
             self.searchVoiceBtn.enabled = YES;
             [self.searchVoiceBtn addTarget:self action:@selector(searchVoiceBtnHandle) forControlEvents:(UIControlEventTouchUpInside)];
@@ -69,7 +70,7 @@
             self.searchVoiceBtn.imageView.backgroundColor = THEME_SEARCH_BOX_BACKGROUND_COLOR;
             [self.searchVoiceBtn setAlpha:0.9f];
             [self.searchVoiceBtn setImage:[UIImage imageNamed:@"ic_small_micro_phone" ] forState:UIControlStateNormal];
-            [self.searchVoiceBtn setImageEdgeInsets:(UIEdgeInsetsMake(5, 5, 5, 5))];
+            [self.searchVoiceBtn setImageEdgeInsets:UIEdgeInsetsMake(insetPadding, insetPadding, insetPadding, insetPadding)];
             self.searchVoiceBtn.imageView.clipsToBounds = YES;
             self.searchVoiceBtn.enabled = YES;
             [self.searchVoiceBtn addTarget:self action:@selector(searchVoiceBtnHandle) forControlEvents:(UIControlEventTouchUpInside)];

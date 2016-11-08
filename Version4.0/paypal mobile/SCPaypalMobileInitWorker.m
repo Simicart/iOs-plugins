@@ -93,7 +93,7 @@
         _payPalConfig.languageOrLocale = LOCALE_IDENTIFIER;
         
         PayPalPayment *pay = [[PayPalPayment alloc] init];
-        pay.amount = [[NSDecimalNumber alloc] initWithFloat:[[fee valueForKey:@"grand_total_incl_tax"] floatValue]];
+        pay.amount = [[NSDecimalNumber alloc] initWithString:[NSString stringWithFormat:@"%@",[fee valueForKey:@"grand_total_incl_tax"]]];
         pay.currencyCode = [[SimiGlobalVar sharedInstance] currencyCode];
         pay.bnCode = bnCode;
         pay.shortDescription = [NSString stringWithFormat:@"%@ #: %@", SCLocalizedString(@"Invoice"), [order valueForKey:@"invoice_number"]];
