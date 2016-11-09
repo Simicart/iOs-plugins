@@ -135,7 +135,7 @@
     if (row.identifier == CART_CHECKOUT_ROW) {
         UITableViewCell *cell = [noti.userInfo objectForKey:@"cell"];
         [cell addSubview:btnPaypalCart];
-        [self removeObserverForNotification:noti];
+//        [self removeObserverForNotification:noti];
     }
 }
 
