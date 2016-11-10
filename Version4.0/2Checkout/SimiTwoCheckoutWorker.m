@@ -62,6 +62,7 @@
             }
             url = [url stringByAppendingString:params];
             SimiTwoCheckoutWebView *nextController = [[SimiTwoCheckoutWebView alloc] init];
+            nextController.order = [order copy];
             url = [url stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
             [nextController setUrlPath:url];
             nextController.urlCallBack = [payment valueForKey:@"url_back"];

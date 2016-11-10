@@ -8,14 +8,12 @@
 
 #import "SCPaypalExpressCoreWorker.h"
 #import <SimiCartBundle/SCCartViewControllerPad.h>
-#import <SimiCartBundle/SCProductSecondDesignViewController.h>
 
-static NSString *product_paypalcheckout_row = @"product_paypalcheckout_row";
 @implementation SCPaypalExpressCoreWorker
 {
     NSDictionary *paypalExpressConfig;
 }
-@synthesize btnPaypalCart, btnPaypalProduct, btnPaypalProductNew;
+@synthesize btnPaypalCart, btnPaypalProduct;
 @synthesize productViewController, productActionView, productActionViewFrame;
 @synthesize webViewController;
 
@@ -31,10 +29,6 @@ static NSString *product_paypalcheckout_row = @"product_paypalcheckout_row";
         
         //open webview after placed Order
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didPlaceOrderBefore:) name:@"DidPlaceOrder-Before" object:nil];
-        
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initProductCellsAfter:) name:@"InitProductCells-After" object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializedProductCellAfter:) name:@"InitializedProductCell-After" object:nil];
-        
         paypalExpressConfig = [[SimiGlobalVar sharedInstance].allConfig valueForKey:@"paypal_express_config"];
     }
     return self;
@@ -87,44 +81,6 @@ static NSString *product_paypalcheckout_row = @"product_paypalcheckout_row";
     }
 }
 
-#pragma mark Product Second Design
-- (void)initProductCellsAfter:(NSNotification*)noti
-{
-    SimiTable *cells = noti.object;
-    SimiSection *mainSection = [cells getSectionByIdentifier:product_main_section];
-    SimiRow *beforeRow = [mainSection getRowByIdentifier:product_option_row];
-    if (beforeRow == nil) {
-        beforeRow = [mainSection getRowByIdentifier:product_nameandprice_row];
-    }
-    [mainSection addRowWithIdentifier:product_paypalcheckout_row height:50 sortOrder:beforeRow.sortOrder + 10];
-    [mainSection sortItems];
-}
-
-- (void)initializedProductCellAfter:(NSNotification*)noti
-{
-    SimiRow *row = [noti.userInfo valueForKey:@"row"];
-    if ([row.identifier isEqualToString:product_paypalcheckout_row]) {
-        UITableViewCell *cell = [noti.userInfo valueForKey:@"cell"];
-        if ([[paypalExpressConfig valueForKey:@"show_on_product_detail"]boolValue]) {
-            if (btnPaypalProductNew == nil) {
-                CGFloat buttonWidth = [SimiGlobalVar scaleValue:290];
-                CGFloat buttonHeight = 40;
-                CGFloat leftPadding = [SimiGlobalVar scaleValue:15];
-                CGFloat topPadding = 5;
-                CGFloat cornerRadius = 4.0f;
-                
-                btnPaypalProductNew = [[UIButton alloc]initWithFrame:CGRectMake(leftPadding, topPadding, buttonWidth,buttonHeight)];
-                [btnPaypalProductNew.layer setCornerRadius:cornerRadius];
-                [btnPaypalProductNew setBackgroundColor:[[SimiGlobalVar sharedInstance] colorWithHexString:@"#ffc439"]];
-                [btnPaypalProductNew setContentEdgeInsets:UIEdgeInsetsMake(0, buttonWidth/2 -75, 0, buttonWidth/2 -75)];
-                [btnPaypalProductNew addTarget:self action:@selector(didClickProductPaypalButton:) forControlEvents:UIControlEventTouchUpInside];
-                [btnPaypalProductNew setImage:[UIImage imageNamed:@"en_paypal_express_product_btn"] forState:UIControlStateNormal];
-            }
-            [btnPaypalProductNew removeFromSuperview];
-            [cell addSubview:btnPaypalProductNew];
-        }
-    }
-}
 
 #pragma mark Add Button to Cart View Controller
 -(void)didChangeCart: (NSNotification *)noti

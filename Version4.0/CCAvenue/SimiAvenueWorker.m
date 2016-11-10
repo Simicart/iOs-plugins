@@ -51,6 +51,7 @@
         if([order valueForKey:@"invoice_number"] && [order valueForKey:@"url_action"]){
             NSString *url = [order valueForKey:@"url_action"];
             SimiAvenueWebView *nextController = [[SimiAvenueWebView alloc] init];
+            nextController.order = [order copy];
             url = [url stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
             [nextController setUrlPath:url];
             nextController.title =  SCLocalizedString(@"CCAvenue");

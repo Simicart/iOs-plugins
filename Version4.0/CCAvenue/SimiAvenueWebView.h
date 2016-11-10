@@ -7,8 +7,9 @@
 //
 
 #import <SimiCartBundle/SimiViewController.h>
+#import <SimiCartBundle/SCRedirectPaymentViewController.h>
 
-@interface SimiAvenueWebView : SimiViewController<UIWebViewDelegate>{
+@interface SimiAvenueWebView : SCRedirectPaymentViewController<UIWebViewDelegate>{
     NSURL *url;
     UIBarButtonItem *backItem;
 }

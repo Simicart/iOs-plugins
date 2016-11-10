@@ -1,15 +1,17 @@
 //
-//  PayUIndiaWorker.m
+//  SCCheckoutcomWorker.m
 //  SimiCartPluginFW
 //
-//  Created by NghiepLy on 7/17/15.
-//  Copyright (c) 2015 Trueplus. All rights reserved.
+//  Created by Hoang Van Trung on 11/10/16.
+//  Copyright © 2016 Trueplus. All rights reserved.
 //
 
-#import "PayUIndiaWorker.h"
+#import "SCCheckoutcomWorker.h"
+#import "SCCheckoutcomViewController.h"
 #import <SimiCartBundle/SCOrderViewController.h>
 #import <SimiCartBundle/SCAppDelegate.h>
-@implementation PayUIndiaWorker
+
+@implementation SCCheckoutcomWorker
 {
     SimiOrderModel *order;
     SimiModel *payment;
@@ -29,11 +31,11 @@
     if ([noti.name isEqualToString:@"DidPlaceOrder-Before"]) {
         order = noti.object;
         payment = [noti.userInfo valueForKey:@"payment"];
-        if ([[[payment valueForKey:@"payment_method"] uppercaseString] isEqualToString:@"SIMIPAYUINDIA"] &&[order valueForKey:@"invoice_number"]) {
-            PayUIndiaViewController *viewController = [[PayUIndiaViewController alloc] init];
-            viewController.order = [order copy];
+        if ([[[payment valueForKey:@"payment_method"] lowercaseString] isEqualToString:@"simicheckoutcom"] &&[order valueForKey:@"invoice_number"]) {
+            SCCheckoutcomViewController *checkoutVC = [[SCCheckoutcomViewController alloc] init];
+            checkoutVC.order = [order copy];
             UINavigationController *currentVC = [SimiGlobalVar sharedInstance].currentlyNavigationController;
-            UINavigationController *navi  = [[UINavigationController alloc]initWithRootViewController:viewController];
+            UINavigationController *navi  = [[UINavigationController alloc]initWithRootViewController:checkoutVC];
             [currentVC presentViewController:navi animated:YES completion:nil];
         }
     }

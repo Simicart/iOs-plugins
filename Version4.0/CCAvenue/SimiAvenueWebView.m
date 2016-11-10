@@ -23,8 +23,7 @@
 
 - (void)viewDidLoadBefore
 {
-    UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc]initWithTitle:SCLocalizedString(@"Cancel") style:UIBarButtonItemStylePlain target:self action:@selector(cancelPayment:)];
-    self.navigationItem.rightBarButtonItem = cancelButton;
+    [self viewDidLoadBefore];
 }
 
 - (void)viewDidLoadAfter
@@ -58,11 +57,6 @@
     }
 }
 
-- (void)cancelPayment:(UIButton*)sender
-{
-    [self showAlertWithTitle:@"FAIL" message:@"Your order has been canceled"];
-    [self.navigationController dismissViewControllerAnimated:YES completion:nil];
-}
 
 - (void)setUrlPath:(NSString *)path{
     if (![urlPath isEqualToString:path]) {

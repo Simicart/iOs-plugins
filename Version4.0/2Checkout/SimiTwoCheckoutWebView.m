@@ -28,15 +28,9 @@
 
 - (void)viewDidLoadBefore
 {
+    [super viewDidLoadBefore];
     [self setToSimiView];
     self.navigationItem.title = SCLocalizedString(@"2Checkout");
-    UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc]initWithTitle:SCLocalizedString(@"Cancel") style:UIBarButtonItemStylePlain target:self action:@selector(cancelPayment:)];
-    self.navigationItem.rightBarButtonItem = cancelButton;
-}
-
-- (void)cancelPayment:(UIButton*)sender
-{
-    [self.navigationController dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)viewWillAppearBefore:(BOOL)animated

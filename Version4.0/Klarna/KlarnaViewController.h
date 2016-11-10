@@ -10,8 +10,9 @@
 #import <SimiCartBundle/SimiViewController.h>
 #import <SimiCartBundle/SimiResponder.h>
 #import "KlarnaModel.h"
+#import <SimiCartBundle/SCRedirectPaymentViewController.h>
 
-@interface KlarnaViewController : SimiViewController<UIWebViewDelegate>
+@interface KlarnaViewController : SCRedirectPaymentViewController<UIWebViewDelegate>
 @property (nonatomic, strong) UIWebView *webView;
 @property (nonatomic, strong) KlarnaModel *klarnaModel;
 @end

@@ -8,7 +8,7 @@
 
 #import <SimiCartBundle/SimiCartBundle.h>
 
-@interface PayUIndiaViewController : SimiViewController<UIWebViewDelegate>
-@property (nonatomic, strong) UIWebView *webView;
-@property (nonatomic, strong) NSString *stringURL;
+#import <SimiCartBundle/SCRedirectPaymentViewController.h>
+
+@interface PayUIndiaViewController : SCRedirectPaymentViewController<UIWebViewDelegate>
 @end

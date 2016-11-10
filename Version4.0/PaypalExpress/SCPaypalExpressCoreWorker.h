@@ -21,8 +21,6 @@
 @property (strong, nonatomic) UIButton *btnPaypalProduct; //Paypal On Product Screen
 @property (strong, nonatomic) UIButton *btnPaypalCart; //Paypal On Cart Screen
 
-@property (strong, nonatomic) UIButton *btnPaypalProductNew;
-
 @property (strong, nonatomic) SCPaypalExpressWebViewController *webViewController;
 @property (nonatomic) CGRect productActionViewFrame;
 

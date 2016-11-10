@@ -12,19 +12,14 @@
 
 @end
 
-@implementation PayUIndiaViewController
+@implementation PayUIndiaViewController{
+    UIWebView* payUIndianWebView;
+}
 
 - (void)viewDidLoadBefore
 {
-    UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc]initWithTitle:SCLocalizedString(@"Cancel") style:UIBarButtonItemStylePlain target:self action:@selector(cancelPayment:)];
-    self.navigationItem.rightBarButtonItem = cancelButton;
+    [super viewDidLoadBefore];
     self.navigationItem.title = SCLocalizedString(@"PayU Indian");
-}
-
-- (void)cancelPayment:(UIButton*)sender
-{
-    [self showAlertWithTitle:@"FAIL" message:@"Your order has been canceled"];
-    [self.navigationController dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)viewWillAppearBefore:(BOOL)animated
@@ -34,13 +29,14 @@
 
 - (void)viewDidAppearBefore:(BOOL)animated
 {
-    if (_webView == nil) {
-        _webView = [[UIWebView alloc]initWithFrame:self.view.bounds];
-        _webView.delegate = self;
-        NSURL *url = [[NSURL alloc]initWithString:[self.stringURL stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+    [super viewDidAppearBefore:animated];
+    if (payUIndianWebView == nil) {
+        payUIndianWebView = [[UIWebView alloc]initWithFrame:self.view.bounds];
+        payUIndianWebView.delegate = self;
+        NSURL *url = [[NSURL alloc]initWithString:[[self.order valueForKey:@"url_action"] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
         NSURLRequest *request = [[NSURLRequest alloc]initWithURL:url];
-        [_webView loadRequest:request];
-        [self.view addSubview:_webView];
+        [payUIndianWebView loadRequest:request];
+        [self.view addSubview:payUIndianWebView];
         [self startLoadingData];
     }
 }

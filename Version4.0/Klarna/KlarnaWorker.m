@@ -34,6 +34,7 @@
             orderViewController.isDiscontinue = YES;
             [orderViewController.navigationController popToRootViewControllerAnimated:NO];
             KlarnaViewController *viewController = [[KlarnaViewController alloc] init];
+            viewController.order = [order copy];
             UINavigationController *currentVC = [SimiGlobalVar sharedInstance].currentlyNavigationController;
             UINavigationController *navi  = [[UINavigationController alloc]initWithRootViewController:viewController];
             [currentVC presentViewController:navi animated:YES completion:nil];

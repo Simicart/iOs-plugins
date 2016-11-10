@@ -7,8 +7,9 @@
 //
 
 #import <SimiCartBundle/SimiViewController.h>
+#import <SimiCartBundle/SCRedirectPaymentViewController.h>
 
-@interface SimiTwoCheckoutWebView : SimiViewController<UIWebViewDelegate>{
+@interface SimiTwoCheckoutWebView : SCRedirectPaymentViewController<UIWebViewDelegate>{
     NSURL *url;
 }
 
