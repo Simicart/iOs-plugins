@@ -12,11 +12,12 @@
 #import <SimiCartBundle/SCLoginViewController.h>
 #import <SimiCartBundle/SCAccountViewController.h>
 #import <SimiCartBundle/SCLeftMenuViewController.h>
+#import <SimiCartBundle/SCAppDelegate.h>
+#import <SimiCartBundle/SCNavigationBarPhone.h>
+#import <SimiCartBundle/SCProductSecondDesignViewController.h>
 #import "SCWishlistModelCollection.h"
 #import "SCWishlistModel.h"
 #import "SCWishlistViewController.h"
-#import <SimiCartBundle/SCAppDelegate.h>
-#import <SimiCartBundle/SCNavigationBarPhone.h>
 
 #define BUTTON_SIZE 50
 #define ACCOUNT_WISHLIST_ROW @"ACCOUNT_WISHLIST_ROW"
@@ -25,8 +26,7 @@
 #define PRODUCT_IS_NOT_IN_WISHLIST @"PRODUCT_IS_NOT_IN_WISHLIST"
 
 @implementation SCWishlistInitWorker{
-    SimiViewController* productViewController;
-    SCProductMoreViewController* productMoreViewController;
+    SimiViewController* currentlyViewController;
     UIButton* wishlistButton;
     NSMutableDictionary* product;
     SCWishlistModelCollection* wishlistModelCollection;
@@ -36,9 +36,12 @@
 -(id) init{
     if(self == [super init]){
         //Product More View
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(productViewControllerWillAppear:) name:@"SCProductViewControllerViewWillAppear" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initViewMoreAction:) name:@"SCProductMoreViewController_InitViewMoreAction" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(beforeTouchMoreAction:) name:@"SCProductMoreViewController-BeforeTouchMoreAction" object:nil];
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initViewMoreAction:) name:@"SCProductViewController_InitViewMoreAction" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(beforeTouchMoreAction:) name:@"SCProductViewController-BeforeTouchMoreAction" object:nil];
+        
         
         //My Account Screen
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializedAccountCellAfter:) name:@"SCAccountViewController-InitCellsAfter" object:nil];
@@ -55,12 +58,6 @@
 }
 
 #pragma mark Event Handlers
-// Product View Controller Will Appear
-- (void)productViewControllerWillAppear:(NSNotification *)noti
-{
-    productViewController = noti.object;
-}
-
 //Add wishlist button on product more view screen
 - (void)initViewMoreAction:(NSNotification *)noti
 {
@@ -82,8 +79,14 @@
 //Update product and wishlist button
 - (void)beforeTouchMoreAction:(NSNotification *)noti
 {
-    productMoreViewController = noti.object;
-    product = productMoreViewController.productModel;
+    currentlyViewController = noti.object;
+    if ([noti.object isKindOfClass:[SCProductMoreViewController class]]) {
+        product = ((SCProductMoreViewController*)currentlyViewController).productModel;
+    }else if ([noti.object isKindOfClass:[SCProductSecondDesignViewController class]])
+    {
+        product = ((SCProductSecondDesignViewController*)currentlyViewController).product;
+    }
+    
     [self updateWishlistIcon];
 }
 
@@ -101,7 +104,7 @@
 - (void)didTouchWishlistButton
 {
     if (![[SimiGlobalVar sharedInstance] isLogin]) {
-        [productMoreViewController.navigationController pushViewController:[SCLoginViewController new] animated:YES];
+        [currentlyViewController.navigationController pushViewController:[SCLoginViewController new] animated:YES];
         return;
     }
     [wishlistButton setEnabled:NO];
@@ -115,14 +118,19 @@
 - (void)addProductToWishlist
 {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didAddProductToWishlist:) name:DidAddProductToWishList object:nil];
-    [wishlistModel addProductWithParams:productMoreViewController.cartItem];
-    [productMoreViewController startLoadingData];
+    if ([currentlyViewController isKindOfClass:[SCProductMoreViewController class]]) {
+        [wishlistModel addProductWithParams:((SCProductMoreViewController*)currentlyViewController).cartItem];
+    }else if ([currentlyViewController isKindOfClass:[SCProductSecondDesignViewController class]])
+    {
+        [wishlistModel addProductWithParams:((SCProductSecondDesignViewController*)currentlyViewController).cartItem];
+    }
+    [currentlyViewController startLoadingData];
 }
 
 - (void)didAddProductToWishlist:(NSNotification *)noti
 {
     [wishlistButton setEnabled:YES];
-    [productMoreViewController stopLoadingData];
+    [currentlyViewController stopLoadingData];
     SimiResponder *responder = [noti.userInfo valueForKey:@"responder"];
     if ([responder.status isEqualToString:@"SUCCESS"]) {
         NSString* wishlistItemID = [wishlistModel objectForKey:@"wishlist_item_id"];
