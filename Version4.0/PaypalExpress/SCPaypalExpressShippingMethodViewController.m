@@ -10,6 +10,13 @@
 #import <SimiCartBundle/SimiFormatter.h>
 #import <SimiCartBundle/SCCartViewControllerPad.h>
 #import <SimiCartBundle/SCThemeWorker.h>
+#import <SimiCartBundle/SimiTable.h>
+#import <SimiCartBundle/UIImageView+WebCache.h>
+
+#define SHIPPING_METHOD_SECTION @"SHIPPING_METHOD_SECTION"
+#define SHIPPING_METHOD_ROW @"SHIPPING_METHOD_ROW"
+#define PRODUCT_SECTION @"PRODUCT_SECTION"
+#define PRODUCT_ROW @"PRODUCT_ROW"
 
 @interface SCPaypalExpressShippingMethodViewController ()
 {
@@ -20,7 +27,9 @@
 @implementation SCPaypalExpressShippingMethodViewController
 {
     UIButton * placeOrderButton;
-    NSIndexPath * checkedData;
+    NSInteger selectedShippingMethod;
+    NSArray* productList;
+    SimiTable* cells;
 }
 @synthesize paypalModel,paypalShippingModel,shippingMethodTableView;
 
@@ -38,11 +47,18 @@
 - (void)viewDidAppearBefore:(BOOL)animated
 {
     if (shippingMethodTableView == nil) {
-        shippingMethodTableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStyleGrouped];
+        shippingMethodTableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height - 50) style:UITableViewStyleGrouped];
+        shippingMethodTableView.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
         shippingMethodTableView.dataSource = self;
         shippingMethodTableView.delegate = self;
-        shippingMethodTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
         [self.view addSubview:shippingMethodTableView];
+        placeOrderButton = [[UIButton alloc]initWithFrame:CGRectMake(0 , self.view.bounds.size.height - 50, self.view.bounds.size.width, 50)];
+        [placeOrderButton setBackgroundColor:THEME_BUTTON_BACKGROUND_COLOR];
+        placeOrderButton.tintColor = THEME_BUTTON_TEXT_COLOR;
+        [placeOrderButton setTitle:SCLocalizedString(@"Place Order") forState:UIControlStateNormal];
+        [placeOrderButton addTarget:self action:@selector(placeOrder:) forControlEvents:UIControlEventTouchUpInside];
+        placeOrderButton.hidden = YES;
+        [self.view addSubview:placeOrderButton];
         [self getShippingMethod];
     }
 }
@@ -62,10 +78,28 @@
     [self removeObserverForNotification:noti];
     [self stopLoadingData];
     if ([responder.status isEqualToString:@"SUCCESS"]) {
+        cells = [SimiTable new];
+        placeOrderButton.hidden = NO;
         listShippingMethods = [[NSMutableArray alloc]initWithArray:[paypalShippingModel valueForKey:@"methods"]];
+        productList = [[paypalShippingModel objectForKey:@"app_customization"] objectForKey:@"products_ordered"];
+        SimiSection* productSection = [cells addSectionWithIdentifier:PRODUCT_SECTION];
+        productSection.headerTitle = SCLocalizedString(@"Products Orderred");
+        for(NSDictionary* product in productList){
+            SimiRow* productRow = [[SimiRow alloc] initWithIdentifier:PRODUCT_ROW height:110];
+            productRow.data = [product copy];
+            [productSection addRow:productRow];
+        }
+        SimiSection* shippingSection = [cells addSectionWithIdentifier:SHIPPING_METHOD_SECTION];
+        shippingSection.headerTitle = SCLocalizedString(@"Please select shipping method");
+        for(NSDictionary* shippingMethod in listShippingMethods){
+            SimiRow* shippingRow = [[SimiRow alloc] initWithIdentifier:SHIPPING_METHOD_ROW height:50];
+            [shippingSection addRow:shippingRow];
+            shippingRow.data = [shippingMethod copy];
+        }
         [shippingMethodTableView reloadData];
     }
     else {
+        placeOrderButton.hidden = YES;
         UIAlertView * alert = [[UIAlertView alloc]initWithTitle:SCLocalizedString(@"Error") message:responder.responseMessage delegate:self cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles: nil];
         [alert show];
     }
@@ -74,94 +108,93 @@
 #pragma mark TableView Datasource
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    if(listShippingMethods == nil)
-        return 0;
-    return 2;
+    return cells.count;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    if (section == 0) {
-        return [listShippingMethods count];
-    }
-    return 1;
+    SimiSection* simiSection = [cells objectAtIndex:section];
+    return simiSection.count;
 }
 
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
 {
-    NSString * title = @"";
-    switch (section) {
-        case 0:
-            title = SCLocalizedString(@"Please select shipping method");
-            break;
-        default:
-            break;
-    }
-    return title;
+    SimiSection* simiSection = [cells objectAtIndex:section];
+    return simiSection.headerTitle;
 }
 
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return 50;
+    SimiSection* section = [cells objectAtIndex:indexPath.section];
+    SimiRow* row = [section objectAtIndex:indexPath.row];
+    return row.height;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell *cell = [[UITableViewCell alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 40)];
-    if ((checkedData.row != indexPath.row)||(checkedData.section != indexPath.section))
-        cell.accessoryType = UITableViewCellAccessoryNone;
-    else
-        cell.accessoryType = UITableViewCellAccessoryCheckmark;
-    
-    if (listShippingMethods != nil) {
-        if (indexPath.section == 0) {
-            UILabel * methodName = [[UILabel alloc]initWithFrame:CGRectMake(20, 5, CGRectGetWidth(self.view.frame)*2/3, 30)];
-            [methodName setFont:[UIFont fontWithName:THEME_FONT_NAME size:14]];
-            [methodName setTextColor:THEME_CONTENT_COLOR];
-            UILabel * methodPrice = [[UILabel alloc]initWithFrame:CGRectMake(CGRectGetWidth(self.view.frame) -  170 , 5, 120 , 30)];
-            [methodPrice setFont:[UIFont fontWithName:THEME_FONT_NAME size:14]];
-            [methodPrice setTextColor:THEME_PRICE_COLOR];
-            
-            SimiModel *shippingMethodModel = [listShippingMethods objectAtIndex:indexPath.row];
-            [methodName setText: [NSString stringWithFormat:@"%@",[shippingMethodModel objectForKey:@"s_method_title"]]];
-            NSString *fee = [NSString stringWithFormat:@"%@",[shippingMethodModel objectForKey:@"s_method_fee"]];
-            NSString * price = [[SimiFormatter sharedInstance] priceWithPrice:fee];
-            [methodPrice setText:price];
-            [methodPrice setTextAlignment:NSTextAlignmentRight];
-            
-            [cell addSubview:methodName];
-            [cell addSubview:methodPrice];
+    SimiSection* section = [cells objectAtIndex:indexPath.section];
+    SimiRow* row = [section objectAtIndex:indexPath.row];
+    UITableViewCell *cell = [UITableViewCell new];
+    float paddingX = 10;
+    float cellWidth = tableView.frame.size.width - 2*paddingX;
+//    float cellHeight = row.height;
+    if([row.identifier isEqualToString:SHIPPING_METHOD_ROW]){
+        NSDictionary* shippingMethod = row.data;
+        NSString* identifier = [NSString stringWithFormat:@"%@%@",SHIPPING_METHOD_ROW,[shippingMethod objectForKey:@"s_method_id"]];
+        cell = [tableView dequeueReusableCellWithIdentifier:identifier];
+        if(!cell){
+            float cellY = 0;
+            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier];
+            UILabel* nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(paddingX, cellY, cellWidth, 25)];
+            [nameLabel setText: [NSString stringWithFormat:@"%@",[shippingMethod objectForKey:@"s_method_title"]]];
+            [cell addSubview:nameLabel];
+            cellY += nameLabel.frame.size.height;
+            UILabel* priceLabel = [[UILabel alloc] initWithFrame:CGRectMake(paddingX, cellY, cellWidth, 25)];
+            [priceLabel setText: [[SimiFormatter sharedInstance] priceWithPrice:[shippingMethod objectForKey:@"s_method_fee"]]];
+            [cell addSubview:priceLabel];
         }
-        else {
-            if (placeOrderButton == nil) {
-                float cellWidth = SCREEN_WIDTH;
-                if (PADDEVICE) {
-                    cellWidth = 2*SCREEN_WIDTH/3;
-                }
-                placeOrderButton = [[UIButton alloc]initWithFrame:CGRectMake(50 , 5 , cellWidth - 100, 40)];
-                [placeOrderButton setBackgroundColor:THEME_BUTTON_BACKGROUND_COLOR];
-                placeOrderButton.tintColor = THEME_BUTTON_TEXT_COLOR;
-                [placeOrderButton setTitle:SCLocalizedString(@"Place Order") forState:UIControlStateNormal];
-                [placeOrderButton.layer setCornerRadius:5.0f];
-                [placeOrderButton addTarget:self action:@selector(placeOrder:) forControlEvents:UIControlEventTouchUpInside];
+        if(selectedShippingMethod == indexPath.row){
+            cell.accessoryType = UITableViewCellAccessoryCheckmark;
+        }else{
+            cell.accessoryType = UITableViewCellAccessoryNone;
+        }
+    }else if([row.identifier isEqualToString:PRODUCT_ROW]){
+        NSDictionary* product = row.data;
+        NSString* identifier = [NSString stringWithFormat:@"%@%@",PRODUCT_ROW,[product objectForKey:@"product_id"]];
+        cell = [tableView dequeueReusableCellWithIdentifier:identifier];
+        if (cell == nil) {
+            SCCartCell *cartCell = [[SCCartCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier];
+            cartCell.useOnOrderPage = YES;
+            [cartCell setItem:[SimiCartModel dictionaryWithDictionary:product]];
+            [cartCell setInterfaceCell];
+            cell = cartCell;
+            if (cartCell.heightCell > row.height) {
+                row.height = cartCell.heightCell;
+                [tableView reloadData];
             }
-            [cell addSubview:placeOrderButton];
-            [cell setBackgroundColor:[UIColor clearColor]];
-            [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
+        }
+    }
+    for(UIView* view in cell.subviews){
+        if([view isKindOfClass:[UILabel class]]){
+            UILabel* label = (UILabel*) view;
+            label.font = [UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE];
+            if([SimiGlobalVar sharedInstance].isReverseLanguage)
+                label.textAlignment = NSTextAlignmentRight;
         }
     }
     return cell;
-
 }
 
 
 #pragma mark Table View Delegate
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (indexPath.section == 0) {
-        checkedData = indexPath;
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    SimiSection* section = [cells objectAtIndex:indexPath.section];
+    if([section.identifier isEqualToString:SHIPPING_METHOD_SECTION]){
+        selectedShippingMethod = indexPath.row;
         [tableView reloadData];
     }
 }
@@ -170,20 +203,11 @@
 - (void)placeOrder :(id)sender
 {
     [self startLoadingData];
-    
     if (paypalModel == nil) {
         paypalModel = [[SCPaypalExpressModel alloc]init];
     }
-    
-    SCPaypalExpressModel *selected;
-    if (checkedData == nil) {
-        selected = [listShippingMethods objectAtIndex:0];
-    }
-    else {
-        selected = [listShippingMethods objectAtIndex:checkedData.row];
-    }
     SimiModel *method = [SimiModel new];
-    [method setValue:@{@"method":[NSString stringWithFormat:@"%@",[selected objectForKey:@"s_method_code"]]}forKey:@"s_method"];
+    [method setValue:@{@"method":[NSString stringWithFormat:@"%@",[[listShippingMethods objectAtIndex:selectedShippingMethod] objectForKey:@"s_method_code"]]}forKey:@"s_method"];
     [paypalModel placeOrderWithParam:method];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didPlaceOrder:) name:@"PaypalExpressDidPlaceOrder" object:nil];
 }
