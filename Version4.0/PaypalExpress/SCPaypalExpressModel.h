@@ -9,6 +9,9 @@
 #import <SimiCartBundle/SimiCartBundle.h>
 #import "SCPaypalExpressAPI.h"
 
+#define DidSaveShippingMethod @"DidSaveShippingMethod"
+
+
 @interface SCPaypalExpressModel: SimiModel
 
 
@@ -38,4 +41,5 @@
  Notification name: DidGetPaypalCheckoutShippingMethods
  */
 - (void)getShippingMethods;
+-(void) saveShippingMethod:(NSDictionary*) params;
 @end

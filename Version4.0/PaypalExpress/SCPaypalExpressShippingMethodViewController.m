@@ -15,12 +15,15 @@
 
 #define SHIPPING_METHOD_SECTION @"SHIPPING_METHOD_SECTION"
 #define SHIPPING_METHOD_ROW @"SHIPPING_METHOD_ROW"
+#define PRODUCT_TOTAL_SECTION @"PRODUCT_TOTAL_SECTION"
+#define PRODUCT_TOTAL_ROW @"PRODUCT_TOTAL_ROW"
 #define PRODUCT_SECTION @"PRODUCT_SECTION"
 #define PRODUCT_ROW @"PRODUCT_ROW"
 
 @interface SCPaypalExpressShippingMethodViewController ()
 {
     NSMutableArray *listShippingMethods;
+    NSMutableArray* orderTotal;
 }
 @end
 
@@ -89,6 +92,17 @@
             productRow.data = [product copy];
             [productSection addRow:productRow];
         }
+        SimiSection* totalSection = [cells addSectionWithIdentifier:PRODUCT_TOTAL_SECTION];
+        orderTotal = [[SimiGlobalVar sharedInstance] convertCartPriceData:[[paypalShippingModel objectForKey:@"app_customization"] objectForKey:@"order_total"]];
+        float heightRow;
+        if(![[SimiGlobalVar sharedInstance] isReverseLanguage]){
+            heightRow = 25 * [SimiGlobalVar sharedInstance].numberRowOnCartPrice + 10;
+        }else{
+            heightRow = [SimiGlobalVar scaleValue:50] * [SimiGlobalVar sharedInstance].numberRowOnCartPrice + 10;
+        }
+        SimiRow* totalRow = [[SimiRow alloc] initWithIdentifier:PRODUCT_TOTAL_ROW height:heightRow];
+        [totalSection addRow:totalRow];
+        
         SimiSection* shippingSection = [cells addSectionWithIdentifier:SHIPPING_METHOD_SECTION];
         shippingSection.headerTitle = SCLocalizedString(@"Please select shipping method");
         for(NSDictionary* shippingMethod in listShippingMethods){
@@ -103,6 +117,14 @@
         UIAlertView * alert = [[UIAlertView alloc]initWithTitle:SCLocalizedString(@"Error") message:responder.responseMessage delegate:self cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles: nil];
         [alert show];
     }
+}
+
+-(void) saveShippingMethod:(NSString* ) methodCode{
+    if(!paypalShippingModel)
+        paypalShippingModel = [SCPaypalExpressModel new];
+    [paypalShippingModel saveShippingMethod:@{@"s_method":@{@"method":methodCode}}];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didGetShippingMethods:) name:DidSaveShippingMethod object:nil];
+    [self startLoadingData];
 }
 
 #pragma mark TableView Datasource
@@ -155,7 +177,8 @@
             [priceLabel setText: [[SimiFormatter sharedInstance] priceWithPrice:[shippingMethod objectForKey:@"s_method_fee"]]];
             [cell addSubview:priceLabel];
         }
-        if(selectedShippingMethod == indexPath.row){
+        if([[shippingMethod objectForKey:@"s_method_selected"] boolValue]){
+            selectedShippingMethod = indexPath.row;
             cell.accessoryType = UITableViewCellAccessoryCheckmark;
         }else{
             cell.accessoryType = UITableViewCellAccessoryNone;
@@ -164,17 +187,20 @@
         NSDictionary* product = row.data;
         NSString* identifier = [NSString stringWithFormat:@"%@%@",PRODUCT_ROW,[product objectForKey:@"product_id"]];
         cell = [tableView dequeueReusableCellWithIdentifier:identifier];
-        if (cell == nil) {
-            SCCartCell *cartCell = [[SCCartCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier];
-            cartCell.useOnOrderPage = YES;
-            [cartCell setItem:[SimiCartModel dictionaryWithDictionary:product]];
-            [cartCell setInterfaceCell];
-            cell = cartCell;
-            if (cartCell.heightCell > row.height) {
-                row.height = cartCell.heightCell;
-                [tableView reloadData];
-            }
+        SCCartCell *cartCell = [[SCCartCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier];
+        cartCell.useOnOrderPage = YES;
+        [cartCell setItem:[SimiCartModel dictionaryWithDictionary:product]];
+        [cartCell setInterfaceCell];
+        cell = cartCell;
+        if (cartCell.heightCell > row.height) {
+            row.height = cartCell.heightCell;
+            [tableView reloadData];
         }
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    }else if([row.identifier isEqualToString:PRODUCT_TOTAL_ROW]){
+        cell = [[SCOrderFeeCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:PRODUCT_TOTAL_ROW];
+        [(SCOrderFeeCell *)cell setData:orderTotal andWidthCell:cellWidth];
+        cell.userInteractionEnabled = NO;
     }
     for(UIView* view in cell.subviews){
         if([view isKindOfClass:[UILabel class]]){
@@ -194,7 +220,8 @@
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     SimiSection* section = [cells objectAtIndex:indexPath.section];
     if([section.identifier isEqualToString:SHIPPING_METHOD_SECTION]){
-        selectedShippingMethod = indexPath.row;
+        NSDictionary* shippingMethod = [listShippingMethods objectAtIndex:indexPath.row];
+        [self saveShippingMethod:[shippingMethod objectForKey:@"s_method_code"]];
         [tableView reloadData];
     }
 }

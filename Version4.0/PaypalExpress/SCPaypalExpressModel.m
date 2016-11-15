@@ -52,4 +52,14 @@
     modelActionType = ModelActionTypeGet;
     [(SCPaypalExpressAPI *)[self getAPI] getShippingMethod:self selector:@selector(didFinishRequest:responder:)];
 }
+
+-(void) saveShippingMethod:(NSDictionary*) params{
+    currentNotificationName = DidSaveShippingMethod;
+    keyResponse = @"ppexpressapi";
+    [self preDoRequest];
+    modelActionType = ModelActionTypeGet;
+    NSString* url = [NSString stringWithFormat:@"%@simiconnector/rest/v2/ppexpressapis/save_shipping_method",kBaseURL];
+    [[SimiAPI new] requestWithMethod:PUT URL:url params:params target:self selector:@selector(didFinishRequest:responder:) header:nil];
+}
+
 @end
