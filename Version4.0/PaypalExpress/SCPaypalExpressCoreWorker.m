@@ -108,6 +108,8 @@ static NSString *product_paypalcheckout_row = @"product_paypalcheckout_row";
         if ([[paypalExpressConfig valueForKey:@"show_on_product_detail"]boolValue]) {
             if (btnPaypalProductNew == nil) {
                 CGFloat buttonWidth = [SimiGlobalVar scaleValue:290];
+                if (PADDEVICE)
+                    buttonWidth = [SimiGlobalVar scaleValue:480];
                 CGFloat buttonHeight = 40;
                 CGFloat leftPadding = [SimiGlobalVar scaleValue:15];
                 CGFloat topPadding = 5;

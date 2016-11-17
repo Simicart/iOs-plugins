@@ -227,7 +227,7 @@
     if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone)
         fbView.frame =  CGRectMake(SCREEN_WIDTH - fbButton.frame.size.width - 15, moreActionView.frame.origin.y - moreActionView.heightMoreView + fbButton.frame.origin.y -5, 0, fbButton.frame.size.height+10);
     else if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
-        fbView.frame =  CGRectMake(SCREEN_WIDTH - fbButton.frame.size.width - 350, moreActionView.frame.origin.y - moreActionView.heightMoreView + fbButton.frame.origin.y -5, 0, fbButton.frame.size.height+10);
+        fbView.frame =  CGRectMake(CGRectGetWidth(currentlyViewController.view.frame) - fbButton.frame.size.width - 15, moreActionView.frame.origin.y - moreActionView.heightMoreView + fbButton.frame.origin.y -5, 0, fbButton.frame.size.height+10);
     [fbView addSubview:facebookLikeView];
     [fbView addSubview:fbCommentButton];
     [fbView addSubview:fbShareButton];
