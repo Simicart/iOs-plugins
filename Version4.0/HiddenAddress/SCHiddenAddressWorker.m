@@ -57,7 +57,7 @@
                         config:@{
                                  @"name" : @"prefix",
                                  @"title": SCLocalizedString(@"Prefix"),
-                                 @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:@"prefix"] isEqualToString:@"req"]]
+                                 @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:@"prefix_show"] isEqualToString:@"req"]]
                                  }];
             }
             
@@ -88,7 +88,7 @@
                         config:@{
                                  @"name" : @"suffix",
                                  @"title": SCLocalizedString(@"Suffix"),
-                                 @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:@"suffix"] isEqualToString:@"req"]]
+                                 @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:@"suffix_show"] isEqualToString:@"req"]]
                                  }];
             }
             if ([self hasField:[hiddenAddressModel valueForKey:@"company_show"]]) {
@@ -96,7 +96,7 @@
                         config:@{
                                  @"name" : @"company",
                                  @"title": SCLocalizedString(@"Company"),
-                                 @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:@"company"] isEqualToString:@"req"]]
+                                 @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:@"company_show"] isEqualToString:@"req"]]
                                  }];
             }
             
@@ -114,7 +114,7 @@
                         config:@{
                                  @"name" : @"street",
                                  @"title": SCLocalizedString(@"Street"),
-                                 @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:@"street"] isEqualToString:@"req"]]
+                                 @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:@"street_show"] isEqualToString:@"req"]]
                                  }];
             }
             
@@ -124,7 +124,7 @@
                         config:@{
                                  @"name" : @"city",
                                  @"title": SCLocalizedString(@"City"),
-                                 @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:@"city"] isEqualToString:@"req"]]
+                                 @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:@"city_show"] isEqualToString:@"req"]]
                                  }];
             }
             
@@ -139,7 +139,7 @@
                                                                                   @"label_field": @"country_name",
                                                                                   @"index_titles": @1,
                                                                                   @"searchable": @1,
-                                                                                  @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:@"country_id"] isEqualToString:@"req"]]
+                                                                                  @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:@"country_id_show"] isEqualToString:@"req"]]
                                                                                   }];
             }
 
@@ -149,7 +149,7 @@
                                                                          config:@{
                                                                                   @"name": @"region",
                                                                                   @"title": SCLocalizedString(@"State"),
-                                                                                  @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:@"region_id"] isEqualToString:@"req"]]
+                                                                                  @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:@"region_id_show"] isEqualToString:@"req"]]
                                                                                   }];
                 newAddressController.stateId = (SimiFormSelect *)[form addField:@"Select"
                                                                          config:@{
@@ -161,7 +161,7 @@
                                                                                   @"label_field": @"state_name",
                                                                                   @"index_titles": @1,
                                                                                   @"searchable": @1,
-                                                                                  @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:@"region_id"] isEqualToString:@"req"]]
+                                                                                  @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:@"region_id_show"] isEqualToString:@"req"]]
                                                                                   }];
             }
             
@@ -171,7 +171,7 @@
                         config:@{
                                  @"name": @"postcode",
                                  @"title": SCLocalizedString(@"Post/Zip Code"),
-                                 @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:@"zipcode"] isEqualToString:@"req"]]
+                                 @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:@"zipcode_show"] isEqualToString:@"req"]]
                                  }];
             }
             
@@ -180,7 +180,7 @@
                         config:@{
                                  @"name": @"telephone",
                                  @"title": SCLocalizedString(@"Phone"),
-                                 @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:@"telephone"] isEqualToString:@"req"]]
+                                 @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:@"telephone_show"] isEqualToString:@"req"]]
                                  }];
             }
             
@@ -189,7 +189,7 @@
                         config:@{
                                  @"name" : @"fax",
                                  @"title": SCLocalizedString(@"Fax"),
-                                 @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:@"fax"] isEqualToString:@"req"]]
+                                 @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:@"fax_show"] isEqualToString:@"req"]]
                                  }];
             }
             if (![SimiGlobalVar sharedInstance].isLogin) {
@@ -200,7 +200,7 @@
                                      @"title": SCLocalizedString(@"Date of Birth"),
                                      @"date_type": @"date",
                                      @"date_format": @"yyyy-MM-dd",
-                                     @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:@"dob"] isEqualToString:@"req"]]
+                                     @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:@"dob_show"] isEqualToString:@"req"]]
                                      }];
                 }
                 
@@ -214,7 +214,7 @@
                                 config:@{
                                          @"name": @"gender",
                                          @"title": SCLocalizedString(@"Gender"),
-                                         @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:@"gender"] isEqualToString:@"req"]],
+                                         @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:@"gender_show"] isEqualToString:@"req"]],
                                          @"source": @[@{@"value":[dict01 valueForKey:@"value"],@"label":SCLocalizedString([dict01 valueForKey:@"label"])},@{@"value":[dict02 valueForKey:@"value"] ,@"label":SCLocalizedString([dict02 valueForKey:@"label"])}]
                                          }];
                     }
