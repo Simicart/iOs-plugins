@@ -63,7 +63,7 @@ static NSString *PRODUCT_ROW_YOUTUBE = @"PRODUCT_ROW_YOUTUBE";
 {
     SimiRow *row = (SimiRow*)[noti.userInfo valueForKey:@"row"];
     itemWidth = 220;
-    itemHeight = row.height;
+    itemHeight = row.height - 10;
     if ([row.identifier isEqualToString:product_video_row]) {
         UITableViewCell *cell = (UITableViewCell*)[noti.userInfo valueForKey:@"cell"];
         NSInteger videoTag = 9999;
@@ -76,7 +76,7 @@ static NSString *PRODUCT_ROW_YOUTUBE = @"PRODUCT_ROW_YOUTUBE";
             if (PADDEVICE) {
                 widthCollecttion = SCREEN_WIDTH/2;
             }
-            UICollectionView *videoCollectionView =[[UICollectionView alloc] initWithFrame:CGRectMake(0, 0, widthCollecttion, row.height) collectionViewLayout:flowLayout];
+            UICollectionView *videoCollectionView =[[UICollectionView alloc] initWithFrame:CGRectMake(0, 10, widthCollecttion, itemHeight) collectionViewLayout:flowLayout];
             [videoCollectionView setContentInset:UIEdgeInsetsMake(0, 20, 0, 0)];
             videoCollectionView.dataSource = self;
             videoCollectionView.delegate = self;
@@ -112,7 +112,7 @@ static NSString *PRODUCT_ROW_YOUTUBE = @"PRODUCT_ROW_YOUTUBE";
         [videoViewCell addSubview:video];
         
         UILabel *labelTitle = [[UILabel alloc]initWithFrame:CGRectMake(0, itemHeight - 30, itemWidth, 30)];
-        [labelTitle setFont:[UIFont fontWithName:THEME_FONT_NAME_REGULAR size:18]];
+        [labelTitle setFont:[UIFont fontWithName:THEME_FONT_NAME_REGULAR size:14]];
         [labelTitle setText:[youtubeUnit valueForKey:@"video_title"]];
         labelTitle.tag = videoTag;
         [videoViewCell addSubview:labelTitle];
