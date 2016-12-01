@@ -93,8 +93,11 @@
         _payPalConfig.languageOrLocale = LOCALE_IDENTIFIER;
         
         PayPalPayment *pay = [[PayPalPayment alloc] init];
-        pay.amount = [[NSDecimalNumber alloc] initWithString:[NSString stringWithFormat:@"%@",[fee valueForKey:@"grand_total_incl_tax"]]];
-        pay.currencyCode = [[SimiGlobalVar sharedInstance] currencyCode];
+        float appCurrencyExchange = [[[SimiGlobalVar sharedInstance].baseConfig valueForKey:@"app_currency_exchange"]floatValue];
+        float orgionalFee = [[fee valueForKey:@"grand_total_incl_tax"]floatValue];
+        float currentFee = appCurrencyExchange * orgionalFee;
+        pay.amount = [[NSDecimalNumber alloc] initWithString:[NSString stringWithFormat:@"%.2f",currentFee]];
+        pay.currencyCode = @"USD";
         pay.bnCode = bnCode;
         pay.shortDescription = [NSString stringWithFormat:@"%@ #: %@", SCLocalizedString(@"Invoice"), [order valueForKey:@"invoice_number"]];
         pay.intent = PayPalPaymentIntentSale;
