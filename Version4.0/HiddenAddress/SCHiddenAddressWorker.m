@@ -247,6 +247,20 @@
                                  }];
             }
             
+            if(newAddressController.positionOpenNewAddress == PositionOpenNewAddressFromCart || newAddressController.positionOpenNewAddress == PositionOpenNewAddressFromOrderReview){
+                NSArray* checkoutCustomFields = [[SimiGlobalVar sharedInstance].appCustomization objectForKey:@"checkout_custom_fields"];
+                for(NSDictionary* customField in checkoutCustomFields){
+                    if([[customField objectForKey:@"input_type"] isEqualToString:@"text"]){
+                        [form addField:@"Text"
+                                config:@{
+                                         @"name": [customField objectForKey:@"name"],
+                                         @"title": [customField objectForKey:@"label"]?[customField objectForKey:@"label"]:@"",
+                                         @"required":[customField objectForKey:@"is_required"]
+                                         }];
+                    }
+                }
+            }
+            
             // Remove state before get country
             [form.fields removeObject:newAddressController.stateId];
             [form.fields removeObject:newAddressController.stateName];
