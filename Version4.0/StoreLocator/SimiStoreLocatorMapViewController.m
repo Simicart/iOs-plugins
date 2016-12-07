@@ -43,12 +43,12 @@
         case MapViewNoneSelectedMarker:
             camera = [GMSCameraPosition cameraWithLatitude:currentLatitube
                                                                     longitude:currentLongitube
-                                                                    zoom:0];
+                                                                    zoom:40];
             break;
         case MapViewSelectedMarker:
             camera = [GMSCameraPosition cameraWithLatitude:latitude
                                                  longitude:longitude
-                                                      zoom:15];
+                                                      zoom:40];
             break;
         default:
             return;
@@ -228,7 +228,7 @@
         float latitude = [[sLModel valueForKey:@"latitude"]floatValue];
         float longitude = [[sLModel valueForKey:@"longtitude"]floatValue];
         
-        GMSCameraPosition *cameraPosition = [GMSCameraPosition cameraWithLatitude:latitude longitude:longitude zoom:15];
+        GMSCameraPosition *cameraPosition = [GMSCameraPosition cameraWithLatitude:latitude longitude:longitude zoom:40];
         [mapView_ setCamera:cameraPosition];
     }
 }
