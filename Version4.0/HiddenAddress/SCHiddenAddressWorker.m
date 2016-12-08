@@ -113,7 +113,7 @@
                 [form addField:@"Text"
                         config:@{
                                  @"name" : @"street",
-                                 @"title": SCLocalizedString(@"Street"),
+                                 @"title": SCLocalizedString(@"Address"),
                                  @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:@"street_show"] isEqualToString:@"req"]]
                                  }];
             }
