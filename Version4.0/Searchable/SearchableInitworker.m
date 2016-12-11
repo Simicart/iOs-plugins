@@ -16,8 +16,8 @@
 -(id) init{
     if(self == [super init]){
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didGetProducts:) name:@"DidGetProductCollection" object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(openSearchableItem) name:@"DidInit" object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(openSearchableItem) name:@"ContinueUserActivity" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(openSearchableItem:) name:@"DidInit" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(openSearchableItem:) name:@"ContinueUserActivity" object:nil];
     }
     return self;
 }
@@ -48,10 +48,9 @@
         }
     }
 }
-
--(void) openSearchableItem{
+-(void) openSearchableItem:(NSNotification*) noti{
     NSUserActivity* searchableUserActivity = [SimiGlobalVar sharedInstance].searchableUserActivity;
-    if(searchableUserActivity){
+    if(searchableUserActivity && [searchableUserActivity.userInfo objectForKey:@"kCSSearchableItemActivityIdentifier"]){
         SCProductViewController* productVC = [SCProductViewController new];
         productVC.productId = [searchableUserActivity.userInfo objectForKey:@"kCSSearchableItemActivityIdentifier"];
         [[[SimiGlobalVar sharedInstance] currentlyNavigationController] popToRootViewControllerAnimated:NO];
