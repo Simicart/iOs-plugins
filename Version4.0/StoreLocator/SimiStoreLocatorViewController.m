@@ -74,6 +74,7 @@
         case 0:
             sLListViewController = [[SimiStoreLocatorListViewController alloc]init];
             sLListViewController.delegate = self;
+            
             return sLListViewController;
             break;
             
@@ -86,9 +87,10 @@
             sLMapViewController.currentLongitube = sLListViewController.currentLongitube;
             sLMapViewController.sLModelCollectionSyncList = sLListViewController.sLModelCollection;
             
-            if (sLMapViewController.mapViewOption != MapViewSelectedMarker) {
-                sLMapViewController.mapViewOption = MapViewNoneSelectedMarker;
-            }
+//            if (sLMapViewController.mapViewOption != MapViewSelectedMarker) {
+//                sLMapViewController.mapViewOption = MapViewNoneSelectedMarker;
+//            }
+            sLMapViewController.mapViewOption = MapViewSelectedMarker;
             return sLMapViewController;
             break;
     }

@@ -35,7 +35,8 @@
     // Do any additional setup after loading the view.
     sLModelCollectionAll = [[SimiStoreLocatorModelCollection alloc]init];
     sLModelCollectionUpdate = [[SimiStoreLocatorModelCollection alloc]init];
-    
+    if(sLModelCollectionSyncList.count > 0)
+        sLModel = [sLModelCollectionSyncList objectAtIndex:0];
     GMSCameraPosition *camera;
     float latitude = [[sLModel valueForKey:@"latitude"]floatValue];
     float longitude = [[sLModel valueForKey:@"longtitude"]floatValue];
