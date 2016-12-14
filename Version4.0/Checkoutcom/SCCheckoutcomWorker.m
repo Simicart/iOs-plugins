@@ -33,7 +33,7 @@
         payment = [noti.userInfo valueForKey:@"payment"];
         if ([[[payment valueForKey:@"payment_method"] lowercaseString] isEqualToString:@"simicheckoutcom"] &&[order valueForKey:@"invoice_number"]) {
             SCCheckoutcomViewController *checkoutVC = [[SCCheckoutcomViewController alloc] init];
-            checkoutVC.order = [order copy];
+            checkoutVC.order = [[SimiOrderModel alloc]initWithDictionary:order];
             UINavigationController *currentVC = [SimiGlobalVar sharedInstance].currentlyNavigationController;
             UINavigationController *navi  = [[UINavigationController alloc]initWithRootViewController:checkoutVC];
             [currentVC presentViewController:navi animated:YES completion:nil];

@@ -31,7 +31,7 @@
         payment = [noti.userInfo valueForKey:@"payment"];
         if ([[[payment valueForKey:@"payment_method"] uppercaseString] isEqualToString:@"SIMIPAYUINDIA"] &&[order valueForKey:@"invoice_number"]) {
             PayUIndiaViewController *viewController = [[PayUIndiaViewController alloc] init];
-            viewController.order = [order copy];
+            viewController.order = [[SimiOrderModel alloc]initWithDictionary:order];
             UINavigationController *currentVC = [SimiGlobalVar sharedInstance].currentlyNavigationController;
             UINavigationController *navi  = [[UINavigationController alloc]initWithRootViewController:viewController];
             [currentVC presentViewController:navi animated:YES completion:nil];
