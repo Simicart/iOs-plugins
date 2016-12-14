@@ -8,8 +8,8 @@
 
 #import "SearchableInitworker.h"
 #import <CoreSpotlight/CoreSpotlight.h>
-#import "SCThemeWorker.h"
-#import "SCProductViewController.h"
+#import <SimiCartBundle/SCThemeWorker.h>
+#import <SimiCartBundle/SCProductViewController.h>
 
 @implementation SearchableInitworker
 
