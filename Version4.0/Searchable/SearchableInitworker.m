@@ -23,28 +23,30 @@
 }
 
 -(void) didGetProducts: (NSNotification*) noti{
-    NSArray* productList = noti.object;
-    if(productList.count > 0){
-        NSMutableArray* searchableItems = [[NSMutableArray alloc] initWithCapacity:0];
-        for(NSDictionary* product in productList){
-            NSUserActivity* userActivity = [[NSUserActivity alloc] initWithActivityType:[NSString stringWithFormat:@"%@.%@",[[NSBundle mainBundle] bundleIdentifier],[product objectForKey:@"entity_id"]]];
-            userActivity.title = [product objectForKey:@"name"];
-            userActivity.userInfo = @{@"id":[product objectForKey:@"entity_id"]};
-            userActivity.eligibleForSearch = YES;
-            CSSearchableItemAttributeSet* searchableItemAttributeSet = [[CSSearchableItemAttributeSet alloc] initWithItemContentType:@"product"];
-            NSArray* images = [product objectForKey:@"images"];
-            if(images.count > 0)
-                searchableItemAttributeSet.thumbnailData = [NSData dataWithContentsOfURL:[NSURL URLWithString:[[images objectAtIndex:0] objectForKey:@"url"]]];
-            searchableItemAttributeSet.title = [product objectForKey:@"name"];
-            searchableItemAttributeSet.contentDescription = [product objectForKey:@"short_description"];
-            id item = [[CSSearchableItem alloc]initWithUniqueIdentifier:[product objectForKey:@"entity_id"] domainIdentifier:[NSString stringWithFormat:@"%@.searchAPIs.product",[[NSBundle mainBundle] bundleIdentifier]] attributeSet:searchableItemAttributeSet];
-            [searchableItems addObject:item];
-            userActivity.contentAttributeSet = searchableItemAttributeSet;
-            [[CSSearchableIndex defaultSearchableIndex] indexSearchableItems:searchableItems completionHandler:^(NSError * _Nullable error) {
-                if(error != nil){
-                    NSLog(@"%@",error.localizedDescription);
-                }
-            }];
+    if([noti.object isKindOfClass:[NSArray class]]){
+        NSArray* productList = noti.object;
+        if(productList.count > 0){
+            NSMutableArray* searchableItems = [[NSMutableArray alloc] initWithCapacity:0];
+            for(NSDictionary* product in productList){
+                NSUserActivity* userActivity = [[NSUserActivity alloc] initWithActivityType:[NSString stringWithFormat:@"%@.%@",[[NSBundle mainBundle] bundleIdentifier],[product objectForKey:@"entity_id"]]];
+                userActivity.title = [product objectForKey:@"name"];
+                userActivity.userInfo = @{@"id":[product objectForKey:@"entity_id"]};
+                userActivity.eligibleForSearch = YES;
+                CSSearchableItemAttributeSet* searchableItemAttributeSet = [[CSSearchableItemAttributeSet alloc] initWithItemContentType:@"product"];
+                NSArray* images = [product objectForKey:@"images"];
+                if(images.count > 0)
+                    searchableItemAttributeSet.thumbnailData = [NSData dataWithContentsOfURL:[NSURL URLWithString:[[images objectAtIndex:0] objectForKey:@"url"]]];
+                searchableItemAttributeSet.title = [product objectForKey:@"name"];
+                searchableItemAttributeSet.contentDescription = [product objectForKey:@"short_description"];
+                id item = [[CSSearchableItem alloc]initWithUniqueIdentifier:[product objectForKey:@"entity_id"] domainIdentifier:[NSString stringWithFormat:@"%@.searchAPIs.product",[[NSBundle mainBundle] bundleIdentifier]] attributeSet:searchableItemAttributeSet];
+                [searchableItems addObject:item];
+                userActivity.contentAttributeSet = searchableItemAttributeSet;
+                [[CSSearchableIndex defaultSearchableIndex] indexSearchableItems:[NSArray arrayWithArray:searchableItems] completionHandler:^(NSError * _Nullable error) {
+                    if(error != nil){
+                        NSLog(@"IndexSearchableItem Error: %@",error.localizedDescription);
+                    }
+                }];
+            }
         }
     }
 }
