@@ -44,9 +44,9 @@
 
 
 -(void) cancelPayment:(id) sender{
-    UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:@"Confirmation" message:@"Are you sure that you want to cancel the order?" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"OK", nil];
+    UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:SCLocalizedString(@"Confirmation") message:[NSString stringWithFormat:@"%@?",SCLocalizedString(@"Are you sure that you want to cancel the order")] delegate:self cancelButtonTitle:SCLocalizedString(@"Close") otherButtonTitles:SCLocalizedString(@"OK"), nil];
     [alertView show];
-    alertView.tag = 0;
+    alertView.simiObjectName = @"cancelOrderAlert";
 }
 
 - (void)setUrlPath:(NSString *)path{
@@ -60,7 +60,7 @@
 
 
 -(void) alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
-    if(alertView.tag == 0){
+    if([alertView.simiObjectName isEqualToString:@"cancelOrderAlert"]){
         if(buttonIndex == 0){
         
         }else if(buttonIndex == 1){

@@ -8,50 +8,51 @@
 
 #import "SearchableInitworker.h"
 #import <CoreSpotlight/CoreSpotlight.h>
-#import "SCThemeWorker.h"
-#import "SCProductViewController.h"
+#import <SimiCartBundle/SCThemeWorker.h>
+#import <SimiCartBundle/SCProductViewController.h>
 
 @implementation SearchableInitworker
 
 -(id) init{
     if(self == [super init]){
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didGetProducts:) name:@"DidGetProductCollection" object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(openSearchableItem) name:@"DidInit" object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(openSearchableItem) name:@"ContinueUserActivity" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(openSearchableItem:) name:@"DidInit" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(openSearchableItem:) name:@"ContinueUserActivity" object:nil];
     }
     return self;
 }
 
 -(void) didGetProducts: (NSNotification*) noti{
-    NSArray* productList = noti.object;
-    if(productList.count > 0){
-        NSMutableArray* searchableItems = [[NSMutableArray alloc] initWithCapacity:0];
-        for(NSDictionary* product in productList){
-            NSUserActivity* userActivity = [[NSUserActivity alloc] initWithActivityType:[NSString stringWithFormat:@"%@.%@",[[NSBundle mainBundle] bundleIdentifier],[product objectForKey:@"entity_id"]]];
-            userActivity.title = [product objectForKey:@"name"];
-            userActivity.userInfo = @{@"id":[product objectForKey:@"entity_id"]};
-            userActivity.eligibleForSearch = YES;
-            CSSearchableItemAttributeSet* searchableItemAttributeSet = [[CSSearchableItemAttributeSet alloc] initWithItemContentType:@"product"];
-            NSArray* images = [product objectForKey:@"images"];
-            if(images.count > 0)
-                searchableItemAttributeSet.thumbnailData = [NSData dataWithContentsOfURL:[NSURL URLWithString:[[images objectAtIndex:0] objectForKey:@"url"]]];
-            searchableItemAttributeSet.title = [product objectForKey:@"name"];
-            searchableItemAttributeSet.contentDescription = [product objectForKey:@"short_description"];
-            id item = [[CSSearchableItem alloc]initWithUniqueIdentifier:[product objectForKey:@"entity_id"] domainIdentifier:[NSString stringWithFormat:@"%@.searchAPIs.product",[[NSBundle mainBundle] bundleIdentifier]] attributeSet:searchableItemAttributeSet];
-            [searchableItems addObject:item];
-            userActivity.contentAttributeSet = searchableItemAttributeSet;
-            [[CSSearchableIndex defaultSearchableIndex] indexSearchableItems:searchableItems completionHandler:^(NSError * _Nullable error) {
-                if(error != nil){
-                    NSLog(@"%@",error.localizedDescription);
-                }
-            }];
+    if([noti.object isKindOfClass:[NSArray class]]){
+        NSArray* productList = noti.object;
+        if(productList.count > 0){
+            NSMutableArray* searchableItems = [[NSMutableArray alloc] initWithCapacity:0];
+            for(NSDictionary* product in productList){
+                NSUserActivity* userActivity = [[NSUserActivity alloc] initWithActivityType:[NSString stringWithFormat:@"%@.%@",[[NSBundle mainBundle] bundleIdentifier],[product objectForKey:@"entity_id"]]];
+                userActivity.title = [product objectForKey:@"name"];
+                userActivity.userInfo = @{@"id":[product objectForKey:@"entity_id"]};
+                userActivity.eligibleForSearch = YES;
+                CSSearchableItemAttributeSet* searchableItemAttributeSet = [[CSSearchableItemAttributeSet alloc] initWithItemContentType:@"product"];
+                NSArray* images = [product objectForKey:@"images"];
+                if(images.count > 0)
+                    searchableItemAttributeSet.thumbnailData = [NSData dataWithContentsOfURL:[NSURL URLWithString:[[images objectAtIndex:0] objectForKey:@"url"]]];
+                searchableItemAttributeSet.title = [product objectForKey:@"name"];
+                searchableItemAttributeSet.contentDescription = [product objectForKey:@"short_description"];
+                id item = [[CSSearchableItem alloc]initWithUniqueIdentifier:[product objectForKey:@"entity_id"] domainIdentifier:[NSString stringWithFormat:@"%@.searchAPIs.product",[[NSBundle mainBundle] bundleIdentifier]] attributeSet:searchableItemAttributeSet];
+                [searchableItems addObject:item];
+                userActivity.contentAttributeSet = searchableItemAttributeSet;
+                [[CSSearchableIndex defaultSearchableIndex] indexSearchableItems:[NSArray arrayWithArray:searchableItems] completionHandler:^(NSError * _Nullable error) {
+                    if(error != nil){
+                        NSLog(@"IndexSearchableItem Error: %@",error.localizedDescription);
+                    }
+                }];
+            }
         }
     }
 }
-
--(void) openSearchableItem{
+-(void) openSearchableItem:(NSNotification*) noti{
     NSUserActivity* searchableUserActivity = [SimiGlobalVar sharedInstance].searchableUserActivity;
-    if(searchableUserActivity){
+    if(searchableUserActivity && [searchableUserActivity.userInfo objectForKey:@"kCSSearchableItemActivityIdentifier"]){
         SCProductViewController* productVC = [SCProductViewController new];
         productVC.productId = [searchableUserActivity.userInfo objectForKey:@"kCSSearchableItemActivityIdentifier"];
         [[[SimiGlobalVar sharedInstance] currentlyNavigationController] popToRootViewControllerAnimated:NO];
