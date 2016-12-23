@@ -19,47 +19,8 @@
 #define FacebookLoginCell @"FacebookLoginCell"
 #define SimiFaceBookWorker_StartLoginWithFaceBook @"SimiFaceBookWorker_StartLoginWithFaceBook"
 
-#define COMMENT_VIEW_TAG 0
-#define COMMENT_HTML @"\
-                    <!DOCTYPE html>\
-                    <html xmlns:fb='http://ogp.me/ns/fb#'>\
-                    <head>\
-                    <meta name='viewport' content='width=%f, initial-scale=1.0'>\
-                    </head>\
-                    <body high=100%>\
-                    <div id='fb-root'></div>\
-                    <script>\
-                    window.fbAsyncInit = function() {\
-                    FB.init({\
-                    appId      : '%@',\
-                    cookie     : true,\
-                    status     : true,\
-                    xfbml      : true\
-                    });\
-                    FB.Event.subscribe('xfbml.render', function(response) {\
-                    FB.Canvas.setSize();\
-                    });\
-                    };\
-                    (function(d, s, id){\
-                    var js, fjs = d.getElementsByTagName(s)[0];\
-                    if (d.getElementById(id)) {return;}\
-                    js = d.createElement(s); js.id = id;\
-                    js.src = 'http://connect.facebook.net/en_US/all.js';\
-                    fjs.parentNode.insertBefore(js, fjs);\
-                    }(document, 'script', 'facebook-jssdk'));\
-                    </script>\
-                    <div class='fb-comments' data-href='%@' data-numposts='5' data-colorscheme='light'></div>\
-                    </body>\
-                    </html>\
-                    <style type=\"text/css\">\
-                    .fb_hide_iframes iframe {\
-                    left: 0;\
-                    top:0;\
-                    right:0;\
-                    bottom:0;\
-                    }\
-                    </style>\
-                    "
+#define COMMENT_VIEW_TAG 1111
+#define FB_BUTTON_SIZE 50
 
 @implementation SCFacebookInitWorker
 {
@@ -70,14 +31,10 @@
     NSString* facebookAppID;
     MoreActionView* moreActionView;
     float widthFacebookView,facebookViewInitX;
-    UIView *commentView;
     UIView* fbView;
-    FBSDKLikeControl* fbLikeControl;
     UIButton* fbButton;
-    float fbButtonSize;
-    UIButton* fbShareButton, *fbCommentButton;
-    BOOL isShowFacebookView, isShowCommentView, isHideTabBar;
-    UIActivityIndicatorView* activityView;
+    BOOL isShowFacebookView;
+//    UIActivityIndicatorView* activityView;
     UIWebView* commentWebView;
     NSString* commentHTMLString;
     UIButton* btnClearAllFacebookCookies;
@@ -92,15 +49,57 @@
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initViewMoreAction:) name:@"SCProductViewController_InitViewMoreAction" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(beforeTouchMoreAction:) name:@"SCProductViewController_BeforeTouchMoreAction" object:nil];
         
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(resetFacebookViewPosition:) name:@"SCProductSecondDesignViewControllerViewDidAppear" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(resetFacebookViewPosition:) name:@"SCProductMoreViewControllerViewDidAppear" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(resetFacebookViewPosition:) name:@"SCProductSecondDesignViewControllerPadViewDidAppear" object:nil];
+        
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:SCLoginViewController_InitCellsAfter object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:ApplicationOpenURL object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:SCLoginViewController_InitCellAfter object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didLogin:) name:DidLogin object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didLogout:) name:DidLogout object:nil];
         
-        
         facebookAppID = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"FacebookAppID"];
-        fbButtonSize = 50;
+        commentHTMLString = @"\
+                             <!DOCTYPE html>\
+                             <html xmlns:fb='http://ogp.me/ns/fb#'>\
+                             <head>\
+                             <meta name='viewport' content='width=%f, initial-scale=1.0'>\
+                             </head>\
+                             <body high=100%>\
+                             <div id='fb-root'></div>\
+                             <script>\
+                             window.fbAsyncInit = function() {\
+                             FB.init({\
+                             appId      : '%@',\
+                             cookie     : true,\
+                             status     : true,\
+                             xfbml      : true\
+                             });\
+                             FB.Event.subscribe('xfbml.render', function(response) {\
+                             FB.Canvas.setSize();\
+                             });\
+                             };\
+                             (function(d, s, id){\
+                             var js, fjs = d.getElementsByTagName(s)[0];\
+                             if (d.getElementById(id)) {return;}\
+                             js = d.createElement(s); js.id = id;\
+                             js.src = 'http://connect.facebook.net/en_US/all.js';\
+                             fjs.parentNode.insertBefore(js, fjs);\
+                             }(document, 'script', 'facebook-jssdk'));\
+                             </script>\
+                             <div class='fb-comments' data-href='%@' data-numposts='5' data-colorscheme='light'></div>\
+                             </body>\
+                             </html>\
+                             <style type=\"text/css\">\
+                             .fb_hide_iframes iframe {\
+                             left: 0;\
+                             top:0;\
+                             right:0;\
+                             bottom:0;\
+                             }\
+                             </style>\
+                             ";
     }
     return self;
 }
@@ -151,17 +150,15 @@
 - (void)initViewMoreAction:(NSNotification*)noti
 {
     moreActionView = noti.object;
-//    if(!fbButton ){
-    fbButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, fbButtonSize, fbButtonSize)];
+    fbButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, FB_BUTTON_SIZE, FB_BUTTON_SIZE)];
     [fbButton setImage:[UIImage imageNamed:@"facebookconnect_ic_detail"] forState:UIControlStateNormal];
     [fbButton setImageEdgeInsets:UIEdgeInsetsMake(9, 9, 9, 9)];
-    [fbButton.layer setCornerRadius:fbButtonSize/2.0f];
+    [fbButton.layer setCornerRadius:FB_BUTTON_SIZE/2.0f];
     [fbButton.layer setShadowOffset:CGSizeMake(1, 1)];
     [fbButton.layer setShadowRadius:2];
     fbButton.layer.shadowOpacity = 0.5;
     [fbButton setBackgroundColor:[UIColor whiteColor]];
     [fbButton addTarget:self action:@selector(fbButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
-//    }
     moreActionView.numberIcon += 1;
     [moreActionView.arrayIcon addObject:fbButton];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(afterInitViewMore:) name:@"SCProductMoreViewController-AfterInitViewMore" object:nil];
@@ -187,9 +184,9 @@
     fbLikeBackgroundImageView.contentMode = UIViewContentModeScaleAspectFit;
     
 //    if (fbLikeControl == nil) {
-        fbLikeControl = [[FBSDKLikeControl alloc]initWithFrame:CGRectMake(0,likeViewSize/5,likeViewSize, likeViewSize)];
-        fbLikeControl.transform = CGAffineTransformMakeScale(0.7, 0.7);
-        fbLikeControl.likeControlStyle = FBSDKLikeControlStyleBoxCount;
+    FBSDKLikeControl* fbLikeControl = [[FBSDKLikeControl alloc]initWithFrame:CGRectMake(0,likeViewSize/5,likeViewSize, likeViewSize)];
+    fbLikeControl.transform = CGAffineTransformMakeScale(0.7, 0.7);
+    fbLikeControl.likeControlStyle = FBSDKLikeControlStyleBoxCount;
 //    }
     fbLikeControl.objectID = productURL;
     
@@ -198,20 +195,20 @@
     [facebookLikeView setBackgroundColor:[UIColor clearColor]];
     
     //fbComment button
-    fbCommentButton = [[UIButton alloc]initWithFrame:CGRectMake([SimiGlobalVar scaleValue:92], 5, fbButtonSize, fbButtonSize)];
+    UIButton* fbCommentButton = [[UIButton alloc]initWithFrame:CGRectMake([SimiGlobalVar scaleValue:92], 5, FB_BUTTON_SIZE, FB_BUTTON_SIZE)];
     [fbCommentButton setImage:[UIImage imageNamed:@"facebookconnect_comment"] forState:UIControlStateNormal];
     [fbCommentButton setImageEdgeInsets:UIEdgeInsetsMake(9, 9, 9, 9)];
-    [fbCommentButton.layer setCornerRadius:fbButtonSize/2.0f];
+    [fbCommentButton.layer setCornerRadius:FB_BUTTON_SIZE/2.0f];
     [fbCommentButton.layer setShadowOffset:CGSizeMake(1, 1)];
     [fbCommentButton.layer setShadowRadius:2];
     fbCommentButton.layer.shadowOpacity = 0.5;
     [fbCommentButton setBackgroundColor:[UIColor whiteColor]];
     [fbCommentButton addTarget:self action:@selector(fbCommentButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
     
-    fbShareButton = [[UIButton alloc]initWithFrame:CGRectMake([SimiGlobalVar scaleValue:170], 5, fbButtonSize, fbButtonSize)];
+    UIButton* fbShareButton = [[UIButton alloc]initWithFrame:CGRectMake([SimiGlobalVar scaleValue:170], 5, FB_BUTTON_SIZE, FB_BUTTON_SIZE)];
     [fbShareButton setImage:[UIImage imageNamed:@"facebookconnect_share"] forState:UIControlStateNormal];
     [fbShareButton setImageEdgeInsets:UIEdgeInsetsMake(9, 9, 9, 9)];
-    [fbShareButton.layer setCornerRadius:fbButtonSize/2.0f];
+    [fbShareButton.layer setCornerRadius:FB_BUTTON_SIZE/2.0f];
     [fbShareButton.layer setShadowOffset:CGSizeMake(1, 1)];
     [fbShareButton.layer setShadowRadius:2];
     fbShareButton.layer.shadowOpacity = 0.5;
@@ -220,18 +217,16 @@
     
     if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone){
         widthFacebookView = SCREEN_WIDTH - fbButton.frame.size.width - 30;
-        facebookViewInitX = SCREEN_WIDTH - widthFacebookView - 15;
     }
     else{
         widthFacebookView = 250;
-        facebookViewInitX = CGRectGetWidth(currentlyViewController.view.frame) - widthFacebookView - 15;
     }
     
     fbView = [UIView new];
     if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone)
-        fbView.frame =  CGRectMake(facebookViewInitX, moreActionView.frame.origin.y - moreActionView.heightMoreView + fbButton.frame.origin.y - 5, 0, fbButton.frame.size.height+10);
+        fbView.frame =  CGRectMake(SCREEN_WIDTH - fbButton.frame.size.width - 15, moreActionView.frame.origin.y - moreActionView.heightMoreView + fbButton.frame.origin.y - 5, 0, fbButton.frame.size.height+10);
     else if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
-        fbView.frame =  CGRectMake(facebookViewInitX, moreActionView.frame.origin.y - moreActionView.heightMoreView + fbButton.frame.origin.y -5, 0, fbButton.frame.size.height+10);
+        fbView.frame =  CGRectMake(CGRectGetWidth(currentlyViewController.view.frame) - fbButton.frame.size.width - 15, moreActionView.frame.origin.y - moreActionView.heightMoreView + fbButton.frame.origin.y -5, 0, fbButton.frame.size.height+10);
     [fbView addSubview:facebookLikeView];
     [fbView addSubview:fbCommentButton];
     [fbView addSubview:fbShareButton];
@@ -244,7 +239,7 @@
 {
     if(isShowFacebookView){
         CGRect frame = fbView.frame;
-        frame.origin.x = facebookViewInitX;
+        frame.origin.x += widthFacebookView;
         frame.size.width = 0;
         [UIView animateWithDuration:0.15f animations:^{
             [fbView setFrame:frame];
@@ -252,7 +247,7 @@
         } completion:^(BOOL finished) {
             
         }];
-        isShowFacebookView = !isShowFacebookView;
+        isShowFacebookView = NO;
     }
 }
 
@@ -260,7 +255,7 @@
 -(void) fbButtonClicked: (id) sender{
     if (!isShowFacebookView) {
         CGRect frame = fbView.frame;
-        frame.origin.x = SCREEN_WIDTH - facebookViewInitX - widthFacebookView;
+        frame.origin.x -= widthFacebookView;
         frame.size.width = widthFacebookView;
         [UIView animateWithDuration:0.15f animations:^{
             [fbView setFrame:frame];
@@ -270,7 +265,7 @@
         }];
     }else{
         CGRect frame = fbView.frame;
-        frame.origin.x = facebookViewInitX;
+        frame.origin.x += widthFacebookView;
         frame.size.width = 0;
         [UIView animateWithDuration:0.15f animations:^{
             [fbView setFrame:frame];
@@ -285,86 +280,68 @@
 
 -(void) fbCommentButtonClicked: (id) sender{
     if(productURL){
-        isShowCommentView = YES;
-        if(!commentView){
-            commentView = [[UIView alloc]init];
-            commentView.tag = COMMENT_VIEW_TAG;
-            UIViewController *currentVC = [(UITabBarController *)[[(SCAppDelegate *)[[UIApplication sharedApplication] delegate] window] rootViewController] selectedViewController];
-            if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-                commentView.frame = [UIScreen mainScreen].bounds;
-            }else
-            {
-                commentView.frame = currentVC.view.bounds;
-            }
-            [commentView setBackgroundColor:[UIColor clearColor]];
-            UIImageView *imgBackground = [[UIImageView alloc]initWithFrame:commentView.bounds];
-            [imgBackground setBackgroundColor:[UIColor blackColor]];
-            [imgBackground setAlpha:0.5];
-            imgBackground.userInteractionEnabled = YES;
-            [commentView addSubview:imgBackground];
-            
-            CGRect frame = commentView.bounds;
-            frame.origin.x += 10;
-            frame.origin.y += 20;
-            frame.size.width -= 20;
-            frame.size.height -= 30;
-            UIView *viewContent = [[UIView alloc]initWithFrame:frame];
-            [viewContent setBackgroundColor:[UIColor whiteColor]];
-            [viewContent.layer setCornerRadius:10.0f];
-            [viewContent.layer setMasksToBounds:YES];
-            [commentView addSubview:viewContent];
-            
-            btnClearAllFacebookCookies = [[UIButton alloc]initWithFrame:CGRectMake(20, 25, frame.size.width - 60, 35)];
-            [btnClearAllFacebookCookies setTitle:@"Logout your facebook account" forState:UIControlStateNormal];
-            [btnClearAllFacebookCookies setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-            [btnClearAllFacebookCookies setBackgroundColor:[UIColor colorWithRed:70.0/255 green:98.0/255 blue:158.0/255 alpha:1.0]];
-            [btnClearAllFacebookCookies.layer setCornerRadius:5.0f];
-            [btnClearAllFacebookCookies.layer setMasksToBounds:YES];
-            [btnClearAllFacebookCookies addTarget:self action:@selector(btnClearAllFacebookCookiesClicked:) forControlEvents:UIControlEventTouchUpInside];
-            [btnClearAllFacebookCookies.titleLabel setFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE]];
-            [commentView addSubview:btnClearAllFacebookCookies];
-            
-            
-            UIButton *btnClose = [[UIButton alloc]initWithFrame:CGRectMake(frame.size.width - 40, 20, 50, 50)];
-            [btnClose setImage:[UIImage imageNamed:@"facebookconnect_close"] forState:UIControlStateNormal];
-            [btnClose setImageEdgeInsets:UIEdgeInsetsMake(10, 26, 26, 10)];
-            [btnClose setBackgroundColor:[UIColor clearColor]];
-            [btnClose addTarget:self action:@selector(didClickCloseCommentView:) forControlEvents:UIControlEventTouchUpInside];
-            [commentView addSubview:btnClose];
-            
-            CGRect frameWebView = frame;
-            frameWebView.origin.y += 50;
-            frameWebView.size.height -= 60;
-            commentWebView = [[UIWebView alloc]initWithFrame:frameWebView];
-            commentWebView.delegate = self;
-            
-            
-            [commentView addSubview:commentWebView];
-                if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-                    if (currentVC.tabBarController.tabBar.isHidden) {
-                        isHideTabBar = YES;
-                    }
-                    currentVC.tabBarController.tabBar.hidden = YES;
-                    [currentVC.view addSubview:commentView];
-                }else
-                {    UIWindow *currentVC = [[UIApplication sharedApplication] keyWindow];
-                    [currentVC addSubview:commentView];
-                }
+        UIView* commentView = [[UIView alloc]init];
+        commentView.tag = COMMENT_VIEW_TAG;
+        UIViewController *currentVC = [(UITabBarController *)[[(SCAppDelegate *)[[UIApplication sharedApplication] delegate] window] rootViewController] selectedViewController];
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+            commentView.frame = [UIScreen mainScreen].bounds;
+        }else
+        {
+            commentView.frame = currentVC.view.bounds;
         }
-        if(!activityView){
-            activityView = [[UIActivityIndicatorView alloc]initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
-            activityView.frame = commentWebView.frame;
-            activityView.hidesWhenStopped = YES;
-            [commentView addSubview:activityView];
-        }
-            
-        commentHTMLString = [NSString stringWithFormat:COMMENT_HTML,commentWebView.frame.size.width,facebookAppID,productURL ];
-            [commentWebView loadHTMLString:commentHTMLString baseURL:[NSURL URLWithString:productURL]];
-            
-        [activityView startAnimating];
+        [commentView setBackgroundColor:[UIColor clearColor]];
+        UIImageView *imgBackground = [[UIImageView alloc]initWithFrame:commentView.bounds];
+        [imgBackground setBackgroundColor:[UIColor blackColor]];
+        [imgBackground setAlpha:0.5];
+        imgBackground.userInteractionEnabled = YES;
+        [commentView addSubview:imgBackground];
         
-        commentWebView.alpha = 1.0;
+        CGRect frame = commentView.bounds;
+        frame.origin.x += 10;
+        frame.origin.y += 20;
+        frame.size.width -= 20;
+        frame.size.height -= 30;
+        UIView *viewContent = [[UIView alloc]initWithFrame:frame];
+        [viewContent setBackgroundColor:[UIColor whiteColor]];
+        [viewContent.layer setCornerRadius:10.0f];
+        [viewContent.layer setMasksToBounds:YES];
+        [commentView addSubview:viewContent];
+        
+        btnClearAllFacebookCookies = [[UIButton alloc]initWithFrame:CGRectMake(20, 25, frame.size.width - 60, 35)];
+        [btnClearAllFacebookCookies setTitle:SCLocalizedString(@"Logout your facebook account") forState:UIControlStateNormal];
+        [btnClearAllFacebookCookies setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        [btnClearAllFacebookCookies setBackgroundColor:[UIColor colorWithRed:70.0/255 green:98.0/255 blue:158.0/255 alpha:1.0]];
+        [btnClearAllFacebookCookies.layer setCornerRadius:5.0f];
+        [btnClearAllFacebookCookies.layer setMasksToBounds:YES];
+        [btnClearAllFacebookCookies addTarget:self action:@selector(btnClearAllFacebookCookiesClicked:) forControlEvents:UIControlEventTouchUpInside];
+        [btnClearAllFacebookCookies.titleLabel setFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE]];
+        [commentView addSubview:btnClearAllFacebookCookies];
+        btnClearAllFacebookCookies.hidden = YES;
+        
+        UIButton *btnClose = [[UIButton alloc]initWithFrame:CGRectMake(frame.size.width - 40, 20, 50, 50)];
+        [btnClose setImage:[UIImage imageNamed:@"facebookconnect_close"] forState:UIControlStateNormal];
+        [btnClose setImageEdgeInsets:UIEdgeInsetsMake(10, 26, 26, 10)];
+        [btnClose setBackgroundColor:[UIColor clearColor]];
+        [btnClose addTarget:self action:@selector(didClickCloseCommentView:) forControlEvents:UIControlEventTouchUpInside];
+        [commentView addSubview:btnClose];
+        
+        CGRect frameWebView = frame;
+        frameWebView.origin.y += 50;
+        frameWebView.size.height -= 60;
+        commentWebView = [[UIWebView alloc]initWithFrame:frameWebView];
+        commentWebView.delegate = self;
+        
+        
+        [commentView addSubview:commentWebView];
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+            [currentVC.view addSubview:commentView];
+        }else
+        {    UIWindow *currentVC = [[UIApplication sharedApplication] keyWindow];
+            [currentVC addSubview:commentView];
+        }
+        [commentWebView loadHTMLString:[NSString stringWithFormat:commentHTMLString,commentWebView.frame.size.width,facebookAppID,productURL ] baseURL:[NSURL URLWithString:productURL]];
     }
+    
 }
 
 -(void) fbShareButtonClicked: (id) sender{
@@ -411,12 +388,11 @@
     UIViewController *currentVC = [(UITabBarController *)[[(SCAppDelegate *)[[UIApplication sharedApplication] delegate] window] rootViewController] selectedViewController];
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         [[currentVC.view.subviews lastObject] removeFromSuperview];
-        if (!isHideTabBar) {
-            currentVC.tabBarController.tabBar.hidden = YES;
-        }
     }else
     {
-        //        [[currentVC.view.subviews lastObject] removeFromSuperview];
+//                [[currentVC.view.subviews lastObject] removeFromSuperview];
+        UIButton* closeButton = (UIButton*) sender;
+        UIView* commentView = closeButton.superview;
         [commentView removeFromSuperview];
     }
 }
@@ -426,10 +402,9 @@
 {
     NSString *stringURL = [NSString stringWithFormat:@"%@",request.URL];
     if ([stringURL containsString:@"facebook.com/plugins/comments.php?api_key"]) {
-        [activityView stopAnimating];
-        [activityView removeFromSuperview];
+        
     }else if([stringURL containsString:@"facebook.com/plugins/close_popup.php"]){
-        [commentWebView loadHTMLString:commentHTMLString baseURL:[NSURL URLWithString:productURL]];
+        [webView loadHTMLString:[NSString stringWithFormat:commentHTMLString,webView.frame.size.width,facebookAppID,productURL ] baseURL:[NSURL URLWithString:productURL]];
     }else if([stringURL containsString:productURL]){
         NSHTTPCookieStorage* cookies = [NSHTTPCookieStorage sharedHTTPCookieStorage];
         NSArray *allCookies = [cookies cookies];
@@ -444,7 +419,20 @@
     return YES;
 }
 
+-(void) webViewDidStartLoad:(UIWebView *)webView{
+    UIActivityIndicatorView* loadingView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
+    [webView addSubview:loadingView];
+    loadingView.center = webView.center;
+    [loadingView startAnimating];
+}
 
+-(void) webViewDidFinishLoad:(UIWebView *)webView{
+    for(UIView* view in webView.subviews){
+        if([view isKindOfClass:[UIActivityIndicatorView class]]){
+            [view removeFromSuperview];
+        }
+    }
+}
 
 #pragma mark FBSDKLoginButtonDelegate
 -(void) loginButton:(FBSDKLoginButton *)loginButton didCompleteWithResult:(FBSDKLoginManagerLoginResult *)result error:(NSError *)error{
@@ -510,6 +498,21 @@
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter]removeObserver:self];
+}
+
+-(void) resetFacebookViewPosition:(NSNotification*) noti{
+    if(isShowFacebookView){
+        CGRect frame = fbView.frame;
+        frame.origin.x += widthFacebookView;
+        frame.size.width = 0;
+        [UIView animateWithDuration:0.15f animations:^{
+            [fbView setFrame:frame];
+            [fbButton setTransform:CGAffineTransformMakeRotation(0)];
+        } completion:^(BOOL finished) {
+            
+        }];
+        isShowFacebookView = NO;
+    }
 }
 
 @end
