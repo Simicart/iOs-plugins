@@ -69,7 +69,7 @@
     SimiCustomerModel* customerModel;
     NSString* facebookAppID;
     MoreActionView* moreActionView;
-    float widthFacebookView;
+    float widthFacebookView,facebookViewInitX;
     UIView *commentView;
     UIView* fbView;
     FBSDKLikeControl* fbLikeControl;
@@ -151,17 +151,17 @@
 - (void)initViewMoreAction:(NSNotification*)noti
 {
     moreActionView = noti.object;
-    if(!fbButton ){
-        fbButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, fbButtonSize, fbButtonSize)];
-        [fbButton setImage:[UIImage imageNamed:@"facebookconnect_ic_detail"] forState:UIControlStateNormal];
-        [fbButton setImageEdgeInsets:UIEdgeInsetsMake(9, 9, 9, 9)];
-        [fbButton.layer setCornerRadius:fbButtonSize/2.0f];
-        [fbButton.layer setShadowOffset:CGSizeMake(1, 1)];
-        [fbButton.layer setShadowRadius:2];
-        fbButton.layer.shadowOpacity = 0.5;
-        [fbButton setBackgroundColor:[UIColor whiteColor]];
-        [fbButton addTarget:self action:@selector(fbButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
-    }
+//    if(!fbButton ){
+    fbButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, fbButtonSize, fbButtonSize)];
+    [fbButton setImage:[UIImage imageNamed:@"facebookconnect_ic_detail"] forState:UIControlStateNormal];
+    [fbButton setImageEdgeInsets:UIEdgeInsetsMake(9, 9, 9, 9)];
+    [fbButton.layer setCornerRadius:fbButtonSize/2.0f];
+    [fbButton.layer setShadowOffset:CGSizeMake(1, 1)];
+    [fbButton.layer setShadowRadius:2];
+    fbButton.layer.shadowOpacity = 0.5;
+    [fbButton setBackgroundColor:[UIColor whiteColor]];
+    [fbButton addTarget:self action:@selector(fbButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
+//    }
     moreActionView.numberIcon += 1;
     [moreActionView.arrayIcon addObject:fbButton];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(afterInitViewMore:) name:@"SCProductMoreViewController-AfterInitViewMore" object:nil];
@@ -186,11 +186,11 @@
     fbLikeBackgroundImageView.frame = CGRectMake(0, 0, likeViewSize, likeViewSize);
     fbLikeBackgroundImageView.contentMode = UIViewContentModeScaleAspectFit;
     
-    if (fbLikeControl == nil) {
+//    if (fbLikeControl == nil) {
         fbLikeControl = [[FBSDKLikeControl alloc]initWithFrame:CGRectMake(0,likeViewSize/5,likeViewSize, likeViewSize)];
         fbLikeControl.transform = CGAffineTransformMakeScale(0.7, 0.7);
         fbLikeControl.likeControlStyle = FBSDKLikeControlStyleBoxCount;
-    }
+//    }
     fbLikeControl.objectID = productURL;
     
     [facebookLikeView addSubview:fbLikeBackgroundImageView];
@@ -218,16 +218,20 @@
     [fbShareButton setBackgroundColor:[UIColor whiteColor]];
     [fbShareButton addTarget:self action:@selector(fbShareButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
     
-    if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone)
+    if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone){
         widthFacebookView = SCREEN_WIDTH - fbButton.frame.size.width - 30;
-    else
+        facebookViewInitX = SCREEN_WIDTH - widthFacebookView - 15;
+    }
+    else{
         widthFacebookView = 250;
+        facebookViewInitX = CGRectGetWidth(currentlyViewController.view.frame) - widthFacebookView - 15;
+    }
     
     fbView = [UIView new];
     if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone)
-        fbView.frame =  CGRectMake(SCREEN_WIDTH - fbButton.frame.size.width - 15, moreActionView.frame.origin.y - moreActionView.heightMoreView + fbButton.frame.origin.y -5, 0, fbButton.frame.size.height+10);
+        fbView.frame =  CGRectMake(facebookViewInitX, moreActionView.frame.origin.y - moreActionView.heightMoreView + fbButton.frame.origin.y - 5, 0, fbButton.frame.size.height+10);
     else if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
-        fbView.frame =  CGRectMake(CGRectGetWidth(currentlyViewController.view.frame) - fbButton.frame.size.width - 15, moreActionView.frame.origin.y - moreActionView.heightMoreView + fbButton.frame.origin.y -5, 0, fbButton.frame.size.height+10);
+        fbView.frame =  CGRectMake(facebookViewInitX, moreActionView.frame.origin.y - moreActionView.heightMoreView + fbButton.frame.origin.y -5, 0, fbButton.frame.size.height+10);
     [fbView addSubview:facebookLikeView];
     [fbView addSubview:fbCommentButton];
     [fbView addSubview:fbShareButton];
@@ -238,9 +242,9 @@
 
 - (void)beforeTouchMoreAction:(NSNotification*)noti
 {
-    if(moreActionView.isShowViewMoreAction && isShowFacebookView){
+    if(isShowFacebookView){
         CGRect frame = fbView.frame;
-        frame.origin.x += widthFacebookView;
+        frame.origin.x = facebookViewInitX;
         frame.size.width = 0;
         [UIView animateWithDuration:0.15f animations:^{
             [fbView setFrame:frame];
@@ -256,7 +260,7 @@
 -(void) fbButtonClicked: (id) sender{
     if (!isShowFacebookView) {
         CGRect frame = fbView.frame;
-        frame.origin.x -= widthFacebookView;
+        frame.origin.x = SCREEN_WIDTH - facebookViewInitX - widthFacebookView;
         frame.size.width = widthFacebookView;
         [UIView animateWithDuration:0.15f animations:^{
             [fbView setFrame:frame];
@@ -264,10 +268,9 @@
         } completion:^(BOOL finished) {
             
         }];
-    }else
-    {
+    }else{
         CGRect frame = fbView.frame;
-        frame.origin.x += widthFacebookView;
+        frame.origin.x = facebookViewInitX;
         frame.size.width = 0;
         [UIView animateWithDuration:0.15f animations:^{
             [fbView setFrame:frame];
