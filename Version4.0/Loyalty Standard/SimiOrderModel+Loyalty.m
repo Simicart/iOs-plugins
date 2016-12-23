@@ -13,7 +13,7 @@
 
 - (void)spendPoints:(NSInteger)points ruleId:(id)ruleId
 {
-    modelActionType = ModelActionTypeEdit;
+    modelActionType = ModelActionTypeGet;
     currentNotificationName = @"DidSpendPointsOrder";
     keyResponse = @"order";
     [self preDoRequest];
