@@ -18,4 +18,6 @@
 
 - (void)saveSettings:(NSDictionary *)target selector:(SEL)selector;
 
+- (void)activeCouponCodeWithParams: (NSDictionary *)params target:(id)target selector:(SEL)selector;
+
 @end

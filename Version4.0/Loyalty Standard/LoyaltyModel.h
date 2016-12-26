@@ -14,4 +14,5 @@
 
 - (void)saveSettings;
 
+- (void)activeCouponCodeWithParams: (NSDictionary *)params;
 @end

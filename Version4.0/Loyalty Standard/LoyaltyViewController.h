@@ -18,8 +18,9 @@ static NSString *LOYALTY_POLICY     = @"policy";
 static NSString *LOYALTY_HISTORY    = @"history";
 static NSString *LOYALTY_SETTING    = @"setting";
 static NSString *LOYALTY_LOGIN      = @"login";
+static NSString *LOYALTY_COUPON     = @"coupon";
 
-@interface LoyaltyViewController : SimiViewController <UITableViewDataSource, UITableViewDelegate>
+@interface LoyaltyViewController : SimiViewController <UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate>
 @property (strong, nonatomic) LoyaltyModel *loyaltyPolicy;
 @property (strong, nonatomic) SimiTable *cells;
 @property (nonatomic) BOOL skipReloadData;

@@ -14,6 +14,8 @@
 @interface LoyaltyViewController () {
     UITableView *_tableView;
     BOOL _reloadDataFlag;
+    UITextField *couponTextField;
+    UIButton *activeCouponButton;
 }
 @end
 
@@ -36,6 +38,9 @@
     _tableView.delegate = self;
     _tableView.dataSource = self;
     _tableView.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+    if (SIMI_SYSTEM_IOS >= 9) {
+        _tableView.cellLayoutMarginsFollowReadableWidth = NO;
+    }
     _cells = [SimiTable new];
     [self.view addSubview:_tableView];
 }
@@ -101,6 +106,9 @@
             row = [section addRowWithIdentifier:LOYALTY_SETTING height:44 sortOrder:0];
             row.title = SCLocalizedString(@"Settings");
             row.image = [UIImage imageNamed:@"loyalty_setting"];
+            // Liam customize
+            [section addRowWithIdentifier:LOYALTY_COUPON height:90 sortOrder:0];
+            // end
         }
         if ([_loyaltyPolicy objectForKey:@"earning_label"]) {
             SimiSection *section = [_cells addSectionWithIdentifier:LOYALTY_EARN headerTitle:[_loyaltyPolicy objectForKey:@"earning_label"]];
@@ -296,7 +304,40 @@
                 [status addSubview:maxLabel];
             }
         }
-    } else if ([section.identifier isEqualToString:LOYALTY_LOGIN]) {
+    } else if ([row.identifier isEqualToString:LOYALTY_COUPON])
+    {
+        cell = [tableView dequeueReusableCellWithIdentifier:LOYALTY_COUPON];
+        if (cell == nil) {
+            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:LOYALTY_COUPON];
+            float padding = 20;
+            UILabel *titleLabel = [[UILabel alloc]initWithFrame:CGRectMake(padding, 10, CGRectGetWidth(tableView.frame) - padding*2, 25)];
+            [titleLabel setFont:[UIFont fontWithName:THEME_FONT_NAME_REGULAR size:18]];
+            [titleLabel setTextColor:THEME_CONTENT_COLOR];
+            [titleLabel setText:SCLocalizedString(@"Coupon Activation")];
+            [cell addSubview:titleLabel];
+            
+            couponTextField = [[UITextField alloc]initWithFrame:CGRectMake(padding, 40, 180, 40)];
+            [couponTextField setFont:[UIFont fontWithName:THEME_FONT_NAME_REGULAR size:15]];
+            [couponTextField setTextColor:THEME_CONTENT_COLOR];
+            couponTextField.layer.borderWidth = 1;
+            couponTextField.layer.borderColor = [UIColor lightGrayColor].CGColor;
+            couponTextField.layer.cornerRadius = 4;
+            couponTextField.leftView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, 10, 40)];
+            couponTextField.leftViewMode = UITextFieldViewModeAlways;
+            couponTextField.clearButtonMode = UITextFieldViewModeWhileEditing;
+            couponTextField.placeholder = SCLocalizedString(@"Enter coupon code here");
+            couponTextField.delegate = self;
+            [cell addSubview:couponTextField];
+            
+            activeCouponButton = [[UIButton alloc]initWithFrame:CGRectMake(padding*2 + 180 , 40, 100, 40)];
+            [activeCouponButton setTitle:SCLocalizedString(@"ACTIVE") forState:UIControlStateNormal];
+            [activeCouponButton setBackgroundColor:THEME_BUTTON_BACKGROUND_COLOR];
+            [activeCouponButton setTitleColor:THEME_BUTTON_TEXT_COLOR forState:UIControlStateNormal];
+            [activeCouponButton addTarget:self action:@selector(activeCouponCode:) forControlEvents:UIControlEventTouchUpInside];
+            activeCouponButton.layer.cornerRadius = 4;
+            [cell addSubview:activeCouponButton];
+        }
+    }else if ([section.identifier isEqualToString:LOYALTY_LOGIN]) {
         // Login Cell
         cell = [tableView dequeueReusableCellWithIdentifier:LOYALTY_LOGIN];
         if (cell == nil) {
@@ -332,6 +373,34 @@
     return cell;
 }
 
+- (void)activeCouponCode:(UIButton*)sender
+{
+    if ([couponTextField.text isEqualToString:@""]) {
+        [self showAlertWithTitle:@"" message:@"Please enter your coupon code"];
+    }else
+    {
+        [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(didActiveCouponCode:) name:@"DidActiveCouponCode" object:_loyaltyPolicy];
+        [_loyaltyPolicy activeCouponCodeWithParams:@{@"coupon_code":couponTextField.text}];
+        if ([couponTextField isFirstResponder]) {
+            [couponTextField resignFirstResponder];
+        }
+        [self startLoadingData];
+    }
+}
+
+- (void)didActiveCouponCode:(NSNotification*)noti
+{
+    [self stopLoadingData];
+    [self removeObserverForNotification:noti];
+    SimiResponder *responder = [noti.userInfo valueForKey:@"responder"];
+    [self showAlertWithTitle:@"" message:responder.responseMessage];
+    _cells = nil;
+    [_tableView reloadData];
+    if ([responder.status isEqualToString:@"SUCCESS"]) {
+        couponTextField.text = @"";
+    }
+}
+
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     SimiRow *row = [[self.cells objectAtIndex:indexPath.section] objectAtIndex:indexPath.row];
@@ -360,5 +429,10 @@
     }
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
-
+#pragma mark UITextField Delegate
+- (BOOL)textFieldShouldReturn:(UITextField *)textField
+{
+    [textField resignFirstResponder];
+    return YES;
+}
 @end

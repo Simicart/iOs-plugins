@@ -29,4 +29,12 @@
     [(LoyaltyAPI *)[self getAPI] saveSettings:self selector:@selector(didFinishRequest:responder:)];
 }
 
+- (void)activeCouponCodeWithParams: (NSDictionary *)params
+{
+    currentNotificationName = @"DidActiveCouponCode";
+    keyResponse = @"simirewardpoint";
+    [self preDoRequest];
+    [(LoyaltyAPI *)[self getAPI] activeCouponCodeWithParams:params target:self selector:@selector(didFinishRequest:responder:)];
+}
+
 @end

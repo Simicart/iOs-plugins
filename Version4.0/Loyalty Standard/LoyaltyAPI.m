@@ -30,8 +30,13 @@
 
 - (void)saveSettings:(NSDictionary *)target selector:(SEL)selector
 {
-     NSString *url = [NSString stringWithFormat:@"%@%@simirewardpoints/savesetting", kBaseURL, kSimiConnectorURL];
+    NSString *url = [NSString stringWithFormat:@"%@%@simirewardpoints/savesetting", kBaseURL, kSimiConnectorURL];
     [self requestWithMethod:PUT URL:url params:target target:target selector:selector header:nil];
 }
 
+- (void)activeCouponCodeWithParams: (NSDictionary *)params target:(id)target selector:(SEL)selector
+{
+    NSString *url = [NSString stringWithFormat:@"%@%@simirewardpoints/activecoupon", kBaseURL, kSimiConnectorURL];
+    [self requestWithMethod:PUT URL:url params:params target:target selector:selector header:nil];
+}
 @end
