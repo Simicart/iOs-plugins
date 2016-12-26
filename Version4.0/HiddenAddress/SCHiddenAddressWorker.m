@@ -119,14 +119,7 @@
             }
             
             
-            if ([self hasField:[hiddenAddressModel valueForKey:@"city_show"]]) {
-                [form addField:@"Text"
-                        config:@{
-                                 @"name" : @"city",
-                                 @"title": SCLocalizedString(@"City"),
-                                 @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:@"city_show"] isEqualToString:@"req"]]
-                                 }];
-            }
+            
             
             if ([self hasField:[hiddenAddressModel valueForKey:@"country_id_show"]]) {
                 newAddressController.country = (SimiFormSelect *)[form addField:@"Select"
@@ -144,6 +137,20 @@
             }
 
             
+            if ([self hasField:[hiddenAddressModel valueForKey:@"city_show"]]) {
+                newAddressController.cityForm = (SimiFormSelect*) [form addField:@"Select"
+                                                                          config:@{
+                                                                                   @"name": @"city",
+                                                                                   @"title": SCLocalizedString(@"City"),
+                                                                                   @"option_type": SimiFormOptionNavigation,
+                                                                                   @"nav_controller": newAddressController.navigationController,
+                                                                                   @"value_field": @"value",
+                                                                                   @"label_field": @"title",
+                                                                                   @"index_titles": @1,
+                                                                                   @"searchable": @1,
+                                                                                   @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:@"city_show"] isEqualToString:@"req"]]
+                                                                                   }];
+            }
             if ([self hasField:[hiddenAddressModel valueForKey:@"region_id_show"]]) {
                 newAddressController.stateName = (SimiFormText *)[form addField:@"Text"
                                                                          config:@{
@@ -173,6 +180,21 @@
                                  @"title": SCLocalizedString(@"Post/Zip Code"),
                                  @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:@"zipcode_show"] isEqualToString:@"req"]]
                                  }];
+            }
+            
+            //Customization
+            if(newAddressController.moreInfoAdded){
+                NSArray* checkoutCustomFields = [[SimiGlobalVar sharedInstance].appCustomization objectForKey:@"checkout_custom_fields"];
+                for(NSDictionary* customField in checkoutCustomFields){
+                    if([[customField objectForKey:@"input_type"] isEqualToString:@"text"]){
+                        [form addField:@"Text"
+                                config:@{
+                                         @"name": [customField objectForKey:@"name"],
+                                         @"title": [customField objectForKey:@"label"]?[customField objectForKey:@"label"]:@"",
+                                         @"required":[customField objectForKey:@"is_required"]
+                                         }];
+                    }
+                }
             }
             
             if ([self hasField:[hiddenAddressModel valueForKey:@"telephone_show"]]) {
@@ -231,7 +253,6 @@
                 
             }
             
-            
             if (newAddressController.isNewCustomer) {
                 [form addField:@"Password"
                         config:@{
@@ -245,20 +266,6 @@
                                  @"title": SCLocalizedString(@"Confirm Password"),
                                  @"required": @1
                                  }];
-            }
-            
-            if(newAddressController.positionOpenNewAddress == PositionOpenNewAddressFromCart || newAddressController.positionOpenNewAddress == PositionOpenNewAddressFromOrderReview){
-                NSArray* checkoutCustomFields = [[SimiGlobalVar sharedInstance].appCustomization objectForKey:@"checkout_custom_fields"];
-                for(NSDictionary* customField in checkoutCustomFields){
-                    if([[customField objectForKey:@"input_type"] isEqualToString:@"text"]){
-                        [form addField:@"Text"
-                                config:@{
-                                         @"name": [customField objectForKey:@"name"],
-                                         @"title": [customField objectForKey:@"label"]?[customField objectForKey:@"label"]:@"",
-                                         @"required":[customField objectForKey:@"is_required"]
-                                         }];
-                    }
-                }
             }
             
             // Remove state before get country
