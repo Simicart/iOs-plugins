@@ -23,14 +23,13 @@
 
 - (void)viewDidLoadBefore
 {
-    [self viewDidLoadBefore];
+    [super viewDidLoadBefore];
 }
 
 - (void)viewDidLoadAfter
 {
     [self setToSimiView];
     self.navigationItem.title = SCLocalizedString(@"CCAvenue");
-    
 }
 
 - (void)viewWillAppearBefore:(BOOL)animated
@@ -41,7 +40,7 @@
 - (void)viewDidAppearBefore:(BOOL)animated
 {
     if (_webView == nil) {
-        _webView = [[UIWebView alloc] initWithFrame:self.view.frame];
+        _webView = [[UIWebView alloc] initWithFrame:self.view.bounds];
         _webView.scalesPageToFit = YES;
         _webView.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
         [self.view addSubview:_webView];
