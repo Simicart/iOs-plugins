@@ -113,13 +113,10 @@
                 [form addField:@"Text"
                         config:@{
                                  @"name" : @"street",
-                                 @"title": SCLocalizedString(@"Street"),
+                                 @"title": SCLocalizedString(@"Address"),
                                  @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:@"street_show"] isEqualToString:@"req"]]
                                  }];
             }
-            
-            
-            
             
             if ([self hasField:[hiddenAddressModel valueForKey:@"country_id_show"]]) {
                 newAddressController.country = (SimiFormSelect *)[form addField:@"Select"
@@ -141,12 +138,12 @@
                 newAddressController.cityForm = (SimiFormSelect*) [form addField:@"Select"
                                                                           config:@{
                                                                                    @"name": @"city",
-                                                                                   @"title": SCLocalizedString(@"City"),
+                                                                                   @"title": SCLocalizedString(@"Please select city"),
                                                                                    @"option_type": SimiFormOptionNavigation,
                                                                                    @"nav_controller": newAddressController.navigationController,
                                                                                    @"value_field": @"value",
                                                                                    @"label_field": @"title",
-                                                                                   @"index_titles": @1,
+                                                                                   @"index_titles": @0,
                                                                                    @"searchable": @1,
                                                                                    @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:@"city_show"] isEqualToString:@"req"]]
                                                                                    }];
@@ -183,7 +180,7 @@
             }
             
             //Customization
-            if(newAddressController.moreInfoAdded){
+            if(newAddressController.positionOpenNewAddress == PositionOpenNewAddressFromCart || newAddressController.positionOpenNewAddress == PositionOpenNewAddressFromOrderReview || newAddressController.moreInfoAdded){
                 NSArray* checkoutCustomFields = [[SimiGlobalVar sharedInstance].appCustomization objectForKey:@"checkout_custom_fields"];
                 for(NSDictionary* customField in checkoutCustomFields){
                     if([[customField objectForKey:@"input_type"] isEqualToString:@"text"]){
@@ -250,7 +247,6 @@
                                      @"required": [NSNumber numberWithBool:[[config taxvatShow] isEqualToString:@"req"]]
                                      }];
                 }
-                
             }
             
             if (newAddressController.isNewCustomer) {
