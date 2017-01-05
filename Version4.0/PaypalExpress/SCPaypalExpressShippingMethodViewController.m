@@ -174,7 +174,7 @@
             [cell addSubview:nameLabel];
             cellY += nameLabel.frame.size.height;
             UILabel* priceLabel = [[UILabel alloc] initWithFrame:CGRectMake(paddingX, cellY, cellWidth, 25)];
-            [priceLabel setText: [[SimiFormatter sharedInstance] priceWithPrice:[shippingMethod objectForKey:@"s_method_fee"]]];
+            [priceLabel setText: [[SimiFormatter sharedInstance] priceWithPrice:[NSString stringWithFormat:@"%@",[shippingMethod objectForKey:@"s_method_fee"]]]];
             [cell addSubview:priceLabel];
         }
         if([[shippingMethod objectForKey:@"s_method_selected"] boolValue]){
