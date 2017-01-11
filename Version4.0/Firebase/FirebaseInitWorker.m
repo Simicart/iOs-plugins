@@ -17,13 +17,20 @@
     if(self == [super init]){
         //Init Firebase configure
         [FIRApp configure];
+        
         //Dynamic Links
         [FIROptions defaultOptions].deepLinkURLScheme = CUSTOM_URL_SCHEME;
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationOpenURL:) name:@"ApplicationOpenURL" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(continueUserActivity:) name:@"ContinueUserActivity" object:nil];
+        
         //Logging events
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(logEvent:) name:@"FirebaseLogEvent" object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setUserProperty:) name:@"FirebaseSetUserProperty" object:nil];
+        [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(trackingEvent:) name:TRACKINGEVENT object:nil];
+//        NSDictionary *info = [[NSBundle mainBundle] infoDictionary];
+//        NSString *version = [info objectForKey:@"CFBundleShortVersionString"];
+//        NSString *appIdentidier = [info objectForKey:@"CFBundleIdentifier"];
+//        [FIRAnalytics setUserPropertyString:version forName:@"App Version"];
+//        [FIRAnalytics setUserPropertyString:appIdentidier forName:@"App ID"];
+        
         //Pushing notifications
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRecieveRemoteNotification:) name:@"ApplicationDidReceiveNotificationFromServer" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tokenRefreshNotification:)
@@ -65,18 +72,23 @@
 }
 
 #pragma mark Logging events and setting user properties
--(void) logEvent:(NSNotification*) noti{
-    [FIRAnalytics logEventWithName:noti.object
-                        parameters:noti.userInfo];
-}
-
--(void) setUserProperty:(NSNotification*) noti{
-    NSDictionary* userProperties = noti.object;
-    for(NSString* key in userProperties.allKeys){
-        [FIRAnalytics setUserPropertyString:[userProperties objectForKey:key] forName:key];
+-(void)trackingEvent:(NSNotification*) noti{
+    if([noti.object isKindOfClass:[NSString class]])
+    {
+        NSString *trackingName = noti.object;
+        trackingName = [trackingName stringByReplacingOccurrencesOfString:@" " withString:@"_"];
+        NSDictionary *params = noti.userInfo;
+        NSMutableDictionary *trackingProperties = [NSMutableDictionary new];
+        for (int i = 0; i < params.count; i ++) {
+            NSString *key = [params.allKeys objectAtIndex:i];
+            key = [key stringByReplacingOccurrencesOfString:@" " withString:@"_"];
+            NSString *value = [params.allValues objectAtIndex:i];
+            [trackingProperties setValue:value forKey:key];
+        }
+        [FIRAnalytics logEventWithName:trackingName
+                            parameters:trackingProperties];
     }
 }
-
 
 #pragma mark Pushing notifications recieving
 -(void) didRecieveRemoteNotification: (NSNotification*) noti{
@@ -137,7 +149,7 @@
 // the InstanceID token.
 -(void) applicationDidRegisterForRemote:(NSNotification*) noti{
     // With swizzling disabled you must set the APNs token here.
-    // [[FIRInstanceID instanceID] setAPNSToken:deviceToken type:FIRInstanceIDAPNSTokenTypeSandbox];
+//     [[FIRInstanceID instanceID] setAPNSToken:deviceToken type:FIRInstanceIDAPNSTokenTypeSandbox];
 }
 
 
