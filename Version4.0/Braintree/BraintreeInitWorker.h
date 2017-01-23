@@ -11,8 +11,7 @@
 #import "BraintreeCore.h"
 #import "BraintreeUI.h"
 #import "BTCardClient.h"
+
 @interface BraintreeInitWorker : NSObject
-
-
 
 @end
