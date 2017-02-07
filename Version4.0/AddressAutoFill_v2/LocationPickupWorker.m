@@ -77,10 +77,12 @@
 {
     if ([noti.name isEqualToString:@"DidCreateAddressAutofill"]) {
         newAddressViewController = [noti.userInfo valueForKey:@"newAddressView"];
-        [newAddressViewController.form addField:@"MapAPI" config:@{@"name": @"latlng",
-                                                                  @"title": SCLocalizedString(@"Country"),
-                                                                   @"sort_order":@10000,
-                                                                   @"height":[NSNumber numberWithFloat:[SimiGlobalVar scaleValue:250]]}];
+        if (!newAddressViewController.isNewCustomer) {
+            [newAddressViewController.form addField:@"MapAPI" config:@{@"name": @"latlng",
+                                                                       @"title": SCLocalizedString(@"Country"),
+                                                                       @"sort_order":@10000,
+                                                                       @"height":[NSNumber numberWithFloat:[SimiGlobalVar scaleValue:250]]}];
+        }
     }else if([noti.name isEqualToString:@"SimiFormMapAPI_DidGetAddress"])
     {
         NSDictionary *params = noti.object;
