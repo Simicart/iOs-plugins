@@ -11,16 +11,20 @@
 #import <SimiCartBundle/SimiRow.h>
 #import <SimiCartBundle/SimiProductModel.h>
 #import <SimiCartBundle/SCProductMoreViewController.h>
+#import <SimiCartBundle/SCProductSecondDesignViewController.h>
 #import "YTPlayerView.h"
+#import "SimiTable.h"
+
 static NSString *PRODUCT_ROW_YOUTUBE = @"PRODUCT_ROW_YOUTUBE";
 @implementation YoutubeWorker
 {
-    NSMutableArray *cells;
     SimiProductModel *product;
     SCProductMoreViewController *productMoreViewController;
     NSMutableArray *youtubeArray;
     NSMutableArray *youtubeVideoArray;
     MoreActionView* moreActionView;
+    float itemWidth;
+    float itemHeight;
 }
 - (instancetype)init
 {
@@ -30,8 +34,90 @@ static NSString *PRODUCT_ROW_YOUTUBE = @"PRODUCT_ROW_YOUTUBE";
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(afterInitViewMore:) name:@"SCProductMoreViewController-AfterInitViewMore" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initViewMoreAction:) name:@"SCProductMoreViewController_InitViewMoreAction" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(productMoreViewControllerViewWillDisappear:) name:@"SCProductMoreViewControllerViewWillDisappear" object:nil];
+        
+        [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(initProductCellsAfter:) name:@"InitProductCells-After" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializedProductCellAfter:) name:@"InitializedProductCell-After" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(productMoreViewControllerViewWillDisappear:) name:@"SCProductSecondDesignViewControllerWillDisappear" object:nil];
     }
     return self;
+}
+
+- (void)initProductCellsAfter:(NSNotification*)noti
+{
+    SCProductSecondDesignViewController *productViewController = (SCProductSecondDesignViewController *)[noti.userInfo valueForKey:@"controller"];
+    if ([productViewController.product valueForKey:@"product_video"]) {
+        product = productViewController.product;
+        youtubeArray = (NSMutableArray*)[product valueForKey:@"product_video"];
+        if(youtubeArray.count > 0){
+            SimiTable *cells = noti.object;
+            SimiSection *videoSection = [[SimiSection alloc]initWithIdentifier:product_video_section];
+            videoSection.headerTitle = SCLocalizedString(@"Video");
+            SimiRow *videoRow = [[SimiRow alloc]initWithIdentifier:product_video_row height:220];
+            [videoSection addRow:videoRow];
+            [cells addObject:videoSection];
+        }
+    }
+}
+
+- (void)initializedProductCellAfter:(NSNotification*)noti
+{
+    SimiRow *row = (SimiRow*)[noti.userInfo valueForKey:@"row"];
+    itemWidth = 220;
+    itemHeight = row.height - 10;
+    if ([row.identifier isEqualToString:product_video_row]) {
+        UITableViewCell *cell = (UITableViewCell*)[noti.userInfo valueForKey:@"cell"];
+        NSInteger videoTag = 9999;
+        if (![cell viewWithTag:videoTag]) {
+            UICollectionViewFlowLayout *flowLayout=[[UICollectionViewFlowLayout alloc] init];
+            [flowLayout setScrollDirection:UICollectionViewScrollDirectionHorizontal];
+            flowLayout.itemSize = CGSizeMake(itemWidth, itemHeight);
+            flowLayout.minimumLineSpacing = 20;
+            float widthCollecttion = SCREEN_WIDTH;
+            if (PADDEVICE) {
+                widthCollecttion = SCREEN_WIDTH/2;
+            }
+            UICollectionView *videoCollectionView =[[UICollectionView alloc] initWithFrame:CGRectMake(0, 10, widthCollecttion, itemHeight) collectionViewLayout:flowLayout];
+            [videoCollectionView setContentInset:UIEdgeInsetsMake(0, 20, 0, 0)];
+            videoCollectionView.dataSource = self;
+            videoCollectionView.delegate = self;
+            [videoCollectionView setBackgroundColor:[UIColor clearColor]];
+            videoCollectionView.showsHorizontalScrollIndicator = NO;
+            videoCollectionView.tag = videoTag;
+            [cell addSubview: videoCollectionView];
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        }
+    }
+}
+
+#pragma mark  CollectionView
+- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
+{
+    return [youtubeArray count];
+}
+
+- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    NSDictionary *youtubeUnit = [youtubeArray objectAtIndex:indexPath.row];
+    NSString *identifier = [youtubeUnit valueForKey:@"video_key"];
+    [collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:identifier];
+    UICollectionViewCell *videoViewCell = [collectionView dequeueReusableCellWithReuseIdentifier:identifier forIndexPath:indexPath];
+    float videoTag = 1234;
+    if (youtubeVideoArray == nil) {
+        youtubeVideoArray = [NSMutableArray new];
+    }
+    if (![videoViewCell viewWithTag:videoTag]) {
+        YTPlayerView *video = [[YTPlayerView alloc]initWithFrame:CGRectMake(0, 0, itemWidth, itemHeight - 30)];
+        [video loadWithVideoId:[youtubeUnit valueForKey:@"video_key"]];
+        [youtubeVideoArray addObject:video];
+        [videoViewCell addSubview:video];
+        
+        UILabel *labelTitle = [[UILabel alloc]initWithFrame:CGRectMake(0, itemHeight - 30, itemWidth, 30)];
+        [labelTitle setFont:[UIFont fontWithName:THEME_FONT_NAME_REGULAR size:14]];
+        [labelTitle setText:[youtubeUnit valueForKey:@"video_title"]];
+        labelTitle.tag = videoTag;
+        [videoViewCell addSubview:labelTitle];
+    }
+    return videoViewCell;
 }
 
 - (void)initTab:(NSNotification*)noti
@@ -147,7 +233,7 @@ static NSString *PRODUCT_ROW_YOUTUBE = @"PRODUCT_ROW_YOUTUBE";
 
 - (void)productMoreViewControllerViewWillDisappear:(NSNotification*)noti
 {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {        
+    if (PADDEVICE) {
         for (int i = 0; i < youtubeVideoArray.count; i++) {
             YTPlayerView *video = [youtubeVideoArray objectAtIndex:i];
             [video stopVideo];

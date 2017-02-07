@@ -26,6 +26,8 @@
     self = [super init];
     if (self) {
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didTapChatButton) name:@"tapToChatButton" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"SCLeftMenu_InitCellsAfter" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"SCLeftMenu_DidSelectRow" object:nil];
         self.zoPimConfig = [[SimiGlobalVar sharedInstance].allConfig valueForKeyPath:@"zopim_config"];
         NSString *enable = [self.zoPimConfig valueForKey:@"enable"];
         if ([enable isEqualToString:@"1"]) {
@@ -45,7 +47,7 @@
         for (int i = 0; i < cells.count; i++) {
             SimiSection *section = [cells objectAtIndex:i];
             if ([section.identifier isEqualToString:LEFTMENU_SECTION_MORE]) {
-                SimiRow *row = [[SimiRow alloc]initWithIdentifier:LEFTMENU_ROW_CHAT height:50 sortOrder:70];
+                SimiRow *row = [[SimiRow alloc]initWithIdentifier:LEFTMENU_ROW_CHAT height:50 sortOrder:80];
                 row.image = [UIImage imageNamed:@"ic_livechat"];
                 row.title = SCLocalizedString(@"Live Chat");
                 row.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
@@ -53,20 +55,13 @@
                 [section sortItems];
             }
         }
-    } else if([noti.name isEqualToString:@"SCLeftMenu_DidSelectRow"])
+    }else if([noti.name isEqualToString:@"SCLeftMenu_DidSelectRow"])
     {
-        NSString *accountKey = [self.zoPimConfig valueForKey:@"account_key"];
-        NSString *showProfile = [self.zoPimConfig valueForKey:@"show_profile"];
-        NSString *name = [self.zoPimConfig valueForKey:@"name"];
-        NSString *email = [self.zoPimConfig valueForKey:@"email"];
-        NSString *phone = [self.zoPimConfig valueForKey:@"phone"];
         SimiRow *row = [noti.userInfo valueForKey:@"simirow"];
-        if([showProfile isEqualToString:@"0"])
-            showProfile = @"3";
         if ([row.identifier isEqualToString:LEFTMENU_ROW_CHAT]) {
             SCNavigationBarPhone *navi = noti.object;
             navi.isDiscontinue = YES;
-            [self startZopimChat:accountKey showProfile:showProfile name:name email:email phone:phone];
+            [self didTapChatButton];
         }
     }
 }
@@ -83,7 +78,6 @@
         NSString *phone = [self.zoPimConfig valueForKey:@"phone"];
         [self startZopimChat:accountKey showProfile:showProfile name:name email:email phone:phone];
     }
-    
 }
 
 -(void)move:(UIPanGestureRecognizer *)sender {

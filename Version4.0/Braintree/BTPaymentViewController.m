@@ -6,13 +6,7 @@
 //  Copyright © 2015 Trueplus. All rights reserved.
 //
 @import PassKit;
-#import <PassKit/PKPaymentAuthorizationViewController.h>
-#import "BraintreeApplePay.h"
 #import "BTPaymentViewController.h"
-#import "BraintreeCard.h"
-#import "BraintreePayPal.h"
-#import "SimiBraintreeModel.h"
-#import <SimiCartBundle/SCThankyouPageViewController.h>
 
 #define BRAINTREE_APPLEPAY @"braintree_applepay"
 #define BRAINTREE_GOOGLEPAY @"braintree_googlepay"
@@ -25,6 +19,7 @@
 @implementation BTPaymentViewController{
     NSMutableArray* paymentList;
     SimiBraintreeModel* braintreeModel;
+    NSString* clientToken;
 }
 @synthesize braintreeClient,order;
 
@@ -39,19 +34,18 @@
 
 
 -(void) viewDidLoad{
-    NSString* clientToken = [_payment valueForKey:@"token"];
+    clientToken = [_payment valueForKey:@"token"];
     self.braintreeClient = [[BTAPIClient alloc] initWithAuthorization:clientToken];
     if([_payment valueForKey:@"payment_list"]){
         paymentList = [_payment valueForKey:@"payment_list"];
     }
     if([paymentList containsObject:BRAINTREE_APPLEPAY]){
         //Remove for unsupporting
-        [paymentList removeObject:BRAINTREE_APPLEPAY];
+//        [paymentList removeObject:BRAINTREE_APPLEPAY];
 //        if (![PKPaymentAuthorizationViewController class] || ![PKPaymentAuthorizationViewController canMakePayments] || ![PKPaymentAuthorizationViewController canMakePaymentsUsingNetworks:@[PKPaymentNetworkAmex, PKPaymentNetworkMasterCard, PKPaymentNetworkVisa]]) {
 //            [paymentList removeObject:BRAINTREE_APPLEPAY];
 //            [self showAlertWithTitle:SCLocalizedString(@"Apple Pay") message:SCLocalizedString(@"This device cannot make payments with Apple Pay")];
 //        }
-        
     }
     if([paymentList containsObject:BRAINTREE_GOOGLEPAY])
         [paymentList removeObject:BRAINTREE_GOOGLEPAY];
@@ -72,13 +66,33 @@
     if([identifier isEqualToString:BRAINTREE_APPLEPAY]){
         [self payWithApplePay];
     }else if([identifier isEqualToString:BRAINTREE_PAYPAL]){
-        BTDropInViewController* dropInVC = [[BTDropInViewController alloc] initWithAPIClient:self.braintreeClient];
-        dropInVC.delegate = self;
-        [self.navigationController pushViewController:dropInVC animated:YES];
+        [self showDropIn:[_payment objectForKey:@"token"]];
     }
     else{
         
     }
+}
+
+-(void) showDropIn:(NSString*) clientTokenOrTokenizationKey{
+    BTDropInRequest *request = [[BTDropInRequest alloc] init];
+    BTDropInController *dropIn = [[BTDropInController alloc] initWithAuthorization:clientTokenOrTokenizationKey request:request handler:^(BTDropInController * _Nonnull controller, BTDropInResult * _Nullable result, NSError * _Nullable error) {
+        [controller dismissViewControllerAnimated:YES completion:nil];
+        if (error != nil) {
+            NSLog(@"ERROR");
+        } else if (result.cancelled) {
+            NSLog(@"CANCELLED");
+        } else {
+            // Use the BTDropInResult properties to update your UI
+            // result.paymentOptionType
+            // result.paymentMethod
+            // result.paymentIcon
+            // result.paymentDescription
+            if(result.paymentMethod.nonce){
+                [self postNonceToServer:result.paymentMethod.nonce];
+            }
+        }
+    }];
+    [self presentViewController:dropIn animated:YES completion:nil];
 }
 - (PKPaymentRequest *)applePaymentRequest {
     PKPaymentRequest *paymentRequest = [[PKPaymentRequest alloc] init];
@@ -96,19 +110,62 @@
     paymentRequest.supportedNetworks = @[PKPaymentNetworkVisa, PKPaymentNetworkMasterCard, PKPaymentNetworkAmex];
 #endif
     paymentRequest.merchantCapabilities = PKMerchantCapability3DS;
-    paymentRequest.countryCode = [[SimiGlobalVar sharedInstance] countryCode];
-    paymentRequest.currencyCode = [[SimiGlobalVar sharedInstance] currencyCode];
-    if ([paymentRequest respondsToSelector:@selector(setShippingType:)]) {
-        paymentRequest.shippingType = PKShippingTypeDelivery;
+    paymentRequest.countryCode = @"US";
+    paymentRequest.currencyCode = @"USD";
+//    if ([paymentRequest respondsToSelector:@selector(setShippingType:)]) {
+//        paymentRequest.shippingType = PKShippingTypeDelivery;
+//    }
+    {
+        //Shipping Contact
+        NSDictionary* shippingAddress = [order objectForKey:@"shipping_address"];
+        PKContact* shippingContact = [[PKContact alloc] init];
+        NSPersonNameComponents *name = [[NSPersonNameComponents alloc] init];
+        name.givenName = [shippingAddress objectForKey:@"firstname"];
+        name.familyName = [shippingAddress objectForKey:@"lastname"];
+        shippingContact.name = name;
+
+        CNMutablePostalAddress *address = [[CNMutablePostalAddress alloc] init];
+        address.street = [shippingAddress objectForKey:@"street"];
+        address.city = [shippingAddress objectForKey:@"city"];
+        address.state = [shippingAddress objectForKey:@"region"];
+        address.postalCode = [shippingAddress objectForKey:@"postcode"];
+        
+        shippingContact.postalAddress = address;
+        paymentRequest.shippingContact = shippingContact;
     }
-    NSMutableDictionary* fees = [order objectForKey:@"fee"];
+    {
+        //Billing Contact
+        NSDictionary* billingAddress = [order objectForKey:@"billing_address"];
+        PKContact* billingContact = [[PKContact alloc] init];
+        NSPersonNameComponents *name = [[NSPersonNameComponents alloc] init];
+        name.givenName = [billingAddress objectForKey:@"firstname"];
+        name.familyName = [billingAddress objectForKey:@"lastname"];
+        billingContact.name = name;
+        
+        CNMutablePostalAddress *address = [[CNMutablePostalAddress alloc] init];
+        address.street = [billingAddress objectForKey:@"street"];
+        address.city = [billingAddress objectForKey:@"city"];
+        address.state = [billingAddress objectForKey:@"region"];
+        address.postalCode = [billingAddress objectForKey:@"postcode"];
+        
+        billingContact.postalAddress = address;
+        paymentRequest.billingContact = billingContact;
+    }
+    NSMutableDictionary* fees = [order objectForKey:@"total"];
     
-    NSDecimalNumber* subTotal = [NSDecimalNumber decimalNumberWithString:[NSString stringWithFormat:@"%.2f",[[fees valueForKey:@"sub_total"] floatValue]]];
-    NSDecimalNumber* grandTotal = [NSDecimalNumber decimalNumberWithString:[NSString stringWithFormat:@"%.2f",[[fees valueForKey:@"grand_total"] floatValue]]];
+    NSDecimalNumber* subTotal = [NSDecimalNumber decimalNumberWithString:[NSString stringWithFormat:@"%.2f",[[fees valueForKey:@"subtotal_incl_tax"] floatValue]]];
+    NSDecimalNumber* shippingFee;
+    if([fees objectForKey:@"shipping_hand_incl_tax"]){
+        shippingFee = [NSDecimalNumber decimalNumberWithString:[NSString stringWithFormat:@"%.2f",[[fees valueForKey:@"shipping_hand_incl_tax"] floatValue]]];
+    }else{
+        shippingFee = [NSDecimalNumber decimalNumberWithString:@"0"];
+    }
+    NSDecimalNumber* grandTotal = [NSDecimalNumber decimalNumberWithString:[NSString stringWithFormat:@"%.2f",[[fees valueForKey:@"grand_total_incl_tax"] floatValue]]];
     
     paymentRequest.paymentSummaryItems =
     @[
       [PKPaymentSummaryItem summaryItemWithLabel:@"Subtotal" amount:subTotal],
+      [PKPaymentSummaryItem summaryItemWithLabel:@"Shipping" amount:shippingFee],
       [PKPaymentSummaryItem summaryItemWithLabel:@"Grand Total" amount:grandTotal],
       ];
     return paymentRequest;
@@ -138,7 +195,7 @@
         if([identifier isEqualToString:BRAINTREE_APPLEPAY]){
             PKPaymentButton *applePayButton = [[PKPaymentButton alloc] initWithPaymentButtonType:PKPaymentButtonTypePlain paymentButtonStyle:PKPaymentButtonStyleBlack];
             [applePayButton addTarget:self action:@selector(payWithApplePay) forControlEvents:UIControlEventTouchUpInside];
-            applePayButton.frame = CGRectMake((self.navigationController.view.frame.size.width - 100)/2, 10, 100, 30);
+            applePayButton.frame = CGRectMake(44, 7, 100, 30);
             [cell addSubview:applePayButton];
         }else if([identifier isEqualToString:BRAINTREE_PAYPAL]){
             cell.textLabel.text = @"Pay with Paypal and Card";
@@ -148,8 +205,22 @@
         }
     }
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    if(!cell)
+        cell = [UITableViewCell new];
     return cell;
 }
+
+-(void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if ([cell respondsToSelector:@selector(setSeparatorInset:)]) {
+        [cell setSeparatorInset:UIEdgeInsetsZero];
+    }
+    
+    if ([cell respondsToSelector:@selector(setLayoutMargins:)]) {
+        [cell setLayoutMargins:UIEdgeInsetsZero];
+    }
+}
+
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
     UILabel* lblHeader = [UILabel new];
@@ -186,7 +257,7 @@
                                      if(!error){
                                          [self showAlertWithTitle:SCLocalizedString(@"Apple Pay") message:[NSString stringWithFormat:@"Cannot make payments.Error: %@", error]];
                                      }
-                                     if (tokenizedApplePayPayment) {
+                                     if (tokenizedApplePayPayment.nonce) {
                                          [self postNonceToServer:tokenizedApplePayPayment.nonce];
                                          completion(PKPaymentAuthorizationStatusSuccess);
                                      } else {
@@ -205,13 +276,16 @@
     
 }
 
-
 - (void)postNonceToServer:(NSString *)paymentMethodNonce {
     if(!braintreeModel)
         braintreeModel = [SimiBraintreeModel new];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:BRAINTREE_SENDNONCETOSERVER object:braintreeModel];
     [self startLoadingData];
     [braintreeModel sendNonceToServer:paymentMethodNonce andOrder:order];
+}
+
+-(void) viewWillDisappear:(BOOL)animated{
+    [[SimiGlobalVar sharedInstance].currentlyNavigationController popToRootViewControllerAnimated:YES];
 }
 
 -(void) didReceiveNotification:(NSNotification *)noti{
@@ -243,6 +317,7 @@ requestsPresentationOfViewController:(UIViewController *)viewController {
 requestsDismissalOfViewController:(UIViewController *)viewController {
     [self dismissViewControllerAnimated:YES completion:nil];
 }
+
 
 #pragma mark - BTAppSwitchDelegate
 

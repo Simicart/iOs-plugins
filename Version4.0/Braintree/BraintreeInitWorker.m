@@ -45,12 +45,23 @@
         NSDictionary* payment = [noti.userInfo objectForKey:@"payment"];
         NSDictionary* shipping = [noti.userInfo objectForKey:@"shipping"];
         if([[[[noti.userInfo valueForKey:@"data"] valueForKey:@"payment_method"] lowercaseString] isEqualToString:BRAINTREE_PAYMENT_METHOD]){
-                currentVC = [noti.userInfo valueForKey:@"controller"];
-                BTPaymentViewController* btPaymentVC = [[BTPaymentViewController alloc] init];
-                btPaymentVC.payment = payment;
-                btPaymentVC.shipping = shipping;
-                btPaymentVC.order = noti.object;
+            currentVC = [noti.userInfo valueForKey:@"controller"];
+            BTPaymentViewController* btPaymentVC = [[BTPaymentViewController alloc] init];
+            btPaymentVC.payment = payment;
+            btPaymentVC.shipping = shipping;
+            btPaymentVC.order = noti.object;
+            if(PHONEDEVICE)
                 [currentVC.navigationController pushViewController:btPaymentVC animated:YES];
+            else if(PADDEVICE){
+                UINavigationController* navi = [[UINavigationController alloc] initWithRootViewController:btPaymentVC];
+                navi.modalPresentationStyle = UIModalPresentationPopover;
+                navi.modalInPopover = YES;
+                UIPopoverPresentationController* popoverVC = navi.popoverPresentationController;
+                popoverVC.sourceView = currentVC.view;
+                popoverVC.sourceRect = CGRectMake(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 1, 1);
+                [popoverVC setPermittedArrowDirections:0];
+                [currentVC presentViewController:navi animated:YES completion:nil];
+            }
         }
     }
 }

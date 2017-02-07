@@ -8,7 +8,7 @@
 
 #import "SimiOrderModel+PayPal.h"
 
-#define kSavePaymentURL @"simiconnector/rest/v2/paypalmobile"
+#define kSavePaymentURL @"simiconnector/rest/v2/paypalmobiles"
 
 @implementation SimiOrderModel (PayPal)
 
