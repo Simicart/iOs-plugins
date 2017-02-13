@@ -13,6 +13,8 @@
 #import <SimiCartBundle/SCProductViewControllerPad.h>
 #import <SimiCartBundle/SCProductSecondDesignViewControllerPad.h>
 
+#import <FirebaseCore/FirebaseCore.h>
+#import <FirebaseDynamicLinks/FirebaseDynamicLinks.h>
 
 #define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
 
@@ -29,6 +31,10 @@
             [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(openSearchableItem:) name:@"DidInit" object:nil];
             [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(openSearchableItem:) name:@"ContinueUserActivity" object:nil];
         }
+        //Dynamic Links
+        [FIROptions defaultOptions].deepLinkURLScheme = [[NSBundle mainBundle] bundleIdentifier];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationOpenURL:) name:@"ApplicationOpenURL" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(continueUserActivity:) name:@"ContinueUserActivity" object:nil];
     }
     return self;
 }
@@ -109,5 +115,34 @@
         searchableUserActivity = nil;
     }
 }
+
+
+#pragma mark Dynamic Links
+-(void) applicationOpenURL:(NSNotification*) noti{
+    NSURL* url = [noti.userInfo objectForKey:@"url"];
+    NSNumber* number = noti.object;
+    FIRDynamicLink *dynamicLink = [[FIRDynamicLinks dynamicLinks] dynamicLinkFromCustomSchemeURL:url];
+    
+    if (dynamicLink) {
+        // Handle the deep link. For example, show the deep-linked content or
+        // apply a promotional offer to the user's account.
+        // ...
+        number = [NSNumber numberWithBool:YES];
+    }else{
+        number = [NSNumber numberWithBool:NO];
+    }
+}
+
+-(void) continueUserActivity:(NSNotification*) noti{
+    NSUserActivity* userActivity = [noti.userInfo objectForKey:@"userActivity"];
+    NSNumber* handledNumber = [noti.userInfo objectForKey:@"handled"];
+    BOOL handled = [[FIRDynamicLinks dynamicLinks] handleUniversalLink:userActivity.webpageURL
+                                                            completion:^(FIRDynamicLink * _Nullable dynamicLink,
+                                                                         NSError * _Nullable error) {
+                                                                // ...
+                                                            }];
+    handledNumber = [NSNumber numberWithBool:handled];
+}
+
 
 @end
