@@ -75,8 +75,9 @@
 
 -(void) showDropIn:(NSString*) clientTokenOrTokenizationKey{
     BTDropInRequest *request = [[BTDropInRequest alloc] init];
+    request.applePayDisabled = YES;
     BTDropInController *dropIn = [[BTDropInController alloc] initWithAuthorization:clientTokenOrTokenizationKey request:request handler:^(BTDropInController * _Nonnull controller, BTDropInResult * _Nullable result, NSError * _Nullable error) {
-        [controller dismissViewControllerAnimated:YES completion:nil];
+//        [controller dismissViewControllerAnimated:YES completion:nil];
         if (error != nil) {
             NSLog(@"ERROR");
         } else if (result.cancelled) {
@@ -87,12 +88,15 @@
             // result.paymentMethod
             // result.paymentIcon
             // result.paymentDescription
-            if(result.paymentMethod.nonce){
-                [self postNonceToServer:result.paymentMethod.nonce];
-            }
+//            if(result.paymentMethod.nonce){
+//                [self postNonceToServer:result.paymentMethod.nonce];
+//            }
         }
     }];
-    [self presentViewController:dropIn animated:YES completion:nil];
+    if(dropIn)
+        [self presentViewController:dropIn animated:YES completion:nil];
+    else
+        [self showAlertWithTitle:@"Braintree" message:SCLocalizedString(@"The provided authorization was invalid")];
 }
 - (PKPaymentRequest *)applePaymentRequest {
     PKPaymentRequest *paymentRequest = [[PKPaymentRequest alloc] init];
@@ -305,7 +309,6 @@
 }
 
 #pragma mark - BTViewControllerPresentingDelegate
-
 // Required
 - (void)paymentDriver:(id)paymentDriver
 requestsPresentationOfViewController:(UIViewController *)viewController {
