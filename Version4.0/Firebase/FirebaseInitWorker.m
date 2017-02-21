@@ -20,11 +20,18 @@
         
         //Logging events
         [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(trackingEvent:) name:TRACKINGEVENT object:nil];
-//        NSDictionary *info = [[NSBundle mainBundle] infoDictionary];
-//        NSString *version = [info objectForKey:@"CFBundleShortVersionString"];
-//        NSString *appIdentidier = [info objectForKey:@"CFBundleIdentifier"];
-//        [FIRAnalytics setUserPropertyString:version forName:@"App Version"];
-//        [FIRAnalytics setUserPropertyString:appIdentidier forName:@"App ID"];
+        [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(trackingViewedScreen:) name:@"SimiViewControllerViewDidAppear" object:nil];
+        NSDictionary *info = [[NSBundle mainBundle] infoDictionary];
+        NSString *version = [info objectForKey:@"CFBundleShortVersionString"];
+        NSString *appIdentidier = [info objectForKey:@"CFBundleIdentifier"];
+        [FIRAnalytics setUserPropertyString:version forName:@"app_version"];
+        [FIRAnalytics setUserPropertyString:appIdentidier forName:@"app_id"];
+        if ([[SimiGlobalVar sharedInstance].baseConfig valueForKey:@"customer_ip"]) {
+            NSString *customerIp = [NSString stringWithFormat:@"%@",[[SimiGlobalVar sharedInstance].baseConfig valueForKey:@"customer_ip"]];
+            if (![customerIp isEqualToString:@""] && ![[[SimiGlobalVar sharedInstance].baseConfig valueForKey:@"customer_ip"] isKindOfClass:[NSNull class]]) {
+                [FIRAnalytics setUserPropertyString:customerIp forName:@"customer_ip"];
+            }
+        }
     }
     return self;
 }
@@ -34,16 +41,45 @@
     if([noti.object isKindOfClass:[NSString class]])
     {
         NSString *trackingName = noti.object;
-        trackingName = [trackingName stringByReplacingOccurrencesOfString:@" " withString:@"_"];
         NSDictionary *params = noti.userInfo;
-        NSMutableDictionary *trackingProperties = [NSMutableDictionary new];
-        for (int i = 0; i < params.count; i ++) {
-            NSString *key = [params.allKeys objectAtIndex:i];
-            key = [key stringByReplacingOccurrencesOfString:@" " withString:@"_"];
-            NSString *value = [params.allValues objectAtIndex:i];
-            [trackingProperties setValue:value forKey:key];
+        if (params == nil) {
+            params = @{};
+        }
+        NSMutableDictionary *trackingProperties = [[NSMutableDictionary alloc]initWithDictionary:params];
+        if ([SimiGlobalVar sharedInstance].isLogin) {
+            [trackingProperties setValue:[[SimiGlobalVar sharedInstance].customer valueForKey:@"email"]  forKey:@"customer_identity"];
+        }else
+        {
+            if ([[SimiGlobalVar sharedInstance].baseConfig valueForKey:@"customer_identity"]) {
+                NSString *customerIdentity = [NSString stringWithFormat:@"%@",[[SimiGlobalVar sharedInstance].baseConfig valueForKey:@"customer_identity"]];
+                if (![customerIdentity isEqualToString:@""] && ![[[SimiGlobalVar sharedInstance].baseConfig valueForKey:@"customer_identity"] isKindOfClass:[NSNull class]]) {
+                    [trackingProperties setValue:customerIdentity  forKey:@"customer_identity"];
+                }
+            }
         }
         [FIRAnalytics logEventWithName:trackingName
+                            parameters:trackingProperties];
+    }
+}
+
+- (void)trackingViewedScreen:(NSNotification*)noti
+{
+    SimiViewController *viewController = noti.object;
+    if (viewController.screenTrackingName != nil && ![viewController.screenTrackingName isEqualToString:@""]) {
+        NSString *actionValue = [NSString stringWithFormat:@"viewed_%@_screen",viewController.screenTrackingName];
+        NSMutableDictionary *trackingProperties = [[NSMutableDictionary alloc]initWithDictionary:@{@"action":actionValue}];
+        if ([SimiGlobalVar sharedInstance].isLogin) {
+            [trackingProperties setValue:[[SimiGlobalVar sharedInstance].customer valueForKey:@"email"]  forKey:@"customer_identity"];
+        }else
+        {
+            if ([[SimiGlobalVar sharedInstance].baseConfig valueForKey:@"customer_identity"]) {
+                NSString *customerIdentity = [NSString stringWithFormat:@"%@",[[SimiGlobalVar sharedInstance].baseConfig valueForKey:@"customer_identity"]];
+                if (![customerIdentity isEqualToString:@""] && ![[[SimiGlobalVar sharedInstance].baseConfig valueForKey:@"customer_identity"] isKindOfClass:[NSNull class]]) {
+                    [trackingProperties setValue:customerIdentity  forKey:@"customer_identity"];
+                }
+            }
+        }
+        [FIRAnalytics logEventWithName:@"page_view_action"
                             parameters:trackingProperties];
     }
 }
