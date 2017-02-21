@@ -9,8 +9,6 @@
 #import "FirebaseInitWorker.h"
 #import "Firebase.h"
 
-#define kGCMMessageIDKey @"gcm.message_id"
-#define CUSTOM_URL_SCHEME @"com.simicart.core40"
 
 @implementation FirebaseInitWorker
 -(id) init{
