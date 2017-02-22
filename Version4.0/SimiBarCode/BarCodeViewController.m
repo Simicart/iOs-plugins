@@ -336,7 +336,7 @@
         }else
         {
             [_previewView setHidden:NO];
-            UIAlertView *alert = [[UIAlertView alloc]initWithTitle:SCLocalizedString(@"Scanning Error") message:SCLocalizedString(@"No product matching code") delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
+            UIAlertView *alert = [[UIAlertView alloc]initWithTitle:SCLocalizedString(@"Scanning Error") message:SCLocalizedString(@"Product does not exist") delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
             alert.simiObjectName = @"AlertFindProductFail";
             [alert show];
         }

@@ -180,7 +180,7 @@
             }
             
             //Customization
-            if(newAddressController.positionOpenNewAddress == PositionOpenNewAddressFromCart || newAddressController.positionOpenNewAddress == PositionOpenNewAddressFromOrderReview || newAddressController.moreInfoAdded){
+            if(newAddressController.moreInfoAdded){
                 NSArray* checkoutCustomFields = [[SimiGlobalVar sharedInstance].appCustomization objectForKey:@"checkout_custom_fields"];
                 for(NSDictionary* customField in checkoutCustomFields){
                     if([[customField objectForKey:@"input_type"] isEqualToString:@"text"]){
