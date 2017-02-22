@@ -253,6 +253,7 @@
 
 //Handling button clicking
 -(void) fbButtonClicked: (id) sender{
+    [[NSNotificationCenter defaultCenter]postNotificationName:TRACKINGEVENT object:@"facebook_connect_action" userInfo:@{@"action":@"clicked_facebook_connect_button",@"product_name":[product valueForKey:@"name"],@"product_id":[product valueForKey:@"entity_id"],@"sku":[product valueForKey:@"sku"]}];
     if (!isShowFacebookView) {
         CGRect frame = fbView.frame;
         frame.origin.x -= widthFacebookView;

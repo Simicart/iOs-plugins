@@ -34,6 +34,8 @@
         [super viewDidLoadBefore];
     }
     self.navigationItem.title = SCLocalizedString(@"Contact Us");
+    self.screenTrackingName = @"contact_us";
+    self.eventTrackingName = @"contact_us_action";
     _contactModel = [[SimiModel alloc]initWithDictionary:[[SimiGlobalVar sharedInstance].allConfig valueForKey:@"instant_contact"]];
     if ([[_contactModel valueForKey:@"phone"] isKindOfClass:[NSArray class]]) {
         arrayPhoneNumber = [[NSMutableArray alloc]initWithArray:[_contactModel valueForKey:@"phone"]];
@@ -134,6 +136,7 @@
 #pragma mark Action
 - (void)btnCallClick
 {
+    [self trackingWithProperties:@{@"action":@"selected_contact_by_call"}];
     if (arrayPhoneNumberAfterCheck.count == 1) {
         stringPhoneNumber = [arrayPhoneNumberAfterCheck objectAtIndex:0];
         [self call];
@@ -164,6 +167,7 @@
 {
     NSString *emailContent = SCLocalizedString(@"");
     [self sendEmailToStoreWithEmail:arrayEmailCheck andEmailContent:emailContent];
+    [self trackingWithProperties:@{@"action":@"selected_contact_by_email"}];
 }
 
 - (void)btnWebsiteClick
@@ -172,6 +176,7 @@
         stringWebsite = [NSString stringWithFormat:@"%@%@",@"http://",stringWebsite];
     }
     [[UIApplication sharedApplication] openURL:[NSURL URLWithString:stringWebsite]];
+    [self trackingWithProperties:@{@"action":@"selected_contact_by_website"}];
 }
 
 - (void)btnMessageClick
@@ -187,6 +192,7 @@
         listPhoneViewController.delegate = self;
         [self.navigationController pushViewController:listPhoneViewController animated:YES];
     }
+    [self trackingWithProperties:@{@"action":@"selected_contact_by_message"}];
 }
 
 - (void)sendMessage

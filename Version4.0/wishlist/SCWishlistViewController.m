@@ -23,8 +23,9 @@
     UILabel* emptyLabel;
 }
 
-- (void)viewDidLoad {
-    [super viewDidLoad];
+- (void)viewDidLoadBefore {
+    [super viewDidLoadBefore];
+    self.eventTrackingName = @"wishlist_action";
     float paddingX = 5;
     float paddingY = 5;
     //Add notifications
@@ -79,8 +80,8 @@
     [SimiGlobalVar sortViewForRTL:self.view andWidth:SCREEN_WIDTH];
 }
 
--(void) viewWillAppear:(BOOL)animated{
-    [super viewWillAppear:animated];
+- (void)viewWillAppearBefore:(BOOL)animated{
+    [super viewWillAppearBefore:animated];
     //Hide all view before load wishlist items
     emptyLabel.hidden = YES;
     wishlistShareView.hidden = YES;
@@ -88,7 +89,7 @@
     [self getWishlistItemsFromBegin];
 }
 
--(void) handleWishlistItemsCount{
+- (void)handleWishlistItemsCount{
     if(wishlistModelCollection.count > 0){
         wishlistCollectionView.hidden = NO;
         wishlistShareView.hidden = NO;
@@ -100,18 +101,18 @@
     }
 }
 
--(void) getWishlistItemsFromBegin{
+- (void)getWishlistItemsFromBegin{
     [wishlistModelCollection removeAllObjects];
     [wishlistCollectionView setContentOffset:CGPointZero animated:NO];
     [wishlistModelCollection getWishlistItemsWithParams:@{@"offset":[NSString stringWithFormat:@"%ld",(long) wishlistModelCollection.count],@"limit":@"10"}];
     [self startLoadingData];
 }
 
--(void) getWishlistItems{
+- (void)getWishlistItems{
     [wishlistModelCollection getWishlistItemsWithParams:@{@"offset":[NSString stringWithFormat:@"%ld",(long) wishlistModelCollection.count],@"limit":@"10"}];
 }
 
--(void) didGetWishlistItems: (NSNotification*) noti{
+- (void)didGetWishlistItems: (NSNotification*) noti{
     [self stopLoadingData];
     SimiResponder* responder = [noti.userInfo objectForKey:@"responder"];
     [wishlistCollectionView.infiniteScrollingView stopAnimating];
@@ -129,17 +130,17 @@
     [super didReceiveMemoryWarning];
 }
 
--(void) wishlistShareViewTapped: (id) sender{
+- (void)wishlistShareViewTapped: (id) sender{
     UIView* view = ((UITapGestureRecognizer* )sender).view;
     [self shareWishlistWithText:wishlistModelCollection.sharingMessage url:wishlistModelCollection.sharingURL inView:view];
 }
 
 #pragma mark UICollectionViewDelegate && UICollectionViewDataSource
--(void) collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath{
+- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath{
     
 }
 
--(UICollectionViewCell* ) collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath{
+- (UICollectionViewCell* )collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath{
     NSString* identifier = [NSString stringWithFormat:@"%@%ld",WISHLISTCOLLECTIONVIEWCELL,(long) indexPath.row];
     [collectionView registerClass:[SCWishlistCollectionViewCell class] forCellWithReuseIdentifier:identifier];
     SCWishlistCollectionViewCell* cell = [collectionView dequeueReusableCellWithReuseIdentifier:identifier forIndexPath:indexPath];
@@ -148,21 +149,21 @@
     return cell;
 }
 
--(NSInteger) collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section{
+- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section{
     return wishlistModelCollection.count;
 }
 
--(NSInteger) numberOfSectionsInCollectionView:(UICollectionView *)collectionView{
+- (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView{
     return 1;
 }
 
 #pragma mark SCWishlistCollectionViewCellDelegate
--(void) deleteWishlistItem:(NSDictionary *)wishlistItem{
+- (void)deleteWishlistItem:(NSDictionary *)wishlistItem{
     [wishlistModelCollection removeItemWithWishlistItemID:[wishlistItem objectForKey:@"wishlist_item_id"]];
     [self startLoadingData];
 }
 
--(void) tapToWishlistItem:(NSDictionary *)wishlistItem{
+- (void)tapToWishlistItem:(NSDictionary *)wishlistItem{
     SCProductViewController* productVC;
     if(PHONEDEVICE){
         productVC = [SCProductViewController new];
@@ -175,7 +176,7 @@
     [self.navigationController pushViewController:productVC animated:YES];
 }
 
--(void) addToCartWithWishlistItem:(NSDictionary *)wishlistItem{
+- (void)addToCartWithWishlistItem:(NSDictionary *)wishlistItem{
     
     if([[wishlistItem objectForKey:@"selected_all_required_options"] boolValue]){
         [wishlistModelCollection addProductToCartWithWishlistID:[wishlistItem objectForKey:@"wishlist_item_id"]];
@@ -194,12 +195,12 @@
     }
 }
 
--(void) shareWishlistItem:(NSDictionary *)wishlistItem inView:(UIView *)view{
+- (void)shareWishlistItem:(NSDictionary *)wishlistItem inView:(UIView *)view{
     [self shareWishlistWithText:[wishlistItem objectForKey:@"product_sharing_message"] url:[wishlistItem objectForKey:@"product_sharing_url"] inView:view];
    
 }
 
--(void) shareWishlistWithText: (NSString*) text url:(NSString*) url inView:(UIView*) view{
+- (void)shareWishlistWithText: (NSString*) text url:(NSString*) url inView:(UIView*) view{
     NSURL *shareUrl = [NSURL URLWithString:url];
     NSArray *activityItems = [NSArray arrayWithObjects:text, shareUrl, nil];
     UIActivityViewController *activityViewController = [[UIActivityViewController alloc] initWithActivityItems:activityItems applicationActivities:nil];
@@ -213,7 +214,7 @@
 }
 
 //Notifications Catched
--(void) didAddProductFromWishlistToCart: (NSNotification* ) noti{
+- (void)didAddProductFromWishlistToCart: (NSNotification* ) noti{
     [self stopLoadingData];
     if(PHONEDEVICE)
         [[[[SCThemeWorker sharedInstance] navigationBarPhone] cartViewController] getCart];
@@ -222,7 +223,7 @@
     // get wishlist again
     [self getWishlistItemsFromBegin];
 }
--(void) didDeleteWishlistItem: (NSNotification*) noti{
+- (void)didDeleteWishlistItem: (NSNotification*) noti{
     [self stopLoadingData];
     [wishlistCollectionView reloadData];
     [self handleWishlistItemsCount];

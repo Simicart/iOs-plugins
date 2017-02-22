@@ -30,6 +30,7 @@
         [self configureNavigationBarOnViewDidLoad];
     }
     // Init Views
+    self.screenTrackingName = @"my_reward";
     self.navigationItem.title = SCLocalizedString(@"My Rewards");
     // Table View
     _tableView = [[UITableView alloc] initWithFrame:self.view.frame style:UITableViewStyleGrouped];

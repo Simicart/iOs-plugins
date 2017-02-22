@@ -27,6 +27,7 @@
         [super viewDidLoadBefore];
     }
     self.title = SCLocalizedString(@"Rewards History");
+    self.screenTrackingName = @"reward_history";
 }
 
 - (void)viewWillAppearBefore:(BOOL)animated

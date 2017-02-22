@@ -19,6 +19,7 @@
 - (void)viewDidLoadBefore
 {
     [super viewDidLoadBefore];
+    self.screenTrackingName = @"store_locator";
     self.dataSource = self;
     self.delegate = self;
 }

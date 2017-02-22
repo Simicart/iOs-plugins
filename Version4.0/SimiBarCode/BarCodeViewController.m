@@ -25,6 +25,7 @@
 - (void)viewDidLoadBefore
 {
     [super viewDidLoadBefore];
+    self.eventTrackingName = @"barcode_action";
     _previewView = [UIView new];
     isFistLoad = YES;
     
@@ -320,6 +321,7 @@
         [_activityIndicatorView removeFromSuperview];
         SimiResponder *responder = [noti.userInfo valueForKey:@"responder"];
         if ([[responder.status uppercaseString] isEqualToString:@"SUCCESS"]) {
+            [self trackingWithProperties:@{@"action":@"scanned_product",@"product_id":[_barCodeModel valueForKey:@"product_entity_id"],@"product_name":[_barCodeModel valueForKey:@"product_name"]}];
             if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
                 SCProductViewController *productViewController = [SCProductViewController new];
                 productViewController.firstProductID = [_barCodeModel valueForKey:@"product_entity_id"];

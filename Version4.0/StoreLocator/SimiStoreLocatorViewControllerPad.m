@@ -36,9 +36,10 @@ NSInteger const heightButtonSearch = 50;
 
 #pragma mark View Cycle
 
-- (void)viewDidLoad
+- (void)viewDidLoadBefore
 {
-    [super viewDidLoad];
+    self.screenTrackingName = @"store_locator";
+    [super viewDidLoadBefore];
     sLListViewControllerLandscape = [[SimiStoreLocatorListViewController alloc]init];
     sLListViewControllerLandscape.delegate = self;
     sLListViewControllerLandscape.sLModelCollection = [[SimiStoreLocatorModelCollection alloc]init];
@@ -57,9 +58,8 @@ NSInteger const heightButtonSearch = 50;
 
 
 
-- (void)viewDidAppear:(BOOL)animated
-{
-    [super viewDidAppear:YES];
+- (void)viewDidAppearBefore:(BOOL)animated{
+    [super viewDidAppearBefore:animated];
     [self setInterfaceLandscape];
 }
 

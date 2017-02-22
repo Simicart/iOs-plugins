@@ -86,6 +86,7 @@
 {
     if (marker.storeLocatorModel != nil) {
         storeLocatorPopup.storeLocatorModel = marker.storeLocatorModel;
+        [[NSNotificationCenter defaultCenter]postNotificationName:TRACKINGEVENT object:@"store_locator_action" userInfo:@{@"action":@"clicked_store_maker",@"store_name":[marker.storeLocatorModel valueForKey:@"name"]}];
         [storeLocatorPopup setContentForPopup];
         return storeLocatorPopup;
     }else
