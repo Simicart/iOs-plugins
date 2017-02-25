@@ -11,7 +11,13 @@
 
 @end
 
-@implementation SimiStoreLocatorViewController
+@implementation SimiStoreLocatorViewController{
+    SimiStoreLocatorDetailViewController* storeLocatorDetailVC;
+    float currentLatitube;
+    float currentLongitube;
+    SimiCLController* cLController;
+    SimiStoreLocatorModelCollection *sLModelCollection;
+}
 @synthesize storeLocatorModelCollection, searchButton,tagChoise, simiTagModelCollection;
 
 #pragma mark View Controller Cycle
@@ -21,14 +27,20 @@
     [super viewDidLoadBefore];
     self.dataSource = self;
     self.delegate = self;
+    
+    cLController = [[SimiCLController alloc]init];
+    cLController.delegate = self;
+    if (SIMI_SYSTEM_IOS >= 8.0) {
+        [cLController.locationManager requestWhenInUseAuthorization];
+    }
+    [cLController.locationManager startUpdatingLocation];
 }
 
-- (void)viewWillAppearAfter:(BOOL)animated
-{
+- (void)viewWillAppearAfter:(BOOL)animated{
     [super viewWillAppearAfter:YES];
-    searchButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"storelocator_search.png"] style:UIBarButtonItemStylePlain target:self action:@selector(btnSearch_Click)];
-    searchButton.width = 44;
-    self.navigationItem.rightBarButtonItem = searchButton;
+//    searchButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"storelocator_search.png"] style:UIBarButtonItemStylePlain target:self action:@selector(btnSearch_Click)];
+//    searchButton.width = 44;
+//    self.navigationItem.rightBarButtonItem = searchButton;
 }
 
 - (void)didReceiveMemoryWarning
@@ -72,9 +84,13 @@
 {
     switch (index) {
         case 0:
-            sLListViewController = [[SimiStoreLocatorListViewController alloc]init];
-            sLListViewController.delegate = self;
-            return sLListViewController;
+//            sLListViewController = [[SimiStoreLocatorListViewController alloc]init];
+//            sLListViewController.delegate = self;
+            if(!storeLocatorDetailVC){
+                storeLocatorDetailVC = [SimiStoreLocatorDetailViewController new];
+                storeLocatorDetailVC.delegate = self;
+            }
+            return storeLocatorDetailVC;
             break;
             
         default:
@@ -82,9 +98,9 @@
                 sLMapViewController = [[SimiStoreLocatorMapViewController alloc]init];
             }
             sLMapViewController.delegate = self;
-            sLMapViewController.currentLatitube = sLListViewController.currentLatitube;
-            sLMapViewController.currentLongitube = sLListViewController.currentLongitube;
-            sLMapViewController.sLModelCollectionSyncList = sLListViewController.sLModelCollection;
+            sLMapViewController.currentLatitube = currentLatitube;
+            sLMapViewController.currentLongitube = currentLongitube;
+            sLMapViewController.sLModelCollectionSyncList = storeLocatorModelCollection;
             
             if (sLMapViewController.mapViewOption != MapViewSelectedMarker) {
                 sLMapViewController.mapViewOption = MapViewNoneSelectedMarker;
@@ -129,7 +145,7 @@
 {
     SimiStoreLocatorDetailViewController *sLDetailViewController = [SimiStoreLocatorDetailViewController new];
     sLDetailViewController.sLModel = sLModel_;
-    sLDetailViewController.title = @"Store List Detail";
+    sLDetailViewController.title = @"Store";
     sLDetailViewController.currentLatitude = sLMapViewController.currentLatitube;
     sLDetailViewController.currentLongitude = sLMapViewController.currentLongitube;
     sLDetailViewController.delegate = self;
@@ -137,26 +153,26 @@
 }
 
 #pragma mark Simi StoreLocatorListViewController Delegate
-- (void)didChoiseStoreFromListToMap
-{
-    if (sLMapViewController == nil) {
-        sLMapViewController = [[SimiStoreLocatorMapViewController alloc]init];
-    }
-    sLMapViewController.sLModel = sLListViewController.sLModel;
-    sLMapViewController.mapViewOption = MapViewSelectedMarker;
-    [self selectTabAtIndex:1];
-}
-
-- (void)showViewDetailControllerFromList:(SimiModel *)sLModel_
-{
-    SimiStoreLocatorDetailViewController *sLDetailViewController = [[SimiStoreLocatorDetailViewController alloc]init];
-    sLDetailViewController.sLModel = sLModel_;
-    sLDetailViewController.title = SCLocalizedString(@"Store List Detail");
-    sLDetailViewController.currentLatitude = sLListViewController.currentLatitube;
-    sLDetailViewController.currentLongitude = sLListViewController.currentLongitube;
-    sLDetailViewController.delegate = self;
-    [self.navigationController pushViewController:sLDetailViewController animated:YES];
-}
+//- (void)didChoiseStoreFromListToMap
+//{
+//    if (sLMapViewController == nil) {
+//        sLMapViewController = [[SimiStoreLocatorMapViewController alloc]init];
+//    }
+//    sLMapViewController.sLModel = sLListViewController.sLModel;
+//    sLMapViewController.mapViewOption = MapViewSelectedMarker;
+//    [self selectTabAtIndex:1];
+//}
+//
+//- (void)showViewDetailControllerFromList:(SimiModel *)sLModel_
+//{
+//    SimiStoreLocatorDetailViewController *sLDetailViewController = [[SimiStoreLocatorDetailViewController alloc]init];
+//    sLDetailViewController.sLModel = sLModel_;
+//    sLDetailViewController.title = SCLocalizedString(@"Store List Detail");
+//    sLDetailViewController.currentLatitude = sLListViewController.currentLatitube;
+//    sLDetailViewController.currentLongitude = sLListViewController.currentLongitube;
+//    sLDetailViewController.delegate = self;
+//    [self.navigationController pushViewController:sLDetailViewController animated:YES];
+//}
 
 #pragma mark Simi StoreLocatorDetailView Controller Delegate
 -(void)returnMapViewController:(SimiModel*) sLModelParam
@@ -172,60 +188,102 @@
 #pragma mark Search
 - (void)btnSearch_Click
 {
-    SimiStoreLocatorSearchViewController * sLSearchViewController = [SimiStoreLocatorSearchViewController new];
-    sLSearchViewController.delegate = self;
-    sLSearchViewController.currentLatitube = sLListViewController.currentLatitube;
-    sLSearchViewController.currentLongitube = sLListViewController.currentLongitube;
-    if (sLListViewController.dictSearch != nil) {
-        sLSearchViewController.stringCountrySearchCode = [sLListViewController.dictSearch valueForKey:@"countryCode"];
-        sLSearchViewController.stringCountrySearchName = [sLListViewController.dictSearch valueForKey:@"countryName"];
-        sLSearchViewController.stringCitySearch = [sLListViewController.dictSearch valueForKey:@"city"];
-        sLSearchViewController.stringStateSearch = [sLListViewController.dictSearch valueForKey:@"state"];
-        sLSearchViewController.stringZipCodeSearch = [sLListViewController.dictSearch valueForKey:@"zipcode"];
-        sLSearchViewController.stringTagSearch = [sLListViewController.dictSearch valueForKey:@"tag"];
-    }
-    
-    if (tagChoise != nil) {
-        sLSearchViewController.tagChoise = tagChoise;
-    }
-    
-    if (simiTagModelCollection != nil) {
-        sLSearchViewController.tagModelCollection = simiTagModelCollection;
-    }
-    [self.navigationController pushViewController:sLSearchViewController animated:YES];
+//    SimiStoreLocatorSearchViewController * sLSearchViewController = [SimiStoreLocatorSearchViewController new];
+//    sLSearchViewController.delegate = self;
+//    sLSearchViewController.currentLatitube = sLListViewController.currentLatitube;
+//    sLSearchViewController.currentLongitube = sLListViewController.currentLongitube;
+//    if (sLListViewController.dictSearch != nil) {
+//        sLSearchViewController.stringCountrySearchCode = [sLListViewController.dictSearch valueForKey:@"countryCode"];
+//        sLSearchViewController.stringCountrySearchName = [sLListViewController.dictSearch valueForKey:@"countryName"];
+//        sLSearchViewController.stringCitySearch = [sLListViewController.dictSearch valueForKey:@"city"];
+//        sLSearchViewController.stringStateSearch = [sLListViewController.dictSearch valueForKey:@"state"];
+//        sLSearchViewController.stringZipCodeSearch = [sLListViewController.dictSearch valueForKey:@"zipcode"];
+//        sLSearchViewController.stringTagSearch = [sLListViewController.dictSearch valueForKey:@"tag"];
+//    }
+//    
+//    if (tagChoise != nil) {
+//        sLSearchViewController.tagChoise = tagChoise;
+//    }
+//    
+//    if (simiTagModelCollection != nil) {
+//        sLSearchViewController.tagModelCollection = simiTagModelCollection;
+//    }
+//    [self.navigationController pushViewController:sLSearchViewController animated:YES];
 }
 
-#pragma  mark Search ViewController Delegate
+//#pragma  mark Search ViewController Delegate
+//
+//- (void)searchStoreLocatorWithCountryName:(NSString *)countryName countryCode:(NSString *)countryCode city:(NSString *)city state:(NSString *)state zipcode:(NSString *)zipcode tag:(NSString *)tag
+//{
+//    sLListViewController.dictSearch = @{@"countryCode":countryCode,@"countryName":countryName,@"city":city,@"state":state,@"zipcode":zipcode,@"tag":tag};
+//    
+//    if (sLMapViewController == nil) {
+//        sLMapViewController = [[SimiStoreLocatorMapViewController alloc]init];
+//    }
+//    sLMapViewController.dictSearch = @{@"countryCode":countryCode,@"countryName":countryName,@"city":city,@"state":state,@"zipcode":zipcode,@"tag":tag};
+//    
+//    sLListViewController.listViewOption = ListViewOptionSearched;
+//    sLMapViewController.searchOption = SearchOptionSearched;
+//}
+//
+//- (void)cacheDataWithstoreLocatorModelCollection:(SimiStoreLocatorModelCollection *)collection simiTagModelCollection:(SimiTagModelCollection *)tagModelCollection tagChoise:(NSString *)tagString
+//{
+//    [sLListViewController.sLModelCollection removeAllObjects];
+//    for (int i = 0; i < collection.count; i++) {
+//        [sLListViewController.sLModelCollection addObject:[collection objectAtIndex:i]];
+//    }
+//    
+//    if (sLMapViewController == nil) {
+//        sLMapViewController = [[SimiStoreLocatorMapViewController alloc]init];
+//    }
+//    [sLMapViewController.sLModelCollectionAll removeAllObjects];
+//    for (int i = 0; i < collection.count; i++) {
+//        [sLMapViewController.sLModelCollectionAll addObject:[collection objectAtIndex:i]];
+//    }
+//    
+//    simiTagModelCollection = tagModelCollection;
+//    tagChoise = tagString;
+//}
 
-- (void)searchStoreLocatorWithCountryName:(NSString *)countryName countryCode:(NSString *)countryCode city:(NSString *)city state:(NSString *)state zipcode:(NSString *)zipcode tag:(NSString *)tag
+#pragma mark Simi CL Delegate
+- (void)locationUpdate:(CLLocation *)location{
+    [cLController.locationManager stopUpdatingLocation];
+    [self didGetCurrentLocationWithLatitube:location.coordinate.latitude andLongitube:location.coordinate.longitude];
+}
+
+- (void)locationError:(NSError *)error {
+    [self didGetCurrentLocationWithLatitube:0 andLongitube:0];
+}
+
+- (void) didGetCurrentLocationWithLatitube:(float)la andLongitube:(float)lng
 {
-    sLListViewController.dictSearch = @{@"countryCode":countryCode,@"countryName":countryName,@"city":city,@"state":state,@"zipcode":zipcode,@"tag":tag};
-    
-    if (sLMapViewController == nil) {
-        sLMapViewController = [[SimiStoreLocatorMapViewController alloc]init];
-    }
-    sLMapViewController.dictSearch = @{@"countryCode":countryCode,@"countryName":countryName,@"city":city,@"state":state,@"zipcode":zipcode,@"tag":tag};
-    
-    sLListViewController.listViewOption = ListViewOptionSearched;
-    sLMapViewController.searchOption = SearchOptionSearched;
+    [self getStoreLocatorListWithLatitube:la andLongitube:lng];
+    currentLatitube = la;
+    currentLongitube = lng;
 }
 
-- (void)cacheDataWithstoreLocatorModelCollection:(SimiStoreLocatorModelCollection *)collection simiTagModelCollection:(SimiTagModelCollection *)tagModelCollection tagChoise:(NSString *)tagString
+
+#pragma mark - Get Store Locator
+- (void) getStoreLocatorListWithLatitube:(float) latitube andLongitube:(float) longitube
 {
-    [sLListViewController.sLModelCollection removeAllObjects];
-    for (int i = 0; i < collection.count; i++) {
-        [sLListViewController.sLModelCollection addObject:[collection objectAtIndex:i]];
+    if (sLModelCollection == nil) {
+        sLModelCollection = [[SimiStoreLocatorModelCollection alloc]init];
     }
-    
-    if (sLMapViewController == nil) {
-        sLMapViewController = [[SimiStoreLocatorMapViewController alloc]init];
-    }
-    [sLMapViewController.sLModelCollectionAll removeAllObjects];
-    for (int i = 0; i < collection.count; i++) {
-        [sLMapViewController.sLModelCollectionAll addObject:[collection objectAtIndex:i]];
-    }
-    
-    simiTagModelCollection = tagModelCollection;
-    tagChoise = tagString;
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didGetStoreLocatorList:) name:@"StoreLocator_DidGetStoreList" object:sLModelCollection];
+    [sLModelCollection getStoreListWithLatitude:[NSString stringWithFormat:@"%f",latitube] longitude:[NSString stringWithFormat:@"%f",longitube] offset:@"0" limit:@"1"];
+    [self startLoadingData];
 }
+
+- (void) didGetStoreLocatorList:(NSNotification*) noti{
+    SimiResponder* responder = [noti.userInfo objectForKey:@"responder"];
+    [self stopLoadingData];
+    if([responder.status isEqualToString:@"SUCCESS"] && sLModelCollection.count > 0){
+        storeLocatorDetailVC.sLModel = [sLModelCollection objectAtIndex:0];
+       
+    }else{
+        [self showAlertWithTitle:@"" message:SCLocalizedString(@"No store found")];
+    }
+}
+
+
 @end

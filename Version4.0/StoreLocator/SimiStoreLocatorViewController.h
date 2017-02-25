@@ -24,9 +24,9 @@
                                             SimiStoreLocatorListViewControllerDelegate,
                                             SimiStoreLocatorDetailViewControllerDelegate,
                                             SimiStoreLocatorMapViewControllerDelegate,
-                                            SimiStoreLocatorSearchViewControllerDelegate>
+                                            SimiStoreLocatorSearchViewControllerDelegate,SimiCLControllerDelegate>
 {
-    SimiStoreLocatorListViewController *sLListViewController;
+//    SimiStoreLocatorListViewController *sLListViewController;
     SimiStoreLocatorMapViewController *sLMapViewController;
 }
 

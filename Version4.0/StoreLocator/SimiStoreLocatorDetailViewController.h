@@ -10,6 +10,8 @@
 #import <SimiCartBundle/SimiViewController.h>
 #import <SimiCartBundle/SimiModel.h>
 #import <MessageUI/MessageUI.h>
+#import "SimiCLController.h"
+#import "SimiStoreLocatorModelCollection.h"
 
 @protocol SimiStoreLocatorDetailViewControllerDelegate <NSObject>
 @optional
