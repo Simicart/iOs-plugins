@@ -77,10 +77,10 @@
     BTDropInRequest *request = [[BTDropInRequest alloc] init];
     request.applePayDisabled = YES;
     BTDropInController *dropIn = [[BTDropInController alloc] initWithAuthorization:clientTokenOrTokenizationKey request:request handler:^(BTDropInController * _Nonnull controller, BTDropInResult * _Nullable result, NSError * _Nullable error) {
-//        [controller dismissViewControllerAnimated:YES completion:nil];
         if (error != nil) {
             NSLog(@"ERROR");
         } else if (result.cancelled) {
+            [controller dismissViewControllerAnimated:YES completion:nil];
             NSLog(@"CANCELLED");
         } else {
             // Use the BTDropInResult properties to update your UI
@@ -369,6 +369,7 @@ requestsDismissalOfViewController:(UIViewController *)viewController {
 
 - (void)dropInViewControllerDidCancel:(BTDropInViewController *)viewController{
     NSLog(@"DIDCANCEL");
+    [viewController dismissViewControllerAnimated:YES completion:nil];
 }
 
 
