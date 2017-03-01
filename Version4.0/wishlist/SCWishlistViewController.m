@@ -163,16 +163,17 @@
 }
 
 -(void) tapToWishlistItem:(NSDictionary *)wishlistItem{
-    SCProductViewController* productVC;
-    if(PHONEDEVICE){
-        productVC = [SCProductViewController new];
-    }else{
-        productVC = [SCProductViewControllerPad new];
-    }
-    productVC.productId = [wishlistItem objectForKey:@"product_id"];
-    productVC.arrayProductsID = [NSMutableArray arrayWithArray:@[productVC.productId]];
-    productVC.firstProductID = productVC.productId;
-    [self.navigationController pushViewController:productVC animated:YES];
+//    SCProductViewController* productVC;
+//    if(PHONEDEVICE){
+//        productVC = [SCProductViewController new];
+//    }else{
+//        productVC = [SCProductViewControllerPad new];
+//    }
+//    productVC.productId = [wishlistItem objectForKey:@"product_id"];
+//    productVC.arrayProductsID = [NSMutableArray arrayWithArray:@[productVC.productId]];
+//    productVC.firstProductID = productVC.productId;
+//    [self.navigationController pushViewController:productVC animated:YES];
+    [SimiGlobalVar pushProductDetailWithNavigationController:self.navigationController andProductID:[wishlistItem objectForKey:@"product_id"] andProductIDs:[NSMutableArray arrayWithArray:@[[wishlistItem objectForKey:@"product_id"]]]];
 }
 
 -(void) addToCartWithWishlistItem:(NSDictionary *)wishlistItem{

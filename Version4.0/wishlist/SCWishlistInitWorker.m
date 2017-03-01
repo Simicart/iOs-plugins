@@ -33,6 +33,7 @@
     SCWishlistModel* wishlistModel;
     SCWishlistViewController* wishlistViewController;
 }
+
 -(id) init{
     if(self == [super init]){
         //Product More View
@@ -47,9 +48,9 @@
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializedAccountCellAfter:) name:@"SCAccountViewController-InitCellsAfter" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didSelectAccountCellAtIndexPath:) name:@"DidSelectAccountCellAtIndexPath" object:nil];
         
-        //Left Menu
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(listMenuInitCellsAfter:) name:@"SCLeftMenu_InitCellsAfter" object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(listMenuDidSelectRow:) name:@"SCLeftMenu_DidSelectRow" object:nil];
+//        //Left Menu
+//        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(listMenuInitCellsAfter:) name:@"SCLeftMenu_InitCellsAfter" object:nil];
+//        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(listMenuDidSelectRow:) name:@"SCLeftMenu_DidSelectRow" object:nil];
         
         wishlistModelCollection = [SCWishlistModelCollection new];
         wishlistModel = [SCWishlistModel new];
@@ -137,6 +138,7 @@
         if(wishlistItemID)
             [product setObject:wishlistItemID forKey:@"wishlist_item_id"];
         [self updateWishlistIcon];
+        [wishlistModelCollection getWishlistItemsWithParams:@{}];
     }
     else {
         UIAlertView * alert = [[UIAlertView alloc]initWithTitle:@"" message:responder.responseMessage  delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil];
@@ -202,37 +204,38 @@
     }
 }
 
-#pragma mark Add to Left Menu
--(void)listMenuInitCellsAfter:(NSNotification *)noti
-{
-    if([SimiGlobalVar sharedInstance].isLogin){
-        SimiTable * cells = [[SimiTable alloc] initWithArray:noti.object];
-        SimiSection* section = [cells getSectionByIdentifier:LEFTMENU_SECTION_MAIN];
-        SimiRow *wishlistRow = [[SimiRow alloc]initWithIdentifier:LEFTMENU_WISHLIST_ROW height:45 sortOrder:310];
-        wishlistRow.title = SCLocalizedString(@"My Wishlist");
-        wishlistRow.image = [UIImage imageNamed:@"wishlist_leftmenu_icon"];
-        [section addRow:wishlistRow];
-    }
-}
+//#pragma mark Add to Left Menu
+//-(void)listMenuInitCellsAfter:(NSNotification *)noti
+//{
+//    if([SimiGlobalVar sharedInstance].isLogin){
+//        SimiTable * cells = [[SimiTable alloc] initWithArray:noti.object];
+//        SimiSection* section = [cells getSectionByIdentifier:LEFTMENU_SECTION_MAIN];
+//        SimiRow *wishlistRow = [[SimiRow alloc]initWithIdentifier:LEFTMENU_WISHLIST_ROW height:45 sortOrder:310];
+//        wishlistRow.title = SCLocalizedString(@"My Wishlist");
+//        wishlistRow.image = [UIImage imageNamed:@"wishlist_leftmenu_icon"];
+//        [section addRow:wishlistRow];
+//    }
+//}
+//
+//-(void)listMenuDidSelectRow:(NSNotification *)noti
+//{
+//    if ([[(SimiRow *)[noti.userInfo objectForKey:@"simirow"] identifier] isEqualToString: LEFTMENU_WISHLIST_ROW]) {
+//        if (wishlistViewController == nil) {
+//            wishlistViewController = [SCWishlistViewController new];
+//        }
+//        UIViewController *currentVC = [(UITabBarController *)[[(SCAppDelegate *)[[UIApplication sharedApplication]delegate] window] rootViewController] selectedViewController];
+//        UIViewController *viewController = [[(UINavigationController *)currentVC viewControllers] lastObject];
+//        for (UIViewController *viewControllerTemp in viewController.navigationController.viewControllers) {
+//            if (viewControllerTemp == wishlistViewController) {
+//                [viewControllerTemp.navigationController popToViewController:viewControllerTemp animated:YES];
+//                return;
+//            }
+//        }
+//        [(UINavigationController *)currentVC pushViewController:wishlistViewController animated:YES];
+//        [(SCNavigationBarPhone*)noti.object setIsDiscontinue:YES];
+//    }
+//}
 
--(void)listMenuDidSelectRow:(NSNotification *)noti
-{
-    if ([[(SimiRow *)[noti.userInfo objectForKey:@"simirow"] identifier] isEqualToString: LEFTMENU_WISHLIST_ROW]) {
-        if (wishlistViewController == nil) {
-            wishlistViewController = [SCWishlistViewController new];
-        }
-        UIViewController *currentVC = [(UITabBarController *)[[(SCAppDelegate *)[[UIApplication sharedApplication]delegate] window] rootViewController] selectedViewController];
-        UIViewController *viewController = [[(UINavigationController *)currentVC viewControllers] lastObject];
-        for (UIViewController *viewControllerTemp in viewController.navigationController.viewControllers) {
-            if (viewControllerTemp == wishlistViewController) {
-                [viewControllerTemp.navigationController popToViewController:viewControllerTemp animated:YES];
-                return;
-            }
-        }
-        [(UINavigationController *)currentVC pushViewController:wishlistViewController animated:YES];
-        [(SCNavigationBarPhone*)noti.object setIsDiscontinue:YES];
-    }
-}
 #pragma mark dealloc
 - (void)dealloc
 {

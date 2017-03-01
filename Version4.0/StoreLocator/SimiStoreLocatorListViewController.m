@@ -57,6 +57,7 @@
 
 -(void)viewDidAppear:(BOOL)animated
 {
+    self.tableView.frame = CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height - bottomViewHeight);
     [super viewDidAppear:YES];
     switch (listViewOption) {
         case ListViewOptionNoneSearch:

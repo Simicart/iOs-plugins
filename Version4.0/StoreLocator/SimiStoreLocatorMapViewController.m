@@ -68,7 +68,7 @@
 - (void)viewDidAppear:(BOOL)animated
 {
     //Load lai du lieu vao collection all
-    [mapView_ setFrame:self.view.bounds];
+    [mapView_ setFrame:CGRectMake(0, 0, self.view.bounds.size.width, self.view.frame.size.height - bottomViewHeight)];
     [self syncDataFromList];
     [self showMaker];
 }
