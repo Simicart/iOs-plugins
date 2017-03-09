@@ -79,6 +79,7 @@
     BTDropInController *dropIn = [[BTDropInController alloc] initWithAuthorization:clientTokenOrTokenizationKey request:request handler:^(BTDropInController * _Nonnull controller, BTDropInResult * _Nullable result, NSError * _Nullable error) {
         if (error != nil) {
             NSLog(@"ERROR");
+            [controller dismissViewControllerAnimated:YES completion:nil];
         } else if (result.cancelled) {
             [controller dismissViewControllerAnimated:YES completion:nil];
             NSLog(@"CANCELLED");

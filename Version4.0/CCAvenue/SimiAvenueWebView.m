@@ -104,7 +104,7 @@
         [self showAlertWithTitle:@"SUCCESS" message:@"Your order is under review"];
         [self.navigationController dismissViewControllerAnimated:YES completion:nil];
         return NO;
-    }else if([requestURL rangeOfString:@"simiavenue/api/index"].location != NSNotFound || [requestURL rangeOfString:@"transaction.do;jsessionid"].location != NSNotFound){
+    }else if([requestURL rangeOfString:@"simiavenue/api/index"].location != NSNotFound){
         [self showAlertWithTitle:@"ERROR" message:@"Have some errors, please try again"];
         [self.navigationController dismissViewControllerAnimated:YES completion:nil];
         return NO;
