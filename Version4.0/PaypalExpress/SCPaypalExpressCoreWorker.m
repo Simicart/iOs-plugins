@@ -93,12 +93,12 @@ static NSString *product_paypalcheckout_row = @"product_paypalcheckout_row";
     if ([[paypalExpressConfig valueForKey:@"show_on_product_detail"]boolValue]) {
         SimiTable *cells = noti.object;
         SimiSection *mainSection = [cells getSectionByIdentifier:product_main_section];
-        SimiRow *beforeRow = [mainSection getRowByIdentifier:product_option_row];
-        if (beforeRow == nil) {
-            beforeRow = [mainSection getRowByIdentifier:product_nameandprice_row];
-        }
-        [mainSection addRowWithIdentifier:product_paypalcheckout_row height:50 sortOrder:beforeRow.sortOrder + 10];
-        [mainSection sortItems];
+//        SimiRow *beforeRow = [mainSection getRowByIdentifier:product_option_row];
+//        if (beforeRow == nil) {
+//            beforeRow = [mainSection getRowByIdentifier:product_nameandprice_row];
+//        }
+        [mainSection addRowWithIdentifier:product_paypalcheckout_row height:50];
+//        [mainSection sortItems];
     }
 }
 

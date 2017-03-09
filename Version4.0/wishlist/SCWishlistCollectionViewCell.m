@@ -83,8 +83,8 @@
         [shareButton setImage:[UIImage imageNamed:@"wishlist_share_icon"] forState:UIControlStateNormal];
         [shareButton addTarget:self action:@selector(shareButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
         [self addSubview:shareButton];
+        [SimiGlobalVar sortViewForRTL:self andWidth:CGRectGetWidth(self.frame)];
     }
-    [SimiGlobalVar sortViewForRTL:self andWidth:CGRectGetWidth(self.frame)];
 }
 
 
