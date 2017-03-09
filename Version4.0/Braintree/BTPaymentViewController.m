@@ -23,7 +23,6 @@
 }
 @synthesize braintreeClient,order;
 
-
 -(void) viewWillAppearBefore:(BOOL)animated{
     
 }
@@ -31,7 +30,6 @@
 -(void) configureLogo{
     
 }
-
 
 -(void) viewDidLoad{
     clientToken = [_payment valueForKey:@"token"];
@@ -76,23 +74,27 @@
 -(void) showDropIn:(NSString*) clientTokenOrTokenizationKey{
     BTDropInRequest *request = [[BTDropInRequest alloc] init];
     request.applePayDisabled = YES;
+    request.threeDSecureVerification = YES;
+    NSMutableDictionary* fees = [order objectForKey:@"total"];
+    NSString* grandTotal = [NSString stringWithFormat:@"%.2f",[[fees valueForKey:@"grand_total_incl_tax"] floatValue]];
+    request.amount = grandTotal;
+    request.currencyCode = [SimiGlobalVar sharedInstance].currencyCode;
     BTDropInController *dropIn = [[BTDropInController alloc] initWithAuthorization:clientTokenOrTokenizationKey request:request handler:^(BTDropInController * _Nonnull controller, BTDropInResult * _Nullable result, NSError * _Nullable error) {
         if (error != nil) {
             NSLog(@"ERROR");
-            [controller dismissViewControllerAnimated:YES completion:nil];
         } else if (result.cancelled) {
-            [controller dismissViewControllerAnimated:YES completion:nil];
             NSLog(@"CANCELLED");
         } else {
-            // Use the BTDropInResult properties to update your UI
-            // result.paymentOptionType
-            // result.paymentMethod
-            // result.paymentIcon
-            // result.paymentDescription
-//            if(result.paymentMethod.nonce){
-//                [self postNonceToServer:result.paymentMethod.nonce];
-//            }
+//             Use the BTDropInResult properties to update your UI
+//             result.paymentOptionType
+//             result.paymentMethod
+//             result.paymentIcon
+//             result.paymentDescription
+            if(result.paymentMethod.nonce){
+                [self postNonceToServer:result.paymentMethod.nonce];
+            }
         }
+        [controller dismissViewControllerAnimated:YES completion:nil];
     }];
     if(dropIn)
         [self presentViewController:dropIn animated:YES completion:nil];
@@ -115,8 +117,8 @@
     paymentRequest.supportedNetworks = @[PKPaymentNetworkVisa, PKPaymentNetworkMasterCard, PKPaymentNetworkAmex];
 #endif
     paymentRequest.merchantCapabilities = PKMerchantCapability3DS;
-    paymentRequest.countryCode = @"US";
-    paymentRequest.currencyCode = @"USD";
+    paymentRequest.countryCode = [SimiGlobalVar sharedInstance].countryCode;
+    paymentRequest.currencyCode = [SimiGlobalVar sharedInstance].currencyCode;
 //    if ([paymentRequest respondsToSelector:@selector(setShippingType:)]) {
 //        paymentRequest.shippingType = PKShippingTypeDelivery;
 //    }
@@ -289,9 +291,9 @@
     [braintreeModel sendNonceToServer:paymentMethodNonce andOrder:order];
 }
 
--(void) viewWillDisappear:(BOOL)animated{
-    [[SimiGlobalVar sharedInstance].currentlyNavigationController popToRootViewControllerAnimated:YES];
-}
+//-(void) viewWillDisappear:(BOOL)animated{
+//    [[SimiGlobalVar sharedInstance].currentlyNavigationController popToRootViewControllerAnimated:YES];
+//}
 
 -(void) didReceiveNotification:(NSNotification *)noti{
     SimiResponder* responder = [noti.userInfo valueForKey:@"responder"];

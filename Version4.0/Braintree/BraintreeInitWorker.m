@@ -12,12 +12,14 @@
 
 #define DidSelectPaymentMethod @"DidSelectPaymentMethod"
 #define DidPlaceOrderAfter @"DidPlaceOrder-After"
+#define DidPlaceOrderBefore @"SCOrderViewController-BeforePlaceOrder"
 #define BRAINTREE_PAYMENT_METHOD @"simibraintree"
 
 @implementation BraintreeInitWorker
 {
     SimiViewController *currentVC;
     NSString* clientToken;
+    SimiOrderModel* originalOrder;
 }
 -(instancetype) init{
     if(self == [super init]){
@@ -25,6 +27,7 @@
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"ApplicationOpenURL" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:DidSelectPaymentMethod object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:DidPlaceOrderAfter object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:DidPlaceOrderBefore object:nil];
         [BTAppSwitch setReturnURLScheme:[NSString stringWithFormat:@"%@.payments",[NSBundle mainBundle].bundleIdentifier]];
     }
     return self;
@@ -49,7 +52,10 @@
             BTPaymentViewController* btPaymentVC = [[BTPaymentViewController alloc] init];
             btPaymentVC.payment = payment;
             btPaymentVC.shipping = shipping;
-            btPaymentVC.order = noti.object;
+            SimiOrderModel* orderModel = [[SimiOrderModel alloc] init];
+            [orderModel addEntriesFromDictionary:originalOrder];
+            [orderModel addEntriesFromDictionary:noti.object];
+            btPaymentVC.order = orderModel;
             if(PHONEDEVICE)
                 [currentVC.navigationController pushViewController:btPaymentVC animated:YES];
             else if(PADDEVICE){
@@ -63,6 +69,8 @@
                 [currentVC presentViewController:navi animated:YES completion:nil];
             }
         }
+    }else if([noti.name isEqualToString:DidPlaceOrderBefore]){
+        originalOrder = [[SimiOrderModel alloc] initWithDictionary:[noti.userInfo objectForKey:@"order"]];
     }
 }
 
