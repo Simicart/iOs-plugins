@@ -26,6 +26,11 @@
 
 -(id) init{
     if(self == [super init]){
+        if (![SimiGlobalVar sharedInstance].isFirebaseInited) {
+            //Init Firebase configure
+            [FIRApp configure];
+            [SimiGlobalVar sharedInstance].isFirebaseInited = YES;
+        }
         if(SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9")){
             [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didGetProducts:) name:@"DidGetProductCollection" object:nil];
             [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(openSearchableItem:) name:@"DidInit" object:nil];
