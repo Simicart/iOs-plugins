@@ -13,9 +13,6 @@
 @implementation FirebaseInitWorker
 -(id) init{
     if(self == [super init]){
-        //Init Firebase configure
-        [FIRApp configure];
-        
         //Logging events
         [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(trackingEvent:) name:TRACKINGEVENT object:nil];
         [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(trackingViewedScreen:) name:@"SimiViewControllerViewDidAppear" object:nil];
