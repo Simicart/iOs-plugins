@@ -172,8 +172,6 @@ static NSString *product_paypalcheckout_row = @"product_paypalcheckout_row";
             btnPaypalCart.layer.shadowOffset = CGSizeMake(-0, 5);
             
             [btnPaypalCart addTarget:self action:@selector(startPaypalCheckout) forControlEvents:UIControlEventTouchUpInside];
-            [cartVC.btnCheckout setFrame:CGRectMake(220, 30, 180, 50)];
-            [cartVC.btnCheckout.superview addSubview:btnPaypalCart];
             [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializedCartCellAfter:) name:@"InitializedCartCell-After" object:nil];
         }
     }
@@ -186,6 +184,8 @@ static NSString *product_paypalcheckout_row = @"product_paypalcheckout_row";
     if (row.identifier == CART_CHECKOUT_ROW) {
         UITableViewCell *cell = [noti.userInfo objectForKey:@"cell"];
         [cell addSubview:btnPaypalCart];
+        SCCartViewController * cartVC = [[SCThemeWorker sharedInstance].navigationBarPad cartViewControllerPad];
+        [cartVC.btnCheckout setFrame:CGRectMake(220, 30, 180, 50)];
         [self removeObserverForNotification:noti];
     }
 }

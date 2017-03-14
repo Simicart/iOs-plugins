@@ -28,6 +28,7 @@
     }else
         [self configureNavigationBarOnViewDidLoad];
     self.title = SCLocalizedString(@"Settings");
+    self.screenTrackingName = @"reward_setting";
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(saveSettings)];
     
     // Init Table View Data

@@ -143,6 +143,7 @@
     SCStoreListTableViewCell *cell = (SCStoreListTableViewCell*)[tableView cellForRowAtIndexPath:indexPath];
     [self.delegate showViewDetailControllerFromList:cell.storeLocatorModel];
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    [[NSNotificationCenter defaultCenter]postNotificationName:TRACKINGEVENT object:@"store_locator_action" userInfo:@{@"action":@"selected_store",@"store_name":[cell.storeLocatorModel valueForKey:@"name"]}];
 }
 
 

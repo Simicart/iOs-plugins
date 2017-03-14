@@ -56,6 +56,7 @@
 
 - (void)viewDidLoadBefore
 {
+    self.screenTrackingName = @"store_detail";
     scrView = [[UIScrollView alloc]initWithFrame:self.view.frame];
     widthContent = CGRectGetWidth(scrView.frame);
     if (PADDEVICE) {
@@ -538,7 +539,7 @@
 {
     NSString *phNo = [NSString  stringWithFormat:@"telprompt:%@",[sLModel valueForKey:@"phone"]];
     NSURL *phoneUrl = [[NSURL alloc]initWithString:[phNo stringByReplacingOccurrencesOfString:@" " withString:@""]];
-    
+    [[NSNotificationCenter defaultCenter]postNotificationName:TRACKINGEVENT object:@"store_locator_action" userInfo:@{@"action":@"call_to_store",@"store_name":[sLModel valueForKey:@"name"]}];
     if ([[UIApplication sharedApplication] canOpenURL:phoneUrl]) {
         [[UIApplication sharedApplication] openURL:phoneUrl];
     } else
@@ -551,6 +552,7 @@
     NSString *email = [sLModel valueForKeyPath:@"email"];
     NSString *emailContent = SCLocalizedString(@"Content");
     [self sendEmailToStoreWithEmail:email andEmailContent:emailContent];
+    [[NSNotificationCenter defaultCenter]postNotificationName:TRACKINGEVENT object:@"store_locator_action" userInfo:@{@"action":@"email_to_store",@"store_name":[sLModel valueForKey:@"name"]}];
 }
 - (void)btnStoreWebSite_Click:(id)sender
 {
@@ -632,6 +634,7 @@
 - (void)btnGetDirections_Click:(id)sender
 {
     // Sua lai dia chi den sau
+    [[NSNotificationCenter defaultCenter]postNotificationName:TRACKINGEVENT object:@"store_locator_action" userInfo:@{@"action":@"get_directions_to_store",@"store_name":[sLModel valueForKey:@"name"]}];
     if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"comgooglemaps://"]]) {
         [[UIApplication sharedApplication] openURL:
          [NSURL URLWithString: [NSString stringWithFormat: @"comgooglemaps://?saddr=%f,%f&daddr=%@,%@&center=%f,%f&zoom=14&views=traffic",currentLatitude , currentLongitude,[sLModel valueForKey:@"latitude"],[sLModel valueForKey:@"longtitude"],currentLatitude, currentLongitude]]];
