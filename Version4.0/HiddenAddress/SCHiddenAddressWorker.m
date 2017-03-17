@@ -228,7 +228,6 @@
                                      @"required": [NSNumber numberWithBool:[[config taxvatShow] isEqualToString:@"req"]]
                                      }];
                 }
-                
             }
             
             
@@ -245,6 +244,52 @@
                                  @"title": SCLocalizedString(@"Confirm Password"),
                                  @"required": @1
                                  }];
+            }
+            
+            if ([[hiddenAddressModel valueForKey:@"custom_fields"] isKindOfClass:[NSArray class]]) {
+                NSArray *customFields = [hiddenAddressModel valueForKey:@"custom_fields"];
+                for (int i = 0; i < customFields.count; i++) {
+                    NSDictionary *fieldDict = [customFields objectAtIndex:i];
+                    NSString *fieldType = [NSString stringWithFormat:@"%@",[fieldDict valueForKey:@"type"]];
+                    NSString *fieldTitle = [NSString stringWithFormat:@"%@",[fieldDict valueForKey:@"title"]];
+                    NSNumber *fieldRequire = [NSNumber numberWithBool:NO];
+                    if ([[fieldDict valueForKey:@"required"] isEqualToString:@"req"]) {
+                        fieldRequire = [NSNumber numberWithBool:YES];
+                    }
+                    NSString *fieldName = [NSString stringWithFormat:@"%@",[fieldDict valueForKey:@"code"]];
+                    int fieldPossition = [[fieldDict valueForKey:@"position"]intValue] *100 - 99;
+                    if ([fieldType isEqualToString:@"text"]) {
+                        [form addField:@"Text"
+                                config:@{
+                                         @"name": fieldName,
+                                         @"title": SCLocalizedString(fieldTitle),
+                                         @"sort_order": [NSNumber numberWithInt:fieldPossition],
+                                         @"required": fieldRequire
+                                         }];
+                    }else if ([fieldType isEqualToString:@"number"]) {
+                        [form addField:@"Number"
+                                config:@{
+                                         @"name": fieldName,
+                                         @"title": SCLocalizedString(fieldTitle),
+                                         @"sort_order": [NSNumber numberWithInt:fieldPossition],
+                                         @"required": fieldRequire
+                                         }];
+                    }else if ([fieldType isEqualToString:@"single_option"]) {
+                        NSArray *optionArray = [fieldDict valueForKey:@"option_array"];
+                        NSMutableArray *sources = [NSMutableArray new];
+                        for (NSString *value in optionArray){
+                            [sources addObject:@{@"value":value,@"label":value}];
+                        }
+                        [form addField:@"Select"
+                                config:@{
+                                         @"name": fieldName,
+                                         @"title": SCLocalizedString(fieldTitle),
+                                         @"sort_order": [NSNumber numberWithInt:fieldPossition],
+                                         @"source": sources,
+                                         @"required": fieldRequire
+                                         }];
+                    }
+                }
             }
             
             // Remove state before get country
