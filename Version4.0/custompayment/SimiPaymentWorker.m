@@ -81,11 +81,11 @@
             UINavigationController *navi = [[UINavigationController alloc]initWithRootViewController:nextController];
             [currentVC presentViewController:navi animated:YES completion:nil];
         }else{
-            [self showAlertWithTitle:@"Error" message:[NSString stringWithFormat:@"Sorry, %@ is not now available. Please try again later.",paymentTitle]];
+            [self showAlertWithTitle:@"Error" message:[NSString stringWithFormat:@"Sorry, %@ is not now available. Please try again later",paymentTitle]];
         }
     }
     @catch (NSException *exception) {
-        [self showAlertWithTitle:@"Error" message:[NSString stringWithFormat:@"Sorry, %@ is not now available. Please try again later.",paymentTitle]];
+        [self showAlertWithTitle:@"Error" message:[NSString stringWithFormat:@"Sorry, %@ is not now available. Please try again later",paymentTitle]];
     }
     @finally {
         

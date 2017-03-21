@@ -125,7 +125,7 @@
         }
     }
     @catch (NSException *exception) {
-        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:SCLocalizedString(@"Error") message:SCLocalizedString(@"Sorry, PayPal is not now available. Please try again later") delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil];
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:SCLocalizedString(@"Error") message:[NSString stringWithFormat:SCLocalizedString(@"Sorry, %@ is not now available. Please try again later"),SCLocalizedString(@"Paypal")] delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil];
         alertView.tag = ALERT_VIEW_ERROR;
         [alertView show];
         [viewController stopLoadingData];

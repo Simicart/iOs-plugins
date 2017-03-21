@@ -71,13 +71,13 @@
             UINavigationController *navi = [[UINavigationController alloc]initWithRootViewController:nextController];
             [currentVC presentViewController:navi animated:NO completion:nil];
         }else{
-            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:SCLocalizedString(@"Error") message:SCLocalizedString(@"Sorry, 2Checkout is not now available. Please try again later.") delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil];
+            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:SCLocalizedString(@"Error") message:[NSString stringWithFormat:SCLocalizedString(@"Sorry, %@ is not now available. Please try again later"),SCLocalizedString(@"2Checkout")] delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil];
             alertView.tag = ALERT_VIEW_ERROR;
             [alertView show];
         }
     }
     @catch (NSException *exception) {
-        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:SCLocalizedString(@"Error") message:SCLocalizedString(@"Sorry, 2Checkout is not now available. Please try again later.") delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil];
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:SCLocalizedString(@"Error") message:[NSString stringWithFormat:SCLocalizedString(@"Sorry, %@ is not now available. Please try again later"),SCLocalizedString(@"2Checkout")] delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil];
         alertView.tag = ALERT_VIEW_ERROR;
         [alertView show];
     }
