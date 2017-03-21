@@ -19,11 +19,11 @@
         NSString *confirm  = [self.form objectForKey:@"confirm_password"];
         
         if ([password length] < 6) {
-            [self showAlertWithTitle:@"" message:@"Please enter 6 or more characters."];
+            [self showAlertWithTitle:@"" message:@"Please enter 6 or more characters"];
             return;
         }
         if (![password isEqualToString:confirm]) {
-            [self showAlertWithTitle:@"" message:@"Password and Confirm password don't match."];
+            [self showAlertWithTitle:@"" message:@"Password and Confirm password don't match"];
             return;
         }
     }

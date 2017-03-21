@@ -98,7 +98,7 @@
     self.tryRecordBtn.hidden = YES;
     
     self.tryRecordLb = [[UILabel alloc] initWithFrame:[SimiGlobalVar scaleFrame:CGRectMake(8, self.tryRecordBtn.frame.origin.y + 50, (SCREEN_WIDTH / 2) - 16, 20)]];
-    self.tryRecordLb.text = SCLocalizedString(@"tap to try again");
+    self.tryRecordLb.text = SCLocalizedString(@"Tap to try again");
     [self.tryRecordLb setFont:[UIFont systemFontOfSize:12]];
     self.tryRecordLb.textColor = [UIColor whiteColor];
     [self.tryRecordLb setTextAlignment:(NSTextAlignmentCenter)];
