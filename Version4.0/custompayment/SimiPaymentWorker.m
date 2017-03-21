@@ -61,6 +61,10 @@
 {
     UINavigationController *currentVC = [SimiGlobalVar sharedInstance].currentlyNavigationController;
     order = [noti.userInfo valueForKey:@"data"];
+    NSString* paymentTitle = @"Payment";
+    if([payment objectForKey:@"title"]){
+        paymentTitle = [NSString stringWithFormat:@"%@",[payment objectForKey:@"title"]];
+    }
     @try {
         if([order valueForKey:@"invoice_number"] &&[order valueForKey:@"payment_method"] && [order valueForKey:@"url_action"] && [_customPayment count] > 0){
             NSString *url = [order valueForKey:@"url_action"];
@@ -77,11 +81,11 @@
             UINavigationController *navi = [[UINavigationController alloc]initWithRootViewController:nextController];
             [currentVC presentViewController:navi animated:YES completion:nil];
         }else{
-            [self showAlertWithTitle:@"Error" message:@"Sorry, Credit Card Payments is not now available. Please try again later."];
+            [self showAlertWithTitle:@"Error" message:[NSString stringWithFormat:@"Sorry, %@ is not now available. Please try again later.",paymentTitle]];
         }
     }
     @catch (NSException *exception) {
-        [self showAlertWithTitle:@"Error" message:@"Sorry, Credit Card Payments is not now available. Please try again later."];
+        [self showAlertWithTitle:@"Error" message:[NSString stringWithFormat:@"Sorry, %@ is not now available. Please try again later.",paymentTitle]];
     }
     @finally {
         
