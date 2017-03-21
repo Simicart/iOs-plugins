@@ -445,7 +445,7 @@
             if([[FBSDKAccessToken currentAccessToken] hasGranted:@"email"]){
                 [self loginWithFacebookInfo];
             }else{
-                UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:SCLocalizedString(@"Opps") message:SCLocalizedString(@"Something went wrong") delegate:nil cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles:nil, nil];
+                UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:SCLocalizedString(@"Sorry") message:SCLocalizedString(@"Couldn't get the user email") delegate:nil cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles:nil, nil];
                 [alertView show];
                 [[FBSDKLoginManager alloc] logOut];
                 [loginViewController.navigationController popViewControllerAnimated:YES];
