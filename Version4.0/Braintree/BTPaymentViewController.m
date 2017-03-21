@@ -37,14 +37,6 @@
     if([_payment valueForKey:@"payment_list"]){
         paymentList = [_payment valueForKey:@"payment_list"];
     }
-    if([paymentList containsObject:BRAINTREE_APPLEPAY]){
-        //Remove for unsupporting
-//        [paymentList removeObject:BRAINTREE_APPLEPAY];
-//        if (![PKPaymentAuthorizationViewController class] || ![PKPaymentAuthorizationViewController canMakePayments] || ![PKPaymentAuthorizationViewController canMakePaymentsUsingNetworks:@[PKPaymentNetworkAmex, PKPaymentNetworkMasterCard, PKPaymentNetworkVisa]]) {
-//            [paymentList removeObject:BRAINTREE_APPLEPAY];
-//            [self showAlertWithTitle:SCLocalizedString(@"Apple Pay") message:SCLocalizedString(@"This device cannot make payments with Apple Pay")];
-//        }
-    }
     if([paymentList containsObject:BRAINTREE_GOOGLEPAY])
         [paymentList removeObject:BRAINTREE_GOOGLEPAY];
     if([paymentList containsObject:BRAINTREE_CREDITCARD])
@@ -55,6 +47,15 @@
     self.view = tableView;
     self.title = SCLocalizedString(@"Braintree");
     [super viewDidLoad];
+    if(![paymentList containsObject:BRAINTREE_APPLEPAY]){
+        //Remove for unsupporting
+        //        [paymentList removeObject:BRAINTREE_APPLEPAY];
+        //        if (![PKPaymentAuthorizationViewController class] || ![PKPaymentAuthorizationViewController canMakePayments] || ![PKPaymentAuthorizationViewController canMakePaymentsUsingNetworks:@[PKPaymentNetworkAmex, PKPaymentNetworkMasterCard, PKPaymentNetworkVisa]]) {
+        //            [paymentList removeObject:BRAINTREE_APPLEPAY];
+        //            [self showAlertWithTitle:SCLocalizedString(@"Apple Pay") message:SCLocalizedString(@"This device cannot make payments with Apple Pay")];
+        //        }
+        [self showDropIn:[_payment objectForKey:@"token"]];
+    }
 }
 
 
