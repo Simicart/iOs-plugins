@@ -77,7 +77,6 @@
 - (void)webViewDidStartLoad:(UIWebView *)webView{
     [self startLoadingData];
     webView.hidden = YES;
-    NSLog(@"webViewDidStartLoad");
 }
 
 - (void)webViewDidFinishLoad:(UIWebView *)webView{
@@ -86,20 +85,18 @@
     if (_webTitle == nil || _webTitle.length == 0) {
         [self setWebTitle:[webView stringByEvaluatingJavaScriptFromString:@"document.title"]];
     }
-    NSLog(@"webViewDidFinishLoad");
 }
 
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
 {
     NSString* requestURL = [NSString stringWithFormat:@"%@",request];
+    NSLog(@"%@",requestURL);
     if(_payment){
-        if([requestURL rangeOfString:[_payment valueForKey:@"url_redirect"]].location != NSNotFound){
-            return YES;
-        }else if([requestURL rangeOfString:[_payment valueForKey:@"url_success"] ].location != NSNotFound){
+        if([requestURL rangeOfString:[_payment valueForKey:@"url_success"] ].location != NSNotFound){
             [self showAlertWithTitle:@"SUCCESS" message:[_payment valueForKey:@"message_success"]];
             [self.navigationController dismissViewControllerAnimated:YES completion:nil];
             return NO;
-        }else if([requestURL rangeOfString:[_payment valueForKey:@"url_fail"]].location != NSNotFound){
+        }else if([requestURL rangeOfString:[_payment valueForKey:@"url_fail"] ].location != NSNotFound){
             [self showAlertWithTitle:@"FAIL" message:[_payment valueForKey:@"message_fail"]];
             [self.navigationController dismissViewControllerAnimated:YES completion:nil];
             return NO;
@@ -124,7 +121,6 @@
     [self removeObserverForNotification:noti];
     [self stopLoadingData];
     SimiResponder* responder = [noti.userInfo valueForKey:@"responder"];
-    [self showAlertWithTitle:responder.status message:responder.responseMessage];
     [self.navigationController dismissViewControllerAnimated:YES completion:nil];
 }
 @end
