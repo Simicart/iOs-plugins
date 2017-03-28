@@ -93,19 +93,19 @@
     NSString* requestURL = [NSString stringWithFormat:@"%@",request];
     if(_payment){
         if([requestURL rangeOfString:[_payment valueForKey:@"url_success"] ].location != NSNotFound){
-            [self showToastMessage:[_payment valueForKey:@"message_success"]];
+            [self showAlertWithTitle:@"" message:[_payment valueForKey:@"message_success"]];
             [self.navigationController dismissViewControllerAnimated:YES completion:nil];
             return NO;
         }else if([requestURL rangeOfString:[_payment valueForKey:@"url_fail"]].location != NSNotFound){
-            [self showToastMessage:[_payment valueForKey:@"message_fail"]];
+            [self showAlertWithTitle:@"" message:[_payment valueForKey:@"message_fail"]];
             [self.navigationController dismissViewControllerAnimated:YES completion:nil];
             return NO;
         }else if([requestURL rangeOfString:[_payment valueForKey:@"url_cancel"]].location != NSNotFound){
-            [self showToastMessage:[_payment valueForKey:@"message_cancel"]];
+            [self showAlertWithTitle:@"" message:[_payment valueForKey:@"message_cancel"]];
             [self.navigationController dismissViewControllerAnimated:YES completion:nil];
             return NO;
         }else if([requestURL rangeOfString:[_payment valueForKey:@"url_error"]].location != NSNotFound){
-            [self showToastMessage:[_payment valueForKey:@"message_error"]];
+            [self showAlertWithTitle:@"" message:[_payment valueForKey:@"message_error"]];
             [self.navigationController dismissViewControllerAnimated:YES completion:nil];
             return NO;
         }
@@ -122,9 +122,9 @@
     [self stopLoadingData];
     SimiResponder* responder = [noti.userInfo valueForKey:@"responder"];
     if([responder.status isEqualToString:@"SUCCESS"]){
-        [self showToastMessage:@"Your order is cancelled"];
+        [self showAlertWithTitle:@"" message:@"Your order is cancelled"];
     }else{
-        [self showAlertWithTitle:responder.status message:responder.responseMessage];
+        [self showAlertWithTitle:@"" message:responder.responseMessage];
     }
     [self.navigationController dismissViewControllerAnimated:YES completion:nil];
 }
