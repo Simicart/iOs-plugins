@@ -14,7 +14,7 @@
 @implementation SimiPaymentWebView
 {
     NSURLRequest* failedRequest;
-    UIActivityIndicatorView* simiLoading;    
+    UIActivityIndicatorView* simiLoading;
 }
 
 - (void)viewDidLoadBefore
@@ -58,11 +58,10 @@
     }
 }
 
-
 -(void) alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
     if([alertView.simiObjectName isEqualToString:@"cancelOrderAlert"]){
         if(buttonIndex == 0){
-        
+            
         }else if(buttonIndex == 1){
             SimiOrderModel *orderModel = [SimiOrderModel new];
             [orderModel cancelOrderWithId:_orderID];
@@ -93,22 +92,20 @@
 {
     NSString* requestURL = [NSString stringWithFormat:@"%@",request];
     if(_payment){
-        if([requestURL rangeOfString:[_payment valueForKey:@"url_redirect"]].location != NSNotFound){
-            return YES;
-        }else if([requestURL rangeOfString:[_payment valueForKey:@"url_success"] ].location != NSNotFound){
-            [self showAlertWithTitle:@"SUCCESS" message:[_payment valueForKey:@"message_success"]];
+        if([requestURL rangeOfString:[_payment valueForKey:@"url_success"] ].location != NSNotFound){
+            [self showToastMessage:[_payment valueForKey:@"message_success"]];
             [self.navigationController dismissViewControllerAnimated:YES completion:nil];
             return NO;
         }else if([requestURL rangeOfString:[_payment valueForKey:@"url_fail"]].location != NSNotFound){
-            [self showAlertWithTitle:@"FAIL" message:[_payment valueForKey:@"message_fail"]];
+            [self showToastMessage:[_payment valueForKey:@"message_fail"]];
             [self.navigationController dismissViewControllerAnimated:YES completion:nil];
             return NO;
         }else if([requestURL rangeOfString:[_payment valueForKey:@"url_cancel"]].location != NSNotFound){
-            [self showAlertWithTitle:@"Cancel" message:[_payment valueForKey:@"message_cancel"]];
+            [self showToastMessage:[_payment valueForKey:@"message_cancel"]];
             [self.navigationController dismissViewControllerAnimated:YES completion:nil];
             return NO;
         }else if([requestURL rangeOfString:[_payment valueForKey:@"url_error"]].location != NSNotFound){
-            [self showAlertWithTitle:@"Error" message:[_payment valueForKey:@"message_error"]];
+            [self showToastMessage:[_payment valueForKey:@"message_error"]];
             [self.navigationController dismissViewControllerAnimated:YES completion:nil];
             return NO;
         }
@@ -124,7 +121,11 @@
     [self removeObserverForNotification:noti];
     [self stopLoadingData];
     SimiResponder* responder = [noti.userInfo valueForKey:@"responder"];
-    [self showAlertWithTitle:responder.status message:responder.responseMessage];
+    if([responder.status isEqualToString:@"SUCCESS"]){
+        [self showToastMessage:@"Your order is cancelled"];
+    }else{
+        [self showAlertWithTitle:responder.status message:responder.responseMessage];
+    }
     [self.navigationController dismissViewControllerAnimated:YES completion:nil];
 }
 @end
