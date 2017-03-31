@@ -8,6 +8,7 @@
 
 #import "SCWishlistViewController.h"
 #import <SimiCartBundle/UIScrollView+SVInfiniteScrolling.h>
+#import <SimiCartBundle/SCProductViewControllerCustomize.h>
 
 #define COLLECTIONVIEWCELLHEIGHT 150
 #define WISHLISTCOLLECTIONVIEWCELL @"WISHLISTCOLLECTIONVIEWCELL"
@@ -164,16 +165,18 @@
 }
 
 - (void)tapToWishlistItem:(NSDictionary *)wishlistItem{
-    SCProductViewController* productVC;
     if(PHONEDEVICE){
-        productVC = [SCProductViewController new];
+        SCProductViewControllerCustomize* productVC = [SCProductViewControllerCustomize new];
+        productVC.productId = [wishlistItem objectForKey:@"product_id"];
+        [self.navigationController pushViewController:productVC animated:YES];
     }else{
-        productVC = [SCProductViewControllerPad new];
+        SCProductViewControllerPad* productVC = [SCProductViewControllerPad new];
+        productVC.productId = [wishlistItem objectForKey:@"product_id"];
+        productVC.arrayProductsID = [NSMutableArray arrayWithArray:@[productVC.productId]];
+        productVC.firstProductID = productVC.productId;
+        [self.navigationController pushViewController:productVC animated:YES];
     }
-    productVC.productId = [wishlistItem objectForKey:@"product_id"];
-    productVC.arrayProductsID = [NSMutableArray arrayWithArray:@[productVC.productId]];
-    productVC.firstProductID = productVC.productId;
-    [self.navigationController pushViewController:productVC animated:YES];
+    
 }
 
 - (void)addToCartWithWishlistItem:(NSDictionary *)wishlistItem{

@@ -107,7 +107,7 @@
         [currentlyViewController.navigationController pushViewController:[SCLoginViewController new] animated:YES];
         return;
     }
-    [wishlistButton setEnabled:NO];
+//    [wishlistButton setEnabled:NO];
     if (![product objectForKey:@"wishlist_item_id"] || [[product objectForKey:@"wishlist_item_id"] isEqualToString:PRODUCT_IS_NOT_IN_WISHLIST])
         [self addProductToWishlist];
     else
@@ -129,7 +129,7 @@
 
 - (void)didAddProductToWishlist:(NSNotification *)noti
 {
-    [wishlistButton setEnabled:YES];
+//    [wishlistButton setEnabled:YES];
     [currentlyViewController stopLoadingData];
     SimiResponder *responder = [noti.userInfo valueForKey:@"responder"];
     if ([responder.status isEqualToString:@"SUCCESS"]) {
@@ -154,7 +154,7 @@
 
 - (void)didRemoveProductFromWishlist:(NSNotification *)noti
 {
-    [wishlistButton setEnabled:YES];
+//    [wishlistButton setEnabled:YES];
     SimiResponder *responder = [noti.userInfo valueForKey:@"responder"];
     if ([responder.status isEqualToString:@"SUCCESS"]) {
         [product setObject:PRODUCT_IS_NOT_IN_WISHLIST forKey:@"wishlist_item_id"];
