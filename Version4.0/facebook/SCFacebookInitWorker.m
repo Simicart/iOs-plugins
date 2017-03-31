@@ -10,8 +10,8 @@
 #import <SimiCartBundle/SCAppDelegate.h>
 #import <SimiCartBundle/SimiTable.h>
 #import <SimiCartBundle/SCLeftMenuViewController.h>
-#import "SCCategoryViewController.h"
-#import "SCProductListViewControllerPad.h"
+#import <SimiCartBundle/SCCategoryViewController.h>
+#import <SimiCartBundle/SCProductListViewControllerPad.h>
 
 //Product More View notifications
 #define SCProductMoreViewController_ViewDidLoadBefore @"SCProductViewMoreController-ViewDidLoadBefore"
