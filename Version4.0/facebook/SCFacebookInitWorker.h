@@ -16,6 +16,6 @@
 #import <SimiCartBundle/KeychainItemWrapper.h>
 #import <SimiCartBundle/SCProductMoreViewController.h>
 
-@interface SCFacebookInitWorker : NSObject<FBSDKLoginButtonDelegate, UIWebViewDelegate>
+@interface SCFacebookInitWorker : NSObject<FBSDKLoginButtonDelegate, UIWebViewDelegate, FBSDKAppInviteDialogDelegate>
 
 @end

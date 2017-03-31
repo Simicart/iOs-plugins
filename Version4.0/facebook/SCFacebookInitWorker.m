@@ -8,6 +8,11 @@
 
 #import "SCFacebookInitWorker.h"
 #import <SimiCartBundle/SCAppDelegate.h>
+#import <SimiCartBundle/SimiTable.h>
+#import <SimiCartBundle/SCLeftMenuViewController.h>
+#import "SCCategoryViewController.h"
+#import "SCProductListViewControllerPad.h"
+
 //Product More View notifications
 #define SCProductMoreViewController_ViewDidLoadBefore @"SCProductViewMoreController-ViewDidLoadBefore"
 #define SCProductMoreViewController_InitViewMoreAction @"SCProductMoreViewController_InitViewMoreAction"
@@ -15,9 +20,14 @@
 //Login view controller notifications
 #define SCLoginViewController_InitCellsAfter @"SCLoginViewController_InitCellsAfter"
 #define ApplicationOpenURL @"ApplicationOpenURL"
+#define ApplicationDidBecomeActive @"ApplicationDidBecomeActive"
 #define SCLoginViewController_InitCellAfter @"SCLoginViewController_InitCellAfter"
 #define FacebookLoginCell @"FacebookLoginCell"
 #define SimiFaceBookWorker_StartLoginWithFaceBook @"SimiFaceBookWorker_StartLoginWithFaceBook"
+#define SCLeftMenu_InitCellsAfter @"SCLeftMenu_InitCellsAfter"
+#define SCLeftMenu_DidSelectRow @"SCLeftMenu_DidSelectRow"
+
+#define LEFTMENU_ROW_FACEBOOK_INVITE @"LEFTMENU_ROW_FACEBOOK_INVITE"
 
 #define COMMENT_VIEW_TAG 1111
 #define FB_BUTTON_SIZE 50
@@ -58,6 +68,17 @@
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:SCLoginViewController_InitCellAfter object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didLogin:) name:DidLogin object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didLogout:) name:DidLogout object:nil];
+        
+        //App Invite
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didInitLeftMenuRows:) name:SCLeftMenu_InitCellsAfter object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didSelectInviteFriends:) name:SCLeftMenu_DidSelectRow object:nil];
+        //Catch when done init the app
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didInitApp:) name:@"DidInit" object:nil];
+        //ApplicationDidBecomeActive
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:ApplicationDidBecomeActive object:nil];
+        //Facebook Analytics
+        [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(trackingEvent:) name:TRACKINGEVENT object:nil];
+        [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(trackingViewedScreen:) name:@"SimiViewControllerViewDidAppear" object:nil];
         
         facebookAppID = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"FacebookAppID"];
         commentHTMLString = @"\
@@ -114,7 +135,15 @@
     }else if([noti.name isEqualToString:ApplicationOpenURL]){
         BOOL numberBool = [[noti object] boolValue];
         numberBool  = [[FBSDKApplicationDelegate sharedInstance] application:[[noti userInfo] valueForKey:@"application"] openURL:[[noti userInfo] valueForKey:@"url"] sourceApplication:[[noti userInfo] valueForKey:@"source_application"] annotation:[[noti userInfo] valueForKey:@"annotation"]];
-    }else if([noti.name isEqualToString:SCLoginViewController_InitCellAfter]){
+        if([noti.userInfo objectForKey:@"url"]){
+            NSURL* url = [noti.userInfo objectForKey:@"url"];
+            [self handleOpeningURL:url.absoluteString];
+        }
+    }else if([noti.name isEqualToString:ApplicationDidBecomeActive]){
+        //Active Facebook App
+        [FBSDKAppEvents activateApp];
+    }
+    else if([noti.name isEqualToString:SCLoginViewController_InitCellAfter]){
         NSIndexPath *indexPath = [noti.userInfo valueForKey:@"indexPath"];
         SimiSection *section = [cells objectAtIndex:indexPath.section];
         SimiRow *row = [section objectAtIndex:indexPath.row];
@@ -143,6 +172,107 @@
                                     [NSURL URLWithString:@"https://facebook.com"]];
         for (NSHTTPCookie* cookie in facebookCookies) {
             [cookies deleteCookie:cookie];
+        }
+    }
+}
+
+-(void) didInitApp:(NSNotification*) noti{
+    if([SimiGlobalVar sharedInstance].deepLinkURL != nil){
+        [self handleOpeningURL:[SimiGlobalVar sharedInstance].deepLinkURL.absoluteString];
+        [SimiGlobalVar sharedInstance].deepLinkURL = nil;
+    }
+    //Active Facebook App
+    [FBSDKAppEvents activateApp];
+}
+
+#pragma mark Logging events and setting user properties
+- (void)trackingEvent:(NSNotification*) noti{
+    if([noti.object isKindOfClass:[NSString class]])
+    {
+        NSString *trackingName = noti.object;
+        NSDictionary *params = noti.userInfo;
+        if (params == nil) {
+            params = @{};
+        }
+        NSMutableDictionary *trackingProperties = [[NSMutableDictionary alloc]initWithDictionary:params];
+        if ([SimiGlobalVar sharedInstance].isLogin) {
+            [trackingProperties setValue:[[SimiGlobalVar sharedInstance].customer valueForKey:@"email"]  forKey:@"customer_identity"];
+        }else
+        {
+            if ([[SimiGlobalVar sharedInstance].baseConfig valueForKey:@"customer_identity"]) {
+                NSString *customerIdentity = [NSString stringWithFormat:@"%@",[[SimiGlobalVar sharedInstance].baseConfig valueForKey:@"customer_identity"]];
+                if (![customerIdentity isEqualToString:@""] && ![[[SimiGlobalVar sharedInstance].baseConfig valueForKey:@"customer_identity"] isKindOfClass:[NSNull class]]) {
+                    [trackingProperties setValue:customerIdentity  forKey:@"customer_identity"];
+                }
+            }
+        }
+        [FBSDKAppEvents logEvent:trackingName parameters:trackingProperties];
+    }
+}
+
+- (void)trackingViewedScreen:(NSNotification*)noti
+{
+    SimiViewController *viewController = noti.object;
+    if (viewController.screenTrackingName != nil && ![viewController.screenTrackingName isEqualToString:@""]) {
+        NSString *actionValue = [NSString stringWithFormat:@"viewed_%@_screen",viewController.screenTrackingName];
+        NSMutableDictionary *trackingProperties = [[NSMutableDictionary alloc]initWithDictionary:@{@"action":actionValue}];
+        if ([SimiGlobalVar sharedInstance].isLogin) {
+            [trackingProperties setValue:[[SimiGlobalVar sharedInstance].customer valueForKey:@"email"]  forKey:@"customer_identity"];
+        }else
+        {
+            if ([[SimiGlobalVar sharedInstance].baseConfig valueForKey:@"customer_identity"]) {
+                NSString *customerIdentity = [NSString stringWithFormat:@"%@",[[SimiGlobalVar sharedInstance].baseConfig valueForKey:@"customer_identity"]];
+                if (![customerIdentity isEqualToString:@""] && ![[[SimiGlobalVar sharedInstance].baseConfig valueForKey:@"customer_identity"] isKindOfClass:[NSNull class]]) {
+                    [trackingProperties setValue:customerIdentity  forKey:@"customer_identity"];
+                }
+            }
+        }
+        [FBSDKAppEvents logEvent:@"page_view_action" parameters:trackingProperties];
+    }
+}
+
+// Handle url 
+-(void) handleOpeningURL:(NSString*) url{
+    if(![url isEqualToString:@""]){
+        NSMutableDictionary *urlParamsDictionary = [[NSMutableDictionary alloc] init];
+        NSArray *urlComponents = [url componentsSeparatedByString:@"?"];
+        if(urlComponents.count > 0){
+            NSString* firstURLParam = [NSString stringWithFormat:@"%@",[urlComponents objectAtIndex:0]];
+            NSArray* firstURLParamComponents = [firstURLParam componentsSeparatedByString:@"://"];
+            if(firstURLParamComponents.count > 1){
+                NSString* paramsPath = [NSString stringWithFormat:@"%@",[firstURLParamComponents objectAtIndex:1]];
+                NSArray* paramsPathComponents = [paramsPath componentsSeparatedByString:@"&"];
+                if(paramsPathComponents.count > 0){
+                    for(NSString* paramsPathComponent in paramsPathComponents){
+                        NSArray* paramComponents = [paramsPathComponent componentsSeparatedByString:@"="];
+                        if(paramComponents.count == 2){
+                            [urlParamsDictionary setValue:[NSString stringWithFormat:@"%@",[paramComponents objectAtIndex:1]] forKey:[NSString stringWithFormat:@"%@",[paramComponents objectAtIndex:0]]];
+                        }
+                    }
+                }
+            }
+        }
+        if([urlParamsDictionary objectForKey:@"product_id"] && ![[NSString stringWithFormat:@"%@",[urlParamsDictionary objectForKey:@"product_id"]] isEqualToString:@""]){
+            [SimiGlobalVar pushProductDetailWithNavigationController:[SimiGlobalVar sharedInstance].currentlyNavigationController andProductID:[NSString stringWithFormat:@"%@",[urlParamsDictionary objectForKey:@"product_id"]] andProductIDs:[[NSMutableArray alloc] initWithArray:@[[NSString stringWithFormat:@"%@",[urlParamsDictionary objectForKey:@"product_id"]]]]];
+        }else if([urlParamsDictionary objectForKey:@"category_id"] && ![[NSString stringWithFormat:@"%@",[urlParamsDictionary objectForKey:@"category_id"]] isEqualToString:@""]){
+            NSString* categoryId = [NSString stringWithFormat:@"%@",[urlParamsDictionary objectForKey:@"category_id"]];
+            BOOL hasChild = [[urlParamsDictionary objectForKey:@"has_child"] boolValue];
+            if(PHONEDEVICE){
+                if (hasChild){
+                    SCCategoryViewController *nextController = [[SCCategoryViewController alloc]init];
+                    nextController.openFrom = CategoryOpenFromParentCategory;
+                    [nextController setCategoryId:categoryId];
+                    [[SimiGlobalVar sharedInstance].currentlyNavigationController pushViewController:nextController animated:YES];
+                }else{
+                    SCProductListViewController *nextController = [[SCProductListViewController alloc]init];;
+                    [nextController setCategoryID: categoryId];
+                    [[SimiGlobalVar sharedInstance].currentlyNavigationController pushViewController:nextController animated:YES];
+                }
+            }else if(PADDEVICE){
+                SCProductListViewControllerPad * nextViewController = [SCProductListViewControllerPad new];
+                [nextViewController setCategoryID:categoryId];
+                [[SimiGlobalVar sharedInstance].currentlyNavigationController pushViewController:nextViewController animated:YES];
+            }
         }
     }
 }
@@ -235,6 +365,38 @@
     fbView.clipsToBounds = YES;
 }
 
+-(void) didInitLeftMenuRows:(NSNotification*) noti{
+    SimiTable* leftMenuCells = noti.object;
+    SimiSection* moreSection = [leftMenuCells getSectionByIdentifier:LEFTMENU_SECTION_MORE];
+    SimiRow *inviteRow = [[SimiRow alloc]initWithIdentifier:LEFTMENU_ROW_FACEBOOK_INVITE height:50 sortOrder:9999];
+    inviteRow.image = [UIImage imageNamed:@"facebook_invite"];
+    inviteRow.title = SCLocalizedString(@"Invite Friends");
+    inviteRow.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+    [moreSection addObject:inviteRow];
+}
+
+-(void) didSelectInviteFriends:(NSNotification*) noti{
+    SimiRow* inviteRow = (SimiRow*)[noti.userInfo objectForKey:@"simirow"];
+    if([inviteRow.identifier isEqualToString:LEFTMENU_ROW_FACEBOOK_INVITE]){
+        if([[SimiGlobalVar sharedInstance].allConfig objectForKey:@"facebook_connect"]){
+            NSDictionary* fbConnect = [[SimiGlobalVar sharedInstance].allConfig objectForKey:@"facebook_connect"];
+            FBSDKAppInviteContent *content =[[FBSDKAppInviteContent alloc] init];
+            NSString* inviteLink = [NSString stringWithFormat:@"%@",[fbConnect objectForKey:@"invite_link"]];
+            NSString* inviteImageURL = [NSString stringWithFormat:@"%@",[fbConnect objectForKey:@"image_description_link"]];
+            content.appLinkURL = [NSURL URLWithString:inviteLink];
+            content.appInvitePreviewImageURL = [NSURL URLWithString:inviteImageURL];
+            [FBSDKAppInviteDialog showFromViewController:[SimiGlobalVar sharedInstance].currentlyNavigationController.viewControllers.lastObject withContent:content delegate:self];
+        }
+    }
+}
+
+#pragma mark FBSDKAppInviteDelegate
+- (void)appInviteDialog:(FBSDKAppInviteDialog *)appInviteDialog didCompleteWithResults:(NSDictionary *)results{
+//    [((SimiViewController*)[SimiGlobalVar sharedInstance].currentlyNavigationController.viewControllers.lastObject) showToastMessage:SCLocalizedString(@"Invite successfully")];
+}
+- (void)appInviteDialog:(FBSDKAppInviteDialog *)appInviteDialog didFailWithError:(NSError *)error{
+//    [((SimiViewController*)[SimiGlobalVar sharedInstance].currentlyNavigationController.viewControllers.lastObject) showToastMessage:SCLocalizedString(@"Invite unsuccessfully")];
+}
 - (void)beforeTouchMoreAction:(NSNotification*)noti
 {
     if(isShowFacebookView){
