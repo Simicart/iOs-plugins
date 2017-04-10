@@ -12,6 +12,7 @@
 #import <SimiCartBundle/SCLeftMenuViewController.h>
 #import <SimiCartBundle/SCCategoryViewController.h>
 #import <SimiCartBundle/SCProductListViewControllerPad.h>
+#import <Bolts/Bolts.h>
 
 //Product More View notifications
 #define SCProductMoreViewController_ViewDidLoadBefore @"SCProductViewMoreController-ViewDidLoadBefore"
@@ -20,6 +21,7 @@
 //Login view controller notifications
 #define SCLoginViewController_InitCellsAfter @"SCLoginViewController_InitCellsAfter"
 #define ApplicationOpenURL @"ApplicationOpenURL"
+#define ApplicationDidFinishLaunching @"ApplicationDidFinishLaunching"
 #define ApplicationDidBecomeActive @"ApplicationDidBecomeActive"
 #define SCLoginViewController_InitCellAfter @"SCLoginViewController_InitCellAfter"
 #define FacebookLoginCell @"FacebookLoginCell"
@@ -79,6 +81,7 @@
         //Facebook Analytics
         [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(trackingEvent:) name:TRACKINGEVENT object:nil];
         [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(trackingViewedScreen:) name:@"SimiViewControllerViewDidAppear" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:ApplicationDidFinishLaunching object:nil];
         
         facebookAppID = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"FacebookAppID"];
         commentHTMLString = @"\
@@ -132,6 +135,9 @@
         SimiSection *section = [cells objectAtIndex:0];
         SimiRow *row = [[SimiRow alloc] initWithIdentifier:FacebookLoginCell height:[SimiGlobalVar scaleValue:50]];
         [section addRow:row];
+    }else if([noti.name isEqualToString:ApplicationDidFinishLaunching]){
+        NSDictionary* launchOptions = [noti.userInfo objectForKey:@"options"];
+        
     }else if([noti.name isEqualToString:ApplicationOpenURL]){
         BOOL numberBool = [[noti object] boolValue];
         numberBool  = [[FBSDKApplicationDelegate sharedInstance] application:[[noti userInfo] valueForKey:@"application"] openURL:[[noti userInfo] valueForKey:@"url"] sourceApplication:[[noti userInfo] valueForKey:@"source_application"] annotation:[[noti userInfo] valueForKey:@"annotation"]];
@@ -181,8 +187,34 @@
         [self handleOpeningURL:[SimiGlobalVar sharedInstance].deepLinkURL.absoluteString];
         [SimiGlobalVar sharedInstance].deepLinkURL = nil;
     }
+    [FBSDKAppLinkUtility fetchDeferredAppLink:^(NSURL *url, NSError *error) {
+        if (error) {
+            NSLog(@"Received error while fetching deferred app link %@", error);
+        }
+        if (url) {
+            [self handleOpeningURL:url.absoluteString];
+        }
+    }];
     //Active Facebook App
     [FBSDKAppEvents activateApp];
+}
+
+-(void) updateUserProperties{
+    if([SimiGlobalVar sharedInstance].isLogin){
+        NSMutableDictionary* userProperties = [[NSMutableDictionary alloc] init];
+        [userProperties addEntriesFromDictionary:@{@"$language":[[SimiGlobalVar sharedInstance].baseConfig objectForKey:@"store_name"],@"$country":[[SimiGlobalVar sharedInstance].baseConfig objectForKey:@"country_name"],@"$currency":[SimiGlobalVar sharedInstance].currencyCode}];
+        [FBSDKAppEvents setUserID:[[SimiGlobalVar sharedInstance].customer objectForKey:@"entity_id"]];
+        if([[[SimiGlobalVar sharedInstance].customer objectForKey:@"gender"] boolValue]){
+            [userProperties setObject:@"m" forKey:@"$gender"];
+        }else{
+            [userProperties setObject:@"f" forKey:@"$gender"];
+        }
+        [FBSDKAppEvents updateUserProperties:userProperties handler:^(FBSDKGraphRequestConnection *connection, id result, NSError *error) {
+            
+        }];
+    }else{
+        [FBSDKAppEvents setUserID:nil];
+    }
 }
 
 #pragma mark Logging events and setting user properties
@@ -194,6 +226,7 @@
         if (params == nil) {
             params = @{};
         }
+       
         NSMutableDictionary *trackingProperties = [[NSMutableDictionary alloc]initWithDictionary:params];
         if ([SimiGlobalVar sharedInstance].isLogin) {
             [trackingProperties setValue:[[SimiGlobalVar sharedInstance].customer valueForKey:@"email"]  forKey:@"customer_identity"];
@@ -206,8 +239,19 @@
                 }
             }
         }
-        [FBSDKAppEvents logEvent:trackingName parameters:trackingProperties];
+        if([noti.object isEqualToString:@"product_action"] && [[NSString stringWithFormat:@"%@",[noti.userInfo objectForKey:@"action"]] isEqualToString:@"added_to_cart"]){
+            [trackingProperties addEntriesFromDictionary:@{FBSDKAppEventParameterNameCurrency:[SimiGlobalVar sharedInstance].currencyCode, FBSDKAppEventParameterNameContentType : @"product", FBSDKAppEventParameterNameContentID : [noti.userInfo objectForKey:@"product_id"],FBSDKAppEventParameterNameDescription:[noti.userInfo objectForKey:@"product_name"]}];
+            [FBSDKAppEvents logEvent:FBSDKAppEventNameAddedToCart parameters:params];
+            return;
+        }else if([noti.object isEqualToString:@"checkout_action"] && [[NSString stringWithFormat:@"%@",[noti.userInfo objectForKey:@"action"]] isEqualToString:@"place_order_successful"]){
+                [trackingProperties addEntriesFromDictionary:@{FBSDKAppEventParameterNameCurrency:[SimiGlobalVar sharedInstance].currencyCode, FBSDKAppEventParameterNameContentType : @"product", FBSDKAppEventParameterNameContentID : [noti.userInfo objectForKey:@"product_id"],FBSDKAppEventParameterNameDescription:[noti.userInfo objectForKey:@"product_name"]}];
+                [FBSDKAppEvents logPurchase:[[NSString stringWithFormat:@"%@",[noti.userInfo objectForKey:@"grand_total"]] doubleValue] currency:[SimiGlobalVar sharedInstance].currencyCode];
+                return;
+        }else{
+            [FBSDKAppEvents logEvent:trackingName parameters:trackingProperties];
+        }
     }
+    [self updateUserProperties];
 }
 
 - (void)trackingViewedScreen:(NSNotification*)noti
@@ -229,6 +273,15 @@
         }
         [FBSDKAppEvents logEvent:@"page_view_action" parameters:trackingProperties];
     }
+     [self updateUserProperties];
+}
+
+-(void) didAddToCart:(NSNotification*) noti{
+    
+}
+
+-(void) didPlaceOrder:(NSNotification*) noti{
+
 }
 
 // Handle url 
@@ -366,13 +419,18 @@
 }
 
 -(void) didInitLeftMenuRows:(NSNotification*) noti{
-    SimiTable* leftMenuCells = noti.object;
-    SimiSection* moreSection = [leftMenuCells getSectionByIdentifier:LEFTMENU_SECTION_MORE];
-    SimiRow *inviteRow = [[SimiRow alloc]initWithIdentifier:LEFTMENU_ROW_FACEBOOK_INVITE height:50 sortOrder:9999];
-    inviteRow.image = [UIImage imageNamed:@"facebook_invite"];
-    inviteRow.title = SCLocalizedString(@"Invite Friends");
-    inviteRow.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-    [moreSection addObject:inviteRow];
+    if([[SimiGlobalVar sharedInstance].allConfig objectForKey:@"facebook_connect"]){
+        NSDictionary* fbConnect = [[SimiGlobalVar sharedInstance].allConfig objectForKey:@"facebook_connect"];
+        if([fbConnect objectForKey:@"invite_link"] && ![[NSString stringWithFormat:@"%@",[fbConnect objectForKey:@"invite_link"]] isEqualToString:@""]){
+            SimiTable* leftMenuCells = noti.object;
+            SimiSection* moreSection = [leftMenuCells getSectionByIdentifier:LEFTMENU_SECTION_MORE];
+            SimiRow *inviteRow = [[SimiRow alloc]initWithIdentifier:LEFTMENU_ROW_FACEBOOK_INVITE height:50 sortOrder:9999];
+            inviteRow.image = [UIImage imageNamed:@"facebook_invite"];
+            inviteRow.title = SCLocalizedString(@"Invite Friends");
+            inviteRow.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+            [moreSection addObject:inviteRow];
+        }
+    }
 }
 
 -(void) didSelectInviteFriends:(NSNotification*) noti{
