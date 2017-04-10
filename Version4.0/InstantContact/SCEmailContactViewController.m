@@ -317,20 +317,24 @@
 #pragma mark Table View Delegate
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell *cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"TableViewContact"];
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:[NSString stringWithFormat:@"TableViewContact_%ld",indexPath.row]];
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     SimiSection *simiSection = [_cells objectAtIndex:indexPath.section];
     if ([simiSection.identifier isEqualToString:EMAILCONTACT_SECTIONMAIN]) {
-        SimiRow *row = [simiSection objectAtIndex:indexPath.row];
-        UIImageView *imageIcon = [[UIImageView alloc]initWithFrame:CGRectMake(15, 15, 33, 20)];
-        [imageIcon setImage:[[UIImage imageNamed:[row.data valueForKey:@"image_tbl"]]imageWithColor:[[SimiGlobalVar sharedInstance]colorWithHexString:stringColor]]];
-        [imageIcon setContentMode:UIViewContentModeScaleAspectFit];
-        [cell addSubview:imageIcon];
-        
-        UILabel *lblName = [[UILabel alloc]initWithFrame:CGRectMake(70, 0, 200, 50)];
-        [lblName setFont:[UIFont fontWithName:THEME_FONT_NAME size:18]];
-        [lblName setText:SCLocalizedString([row.data valueForKey:@"title"])];
-        [cell addSubview:lblName];
+        if (cell == nil) {
+            cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:[NSString stringWithFormat:@"TableViewContact_%ld",indexPath.row]];
+            SimiRow *row = [simiSection objectAtIndex:indexPath.row];
+            UIImageView *imageIcon = [[UIImageView alloc]initWithFrame:CGRectMake(15, 15, 33, 20)];
+            [imageIcon setImage:[[UIImage imageNamed:[row.data valueForKey:@"image_tbl"]]imageWithColor:[[SimiGlobalVar sharedInstance]colorWithHexString:stringColor]]];
+            [imageIcon setContentMode:UIViewContentModeScaleAspectFit];
+            [cell.contentView addSubview:imageIcon];
+            
+            UILabel *lblName = [[UILabel alloc]initWithFrame:CGRectMake(70, 0, 200, 50)];
+            [lblName setFont:[UIFont fontWithName:THEME_FONT_NAME size:18]];
+            [lblName setText:SCLocalizedString([row.data valueForKey:@"title"])];
+            [cell.contentView addSubview:lblName];
+            [SimiGlobalVar sortViewForRTL:cell.contentView andWidth:CGRectGetWidth(tableView.frame)];
+        }
     }
     return cell;
 }
