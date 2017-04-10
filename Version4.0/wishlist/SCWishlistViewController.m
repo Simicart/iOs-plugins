@@ -182,16 +182,7 @@
         [wishlistModelCollection addProductToCartWithWishlistID:[wishlistItem objectForKey:@"wishlist_item_id"]];
         [self startLoadingData];
     }else{
-        SCProductViewController* productVC;
-        if(PHONEDEVICE){
-            productVC = [SCProductViewController new];
-        }else{
-            productVC = [SCProductViewControllerPad new];
-        }
-        productVC.productId = [wishlistItem objectForKey:@"product_id"];
-        productVC.arrayProductsID = [NSMutableArray arrayWithArray:@[productVC.productId]];
-        productVC.firstProductID = productVC.productId;
-        [self.navigationController pushViewController:productVC animated:YES];
+        [SimiGlobalVar pushProductDetailWithNavigationController:self.navigationController andProductID:[NSString stringWithFormat:@"%@",[wishlistItem objectForKey:@"product_id"]] andProductIDs:[[NSMutableArray alloc] initWithObjects:[NSString stringWithFormat:@"%@",[wishlistItem objectForKey:@"product_id"]], nil]];
     }
 }
 
