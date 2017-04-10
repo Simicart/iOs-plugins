@@ -21,7 +21,7 @@
 {
     self.navigationItem.title = SCLocalizedString(self.navigationItem.title);
     UIBarButtonItem *cancel = [[UIBarButtonItem alloc] initWithTitle:SCLocalizedString(@"Cancel") style:UIBarButtonItemStylePlain target:self action:@selector(cancelPayment:)];
-    self.navigationItem.rightBarButtonItem = cancel;
+    self.navigationItem.leftBarButtonItem = cancel;
 }
 
 - (void)viewWillAppearBefore:(BOOL)animated
