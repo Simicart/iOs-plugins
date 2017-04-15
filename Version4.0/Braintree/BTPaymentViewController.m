@@ -56,8 +56,14 @@
         //        }
         [self showDropIn:[_payment objectForKey:@"token"]];
     }
+    UIBarButtonItem *cancelButtonItem = [[UIBarButtonItem alloc] initWithTitle:SCLocalizedString(@"Cancel") style:UIBarButtonItemStylePlain target:self action:@selector(cancelPayment:)];
+    self.navigationItem.rightBarButtonItem = cancelButtonItem;
 }
 
+-(void) cancelPayment:(id) sender{
+    UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:SCLocalizedString(@"Confirmation") message:[NSString stringWithFormat:@"%@?",SCLocalizedString(@"Are you sure that you want to cancel the order")] delegate:self cancelButtonTitle:SCLocalizedString(@"Close") otherButtonTitles:SCLocalizedString(@"OK"), nil];
+    [alertView show];
+}
 
 #pragma mark TableViewDelegate
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -376,5 +382,28 @@ requestsDismissalOfViewController:(UIViewController *)viewController {
     [viewController dismissViewControllerAnimated:YES completion:nil];
 }
 
+#pragma mark UIAlertViewDelegate
+-(void) alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
+    if(buttonIndex == 0){
+        
+    }else if(buttonIndex == 1){
+        SimiOrderModel *orderModel = [SimiOrderModel new];
+        [orderModel cancelOrderWithId:[order objectForKey:@"invoice_number"]];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didCancelOrder:) name:@"DidCancelOrder" object:orderModel];
+        [self startLoadingData];
+    }
+}
 
+- (void)didCancelOrder:(NSNotification*) noti{
+    [self stopLoadingData];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:DidCancelOrder object:nil];
+    SimiResponder* responder = [noti.userInfo objectForKey:@"responder"];
+    if([responder.status isEqualToString:@"SUCCESS"]){
+        [self showAlertWithTitle:@"" message:[NSString stringWithFormat:@"%@",SCLocalizedString(@"Your order is cancelled")]];
+    }else{
+        
+    }
+    [self dismissViewControllerAnimated:YES completion:nil];
+    [[SimiGlobalVar sharedInstance].currentlyNavigationController popToRootViewControllerAnimated:YES];
+}
 @end

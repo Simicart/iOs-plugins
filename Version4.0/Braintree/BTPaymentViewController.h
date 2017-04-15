@@ -23,7 +23,7 @@
 
 static NSString* const PAYMENTSECTION = @"PAYMENTSECTION";
 
-@interface BTPaymentViewController: SimiViewController<UITableViewDelegate, UITableViewDataSource,PKPaymentAuthorizationViewControllerDelegate,BTViewControllerPresentingDelegate,BTAppSwitchDelegate, BTDropInViewControllerDelegate>
+@interface BTPaymentViewController: SimiViewController<UITableViewDelegate, UITableViewDataSource,PKPaymentAuthorizationViewControllerDelegate,BTViewControllerPresentingDelegate,BTAppSwitchDelegate, BTDropInViewControllerDelegate,UIAlertViewDelegate>
 @property (nonatomic, strong) BTAPIClient *braintreeClient;
 @property (nonatomic,strong) SimiOrderModel* order;
 @property NSDictionary* payment;
