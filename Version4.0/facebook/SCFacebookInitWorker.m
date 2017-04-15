@@ -21,7 +21,6 @@
 //Login view controller notifications
 #define SCLoginViewController_InitCellsAfter @"SCLoginViewController_InitCellsAfter"
 #define ApplicationOpenURL @"ApplicationOpenURL"
-#define ApplicationDidFinishLaunching @"ApplicationDidFinishLaunching"
 #define ApplicationDidBecomeActive @"ApplicationDidBecomeActive"
 #define SCLoginViewController_InitCellAfter @"SCLoginViewController_InitCellAfter"
 #define FacebookLoginCell @"FacebookLoginCell"
@@ -81,7 +80,6 @@
         //Facebook Analytics
         [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(trackingEvent:) name:TRACKINGEVENT object:nil];
         [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(trackingViewedScreen:) name:@"SimiViewControllerViewDidAppear" object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:ApplicationDidFinishLaunching object:nil];
         
         facebookAppID = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"FacebookAppID"];
         commentHTMLString = @"\
@@ -135,9 +133,6 @@
         SimiSection *section = [cells objectAtIndex:0];
         SimiRow *row = [[SimiRow alloc] initWithIdentifier:FacebookLoginCell height:[SimiGlobalVar scaleValue:50]];
         [section addRow:row];
-    }else if([noti.name isEqualToString:ApplicationDidFinishLaunching]){
-        NSDictionary* launchOptions = [noti.userInfo objectForKey:@"options"];
-        
     }else if([noti.name isEqualToString:ApplicationOpenURL]){
         BOOL numberBool = [[noti object] boolValue];
         numberBool  = [[FBSDKApplicationDelegate sharedInstance] application:[[noti userInfo] valueForKey:@"application"] openURL:[[noti userInfo] valueForKey:@"url"] sourceApplication:[[noti userInfo] valueForKey:@"source_application"] annotation:[[noti userInfo] valueForKey:@"annotation"]];
@@ -164,8 +159,7 @@
             float widthCell = loginViewWidth - 2* paddingX;
             
             FBSDKLoginButton *loginButton = [[FBSDKLoginButton alloc] initWithFrame:CGRectMake(paddingX, paddingY, widthCell, heightCell)];
-            loginButton.readPermissions = @[@"email"];
-            loginButton.publishPermissions = @[@"publish_actions"];
+            loginButton.readPermissions = @[@"public_profile", @"email"];
             loginButton.delegate = self;
             cell.backgroundColor = [UIColor clearColor];
             [cell addSubview:loginButton];
@@ -244,7 +238,6 @@
             [FBSDKAppEvents logEvent:FBSDKAppEventNameAddedToCart parameters:params];
             return;
         }else if([noti.object isEqualToString:@"checkout_action"] && [[NSString stringWithFormat:@"%@",[noti.userInfo objectForKey:@"action"]] isEqualToString:@"place_order_successful"]){
-                [trackingProperties addEntriesFromDictionary:@{FBSDKAppEventParameterNameCurrency:[SimiGlobalVar sharedInstance].currencyCode, FBSDKAppEventParameterNameContentType : @"product", FBSDKAppEventParameterNameContentID : [noti.userInfo objectForKey:@"product_id"],FBSDKAppEventParameterNameDescription:[noti.userInfo objectForKey:@"product_name"]}];
                 [FBSDKAppEvents logPurchase:[[NSString stringWithFormat:@"%@",[noti.userInfo objectForKey:@"grand_total"]] doubleValue] currency:[SimiGlobalVar sharedInstance].currencyCode];
                 return;
         }else{
@@ -657,20 +650,13 @@
 
 #pragma mark FBSDKLoginButtonDelegate
 -(void) loginButton:(FBSDKLoginButton *)loginButton didCompleteWithResult:(FBSDKLoginManagerLoginResult *)result error:(NSError *)error{
- 
-    if([[FBSDKAccessToken currentAccessToken] hasGranted:@"email"]){
+    if(!error){
         [self loginWithFacebookInfo];
     }else{
-        [[FBSDKLoginManager alloc] logInWithReadPermissions:@[@"email"] fromViewController:loginViewController handler:^(FBSDKLoginManagerLoginResult *result, NSError *error) {
-            if([[FBSDKAccessToken currentAccessToken] hasGranted:@"email"]){
-                [self loginWithFacebookInfo];
-            }else{
-                UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:SCLocalizedString(@"Sorry") message:SCLocalizedString(@"Couldn't get the user email") delegate:nil cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles:nil, nil];
-                [alertView show];
-                [[FBSDKLoginManager alloc] logOut];
-                [loginViewController.navigationController popViewControllerAnimated:YES];
-            }
-        }];
+        UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:SCLocalizedString(@"Opps") message:SCLocalizedString(@"Login failed. Please try again later") delegate:nil cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles:nil, nil];
+        [alertView show];
+        [[FBSDKLoginManager alloc] logOut];
+        [loginViewController.navigationController popViewControllerAnimated:YES];
     }
 }
 
@@ -684,6 +670,9 @@
          if (!error) {
              if([result isKindOfClass:[NSDictionary class]]){
                  NSString *email = [result objectForKey:@"email"];
+                 if(!email){
+                     email = [NSString stringWithFormat:@"%@@facebook.com",[result objectForKey:@"id"]];
+                 }
                  NSString *firstName = [result objectForKey:@"first_name"];
                  NSString *lastName = [result objectForKey:@"last_name"];
                  if(customerModel == nil)
