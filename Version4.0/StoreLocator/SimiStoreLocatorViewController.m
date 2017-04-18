@@ -47,12 +47,12 @@
 {
     UILabel *lblStoreList = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, 100, 30)];
     lblStoreList.text = SCLocalizedString(@"Store List");
-    lblStoreList.textColor = [UIColor orangeColor];
+    lblStoreList.textColor = [UIColor blackColor];
     [lblStoreList setFont:[UIFont fontWithName:[NSString stringWithFormat:@"%@-%@",THEME_FONT_NAME,@"Bold"] size:16]];
     
     UILabel *lblMapView = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, 100, 30)];
     lblMapView.text = SCLocalizedString(@"Map View");
-    lblMapView.textColor = [UIColor orangeColor];
+    lblMapView.textColor = [UIColor blackColor];
     [lblMapView setFont:[UIFont fontWithName:[NSString stringWithFormat:@"%@-%@",THEME_FONT_NAME,@"Bold"] size:16]];
     switch (index) {
         case 0:

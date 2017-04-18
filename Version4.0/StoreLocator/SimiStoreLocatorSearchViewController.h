@@ -40,7 +40,7 @@
 @property (nonatomic, strong) NSString *stringTagSearch;
 @property (nonatomic, weak) id<SimiStoreLocatorSearchViewControllerDelegate> delegate;
 
-@property (nonatomic, strong) UIActivityIndicatorView *activityIndicatorView;
+//@property (nonatomic, strong) UIActivityIndicatorView *activityIndicatorView;
 
 @property (nonatomic, strong)  UIScrollView *scrView;
 
