@@ -40,7 +40,7 @@
 @synthesize sLModelCollection, tagModelCollection, stringCitySearch, stringCountrySearchCode,stringCountrySearchName, stringStateSearch, stringZipCodeSearch, delegate, simiAddressStoreLocatorModelCollection, currentLongitube, currentLatitube, stringTagSearch, tagChoise;
 @synthesize lblZipcode,lblState,lblCity,lblCountry,lblContentCountry,lblSearchByArea,lblSearchByTag, collectionViewTagContent;
 @synthesize txtStateSearch,tblViewCountry,txtCitySearch,txtZipCode;
-@synthesize viewSearchByZipcode,viewSearchByState,viewSearchByCity,viewSearchByCountry, viewSearch, viewSearchByTag, scrView, activityIndicatorView;
+@synthesize viewSearchByZipcode,viewSearchByState,viewSearchByCity,viewSearchByCountry, viewSearch, viewSearchByTag, scrView;
 @synthesize btnSearch, btnClearAll;
 
 - (void)viewDidLoadBefore
@@ -400,13 +400,7 @@
     }
     
     [self getStoreLocator];
-    if (activityIndicatorView == nil) {
-        activityIndicatorView = [[UIActivityIndicatorView alloc]initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
-        activityIndicatorView.hidesWhenStopped = YES;
-        activityIndicatorView.frame = self.view.bounds;
-    }
-    [self.view addSubview:activityIndicatorView];
-    [activityIndicatorView startAnimating];
+    [self startLoadingData];
     for (UIView *subView in scrView.subviews) {
         subView.userInteractionEnabled = NO;
         subView.alpha = 0.5;
@@ -509,8 +503,7 @@
 {
     SimiResponder* responder = [noti.userInfo valueForKey:@"responder"];
     if ([[responder.status uppercaseString] isEqualToString:@"SUCCESS"]) {
-        [activityIndicatorView stopAnimating];
-        [activityIndicatorView removeFromSuperview];
+        [self stopLoadingData];
         for (UIView* subView in scrView.subviews) {
             subView.userInteractionEnabled = YES;
             subView.alpha = 1.0;
