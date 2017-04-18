@@ -697,6 +697,14 @@
 //login and logout notification
 -(void) didLogin:(NSNotification*) noti{
     [loginViewController stopLoadingData];
+    SimiResponder* responder = [noti.userInfo objectForKey:@"responder"];
+    if([responder.status isEqualToString:@"SUCCESS"]){
+    
+    }else{
+        if([FBSDKAccessToken currentAccessToken]){
+            [[FBSDKLoginManager alloc] logOut];
+        }
+    }
 }
 
 -(void) didLogout: (NSNotification* )noti{
