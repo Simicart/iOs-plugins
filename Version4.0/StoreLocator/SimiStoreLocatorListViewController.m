@@ -15,7 +15,9 @@
 }
 @end
 
-@implementation SimiStoreLocatorListViewController
+@implementation SimiStoreLocatorListViewController{
+    UIImageView* loadingImageView;
+}
 @synthesize currentLongitube, currentLatitube, sLModelCollection, delegate;
 @synthesize sLModel,listViewOption, dictSearch;
 
@@ -31,9 +33,46 @@
 
 #pragma mark Cycle View
 
+- (void)startLoadingData{
+    if(loadingImageView)
+        [loadingImageView removeFromSuperview];
+    loadingImageView = [[UIImageView alloc] initWithFrame:CGRectMake((self.view.bounds.size.width - 80)/2, (self.view.bounds.size.height - 80)/2, 80, 80)];
+    NSMutableArray* loadingImages = [NSMutableArray new];
+    for(int i = 0;i< 40;i++){
+        [loadingImages addObject:[UIImage imageNamed:[NSString stringWithFormat:@"ph-%d",i]]];
+    }
+    loadingImageView.animationImages =  loadingImages;
+    [loadingImageView startAnimating];
+    [self.view addSubview: loadingImageView];
+    self.view.userInteractionEnabled = NO;
+    //    self.view.alpha = 0.5;
+    //    if (!simiLoading.isAnimating) {
+    //        CGRect frame = self.view.bounds;
+    //        simiLoading = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
+    //        simiLoading.hidesWhenStopped = YES;
+    //        simiLoading.center = CGPointMake(frame.size.width/2, frame.size.height/2);
+    //        [self.view addSubview:simiLoading];
+    //        [simiLoading startAnimating];
+    //        if (_didAppear) {
+    //        }
+    //    }
+}
+
+- (void)stopLoadingData{
+    self.view.userInteractionEnabled = YES;
+    //    self.view.alpha = 1;
+    [loadingImageView stopAnimating];
+    [loadingImageView removeFromSuperview];
+    //    loadingImageView.hidden = YES;
+    //    [simiLoading stopAnimating];
+    //    [simiLoading removeFromSuperview];
+}
+
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    self.tableView.tableFooterView = [UIView new];
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     [self.tableView setContentInset:UIEdgeInsetsZero];
@@ -181,10 +220,12 @@
                 isFirstRun = NO;
                 offset = [sLModelCollection count];
                 [sLModelCollection getStoreListWithLatitude:[NSString stringWithFormat:@"%f",currentLatitube] longitude:[NSString stringWithFormat:@"%f",currentLongitube] offset:[NSString stringWithFormat:@"%d",(int)offset] limit:@"20"];
-                [self.tableView.infiniteScrollingView startAnimating];
+//                [self.tableView.infiniteScrollingView startAnimating];
+                [self startLoadingData];
             }else
             {
-                [self.tableView.infiniteScrollingView stopAnimating];
+//                [self.tableView.infiniteScrollingView stopAnimating];
+                [self stopLoadingData];
             }
             break;
         case ListViewOptionSearched:
@@ -196,10 +237,12 @@
                 isFirstRun = NO;
                 offset = [sLModelCollection count];
                 [sLModelCollection getStoreListWithLatitude:[NSString stringWithFormat:@"%f",currentLatitube] longitude:[NSString stringWithFormat:@"%f",currentLongitube] offset:[NSString stringWithFormat:@"%d",(int)offset] limit:@"20" country:[dictSearch valueForKey:@"countryCode"] city:[dictSearch valueForKey:@"city"] state:[dictSearch valueForKey:@"state"] zipcode:[dictSearch valueForKey:@"zipcode"] tag:[dictSearch valueForKey:@"tag"]];
-                [self.tableView.infiniteScrollingView startAnimating];
+//                [self.tableView.infiniteScrollingView startAnimating];
+                [self startLoadingData];
             }else
             {
-                [self.tableView.infiniteScrollingView stopAnimating];
+//                [self.tableView.infiniteScrollingView stopAnimating];
+                [self stopLoadingData];
             }
             break;
         default:
@@ -210,7 +253,8 @@
 - (void) didGetStoreLocatorList
 {
     [self.tableView reloadData];
-    [self.tableView.infiniteScrollingView stopAnimating];
+//    [self.tableView.infiniteScrollingView stopAnimating];
+    [self stopLoadingData];
 }
 
 #pragma mark Mail Delegate
