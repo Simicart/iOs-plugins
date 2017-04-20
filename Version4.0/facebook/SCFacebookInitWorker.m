@@ -122,6 +122,7 @@
                              }\
                              </style>\
                              ";
+        [FBSDKAppEvents activateApp];
     }
     return self;
 }
