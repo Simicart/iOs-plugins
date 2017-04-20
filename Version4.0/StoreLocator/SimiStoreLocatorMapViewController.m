@@ -201,7 +201,7 @@
     SimiStoreLocatorMaker *currentLocations = [[SimiStoreLocatorMaker alloc]init];
     currentLocations.position = CLLocationCoordinate2DMake(currentLatitube, currentLongitube);
     currentLocations.title = @"You are here.";
-    currentLocations.icon = [UIImage imageNamed:@"sl_icon__09.png"];
+    currentLocations.icon = [UIImage imageNamed:@"sl_icon_marker.png"];
     currentLocations.map = mapView_;
     currentLocations.tappable = YES;
     
