@@ -15,6 +15,7 @@
 #import <SimiCartBundle/SCAppDelegate.h>
 #import <SimiCartBundle/SCNavigationBarPhone.h>
 #import <SimiCartBundle/SCProductSecondDesignViewController.h>
+#import <SimiCartBundle/SCProductViewControllerCustomize.h>
 #import "SCWishlistModelCollection.h"
 #import "SCWishlistModel.h"
 #import "SCWishlistViewController.h"
@@ -48,8 +49,8 @@
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didSelectAccountCellAtIndexPath:) name:@"DidSelectAccountCellAtIndexPath" object:nil];
         
         //Left Menu
-//        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(listMenuInitCellsAfter:) name:@"SCLeftMenu_InitCellsAfter" object:nil];
-//        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(listMenuDidSelectRow:) name:@"SCLeftMenu_DidSelectRow" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(listMenuInitCellsAfter:) name:@"SCLeftMenu_InitCellsAfter" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(listMenuDidSelectRow:) name:@"SCLeftMenu_DidSelectRow" object:nil];
         
         wishlistModelCollection = [SCWishlistModelCollection new];
         wishlistModel = [SCWishlistModel new];
@@ -85,6 +86,8 @@
     }else if ([noti.object isKindOfClass:[SCProductSecondDesignViewController class]])
     {
         product = ((SCProductSecondDesignViewController*)currentlyViewController).product;
+    }else if([noti.object isKindOfClass:[SCProductViewControllerCustomize class]]){
+        product = ((SCProductViewControllerCustomize*)currentlyViewController).product;
     }
     
     [self updateWishlistIcon];
@@ -123,6 +126,8 @@
     }else if ([currentlyViewController isKindOfClass:[SCProductSecondDesignViewController class]])
     {
         [wishlistModel addProductWithParams:((SCProductSecondDesignViewController*)currentlyViewController).cartItem];
+    }else if([currentlyViewController isKindOfClass:[SCProductViewControllerCustomize class]]){
+        [wishlistModel addProductWithParams:((SCProductViewControllerCustomize*)currentlyViewController).cartItem];
     }
     [currentlyViewController startLoadingData];
 }
