@@ -48,12 +48,9 @@
     self.title = SCLocalizedString(@"Braintree");
     [super viewDidLoad];
     if(![paymentList containsObject:BRAINTREE_APPLEPAY]){
-        //Remove for unsupporting
-        //        [paymentList removeObject:BRAINTREE_APPLEPAY];
-        //        if (![PKPaymentAuthorizationViewController class] || ![PKPaymentAuthorizationViewController canMakePayments] || ![PKPaymentAuthorizationViewController canMakePaymentsUsingNetworks:@[PKPaymentNetworkAmex, PKPaymentNetworkMasterCard, PKPaymentNetworkVisa]]) {
-        //            [paymentList removeObject:BRAINTREE_APPLEPAY];
-        //            [self showAlertWithTitle:SCLocalizedString(@"Apple Pay") message:SCLocalizedString(@"This device cannot make payments with Apple Pay")];
-        //        }
+        if (![PKPaymentAuthorizationViewController class] || ![PKPaymentAuthorizationViewController canMakePayments] || ![PKPaymentAuthorizationViewController canMakePaymentsUsingNetworks:@[PKPaymentNetworkAmex, PKPaymentNetworkMasterCard, PKPaymentNetworkVisa]]) {
+            [paymentList removeObject:BRAINTREE_APPLEPAY];
+        }
         [self showDropIn:[_payment objectForKey:@"token"]];
     }
     UIBarButtonItem *cancelButtonItem = [[UIBarButtonItem alloc] initWithTitle:SCLocalizedString(@"Cancel") style:UIBarButtonItemStylePlain target:self action:@selector(cancelPayment:)];
@@ -110,13 +107,14 @@
 }
 - (PKPaymentRequest *)applePaymentRequest {
     PKPaymentRequest *paymentRequest = [[PKPaymentRequest alloc] init];
-    paymentRequest.requiredBillingAddressFields = PKAddressFieldName;
-    PKShippingMethod *shippingMethod = [PKShippingMethod summaryItemWithLabel:[_shipping valueForKey:@"s_method_title"] amount:[NSDecimalNumber decimalNumberWithString:[NSString stringWithFormat:@"%@",[_shipping valueForKey:@"s_method_fee"]]]];
-    shippingMethod.detail = [_shipping valueForKey:@"s_method_name"] ;
-    shippingMethod.identifier = [_shipping valueForKey:@"s_method_id"];
-    paymentRequest.shippingMethods = @[shippingMethod];
-    paymentRequest.requiredShippingAddressFields = PKAddressFieldAll;
     
+//    paymentRequest.requiredBillingAddressFields = PKAddressFieldName;
+//    PKShippingMethod *shippingMethod = [PKShippingMethod summaryItemWithLabel:[_shipping valueForKey:@"s_method_title"] amount:[NSDecimalNumber decimalNumberWithString:[NSString stringWithFormat:@"%@",[_shipping valueForKey:@"s_method_fee"]]]];
+//    shippingMethod.detail = [_shipping valueForKey:@"s_method_name"] ;
+//    shippingMethod.identifier = [_shipping valueForKey:@"s_method_id"];
+//    paymentRequest.shippingMethods = @[shippingMethod];
+//    paymentRequest.requiredShippingAddressFields = PKAddressFieldAll;
+//    
     paymentRequest.merchantIdentifier = [self.payment valueForKey:@"apple_merchant"];
 #ifdef __IPHONE_9_0
     paymentRequest.supportedNetworks = @[PKPaymentNetworkVisa, PKPaymentNetworkMasterCard, PKPaymentNetworkAmex, PKPaymentNetworkDiscover];
@@ -126,45 +124,48 @@
     paymentRequest.merchantCapabilities = PKMerchantCapability3DS;
     paymentRequest.countryCode = [SimiGlobalVar sharedInstance].countryCode;
     paymentRequest.currencyCode = [SimiGlobalVar sharedInstance].currencyCode;
+    //Shipping and Billing is not required
+    paymentRequest.requiredBillingAddressFields = NO;
+    paymentRequest.requiredShippingAddressFields = NO;
 //    if ([paymentRequest respondsToSelector:@selector(setShippingType:)]) {
 //        paymentRequest.shippingType = PKShippingTypeDelivery;
 //    }
-    {
-        //Shipping Contact
-        NSDictionary* shippingAddress = [order objectForKey:@"shipping_address"];
-        PKContact* shippingContact = [[PKContact alloc] init];
-        NSPersonNameComponents *name = [[NSPersonNameComponents alloc] init];
-        name.givenName = [shippingAddress objectForKey:@"firstname"];
-        name.familyName = [shippingAddress objectForKey:@"lastname"];
-        shippingContact.name = name;
-
-        CNMutablePostalAddress *address = [[CNMutablePostalAddress alloc] init];
-        address.street = [shippingAddress objectForKey:@"street"];
-        address.city = [shippingAddress objectForKey:@"city"];
-        address.state = [shippingAddress objectForKey:@"region"];
-        address.postalCode = [shippingAddress objectForKey:@"postcode"];
-        
-        shippingContact.postalAddress = address;
-        paymentRequest.shippingContact = shippingContact;
-    }
-    {
-        //Billing Contact
-        NSDictionary* billingAddress = [order objectForKey:@"billing_address"];
-        PKContact* billingContact = [[PKContact alloc] init];
-        NSPersonNameComponents *name = [[NSPersonNameComponents alloc] init];
-        name.givenName = [billingAddress objectForKey:@"firstname"];
-        name.familyName = [billingAddress objectForKey:@"lastname"];
-        billingContact.name = name;
-        
-        CNMutablePostalAddress *address = [[CNMutablePostalAddress alloc] init];
-        address.street = [billingAddress objectForKey:@"street"];
-        address.city = [billingAddress objectForKey:@"city"];
-        address.state = [billingAddress objectForKey:@"region"];
-        address.postalCode = [billingAddress objectForKey:@"postcode"];
-        
-        billingContact.postalAddress = address;
-        paymentRequest.billingContact = billingContact;
-    }
+//    {
+//        //Shipping Contact
+//        NSDictionary* shippingAddress = [order objectForKey:@"shipping_address"];
+//        PKContact* shippingContact = [[PKContact alloc] init];
+//        NSPersonNameComponents *name = [[NSPersonNameComponents alloc] init];
+//        name.givenName = [shippingAddress objectForKey:@"firstname"];
+//        name.familyName = [shippingAddress objectForKey:@"lastname"];
+//        shippingContact.name = name;
+//
+//        CNMutablePostalAddress *address = [[CNMutablePostalAddress alloc] init];
+//        address.street = [shippingAddress objectForKey:@"street"];
+//        address.city = [shippingAddress objectForKey:@"city"];
+//        address.state = [shippingAddress objectForKey:@"region"];
+//        address.postalCode = [shippingAddress objectForKey:@"postcode"];
+//        
+//        shippingContact.postalAddress = address;
+//        paymentRequest.shippingContact = shippingContact;
+//    }
+//    {
+//        //Billing Contact
+//        NSDictionary* billingAddress = [order objectForKey:@"billing_address"];
+//        PKContact* billingContact = [[PKContact alloc] init];
+//        NSPersonNameComponents *name = [[NSPersonNameComponents alloc] init];
+//        name.givenName = [billingAddress objectForKey:@"firstname"];
+//        name.familyName = [billingAddress objectForKey:@"lastname"];
+//        billingContact.name = name;
+//        
+//        CNMutablePostalAddress *address = [[CNMutablePostalAddress alloc] init];
+//        address.street = [billingAddress objectForKey:@"street"];
+//        address.city = [billingAddress objectForKey:@"city"];
+//        address.state = [billingAddress objectForKey:@"region"];
+//        address.postalCode = [billingAddress objectForKey:@"postcode"];
+//        
+//        billingContact.postalAddress = address;
+//        paymentRequest.billingContact = billingContact;
+//    }
     NSMutableDictionary* fees = [order objectForKey:@"total"];
     
     NSDecimalNumber* subTotal = [NSDecimalNumber decimalNumberWithString:[NSString stringWithFormat:@"%.2f",[[fees valueForKey:@"subtotal_incl_tax"] floatValue]]];
@@ -175,13 +176,13 @@
         shippingFee = [NSDecimalNumber decimalNumberWithString:@"0"];
     }
     NSDecimalNumber* grandTotal = [NSDecimalNumber decimalNumberWithString:[NSString stringWithFormat:@"%.2f",[[fees valueForKey:@"grand_total_incl_tax"] floatValue]]];
-    
-    paymentRequest.paymentSummaryItems =
-    @[
-      [PKPaymentSummaryItem summaryItemWithLabel:@"Subtotal" amount:subTotal],
-      [PKPaymentSummaryItem summaryItemWithLabel:@"Shipping" amount:shippingFee],
-      [PKPaymentSummaryItem summaryItemWithLabel:@"Grand Total" amount:grandTotal],
-      ];
+    NSMutableArray* summaryItems = [[NSMutableArray alloc] init];
+    [summaryItems addObject:[PKPaymentSummaryItem summaryItemWithLabel:@"Subtotal" amount:subTotal]];
+    if(shippingFee.floatValue > 0){
+        [summaryItems addObject:[PKPaymentSummaryItem summaryItemWithLabel:@"Shipping" amount:shippingFee]];
+    }
+    [summaryItems addObject:[PKPaymentSummaryItem summaryItemWithLabel:@"Grand Total" amount:grandTotal]];
+    paymentRequest.paymentSummaryItems = summaryItems;
     return paymentRequest;
 }
 
@@ -207,12 +208,13 @@
     if(!cell){
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier];
         if([identifier isEqualToString:BRAINTREE_APPLEPAY]){
-            PKPaymentButton *applePayButton = [[PKPaymentButton alloc] initWithPaymentButtonType:PKPaymentButtonTypePlain paymentButtonStyle:PKPaymentButtonStyleBlack];
+            PKPaymentButton *applePayButton = [[PKPaymentButton alloc] initWithPaymentButtonType:PKPaymentButtonTypeBuy paymentButtonStyle:PKPaymentButtonStyleBlack];
             [applePayButton addTarget:self action:@selector(payWithApplePay) forControlEvents:UIControlEventTouchUpInside];
-            applePayButton.frame = CGRectMake(44, 7, 100, 30);
+            applePayButton.frame = CGRectMake(15, 2, 120, 40);
             [cell addSubview:applePayButton];
         }else if([identifier isEqualToString:BRAINTREE_PAYPAL]){
-            cell.textLabel.text = @"Pay with Paypal and Card";
+            cell.textLabel.text = @"Pay with Paypal and Credit Card";
+            cell.textLabel.font = [UIFont fontWithName:THEME_FONT_NAME size:13];
         }
         else{
             
