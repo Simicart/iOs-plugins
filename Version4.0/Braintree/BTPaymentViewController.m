@@ -47,10 +47,10 @@
     self.view = tableView;
     self.title = SCLocalizedString(@"Braintree");
     [super viewDidLoad];
+    if (![PKPaymentAuthorizationViewController class] || ![PKPaymentAuthorizationViewController canMakePayments] || ![PKPaymentAuthorizationViewController canMakePaymentsUsingNetworks:@[PKPaymentNetworkAmex, PKPaymentNetworkMasterCard, PKPaymentNetworkVisa]]) {
+        [paymentList removeObject:BRAINTREE_APPLEPAY];
+    }
     if(![paymentList containsObject:BRAINTREE_APPLEPAY]){
-        if (![PKPaymentAuthorizationViewController class] || ![PKPaymentAuthorizationViewController canMakePayments] || ![PKPaymentAuthorizationViewController canMakePaymentsUsingNetworks:@[PKPaymentNetworkAmex, PKPaymentNetworkMasterCard, PKPaymentNetworkVisa]]) {
-            [paymentList removeObject:BRAINTREE_APPLEPAY];
-        }
         [self showDropIn:[_payment objectForKey:@"token"]];
     }
     UIBarButtonItem *cancelButtonItem = [[UIBarButtonItem alloc] initWithTitle:SCLocalizedString(@"Cancel") style:UIBarButtonItemStylePlain target:self action:@selector(cancelPayment:)];
@@ -77,7 +77,7 @@
 
 -(void) showDropIn:(NSString*) clientTokenOrTokenizationKey{
     BTDropInRequest *request = [[BTDropInRequest alloc] init];
-    request.applePayDisabled = YES;
+//    request.applePayDisabled = YES;
     request.threeDSecureVerification = YES;
     NSMutableDictionary* fees = [order objectForKey:@"total"];
     NSString* grandTotal = [NSString stringWithFormat:@"%.2f",[[fees valueForKey:@"grand_total_incl_tax"] floatValue]];
@@ -382,6 +382,13 @@ requestsDismissalOfViewController:(UIViewController *)viewController {
 - (void)dropInViewControllerDidCancel:(BTDropInViewController *)viewController{
     NSLog(@"DIDCANCEL");
     [viewController dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)dropInViewControllerDidLoad:(BTDropInViewController *)viewController{
+    
+}
+- (void)dropInViewControllerWillComplete:(BTDropInViewController *)viewController{
+    
 }
 
 #pragma mark UIAlertViewDelegate
