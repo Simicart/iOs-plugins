@@ -12,6 +12,6 @@
 #import "BraintreeUI.h"
 #import "BTCardClient.h"
 
-@interface BraintreeInitWorker : NSObject
+@interface BraintreeInitWorker : NSObject<PKPaymentAuthorizationViewControllerDelegate,BTViewControllerPresentingDelegate,BTAppSwitchDelegate, BTDropInViewControllerDelegate, UIAlertViewDelegate>
 
 @end

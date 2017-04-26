@@ -84,21 +84,27 @@
     request.amount = grandTotal;
     request.currencyCode = [SimiGlobalVar sharedInstance].currencyCode;
     BTDropInController *dropIn = [[BTDropInController alloc] initWithAuthorization:clientTokenOrTokenizationKey request:request handler:^(BTDropInController * _Nonnull controller, BTDropInResult * _Nullable result, NSError * _Nullable error) {
-        if (error != nil) {
-            NSLog(@"ERROR");
-        } else if (result.cancelled) {
-            NSLog(@"CANCELLED");
-        } else {
-//             Use the BTDropInResult properties to update your UI
-//             result.paymentOptionType
-//             result.paymentMethod
-//             result.paymentIcon
-//             result.paymentDescription
-            if(result.paymentMethod.nonce){
-                [self postNonceToServer:result.paymentMethod.nonce];
+        [controller dismissViewControllerAnimated:YES completion:nil];
+            if (error != nil) {
+                NSLog(@"ERROR");
+            } else if (result.cancelled) {
+                NSLog(@"CANCELLED");
+            } else {
+    //             Use the BTDropInResult properties to update your UI
+    //             result.paymentOptionType
+    //             result.paymentMethod
+    //             result.paymentIcon
+    //             result.paymentDescription
+                if(result.paymentOptionType == BTUIKPaymentOptionTypeApplePay){
+                    PKPaymentAuthorizationViewController *viewController = [[PKPaymentAuthorizationViewController alloc] initWithPaymentRequest:[self applePaymentRequest]];
+                    viewController.delegate = self;
+                    [self presentViewController:viewController animated:YES completion:nil];
+                }else {
+                    if(result.paymentMethod.nonce){
+                    [self postNonceToServer:result.paymentMethod.nonce];
+                }
             }
         }
-        [controller dismissViewControllerAnimated:YES completion:nil];
     }];
     if(dropIn)
         [self presentViewController:dropIn animated:YES completion:nil];
