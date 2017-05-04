@@ -27,6 +27,7 @@
 #define SimiFaceBookWorker_StartLoginWithFaceBook @"SimiFaceBookWorker_StartLoginWithFaceBook"
 #define SCLeftMenu_InitCellsAfter @"SCLeftMenu_InitCellsAfter"
 #define SCLeftMenu_DidSelectRow @"SCLeftMenu_DidSelectRow"
+#define DidClickFacebookLoginButton @"DidClickFacebookLoginButton"
 
 #define LEFTMENU_ROW_FACEBOOK_INVITE @"LEFTMENU_ROW_FACEBOOK_INVITE"
 
@@ -80,6 +81,9 @@
         //Facebook Analytics
         [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(trackingEvent:) name:TRACKINGEVENT object:nil];
         [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(trackingViewedScreen:) name:@"SimiViewControllerViewDidAppear" object:nil];
+        
+        //Customize
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:DidClickFacebookLoginButton object:nil];
         
         facebookAppID = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"FacebookAppID"];
         commentHTMLString = @"\
@@ -174,6 +178,18 @@
         for (NSHTTPCookie* cookie in facebookCookies) {
             [cookies deleteCookie:cookie];
         }
+    }else if([noti.name isEqualToString:DidClickFacebookLoginButton]){
+        FBSDKLoginManager *login = [[FBSDKLoginManager alloc] init];
+        [login logInWithReadPermissions: @[@"public_profile", @"email"] fromViewController:[noti.userInfo objectForKey:@"viewcontroller"] handler:^(FBSDKLoginManagerLoginResult *result, NSError *error) {
+             if (error) {
+                 UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:SCLocalizedString(@"Opps") message:SCLocalizedString(@"Login failed. Please try again later") delegate:nil cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles:nil, nil];
+                 [alertView show];
+             } else if (result.isCancelled) {
+                 NSLog(@"Cancelled");
+             } else {
+                 [self loginWithFacebookInfo];
+             }
+         }];
     }
 }
 
