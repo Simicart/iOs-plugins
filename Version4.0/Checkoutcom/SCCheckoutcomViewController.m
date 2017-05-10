@@ -15,6 +15,7 @@
 @implementation SCCheckoutcomViewController
 {
     UIWebView* checkoutWebView;
+    CheckoutcomModel* checkoutcomModel;
 }
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -34,7 +35,12 @@
 -(BOOL) webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType{
     NSString* url = [request.URL absoluteString];
     if([url containsString:[self.order objectForKey:@"success_url"]]){
-        [self dismissViewControllerAnimated:YES completion:nil];
+        if(!checkoutcomModel){
+            checkoutcomModel = [CheckoutcomModel new];
+        }
+        [checkoutcomModel completeOrderWithParams:@{@"invoice_number":[self.order objectForKey:@"invoice_number"]}];
+        [self startLoadingData];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didCompleteOrder:) name:DidUpdateCheckoutComPayment object:nil];
         return NO;
     }
     return YES;
@@ -46,6 +52,19 @@
 
 -(void) webViewDidFinishLoad:(UIWebView *)webView{
     [self stopLoadingData];
+}
+
+-(void) didCompleteOrder:(NSNotification*) noti{
+    [self stopLoadingData];
+    [self removeObserverForNotification:noti];
+    SimiResponder* responder = [noti.userInfo objectForKey:@"responder"];
+    [self showAlertWithTitle:@"" message:[NSString stringWithFormat:@"%@!",SCLocalizedString(@"Thank you for your purchase")]];
+    if([responder.status isEqualToString:@"SUCCESS"]){
+        
+    }else{
+        
+    }
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 @end
