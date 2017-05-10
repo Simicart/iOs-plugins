@@ -1,16 +1,15 @@
 //
 //  GoogleSignIn.h
+//  Google Sign-In iOS SDK
 //
-//  Copyright 2016 Google Inc.
+//  Copyright 2015 Google Inc.
 //
-
-#ifndef GOOGLESIGNIN_H
-#define GOOGLESIGNIN_H
+//  Use of this SDK is subject to the Google APIs Terms of Service:
+//  https://developers.google.com/terms/
+//
 
 #import "GIDAuthentication.h"
 #import "GIDGoogleUser.h"
 #import "GIDProfileData.h"
 #import "GIDSignIn.h"
 #import "GIDSignInButton.h"
-
-#endif

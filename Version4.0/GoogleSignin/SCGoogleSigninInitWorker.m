@@ -20,7 +20,7 @@
 @implementation SCGoogleSigninInitWorker{
     SimiCustomerModel* customerModel;
     SimiTable* cells;
-    SimiViewController* loginViewController;
+    UIViewController* loginViewController;
 }
 
 -(id) init{
@@ -30,6 +30,9 @@
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:SCLoginViewController_InitCellsAfter object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didLogout:) name:DidLogout object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didLogin:) name:DidLogout object:nil];
+        
+        //Customization
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"DidClickGoogleLoginButton" object:nil];
         
         //Init GIDSignin attributes
         [GIDSignIn sharedInstance].delegate = self;
@@ -73,6 +76,9 @@
             [cell addSubview:ggSignInButton];
             [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
         }
+    }else if([noti.name isEqualToString:@"DidClickGoogleLoginButton"]){
+        loginViewController = [noti.userInfo objectForKey:@"controller"];
+        [[GIDSignIn sharedInstance] signIn];
     }
 }
 
@@ -82,8 +88,7 @@
 }
 
 -(void) didLogin: (NSNotification*) noti{
-    if([[GIDSignIn sharedInstance] currentUser])
-       [loginViewController stopLoadingData];
+    
 }
 
 //GIDSigninDelegate
@@ -96,28 +101,27 @@
             customerModel = [SimiCustomerModel new];
         }
         [customerModel loginWithSocialEmail:email password:[[SimiGlobalVar sharedInstance] md5PassWordWithEmail:email]  firstName:firstName lastName:lastName];
-        [loginViewController startLoadingData];
     }
 }
 
 -(void) signIn:(GIDSignIn *)signIn didDisconnectWithUser:(GIDGoogleUser *)user withError:(NSError *)error{
     if(!error){
-        
+        if([[GIDSignIn sharedInstance] currentUser])
+            [[GIDSignIn sharedInstance] signOut];
     }
 }
 
 
 //GIDSignInUIDelegate
 -(void) signInWillDispatch:(GIDSignIn *)signIn error:(NSError *)error{
-    [loginViewController stopLoadingData];
+    
 }
 
 -(void) signIn:(GIDSignIn *)signIn presentViewController:(UIViewController *)viewController{
     [loginViewController presentViewController:viewController animated:YES completion:nil];
 }
 
-- (void)signIn:(GIDSignIn *)signIn
-dismissViewController:(UIViewController *)viewController {
+- (void)signIn:(GIDSignIn *)signIn dismissViewController:(UIViewController *)viewController {
     [loginViewController dismissViewControllerAnimated:YES completion:nil];
 }
 

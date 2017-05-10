@@ -27,7 +27,6 @@
 #define SimiFaceBookWorker_StartLoginWithFaceBook @"SimiFaceBookWorker_StartLoginWithFaceBook"
 #define SCLeftMenu_InitCellsAfter @"SCLeftMenu_InitCellsAfter"
 #define SCLeftMenu_DidSelectRow @"SCLeftMenu_DidSelectRow"
-#define DidClickFacebookLoginButton @"DidClickFacebookLoginButton"
 
 #define LEFTMENU_ROW_FACEBOOK_INVITE @"LEFTMENU_ROW_FACEBOOK_INVITE"
 
@@ -83,7 +82,7 @@
         [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(trackingViewedScreen:) name:@"SimiViewControllerViewDidAppear" object:nil];
         
         //Customize
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:DidClickFacebookLoginButton object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"DidClickFacebookLoginButton" object:nil];
         
         facebookAppID = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"FacebookAppID"];
         commentHTMLString = @"\
@@ -178,7 +177,7 @@
         for (NSHTTPCookie* cookie in facebookCookies) {
             [cookies deleteCookie:cookie];
         }
-    }else if([noti.name isEqualToString:DidClickFacebookLoginButton]){
+    }else if([noti.name isEqualToString:@"DidClickFacebookLoginButton"]){
         FBSDKLoginManager *login = [[FBSDKLoginManager alloc] init];
         [login logInWithReadPermissions: @[@"public_profile", @"email"] fromViewController:[noti.userInfo objectForKey:@"viewcontroller"] handler:^(FBSDKLoginManagerLoginResult *result, NSError *error) {
              if (error) {

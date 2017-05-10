@@ -34,7 +34,6 @@
 #pragma mark UIWebViewDelegate
 -(BOOL) webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType{
     NSString* url = [request.URL absoluteString];
-    NSLog(@"%@",url);
     if([url containsString:[self.order objectForKey:@"success_url"]]){
         if(!checkoutcomModel){
             checkoutcomModel = [CheckoutcomModel new];
