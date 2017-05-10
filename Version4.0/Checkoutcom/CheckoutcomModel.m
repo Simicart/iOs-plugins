@@ -10,6 +10,9 @@
 
 @implementation CheckoutcomModel
 -(void) completeOrderWithParams:(NSDictionary *)params{
-    
+    currentNotificationName = DidUpdateCheckoutComPayment;
+    keyResponse = @"checkoutcomapi";
+    [self preDoRequest];
+    [[SimiAPI new] requestWithMethod:GET URL:[NSString stringWithFormat:@"%@simiconnector/rest/v2/checkoutcomapis/update_payment",kBaseURL] params:params target:self selector:@selector(didFinishRequest:responder:) header:nil];
 }
 @end

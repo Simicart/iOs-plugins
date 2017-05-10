@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <SimiCartBundle/SimiOrderModel.h>
 #import <SimiCartBundle/SCRedirectPaymentViewController.h>
+#import "CheckoutcomModel.h"
 
 @interface SCCheckoutcomViewController : SCRedirectPaymentViewController<UIWebViewDelegate>
 @end
