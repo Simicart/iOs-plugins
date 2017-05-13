@@ -128,21 +128,14 @@
                                  }];
             }
             
-            if ([self hasField:[hiddenAddressModel valueForKey:@"country_id_show"]]) {
-                newAddressController.country = (SimiFormSelect *)[form addField:@"Select"
-                                                                         config:@{
-                                                                                  @"name": @"country_id",
-                                                                                  @"title": SCLocalizedString(@"Country"),
-                                                                                  @"option_type": SimiFormOptionNavigation,
-                                                                                  @"nav_controller": newAddressController.navigationController,
-                                                                                  @"value_field": @"country_code",
-                                                                                  @"label_field": @"country_name",
-                                                                                  @"index_titles": @1,
-                                                                                  @"searchable": @1,
-                                                                                  @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:@"country_id_show"] isEqualToString:@"req"]]
-                                                                                  }];
+            if ([self hasField:[hiddenAddressModel valueForKey:@"zipcode_show"]]) {
+                [form addField:@"Text"
+                        config:@{
+                                 @"name": @"postcode",
+                                 @"title": SCLocalizedString(@"Post/Zip Code"),
+                                 @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:@"zipcode_show"] isEqualToString:@"req"]]
+                                 }];
             }
-
             
             if ([self hasField:[hiddenAddressModel valueForKey:@"region_id_show"]]) {
                 newAddressController.stateName = (SimiFormText *)[form addField:@"Text"
@@ -165,15 +158,21 @@
                                                                                   }];
             }
             
-            
-            if ([self hasField:[hiddenAddressModel valueForKey:@"zipcode_show"]]) {
-                [form addField:@"Text"
-                        config:@{
-                                 @"name": @"postcode",
-                                 @"title": SCLocalizedString(@"Post/Zip Code"),
-                                 @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:@"zipcode_show"] isEqualToString:@"req"]]
-                                 }];
+            if ([self hasField:[hiddenAddressModel valueForKey:@"country_id_show"]]) {
+                newAddressController.country = (SimiFormSelect *)[form addField:@"Select"
+                                                                         config:@{
+                                                                                  @"name": @"country_id",
+                                                                                  @"title": SCLocalizedString(@"Country"),
+                                                                                  @"option_type": SimiFormOptionNavigation,
+                                                                                  @"nav_controller": newAddressController.navigationController,
+                                                                                  @"value_field": @"country_code",
+                                                                                  @"label_field": @"country_name",
+                                                                                  @"index_titles": @1,
+                                                                                  @"searchable": @1,
+                                                                                  @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:@"country_id_show"] isEqualToString:@"req"]]
+                                                                                  }];
             }
+
             
             if ([self hasField:[hiddenAddressModel valueForKey:@"telephone_show"]]) {
                 [form addField:@"Phone"
