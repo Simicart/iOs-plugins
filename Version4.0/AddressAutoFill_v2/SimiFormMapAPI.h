@@ -9,6 +9,7 @@
 #import <SimiCartBundle/SimiCartBundle.h>
 #import <SimiCartBundle/SimiFormAbstract.h>
 #import <GoogleMaps/GoogleMaps.h>
+#import <GooglePlaces/GooglePlaces.h>
 @interface SimiFormMapAPI : SimiFormAbstract <UIActionSheetDelegate,GMSMapViewDelegate,CLLocationManagerDelegate>
 {
     CLLocationManager* locationManager;

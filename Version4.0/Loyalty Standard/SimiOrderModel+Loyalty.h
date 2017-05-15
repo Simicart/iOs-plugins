@@ -12,4 +12,6 @@
 
 - (void)spendPoints:(NSInteger)points ruleId:(id)ruleId;
 
+- (void)spendPoints:(NSString*)points;
+
 @end

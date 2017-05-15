@@ -109,6 +109,7 @@
     NSDictionary *params = @{@"longitude":[NSString stringWithFormat:@"%f",coordinate.longitude], @"latitude":[NSString stringWithFormat:@"%f",coordinate.latitude]};
     [[NSNotificationCenter defaultCenter]postNotificationName:@"SimiFormMapAPI_DidGetAddress" object:params];
 }
+
 - (void)dealloc
 {
      [[NSNotificationCenter defaultCenter] removeObserver:self];
