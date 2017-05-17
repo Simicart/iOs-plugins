@@ -8,6 +8,9 @@
 
 #import <Foundation/Foundation.h>
 #import "SimiAddressAutofillModel.h"
-@interface LocationPickupWorker : NSObject
+#import <GoogleMaps/GoogleMaps.h>
+#import <GooglePlaces/GooglePlaces.h>
+
+@interface LocationPickupWorker : NSObject<GMSAutocompleteTableDataSourceDelegate,UITextFieldDelegate>
 
 @end

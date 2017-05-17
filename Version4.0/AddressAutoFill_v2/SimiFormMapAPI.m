@@ -22,7 +22,6 @@
 
 - (instancetype)initWithConfig:(NSDictionary *)config
 {
-     [GMSServices provideAPIKey:@"AIzaSyDh-R-4SO0lAeWa-2Dkfe7YPMQIa75GR5c"];
     self = [super initWithConfig:config];
     if(self)
     {

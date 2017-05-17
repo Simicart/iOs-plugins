@@ -33,6 +33,8 @@ static NSString *LEFTMENU_REWARDS_ROW     = @"leftmenu_rewards";
 
 @implementation LoyaltyPluginInitial{
     UITextField* rewardPointTextField;
+    SimiOrderModel* order;
+    NSDictionary* loyaltyData;
 }
 
 - (instancetype)init
@@ -59,7 +61,7 @@ static NSString *LEFTMENU_REWARDS_ROW     = @"leftmenu_rewards";
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"DidGetOrderConfig" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"DidSetCouponCode" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"DidSaveShippingMethod" object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"DidSpendPointsOrder" object:nil];
+//        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"DidSpendPointsOrder" object:nil];
         
         //Order screen init order table on iphone
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"SCOrderViewController-InitTableBefore" object:nil];
@@ -85,15 +87,15 @@ static NSString *LEFTMENU_REWARDS_ROW     = @"leftmenu_rewards";
 
 - (void)didReceiveNotification:(NSNotification *)noti{
 #pragma mark set Order Table
-    if (([noti.name isEqualToString:@"DidGetOrderConfig"] || [noti.name isEqualToString:@"DidSpendPointsOrder"] || [noti.name isEqualToString:@"DidSetCouponCode"] || [noti.name isEqualToString:@"DidSaveShippingMethod"] || [noti.name isEqualToString:@"SCOrderViewController-InitTableBefore"] || [noti.name isEqualToString:@"SCOrderViewController-InitTableAfter"]||[noti.name isEqualToString:@"SCOrderViewController-InitRightTableAfter"]) && self.orderViewController) {
-        SimiOrderModel *order = [self.orderViewController order];
+    if (([noti.name isEqualToString:@"DidGetOrderConfig"] || [noti.name isEqualToString:@"DidSetCouponCode"] || [noti.name isEqualToString:@"DidSaveShippingMethod"] || [noti.name isEqualToString:@"SCOrderViewController-InitTableBefore"] || [noti.name isEqualToString:@"SCOrderViewController-InitTableAfter"]||[noti.name isEqualToString:@"SCOrderViewController-InitRightTableAfter"]) && self.orderViewController) {
+        order = [self.orderViewController order];
         SimiTable *orderTable = [self.orderViewController orderTable];
         if (PADDEVICE) {
             orderTable = [(SCOrderViewControllerPad *)self.orderViewController orderTableRight];
         }
-        NSDictionary* loyalty = [order objectForKey:@"loyalty"];
+        loyaltyData = [order objectForKey:@"loyalty"];
 //        NSArray *rules = [[order valueForKey:@"loyalty"] objectForKey:@"loyalty_rules"];
-        if (loyalty) {
+        if ([[loyaltyData objectForKey:@"loyalty_max"] floatValue] > 0) {
 //            NSDictionary *rule = [rules objectAtIndex:0];
             if ([orderTable getSectionIndexByIdentifier:LOYALTY_CHECKOUT] == NSNotFound) {
                 NSUInteger index = [orderTable getSectionIndexByIdentifier:ORDER_TOTALS_SECTION];
@@ -113,20 +115,35 @@ static NSString *LEFTMENU_REWARDS_ROW     = @"leftmenu_rewards";
                 break;
             }
         }
-        if ([noti.name isEqualToString:@"DidSpendPointsOrder"]) {
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            [[(SCOrderViewControllerPad *)self.orderViewController tableRight] reloadData];
+        }
+#pragma mark init Cart Cell
+    }else if([noti.name isEqualToString:@"DidSpendPointsOrder"] ){
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:noti.name object:nil];
+        SimiViewController *currentVC = [SimiGlobalVar sharedInstance].currentlyNavigationController.viewControllers.lastObject;
+        [currentVC stopLoadingData];
+        if([currentVC isKindOfClass:[SCCartViewController class]]){
+            [((SCCartViewController*) currentVC) getCart];
+        }else if([currentVC isKindOfClass:[SCOrderViewController class]]){
             [self.orderViewController didGetOrderConfig:noti];
         }
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             [[(SCOrderViewControllerPad *)self.orderViewController tableRight] reloadData];
         }
-#pragma mark init Cart Cell
-    } else if ([noti.name isEqualToString:@"InitCartCell-Before"]) {
+    }else if ([noti.name isEqualToString:@"InitCartCell-Before"]) {
         SimiCartModelCollection *cart = [[SimiGlobalVar sharedInstance] cart];
-        if (cart.count && cart.loyaltyData.count > 0) {
+        loyaltyData = cart.loyaltyData;
+        if (cart.count && [[loyaltyData objectForKey:@"loyalty_max"] floatValue] > 0) {
             // Add Row to show Loyalty Labels
             SimiTable *cartCells = (SimiTable *)noti.object;
             SimiSection *loyaltySection = [cartCells addSectionWithIdentifier:LOYALTY_CART];
-            [loyaltySection addRowWithIdentifier:LOYALTY_CART height:150];
+            loyaltySection.sortOrder = 150;
+            SimiRow* loyaltyRow = [loyaltySection getRowByIdentifier:LOYALTY_CART];
+            if(!loyaltyRow){
+                loyaltyRow = [[SimiRow alloc] initWithIdentifier:LOYALTY_CART height:150];
+                [loyaltySection addRow:loyaltyRow];
+            }
         }
     } else if ([noti.name isEqualToString:@"InitializedCartCell-Before"]) {
         SimiRow *row = [noti.userInfo objectForKey:@"row"];
@@ -148,13 +165,13 @@ static NSString *LEFTMENU_REWARDS_ROW     = @"leftmenu_rewards";
                 //        }
                 UITableView *tableView = (UITableView *)[noti.userInfo objectForKey:@"tableView"];
 //                SimiOrderModel *order = [self.orderViewController order];
-                NSDictionary* loyalty = cart.loyaltyData;
+                loyaltyData = cart.loyaltyData;
                 SimiLabel* titleLabel = [[SimiLabel alloc] initWithFrame:CGRectMake(15, 5,tableView.frame.size.width - 30 , 25)];
-                titleLabel.text = [NSString stringWithFormat:@"You have %@ Reward Points available.", [loyalty objectForKey:@"loyalty_max"]];
+                titleLabel.text = [NSString stringWithFormat:@"You have %@ Reward Points available.", [loyaltyData objectForKey:@"loyalty_max"]];
                 [cell addSubview:titleLabel];
                 rewardPointTextField = [[UITextField alloc] initWithFrame:CGRectMake(15, 30, tableView.frame.size.width - 30, 40)];
-                if([[loyalty objectForKey:@"loyalty_spend"] floatValue] > 0){
-                    rewardPointTextField.text = [NSString stringWithFormat:@"%@",[loyalty objectForKey:@"loyalty_spend"]];
+                if([[loyaltyData objectForKey:@"loyalty_spend"] floatValue] > 0){
+                    rewardPointTextField.text = [NSString stringWithFormat:@"%@",[loyaltyData objectForKey:@"loyalty_spend"]];
                 }
                 rewardPointTextField.placeholder = SCLocalizedString(@"Enter amount of points to spend");
                 rewardPointTextField.font = [UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE];
@@ -172,7 +189,7 @@ static NSString *LEFTMENU_REWARDS_ROW     = @"leftmenu_rewards";
                 useMaxCheckbox.checkAlignment = M13CheckboxAlignmentLeft;
                 useMaxCheckbox.strokeColor = THEME_BUTTON_BACKGROUND_COLOR;
                 useMaxCheckbox.checkColor = THEME_BUTTON_BACKGROUND_COLOR;
-                useMaxCheckbox.titleLabel.text = [NSString stringWithFormat:@"%@ %@",SCLocalizedString(@"Use maximum"),[loyalty objectForKey:@"loyalty_max"]];
+                useMaxCheckbox.titleLabel.text = [NSString stringWithFormat:@"%@ %@",SCLocalizedString(@"Use maximum"),[loyaltyData objectForKey:@"loyalty_max"]];
                 useMaxCheckbox.titleLabel.font = [UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE];
                 [useMaxCheckbox addTarget:self action:@selector(useMaxCheckbox:) forControlEvents:UIControlEventValueChanged];
                 [cell addSubview:useMaxCheckbox];
@@ -232,7 +249,7 @@ static NSString *LEFTMENU_REWARDS_ROW     = @"leftmenu_rewards";
     pointValue *= pointStep;
     slider.value = (float)pointValue;
     
-    SimiOrderModel *order = [self.orderViewController order];
+    order = [self.orderViewController order];
     if ([[[order valueForKey:@"loyalty"] objectForKey:@"loyalty_spend"] integerValue] == pointValue) {
         return;
     }
@@ -365,7 +382,7 @@ static NSString *LEFTMENU_REWARDS_ROW     = @"leftmenu_rewards";
 
 - (void)initOrderRightTableAfter:(NSNotification *)noti
 {
-    SimiOrderModel *order = [self.orderViewController order];
+    order = [self.orderViewController order];
     NSArray *rules = [[order objectForKey:@"fee"] objectForKey:@"loyalty_rules"];
     if ([rules count]) {
         NSDictionary *rule = [rules objectAtIndex:0];
@@ -397,14 +414,14 @@ static NSString *LEFTMENU_REWARDS_ROW     = @"leftmenu_rewards";
 //            return;
 //        }
         UITableView *tableView = (UITableView *)[noti.userInfo objectForKey:@"tableView"];
-        SimiOrderModel *order = [self.orderViewController order];
-        NSDictionary* loyalty = [order objectForKey:@"loyalty"];
+        order = [self.orderViewController order];
+        loyaltyData = [order objectForKey:@"loyalty"];
         SimiLabel* titleLabel = [[SimiLabel alloc] initWithFrame:CGRectMake(15, 5,tableView.frame.size.width - 30 , 25)];
-        titleLabel.text = [NSString stringWithFormat:@"You have %@ Reward Points available.", [loyalty objectForKey:@"loyalty_max"]];
+        titleLabel.text = [NSString stringWithFormat:@"You have %@ Reward Points available.", [loyaltyData objectForKey:@"loyalty_max"]];
         [cell addSubview:titleLabel];
         rewardPointTextField = [[UITextField alloc] initWithFrame:CGRectMake(15, 30, tableView.frame.size.width - 30, 40)];
-        if([[loyalty objectForKey:@"loyalty_spend"] floatValue] > 0){
-            rewardPointTextField.text = [NSString stringWithFormat:@"%@",[loyalty objectForKey:@"loyalty_spend"]];
+        if([[loyaltyData objectForKey:@"loyalty_spend"] floatValue] > 0){
+            rewardPointTextField.text = [NSString stringWithFormat:@"%@",[loyaltyData objectForKey:@"loyalty_spend"]];
         }
         rewardPointTextField.placeholder = SCLocalizedString(@"Enter amount of points to spend");
         rewardPointTextField.font = [UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE];
@@ -422,7 +439,7 @@ static NSString *LEFTMENU_REWARDS_ROW     = @"leftmenu_rewards";
         useMaxCheckbox.checkAlignment = M13CheckboxAlignmentLeft;
         useMaxCheckbox.strokeColor = THEME_BUTTON_BACKGROUND_COLOR;
         useMaxCheckbox.checkColor = THEME_BUTTON_BACKGROUND_COLOR;
-        useMaxCheckbox.titleLabel.text = [NSString stringWithFormat:@"%@ %@",SCLocalizedString(@"Use maximum"),[loyalty objectForKey:@"loyalty_max"]];
+        useMaxCheckbox.titleLabel.text = [NSString stringWithFormat:@"%@ %@",SCLocalizedString(@"Use maximum"),[loyaltyData objectForKey:@"loyalty_max"]];
         useMaxCheckbox.titleLabel.font = [UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE];
         [useMaxCheckbox addTarget:self action:@selector(useMaxCheckbox:) forControlEvents:UIControlEventValueChanged];
         [cell addSubview:useMaxCheckbox];
@@ -484,39 +501,42 @@ static NSString *LEFTMENU_REWARDS_ROW     = @"leftmenu_rewards";
 }
 
 -(void) applyPoints: (id) sender{
-    SimiOrderModel* order = [self.orderViewController order];
-    NSDictionary* loyalty = [order objectForKey:@"loyalty"];
-    float maxPoint = [[loyalty objectForKey:@"loyalty_max"] floatValue];
-    float minPoint = [[loyalty objectForKey:@"loyalty_min"] floatValue];
+    SimiViewController *currentVC = [SimiGlobalVar sharedInstance].currentlyNavigationController.viewControllers.lastObject;
+    [currentVC startLoadingData];
+    if(!order){
+        order = [SimiOrderModel new];
+    }
+    float maxPoint = [[loyaltyData objectForKey:@"loyalty_max"] floatValue];
+    float minPoint = [[loyaltyData objectForKey:@"loyalty_min"] floatValue];
     float currentPoint = [rewardPointTextField.text floatValue];
     if(currentPoint > maxPoint){
-        [self.orderViewController showToastMessage:[NSString stringWithFormat:@"%@ %@",SCLocalizedString(@"Maximum point is"),[loyalty objectForKey:@"loyalty_max"]]];
-        rewardPointTextField.text = [NSString stringWithFormat:@"%@",[loyalty objectForKey:@"loyalty_max"]];
+        [self.orderViewController showToastMessage:[NSString stringWithFormat:@"%@ %@",SCLocalizedString(@"Maximum point is"),[loyaltyData objectForKey:@"loyalty_max"]]];
+        rewardPointTextField.text = [NSString stringWithFormat:@"%@",[loyaltyData objectForKey:@"loyalty_max"]];
         return;
     }
     if(currentPoint < minPoint){
-        [self.orderViewController showToastMessage:[NSString stringWithFormat:@"%@ %@",SCLocalizedString(@"Minimum point is"),[loyalty objectForKey:@"loyalty_min"]]];
-        rewardPointTextField.text = [NSString stringWithFormat:@"%@",[loyalty objectForKey:@"loyalty_min"]];
+        [self.orderViewController showToastMessage:[NSString stringWithFormat:@"%@ %@",SCLocalizedString(@"Minimum point is"),[loyaltyData objectForKey:@"loyalty_min"]]];
+        rewardPointTextField.text = [NSString stringWithFormat:@"%@",[loyaltyData objectForKey:@"loyalty_min"]];
         return;
     }
-    [[NSNotificationCenter defaultCenter] addObserver:self.orderViewController selector:@selector(didReceiveNotification:) name:@"DidSpendPointsOrder" object:order];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"DidSpendPointsOrder" object:nil];
     [order spendPoints:rewardPointTextField.text];
-    [self.orderViewController startLoadingData];
 }
 
 -(void) cancelPoints:(id) sender{
-    SimiOrderModel* order = [self.orderViewController order];
-    [[NSNotificationCenter defaultCenter] addObserver:self.orderViewController selector:@selector(didReceiveNotification:) name:@"DidSpendPointsOrder" object:order];
+    SimiViewController *currentVC = [SimiGlobalVar sharedInstance].currentlyNavigationController.viewControllers.lastObject;
+    [currentVC startLoadingData];
+    if(!order){
+        order = [SimiOrderModel new];
+    }
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"DidSpendPointsOrder" object:nil];
     [order spendPoints:@"0"];
-    [self.orderViewController startLoadingData];
 }
 
 -(void) useMaxCheckbox:(id) sender{
     M13Checkbox* checkbox = (M13Checkbox*) sender;
-    SimiOrderModel* order = [self.orderViewController order];
-    NSDictionary* loyalty = [order objectForKey:@"loyalty"];
     if(checkbox.checkState == M13CheckboxStateChecked){
-        rewardPointTextField.text = [NSString stringWithFormat:@"%@",[loyalty objectForKey:@"loyalty_max"]];
+        rewardPointTextField.text = [NSString stringWithFormat:@"%@",[loyaltyData objectForKey:@"loyalty_max"]];
     }else{
         rewardPointTextField.text = @"0";
     }
