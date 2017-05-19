@@ -322,19 +322,7 @@
         SimiResponder *responder = [noti.userInfo valueForKey:@"responder"];
         if ([[responder.status uppercaseString] isEqualToString:@"SUCCESS"]) {
             [self trackingWithProperties:@{@"action":@"scanned_product",@"product_id":[_barCodeModel valueForKey:@"product_entity_id"],@"product_name":[_barCodeModel valueForKey:@"product_name"]}];
-            if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-                SCProductViewController *productViewController = [SCProductViewController new];
-                productViewController.firstProductID = [_barCodeModel valueForKey:@"product_entity_id"];
-                productViewController.arrayProductsID = [[NSMutableArray alloc]initWithArray: @[productViewController.firstProductID]];
-                [self.navigationController pushViewController:productViewController animated:YES];
-            }else
-            {
-                SCProductViewControllerPad *productViewController = [SCProductViewControllerPad new];
-                productViewController.firstProductID = [_barCodeModel valueForKey:@"product_entity_id"];
-                productViewController.arrayProductsID = [[NSMutableArray alloc]initWithArray: @[productViewController.firstProductID]];
-                [self.navigationController pushViewController:productViewController animated:YES];
-
-            }
+            [SimiGlobalVar pushProductDetailWithNavigationController:self.navigationController andProductID:[_barCodeModel valueForKey:@"product_entity_id"] andProductIDs:[NSMutableArray arrayWithArray:@[[_barCodeModel valueForKey:@"product_entity_id"]]]];
         }else
         {
             [_previewView setHidden:NO];
