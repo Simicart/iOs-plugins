@@ -22,8 +22,8 @@
     self = [super init];
     if (self) {
         [[NSNotificationCenter defaultCenter] removeObserver:self];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"DidCreateAddressAutofill" object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"SimiFormMapAPI_DidGetAddress" object:nil];
+//        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"DidCreateAddressAutofill" object:nil];
+//        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"SimiFormMapAPI_DidGetAddress" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(formFieldDataChanged:) name:SimiFormFieldDataChangedNotification object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(newAddressViewDidLoadBefore:) name:@"SCNewAddressViewController-ViewDidLoadBefore" object:nil];
     }
@@ -102,23 +102,23 @@
     [newAddressViewController stopLoadingData];
 }
 
-- (void)didReceiveNotification:(NSNotification *)noti
-{
-    if ([noti.name isEqualToString:@"DidCreateAddressAutofill"]) {
-        newAddressViewController = [noti.userInfo valueForKey:@"newAddressView"];
-        SimiFormAbstract* mapForm = [newAddressViewController.form getFieldByName:@"latlng"];
-        if(!mapForm){
-            mapForm = [newAddressViewController.form addField:@"MapAPI" config:@{@"name": @"latlng",
-                                                                                 @"title": SCLocalizedString(@"Country"),
-                                                                                 @"sort_order":@10000,
-                                                                                 @"height":[NSNumber numberWithFloat:[SimiGlobalVar scaleValue:250]]}];
-        }
-    }else if([noti.name isEqualToString:@"SimiFormMapAPI_DidGetAddress"])
-    {
-        NSDictionary *params = noti.object;
-        [self getAddressWithParams:params];
-    }
-}
+//- (void)didReceiveNotification:(NSNotification *)noti
+//{
+//    if ([noti.name isEqualToString:@"DidCreateAddressAutofill"]) {
+//        newAddressViewController = [noti.userInfo valueForKey:@"newAddressView"];
+//        SimiFormAbstract* mapForm = [newAddressViewController.form getFieldByName:@"latlng"];
+//        if(!mapForm){
+//            mapForm = [newAddressViewController.form addField:@"MapAPI" config:@{@"name": @"latlng",
+//                                                                                 @"title": SCLocalizedString(@"Country"),
+//                                                                                 @"sort_order":@10000,
+//                                                                                 @"height":[NSNumber numberWithFloat:[SimiGlobalVar scaleValue:250]]}];
+//        }
+//    }else if([noti.name isEqualToString:@"SimiFormMapAPI_DidGetAddress"])
+//    {
+//        NSDictionary *params = noti.object;
+//        [self getAddressWithParams:params];
+//    }
+//}
 
 -(void) formFieldDataChanged:(NSNotification*) noti{
     if([((SimiFormAbstract*)noti.object).simiObjectName isEqualToString:@"street"]){
