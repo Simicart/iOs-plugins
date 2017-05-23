@@ -100,11 +100,14 @@ static NSString *LEFTMENU_REWARDS_ROW     = @"leftmenu_rewards";
             if ([orderTable getSectionIndexByIdentifier:LOYALTY_CHECKOUT] == NSNotFound) {
                 NSUInteger index = [orderTable getSectionIndexByIdentifier:ORDER_TOTALS_SECTION];
                 if (index != NSNotFound) {
-                    SimiSection *section = [orderTable addSectionWithIdentifier:LOYALTY_CHECKOUT atIndex:index];
-                    section.headerTitle = SCLocalizedString(@"Use Reward Points");
-//                    CGFloat height = [[rule objectForKey:@"optionType"] isEqualToString:@"slider"] ? 105 : 40;
-//                    if (![[SimiGlobalVar sharedInstance] isLogin]) height = 40;
-                    [section addRowWithIdentifier:LOYALTY_CHECKOUT height:145];
+                    SimiSection* section = [orderTable getSectionByIdentifier:LOYALTY_CHECKOUT];
+                    if(!section){
+                        section = [orderTable addSectionWithIdentifier:LOYALTY_CHECKOUT atIndex:index];
+                        section.headerTitle = SCLocalizedString(@"Use Reward Points");
+    //                    CGFloat height = [[rule objectForKey:@"optionType"] isEqualToString:@"slider"] ? 105 : 40;
+    //                    if (![[SimiGlobalVar sharedInstance] isLogin]) height = 40;
+                        [section addRowWithIdentifier:LOYALTY_CHECKOUT height:145];
+                    }
                 }
             }
         }
@@ -137,11 +140,11 @@ static NSString *LEFTMENU_REWARDS_ROW     = @"leftmenu_rewards";
         if (cart.count && [[loyaltyData objectForKey:@"loyalty_max"] floatValue] > 0) {
             // Add Row to show Loyalty Labels
             SimiTable *cartCells = (SimiTable *)noti.object;
-            SimiSection *loyaltySection = [cartCells addSectionWithIdentifier:LOYALTY_CART];
-            loyaltySection.sortOrder = 150;
-            SimiRow* loyaltyRow = [loyaltySection getRowByIdentifier:LOYALTY_CART];
-            if(!loyaltyRow){
-                loyaltyRow = [[SimiRow alloc] initWithIdentifier:LOYALTY_CART height:150];
+            SimiSection* loyaltySection = [cartCells getSectionByIdentifier:LOYALTY_CART];
+            if(!loyaltySection){
+                loyaltySection = [cartCells addSectionWithIdentifier:LOYALTY_CART];
+                loyaltySection.sortOrder = 150;
+                SimiRow* loyaltyRow = [[SimiRow alloc] initWithIdentifier:LOYALTY_CART height:150];
                 [loyaltySection addRow:loyaltyRow];
             }
         }

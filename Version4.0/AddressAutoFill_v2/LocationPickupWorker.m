@@ -145,7 +145,7 @@
         [text appendAttributedString:[[NSAttributedString alloc] initWithString:@"\n\n"]];
         [text appendAttributedString:place.attributions];
     }
-    NSDictionary *params = @{@"longitude":[NSString stringWithFormat:@"%f",place.coordinate.longitude], @"latitude":[NSString stringWithFormat:@"%f",place.coordinate.latitude]};
+    NSDictionary *params = @{@"longitude":[NSString stringWithFormat:@"%f",place.coordinate.longitude], @"latitude":[NSString stringWithFormat:@"%f",place.coordinate.latitude],@"place_id":place.placeID};
     [self getAddressWithParams:params];
 }
 
