@@ -199,7 +199,7 @@
 - (void)setStoreLocation:(SimiModel *)storeLocation{
     _storeLocation = storeLocation;
     [storeImageView sd_setImageWithURL:[storeLocation objectForKey:@"image"] placeholderImage:[UIImage imageNamed:@"image_placeholder"]];
-    distanceLabel.text = [NSString stringWithFormat:@"%@ km",[[SimiFormatter sharedInstance] formatFloatNumber:[[storeLocation objectForKey:@"distance"] floatValue] maxDecimals:2 minDecimals:0]];
+    distanceLabel.text = [NSString stringWithFormat:@"%@ km",[[SimiFormatter sharedInstance] formatFloatNumber:[[storeLocation objectForKey:@"distance"] floatValue]/1000.0f maxDecimals:2 minDecimals:0]];
     [distanceLabel resizLabelToFit];
     storeNameLabel.text = [storeLocation objectForKey:@"name"];
     [storeNameLabel resizLabelToFit];

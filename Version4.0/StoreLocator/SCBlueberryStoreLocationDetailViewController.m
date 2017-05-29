@@ -152,7 +152,7 @@
 
         }else if([row.identifier isEqualToString:STORELOCATION_DETAIL_INFO]){
             SCBlueberryLabel* distanceLabel = [[SCBlueberryLabel alloc] initWithFrame:ScaleFrame(CGRectMake(15, 32, 64, 30)) andFont:RegularWithSize(14) opacity:0.48f andTextColor:[UIColor blackColor]];
-            distanceLabel.text = distanceLabel.text = [NSString stringWithFormat:@"%@ km",[[SimiFormatter sharedInstance] formatFloatNumber:[[_storeLocation objectForKey:@"distance"] floatValue] maxDecimals:2 minDecimals:0]];;
+            distanceLabel.text = distanceLabel.text = [NSString stringWithFormat:@"%@ km",[[SimiFormatter sharedInstance] formatFloatNumber:[[_storeLocation objectForKey:@"distance"] floatValue]/1000.0f maxDecimals:2 minDecimals:0]];;
             [distanceLabel resizLabelToFit];
             [cell addSubview:distanceLabel];
             SCBlueberryLabel* storeNameLabel = [[SCBlueberryLabel alloc] initWithFrame:ScaleFrame(CGRectMake(94, 15, 320 - 94 - 15, 25)) andFont:RegularWithSize(20) opacity:1 andTextColor:[UIColor blackColor]];
