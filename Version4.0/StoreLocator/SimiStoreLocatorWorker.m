@@ -14,6 +14,7 @@
 #import "SimiStoreLocatorViewControllerPad.h"
 #import <SimiCartBundle/SCNavigationBarPhone.h>
 #import <SimiCartBundle/SCNavigationBarPad.h>
+#import "SCBlueberryStoreLocatorViewController.h"
 @implementation SimiStoreLocatorWorker
 {
     SimiTable *cells;
@@ -25,6 +26,7 @@
     if (self) {
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initCellsAfter:) name:@"SCLeftMenu_InitCellsAfter" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didSelectRow:) name:@"SCLeftMenu_DidSelectRow" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(openStoreLocator:) name:@"OpenStoreLocator" object:nil];
     }
     [GMSServices provideAPIKey:@"AIzaSyAmBe73HHr9CU1lYU96CFg6PTwG2i6NDwU"];
     return self;
@@ -64,6 +66,13 @@
         navi.isDiscontinue = YES;
     }
 }
+
+- (void)openStoreLocator:(NSNotification *)noti{
+    SCBlueberryStoreLocatorViewController *storeLocatorViewController = [[SCBlueberryStoreLocatorViewController alloc]init];
+    UINavigationController* navi = [[UINavigationController alloc] initWithRootViewController:storeLocatorViewController];
+    [[SimiGlobalVar sharedInstance].currentlyNavigationController.viewControllers.lastObject presentViewController:navi animated:YES completion:nil];
+}
+
 
 - (void)dealloc
 {

@@ -28,8 +28,7 @@ typedef NS_ENUM(NSInteger, ListViewOption){
 @end
 
 
-@interface SimiStoreLocatorListViewController : UITableViewController<UITableViewDataSource, UITableViewDelegate, SCStoreListTableViewCellDelegate,MFMailComposeViewControllerDelegate>
-{
+@interface SimiStoreLocatorListViewController : UITableViewController<UITableViewDataSource, UITableViewDelegate, SCStoreListTableViewCellDelegate,MFMailComposeViewControllerDelegate>{
     SimiCLController *cLController;
 }
 @property (nonatomic, weak) id<SimiStoreLocatorListViewControllerDelegate> delegate;

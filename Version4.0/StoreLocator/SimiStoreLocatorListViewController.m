@@ -8,8 +8,7 @@
 
 #import "SimiStoreLocatorListViewController.h"
 
-@interface SimiStoreLocatorListViewController ()
-{
+@interface SimiStoreLocatorListViewController (){
     NSInteger offset;
     BOOL isFirstRun;
 }
