@@ -58,7 +58,7 @@
         placeOrderButton = [[UIButton alloc]initWithFrame:CGRectMake(0 , self.view.bounds.size.height - 50, self.view.bounds.size.width, 50)];
         [placeOrderButton setBackgroundColor:THEME_BUTTON_BACKGROUND_COLOR];
         placeOrderButton.tintColor = THEME_BUTTON_TEXT_COLOR;
-        [placeOrderButton setTitle:SCLocalizedString(@"Place Order") forState:UIControlStateNormal];
+        [placeOrderButton setTitle:SCLocalizedString(@"Confirm Order") forState:UIControlStateNormal];
         [placeOrderButton addTarget:self action:@selector(placeOrder:) forControlEvents:UIControlEventTouchUpInside];
         placeOrderButton.hidden = YES;
         [self.view addSubview:placeOrderButton];
