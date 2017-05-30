@@ -25,8 +25,8 @@
 - (void)didReceiveNotification:(NSNotification *)noti{
     SimiProductModel *product = [noti.userInfo valueForKey:@"product"];
     UIImageView *imageView = [noti.userInfo valueForKey:@"imageView"];
-    NSDictionary* productLabel = [product objectForKey:@"product_label"];
-    if(productLabel){
+    NSArray* productLabels = [product objectForKey:@"product_label"];
+    for(NSDictionary* productLabel in productLabels){
         CGRect frame = imageView.frame;
         frame.size.width = frame.size.width/3 < frame.size.height/3 ? frame.size.width/3 : frame.size.height/3;
         frame.size.height = frame.size.width;
@@ -97,12 +97,6 @@
         
         labelView.center = center;
         [imageView addSubview:labelView];
-    }else{
-        for (UIView *view in imageView.subviews) {
-            if ([view.simiObjectIdentifier isEqual:PRODUCT_LABEL_IDENTIFIER]) {
-                [view removeFromSuperview];
-            }
-        }
     }
 }
 
