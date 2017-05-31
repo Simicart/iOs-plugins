@@ -8,6 +8,8 @@
 
 #import "SCBlueberryStoreLocationDetailViewController.h"
 #import "SimiTable.h"
+#import "SCBlueberryGenericTableViewCell.h"
+#import <MessageUI/MessageUI.h>
 
 #define STORELOCATION_DETAIL @"STORELOCATION_DETAIL"
 #define STORELOCATION_DETAIL_MAP @"STORELOCATION_DETAIL_MAP"
@@ -18,7 +20,7 @@
 #define STORELOCATION_HOURS @"STORELOCATION_HOURS"
 #define STORELOCATION_ABOUT @"STORELOCATION_ABOUT"
 
-@interface SCBlueberryStoreLocationDetailViewController ()
+@interface SCBlueberryStoreLocationDetailViewController ()<MFMailComposeViewControllerDelegate>
 
 @end
 
@@ -80,7 +82,8 @@
             [self showAlertWithTitle:@"" message:@"Please install Google Map for getting directions"];
         }
     }else if([storeLocationRow.identifier isEqualToString:STORELOCATION_DETAIL_PHONE]){
-        NSURL *phoneUrl = [NSURL URLWithString:[NSString  stringWithFormat:@"telprompt:%@",[_storeLocation objectForKey:@"phone"]]];
+        NSString *phoneNumber = [[NSString stringWithFormat:@"%@",[_storeLocation objectForKey:@"phone"]] stringByReplacingOccurrencesOfString:@" " withString:@""];
+        NSURL *phoneUrl = [NSURL URLWithString:[NSString  stringWithFormat:@"telprompt:%@",phoneNumber]];
         if ([[UIApplication sharedApplication] canOpenURL:phoneUrl]) {
             [[UIApplication sharedApplication] openURL:phoneUrl];
         }else{
@@ -88,12 +91,9 @@
         }
 
     }else if([storeLocationRow.identifier isEqualToString:STORELOCATION_DETAIL_EMAIL]){
-        NSURL *mailUrl = [NSURL URLWithString:[NSString stringWithFormat:@"mailto:%@",[_storeLocation objectForKey:@"email"]]];
-        if ([[UIApplication sharedApplication] canOpenURL:mailUrl]) {
-            [[UIApplication sharedApplication] openURL:mailUrl];
-        }else{
-            [self showToastMessage:@"Email address is not available"];
-        }
+        NSString *email = [_storeLocation valueForKeyPath:@"email"];
+        NSString *emailContent = SCLocalizedString(@"Content");
+        [self sendEmailToStoreWithEmail:email andEmailContent:emailContent];
     }
 }
 
@@ -148,20 +148,20 @@
                         NSLog(@"%@",error);
                 }];
             }
-            [cell addSubview:mapImageView];
+            [cell.contentView addSubview:mapImageView];
 
         }else if([row.identifier isEqualToString:STORELOCATION_DETAIL_INFO]){
             SCBlueberryLabel* distanceLabel = [[SCBlueberryLabel alloc] initWithFrame:ScaleFrame(CGRectMake(15, 32, 64, 30)) andFont:RegularWithSize(14) opacity:0.48f andTextColor:[UIColor blackColor]];
             distanceLabel.text = distanceLabel.text = [NSString stringWithFormat:@"%@ km",[[SimiFormatter sharedInstance] formatFloatNumber:[[_storeLocation objectForKey:@"distance"] floatValue]/1000.0f maxDecimals:2 minDecimals:0]];;
             [distanceLabel resizLabelToFit];
-            [cell addSubview:distanceLabel];
+            [cell.contentView addSubview:distanceLabel];
             SCBlueberryLabel* storeNameLabel = [[SCBlueberryLabel alloc] initWithFrame:ScaleFrame(CGRectMake(94, 15, 320 - 94 - 15, 25)) andFont:RegularWithSize(20) opacity:1 andTextColor:[UIColor blackColor]];
             storeNameLabel.text = [_storeLocation objectForKey:@"name"];
-            [cell addSubview:storeNameLabel];
+            [cell.contentView addSubview:storeNameLabel];
             [storeNameLabel resizLabelToFit];
             SCBlueberryLabel* addressLabel = [[SCBlueberryLabel alloc] initWithFrame:CGRectMake(ScaleValue(94), storeNameLabel.frame.origin.y + storeNameLabel.frame.size.height, ScaleValue(211), 25) andFont:RegularWithSize(14) opacity:0.5f andTextColor:[UIColor blackColor]];
             addressLabel.text = [_storeLocation objectForKey:@"address"];
-            [cell addSubview:addressLabel];
+            [cell.contentView addSubview:addressLabel];
             [addressLabel resizLabelToFit];
             SCBlueberryLabel* hourLabel = [[SCBlueberryLabel alloc] initWithFrame:CGRectMake(ScaleValue(94), addressLabel.frame.origin.y + addressLabel.frame.size.height, ScaleValue(211), 25) andFont:RegularWithSize(14) opacity:0.5f andTextColor:[UIColor blackColor]];
             NSDateComponents *components = [[NSCalendar currentCalendar] components:NSCalendarUnitDay | NSCalendarUnitMonth | NSCalendarUnitYear fromDate:[NSDate date]];
@@ -219,66 +219,60 @@
             }
             hourLabel.text = status;
             [hourLabel resizLabelToFit];
-            [cell addSubview:hourLabel];
+            [cell.contentView addSubview:hourLabel];
         }else if([row.identifier isEqualToString:STORELOCATION_DETAIL_PHONE]){
-            cell.textLabel.text = [_storeLocation objectForKey:@"phone"];
-            cell.textLabel.font = RegularWithSize(18);
-            cell.accessoryView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"ic_call"]];
+            cell = [[SCBlueberryGenericTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:row.identifier andText:[_storeLocation objectForKey:@"phone"] andiCon:[UIImage imageNamed:@"ic_call"]];
             cell.selectionStyle = UITableViewCellSelectionStyleDefault;
         }else if([row.identifier isEqualToString:STORELOCATION_DETAIL_DIRECTIONS]){
-            cell.textLabel.text = SCLocalizedString(@"Get directions");
-            cell.textLabel.font = RegularWithSize(18);
-            cell.accessoryView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"ic_direction"]];
+            cell = [[SCBlueberryGenericTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:row.identifier andText:SCLocalizedString(@"Get directions") andiCon:[UIImage imageNamed:@"ic_direction"]];
             cell.selectionStyle = UITableViewCellSelectionStyleDefault;
         }else if([row.identifier isEqualToString:STORELOCATION_DETAIL_EMAIL]){
-            cell.textLabel.text = SCLocalizedString(@"Send email");
-            cell.textLabel.font = RegularWithSize(18);
-            cell.accessoryView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"ic_mail"]];
+            cell = [[SCBlueberryGenericTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:row.identifier andText:SCLocalizedString(@"Send email") andiCon:[UIImage imageNamed:@"ic_mail"]];
             cell.selectionStyle = UITableViewCellSelectionStyleDefault;
         }else if([row.identifier isEqualToString:STORELOCATION_HOURS]){
             UIImageView* hourImageView = [[UIImageView alloc] initWithFrame:ScaleFrame(CGRectMake(15, 15, 32, 32))];
             hourImageView.image = [UIImage imageNamed:@"ic_hour"];
-            [cell addSubview:hourImageView];
+            [cell.contentView addSubview:hourImageView];
             SCBlueberryLabel* titleLabel = [[SCBlueberryLabel alloc] initWithFrame:ScaleFrame(CGRectMake(57, 15, 248, 32)) andFont:RegularWithSize(18) opacity:1 andTextColor:[UIColor blackColor]];
             titleLabel.text = SCLocalizedString(@"Store hours");
-            [cell addSubview:titleLabel];
+            [cell.contentView addSubview:titleLabel];
             
             SCBlueberryLabel* normalDayHoursTitleLabel = [[SCBlueberryLabel alloc] initWithFrame:ScaleFrame(CGRectMake(57, 50, 124, 25)) andFont:RegularWithSize(16) opacity:1 andTextColor:[UIColor blackColor]];
             normalDayHoursTitleLabel.text = @"Monday - Friday";
-            [cell addSubview:normalDayHoursTitleLabel];
+            [cell.contentView addSubview:normalDayHoursTitleLabel];
             SCBlueberryLabel* normalDayHoursLabel = [[SCBlueberryLabel alloc] initWithFrame:ScaleFrame(CGRectMake(181, 50, 124, 25)) andFont:RegularWithSize(16) opacity:1 andTextColor:[UIColor blackColor]];
             normalDayHoursLabel.text = [NSString stringWithFormat:@"%@ - %@",[_storeLocation objectForKey:@"monday_open"],[_storeLocation objectForKey:@"monday_close"]];
-            [cell addSubview:normalDayHoursLabel];
+            [cell.contentView addSubview:normalDayHoursLabel];
             normalDayHoursLabel.textAlignment = NSTextAlignmentRight;
             
             SCBlueberryLabel* saturdayHoursTitleLabel = [[SCBlueberryLabel alloc] initWithFrame:ScaleFrame(CGRectMake(57, 75, 124, 25)) andFont:RegularWithSize(16) opacity:1 andTextColor:[UIColor blackColor]];
             saturdayHoursTitleLabel.text = @"Saturday";
-            [cell addSubview:saturdayHoursTitleLabel];
+            [cell.contentView addSubview:saturdayHoursTitleLabel];
             SCBlueberryLabel* saturdayHoursLabel = [[SCBlueberryLabel alloc] initWithFrame:ScaleFrame(CGRectMake(181, 75, 124, 25)) andFont:RegularWithSize(16) opacity:1 andTextColor:[UIColor blackColor]];
             saturdayHoursLabel.text = [NSString stringWithFormat:@"%@ - %@",[_storeLocation objectForKey:@"saturday_open"],[_storeLocation objectForKey:@"saturday_close"]];
-            [cell addSubview:saturdayHoursLabel];
+            [cell.contentView addSubview:saturdayHoursLabel];
             saturdayHoursLabel.textAlignment = NSTextAlignmentRight;
             
             SCBlueberryLabel* sundayHoursTitleLabel = [[SCBlueberryLabel alloc] initWithFrame:ScaleFrame(CGRectMake(57, 100, 100, 25)) andFont:RegularWithSize(16) opacity:1 andTextColor:[UIColor blackColor]];
             sundayHoursTitleLabel.text = @"Sunday";
-            [cell addSubview:sundayHoursTitleLabel];
+            [cell.contentView addSubview:sundayHoursTitleLabel];
             SCBlueberryLabel* sundayHoursLabel = [[SCBlueberryLabel alloc] initWithFrame:ScaleFrame(CGRectMake(181, 100, 124, 25)) andFont:RegularWithSize(16) opacity:1 andTextColor:[UIColor blackColor]];
             sundayHoursLabel.text = [NSString stringWithFormat:@"%@ - %@",[_storeLocation objectForKey:@"sunday_open"],[_storeLocation objectForKey:@"sunday_close"]];
             sundayHoursLabel.textAlignment = NSTextAlignmentRight;
-            [cell addSubview:sundayHoursLabel];
+            [cell.contentView addSubview:sundayHoursLabel];
 
         }else if([row.identifier isEqualToString:STORELOCATION_ABOUT]){
             UIImageView* aboutImageView = [[UIImageView alloc] initWithFrame:ScaleFrame(CGRectMake(15, 15, 32, 32))];
             aboutImageView.image = [UIImage imageNamed:@"ic_about"];
-            [cell addSubview:aboutImageView];
+            [cell.contentView addSubview:aboutImageView];
             SCBlueberryLabel* titleLabel = [[SCBlueberryLabel alloc] initWithFrame:ScaleFrame(CGRectMake(57, 15, 248, 32)) andFont:RegularWithSize(18) opacity:1 andTextColor:[UIColor blackColor]];
             titleLabel.text = SCLocalizedString(@"About");
-            [cell addSubview:titleLabel];
+            [cell.contentView addSubview:titleLabel];
             UITextView* aboutTextView = [[UITextView alloc] initWithFrame:ScaleFrame(CGRectMake(57, 50, 248, 152 - 15 - 50))];
             aboutTextView.editable = NO;
             aboutTextView.font = RegularWithSize(16);
             aboutTextView.text = [_storeLocation objectForKey:@"description"];
-            [cell addSubview:aboutTextView];
+            [cell.contentView addSubview:aboutTextView];
         }
         cell.preservesSuperviewLayoutMargins = NO;
         cell.separatorInset = UIEdgeInsetsZero;
@@ -287,8 +281,51 @@
     return cell;
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
+#pragma mark Email Delegate
+- (void)sendEmailToStoreWithEmail:(NSString *)email andEmailContent:(NSString *)emailContent
+{
+    if([MFMailComposeViewController canSendMail])
+    {
+        MFMailComposeViewController *controller = [[MFMailComposeViewController alloc] init];
+        controller.mailComposeDelegate = self;
+        [controller setToRecipients:[[NSArray alloc] initWithObjects:email, nil]];
+        
+        [controller setSubject:[NSString stringWithFormat:@""]];
+        [controller setMessageBody:emailContent isHTML:NO];
+        
+        if(PADDEVICE)
+        {
+            [self presentViewController:controller animated:YES completion:NULL];
+        }
+        else {
+            [self presentViewController:controller animated:YES completion:NULL];
+        }
+    }
+    else{
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:SCLocalizedString(@"No Email Account") message:SCLocalizedString(@"Open Settings app to set up an email account")
+                                                       delegate:self cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles: nil];
+        
+        [alert show];
+    }
+}
+
+- (void)mailComposeController:(MFMailComposeViewController*)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError*)error
+{
+    
+    if(result==MFMailComposeResultCancelled)
+    {
+        [controller dismissViewControllerAnimated:YES completion:NULL];
+    }
+    if(result==MFMailComposeResultSent)
+    {
+        [self showToastMessage:@"Your email was sent succesfully"];
+        [controller dismissViewControllerAnimated:YES completion:NULL];
+    }
+    if(result==MFMailComposeResultFailed)
+    {
+        [self showToastMessage:@"Your mail was not sent"];
+        [controller dismissViewControllerAnimated:YES completion:NULL];
+    }
 }
 
 @end

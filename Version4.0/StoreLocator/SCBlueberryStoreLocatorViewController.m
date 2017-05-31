@@ -158,6 +158,9 @@
             storeLocatorMaker_.map = mapView;
         }
     }
+    [cell setSeparatorInset:UIEdgeInsetsZero];
+    [cell setPreservesSuperviewLayoutMargins:NO];
+    [cell setLayoutMargins:UIEdgeInsetsZero];
     return cell;
 }
 @end
@@ -174,24 +177,28 @@
     if(self == [super initWithStyle:style reuseIdentifier:reuseIdentifier]){
         storeImageView = [[UIImageView alloc] initWithFrame:ScaleFrame(CGRectMake(15, 15, 64, 64))];
         storeImageView.contentMode = UIViewContentModeScaleAspectFill;
-        [self addSubview:storeImageView];
+        [self.contentView addSubview:storeImageView];
+        
         distanceLabel = [[SCBlueberryLabel alloc] initWithFrame:ScaleFrame(CGRectMake(15, 80, 64, 25)) andFont:RegularWithSize(14) opacity:0.48f andTextColor:[UIColor blackColor]];
-        [self addSubview:distanceLabel];
+        [self.contentView addSubview:distanceLabel];
+        
         storeNameLabel = [[SCBlueberryLabel alloc] initWithFrame:ScaleFrame(CGRectMake(94, 15, 191, 30)) andFont:RegularWithSize(18) andTextColor:[UIColor blackColor]];
-        [self addSubview:storeNameLabel];
+        [self.contentView addSubview:storeNameLabel];
+        
         addressLabel = [[SCBlueberryLabel alloc] initWithFrame:ScaleFrame(CGRectMake(94, 30, 191, 50)) andFont:RegularWithSize(14) opacity:0.5f andTextColor:[UIColor blackColor]];
-        [self addSubview:addressLabel];
+        [self.contentView addSubview:addressLabel];
+        
         openHourLabel = [[SCBlueberryLabel alloc] initWithFrame:ScaleFrame(CGRectMake(94, 75, 191, 25)) andFont:RegularWithSize(14) opacity:0.5f andTextColor:[UIColor blackColor]];
-        [self addSubview:openHourLabel];
+        [self.contentView addSubview:openHourLabel];
+        
         callButton = [[SCBlueberryButton alloc] initWithFrame:ScaleFrame(CGRectMake(94, 104, 90, 34)) title:SCLocalizedString(@"Call") titleFont:RegularWithSize(16) titleColor:[UIColor blackColor] backgroundColor:COLOR_WITH_HEX(@"#f8f8f8") cornerRadius:10.0f borderWidth:1 borderColor:COLOR_WITH_HEX(@"#ededed")];
         [callButton setImage:[UIImage imageNamed:@"ic_call"] forState:UIControlStateNormal];
         [callButton setTitle:SCLocalizedString(@"Call") forState:UIControlStateNormal];
         [callButton setImageEdgeInsets:UIEdgeInsetsMake(ScaleValue(4), ScaleValue(10), ScaleValue(4),ScaleValue(53))];
-//        [callButton setTitleEdgeInsets:UIEdgeInsetsMake(0, ScaleValue(46), 0, ScaleValue(0))];
         [callButton setContentHorizontalAlignment:UIControlContentHorizontalAlignmentCenter];
         callButton.titleLabel.layer.opacity = 0.5f;
         [callButton addTarget:self action:@selector(callStore:) forControlEvents:UIControlEventTouchUpInside];
-        [self addSubview:callButton];
+        [self.contentView addSubview:callButton];
     }
     return self;
 }
@@ -271,7 +278,8 @@
 }
 
 - (void)callStore:(id)sender {
-    NSURL *phoneUrl = [NSURL URLWithString:[NSString  stringWithFormat:@"telprompt:%@",[_storeLocation objectForKey:@"phone"]]];
+    NSString *phoneNumber = [[NSString stringWithFormat:@"%@",[_storeLocation objectForKey:@"phone"]] stringByReplacingOccurrencesOfString:@" " withString:@""];
+    NSURL *phoneUrl = [NSURL URLWithString:[NSString  stringWithFormat:@"telprompt:%@",phoneNumber]];
     if ([[UIApplication sharedApplication] canOpenURL:phoneUrl]) {
         [[UIApplication sharedApplication] openURL:phoneUrl];
     }
