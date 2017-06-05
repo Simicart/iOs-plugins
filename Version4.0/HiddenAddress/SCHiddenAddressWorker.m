@@ -91,14 +91,6 @@
                                  @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:@"suffix_show"] isEqualToString:@"req"]]
                                  }];
             }
-            if ([self hasField:[hiddenAddressModel valueForKey:@"company_show"]]) {
-                [form addField:@"Text"
-                        config:@{
-                                 @"name" : @"company",
-                                 @"title": SCLocalizedString(@"Company"),
-                                 @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:@"company_show"] isEqualToString:@"req"]]
-                                 }];
-            }
             
             if (![[SimiGlobalVar sharedInstance] isLogin]) {
                 [form addField:@"Email"
@@ -108,23 +100,21 @@
                                  @"required": @1
                                  }];
             }
-            
-            if ([self hasField:[hiddenAddressModel valueForKey:@"street_show"]]) {
+            if ([self hasField:[hiddenAddressModel valueForKey:@"company_show"]]) {
                 [form addField:@"Text"
                         config:@{
-                                 @"name" : @"street",
-                                 @"title": SCLocalizedString(@"Street"),
-                                 @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:@"street_show"] isEqualToString:@"req"]]
+                                 @"name" : @"company",
+                                 @"title": SCLocalizedString(@"Company"),
+                                 @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:@"company_show"] isEqualToString:@"req"]]
                                  }];
             }
             
-            
-            if ([self hasField:[hiddenAddressModel valueForKey:@"city_show"]]) {
+            if ([self hasField:[hiddenAddressModel valueForKey:@"taxvat_show"]]) {
                 [form addField:@"Text"
                         config:@{
-                                 @"name" : @"city",
-                                 @"title": SCLocalizedString(@"City"),
-                                 @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:@"city_show"] isEqualToString:@"req"]]
+                                 @"name": @"taxvat",
+                                 @"title": SCLocalizedString(@"Tax/VAT number"),
+                                 @"required": [NSNumber numberWithBool:[[config taxvatShow] isEqualToString:@"req"]]
                                  }];
             }
             
@@ -165,6 +155,26 @@
                                                                                   }];
             }
             
+            if ([self hasField:[hiddenAddressModel valueForKey:@"street_show"]]) {
+                [form addField:@"Text"
+                        config:@{
+                                 @"name" : @"street",
+                                 @"title": SCLocalizedString(@"Street"),
+                                 @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:@"street_show"] isEqualToString:@"req"]]
+                                 }];
+            }
+    
+            
+            if ([self hasField:[hiddenAddressModel valueForKey:@"city_show"]]) {
+                [form addField:@"Text"
+                        config:@{
+                                 @"name" : @"city",
+                                 @"title": SCLocalizedString(@"City"),
+                                 @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:@"city_show"] isEqualToString:@"req"]]
+                                 }];
+            }
+            
+           
             
             if ([self hasField:[hiddenAddressModel valueForKey:@"zipcode_show"]]) {
                 [form addField:@"Text"
@@ -220,14 +230,7 @@
                     }
                 }
                 
-                if ([self hasField:[hiddenAddressModel valueForKey:@"taxvat_show"]]) {
-                    [form addField:@"Text"
-                            config:@{
-                                     @"name": @"taxvat",
-                                     @"title": SCLocalizedString(@"Tax/VAT number"),
-                                     @"required": [NSNumber numberWithBool:[[config taxvatShow] isEqualToString:@"req"]]
-                                     }];
-                }
+                
                 
             }
             
