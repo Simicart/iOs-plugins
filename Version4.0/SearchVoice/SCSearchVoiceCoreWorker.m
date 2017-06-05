@@ -62,9 +62,9 @@
             [self.searchVoiceBtn addTarget:self action:@selector(searchVoiceBtnHandle) forControlEvents:(UIControlEventTouchUpInside)];
             [homeViewController.view addSubview:self.searchVoiceBtn];
         } else if ([noti.object isKindOfClass:[SCProductListViewController class]]) {
-            SCProductListViewController *homeViewController = noti.object;
-            [homeViewController.searchProduct setFrame:[SimiGlobalVar scaleFrame:CGRectMake(5, 5, 310 - 28 - 5, 28)]];
-            [homeViewController.searchBarBackground setFrame:homeViewController.searchProduct.frame];
+            SCProductListViewController *productListViewController = noti.object;
+            [productListViewController.productSearchBar setFrame:[SimiGlobalVar scaleFrame:CGRectMake(5, 5, 310 - 28 - 5, 28)]];
+            [productListViewController.searchBarBackground setFrame:productListViewController.productSearchBar.frame];
             self.searchVoiceBtn = [[UIButton alloc] initWithFrame:[SimiGlobalVar scaleFrame:CGRectMake(282, 0, 38, 38)]];
             self.searchVoiceBtn.backgroundColor = [UIColor clearColor];
             self.searchVoiceBtn.imageView.backgroundColor = THEME_SEARCH_BOX_BACKGROUND_COLOR;
@@ -74,7 +74,7 @@
             self.searchVoiceBtn.imageView.clipsToBounds = YES;
             self.searchVoiceBtn.enabled = YES;
             [self.searchVoiceBtn addTarget:self action:@selector(searchVoiceBtnHandle) forControlEvents:(UIControlEventTouchUpInside)];
-            [homeViewController.view addSubview:self.searchVoiceBtn];
+            [productListViewController.view addSubview:self.searchVoiceBtn];
         }
     }
 }
@@ -89,9 +89,9 @@
             homeViewController.searchBarHome.text = result;
             [homeViewController searchBarSearchButtonClicked:homeViewController.searchBarHome];
         }else if ([currentNoti.object isKindOfClass:[SCProductListViewController class]]) {
-            SCProductListViewController *homeViewController = currentNoti.object;
-            homeViewController.searchProduct.text = result;
-            [homeViewController searchBarSearchButtonClicked:homeViewController.searchProduct];
+            SCProductListViewController *productListViewController = currentNoti.object;
+            productListViewController.productSearchBar.text = result;
+            [productListViewController searchBarSearchButtonClicked:productListViewController.productSearchBar];
         }
     }
 }
@@ -106,8 +106,8 @@
             SCHomeViewController *homeViewController = currentNoti.object;
             [homeViewController.searchBarHome becomeFirstResponder];
         } else if ([currentNoti.object isKindOfClass:[SCProductListViewController class]]) {
-            SCProductListViewController *homeViewController = currentNoti.object;
-            [homeViewController.searchProduct becomeFirstResponder];
+            SCProductListViewController *productListViewController = currentNoti.object;
+            [productListViewController.productSearchBar becomeFirstResponder];
         }
     }
 }
