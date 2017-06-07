@@ -29,6 +29,8 @@
     for(NSDictionary* productLabel in productLabels){
         CGRect frame = imageView.frame;
         frame.size.width = frame.size.width/3 < frame.size.height/3 ? frame.size.width/3 : frame.size.height/3;
+        if(frame.size.width == 0)
+            frame.size.width = SCREEN_WIDTH/3;
         frame.size.height = frame.size.width;
         
         UIButton *labelView = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -46,7 +48,6 @@
         labelView.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin|UIViewAutoresizingFlexibleHeight|UIViewAutoresizingFlexibleLeftMargin|UIViewAutoresizingFlexibleRightMargin|UIViewAutoresizingFlexibleTopMargin|UIViewAutoresizingFlexibleWidth;
         
         CGPoint center;
-        
         switch ([[productLabel valueForKey:@"position"] integerValue]) {
             //Left
             case LabelPositionLeftTop:{
