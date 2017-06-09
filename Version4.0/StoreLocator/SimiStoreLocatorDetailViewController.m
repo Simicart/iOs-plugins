@@ -44,7 +44,6 @@
 @synthesize btnStorePhone;
 
 #pragma mark View Cycle
-
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
@@ -54,14 +53,11 @@
     return self;
 }
 
-- (void)viewDidLoadBefore
-{
+- (void)viewDidLoadBefore{
     [super viewDidLoadBefore];
 }
 
-- (void)initStoreName
-{
-    
+- (void)initStoreName{
     lblStoreName = [[UILabel alloc]initWithFrame:CGRectMake(edgeSpace, heightScrViewContentSize, widthContent - 2*edgeSpace - sizeStoreImage, heightLabel)];
     [lblStoreName setTextColor:[UIColor colorWithRed:243.0/255.0 green:53.0/255.0 blue:53.0/255.0 alpha:1.0]];
     [lblStoreName setFont:[UIFont fontWithName:THEME_FONT_NAME_REGULAR size:THEME_FONT_SIZE + 4]];
@@ -601,8 +597,7 @@
     [self.navigationController popViewControllerAnimated:YES];
 }
 
-- (void)btnGetDirections_Click:(id)sender
-{
+- (void)btnGetDirections_Click:(id)sender{
     // Sua lai dia chi den sau
     if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"comgooglemaps://"]]) {
         [[UIApplication sharedApplication] openURL:

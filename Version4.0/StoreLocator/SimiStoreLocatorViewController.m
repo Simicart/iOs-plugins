@@ -260,6 +260,8 @@
     [self getStoreLocatorListWithLatitube:la andLongitube:lng];
     currentLatitube = la;
     currentLongitube = lng;
+    storeLocatorDetailVC.currentLatitude = currentLatitube;
+    storeLocatorDetailVC.currentLongitude = currentLongitube;
 }
 
 
