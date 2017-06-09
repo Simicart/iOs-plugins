@@ -32,8 +32,7 @@
     return self;
 }
 
-- (void)initCellsAfter:(NSNotification*)noti
-{
+- (void)initCellsAfter:(NSNotification*)noti{
     cells = noti.object;
     for (int i = 0; i < cells.count; i++) {
         SimiSection *section = [cells objectAtIndex:i];
@@ -57,8 +56,7 @@
             UIViewController *currentVC = [(UITabBarController *)[[(SCAppDelegate *)[[UIApplication sharedApplication] delegate] window] rootViewController] selectedViewController];
             SimiStoreLocatorViewControllerPad *storeLocatorViewController = [[SimiStoreLocatorViewControllerPad alloc]init];
             [(UINavigationController *)currentVC pushViewController:storeLocatorViewController animated:YES];
-        }else
-        {
+        }else{
             UIViewController *currentVC = [(UITabBarController *)[[(SCAppDelegate *)[[UIApplication sharedApplication] delegate] window] rootViewController] selectedViewController];
             SimiStoreLocatorViewController *storeLocatorViewController = [[SimiStoreLocatorViewController alloc]init];
             [(UINavigationController *)currentVC pushViewController:storeLocatorViewController animated:YES];

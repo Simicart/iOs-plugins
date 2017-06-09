@@ -636,8 +636,7 @@
     // Sua lai dia chi den sau
     [[NSNotificationCenter defaultCenter]postNotificationName:TRACKINGEVENT object:@"store_locator_action" userInfo:@{@"action":@"get_directions_to_store",@"store_name":[sLModel valueForKey:@"name"]}];
     if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"comgooglemaps://"]]) {
-        [[UIApplication sharedApplication] openURL:
-         [NSURL URLWithString: [NSString stringWithFormat: @"comgooglemaps://?saddr=%f,%f&daddr=%@,%@&center=%f,%f&zoom=14&views=traffic",currentLatitude , currentLongitude,[sLModel valueForKey:@"latitude"],[sLModel valueForKey:@"longtitude"],currentLatitude, currentLongitude]]];
+        [[UIApplication sharedApplication] openURL: [NSURL URLWithString: [NSString stringWithFormat: @"comgooglemaps://?saddr=%f,%f&daddr=%@,%@&center=%f,%f&zoom=14&views=traffic",currentLatitude , currentLongitude,[sLModel valueForKey:@"latitude"],[sLModel valueForKey:@"longtitude"],currentLatitude, currentLongitude]]];
     } else {
         UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Message" message:@"To find the way to the store, you must install Google Mapp App first.l" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
         [alert show];
