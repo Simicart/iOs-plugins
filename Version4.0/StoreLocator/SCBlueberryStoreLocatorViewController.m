@@ -215,9 +215,10 @@
     addressLabel.frame = frame;
     addressLabel.text = [storeLocation objectForKey:@"address"];
     [addressLabel resizLabelToFit];
-    NSDateComponents *components = [[NSCalendar currentCalendar] components:NSCalendarUnitDay | NSCalendarUnitMonth | NSCalendarUnitYear fromDate:[NSDate date]];
+    NSCalendar *gregorian = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+    NSDateComponents *comps = [gregorian components:NSCalendarUnitWeekday fromDate:[NSDate date]];
     NSString* status = @"";
-    switch (components.weekday) {
+    switch (comps.weekday) {
         case 2://Mon
             if([[storeLocation objectForKey:@"monday_status"] boolValue]){
                 status = [NSString stringWithFormat:@"%@ %@",SCLocalizedString(@"OPEN until"),[storeLocation objectForKey:@"monday_close"]];

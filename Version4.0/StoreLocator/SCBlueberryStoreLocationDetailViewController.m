@@ -164,9 +164,10 @@
             [cell.contentView addSubview:addressLabel];
             [addressLabel resizLabelToFit];
             SCBlueberryLabel* hourLabel = [[SCBlueberryLabel alloc] initWithFrame:CGRectMake(ScaleValue(94), addressLabel.frame.origin.y + addressLabel.frame.size.height, ScaleValue(211), 25) andFont:RegularWithSize(14) opacity:0.5f andTextColor:[UIColor blackColor]];
-            NSDateComponents *components = [[NSCalendar currentCalendar] components:NSCalendarUnitDay | NSCalendarUnitMonth | NSCalendarUnitYear fromDate:[NSDate date]];
+            NSCalendar *gregorian = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+            NSDateComponents *comps = [gregorian components:NSCalendarUnitWeekday fromDate:[NSDate date]];
             NSString* status = @"";
-            switch (components.weekday) {
+            switch (comps.weekday) {
                 case 2://Mon
                     if([[_storeLocation objectForKey:@"monday_status"] boolValue]){
                         status = [NSString stringWithFormat:@"%@ %@",SCLocalizedString(@"OPEN until"),[_storeLocation objectForKey:@"monday_close"]];
