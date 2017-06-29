@@ -15,6 +15,7 @@
 #define DidPlaceOrderBefore @"SCOrderViewController-BeforePlaceOrder"
 #define BRAINTREE_PAYMENT_METHOD @"simibraintree"
 
+
 @implementation BraintreeInitWorker
 {
     SimiViewController *currentVC;
@@ -23,6 +24,7 @@
     NSDictionary* selectedShipping;
     SimiBraintreeModel* braintreeModel;
     BOOL applePayCompleted;
+    NSString* dropInNonce;
 }
 -(instancetype) init{
     if(self == [super init]){
@@ -32,6 +34,7 @@
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:DidPlaceOrderAfter object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:DidPlaceOrderBefore object:nil];
         [BTAppSwitch setReturnURLScheme:[NSString stringWithFormat:@"%@.payments",[NSBundle mainBundle].bundleIdentifier]];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(placeOrderWithBraintreePayment:) name:@"PlaceOrderWithBraintreePayment" object:nil];
     }
     return self;
 }
@@ -48,12 +51,12 @@
     }else if([noti.name isEqualToString:DidSelectPaymentMethod]){
         
     }else if([noti.name isEqualToString:DidPlaceOrderAfter]){
-        if([[[[noti.userInfo valueForKey:@"data"] valueForKey:@"payment_method"] lowercaseString] isEqualToString:BRAINTREE_PAYMENT_METHOD]){
-            selectedPayment = [noti.userInfo objectForKey:@"payment"];
-            selectedShipping = [noti.userInfo objectForKey:@"shipping"];
-            currentVC = [noti.userInfo valueForKey:@"controller"];
-            [order addEntriesFromDictionary:noti.object];
-            [self showDropIn:[selectedPayment objectForKey:@"token"]];
+//        if([[[[noti.userInfo valueForKey:@"data"] valueForKey:@"payment_method"] lowercaseString] isEqualToString:BRAINTREE_PAYMENT_METHOD]){
+//            selectedPayment = [noti.userInfo objectForKey:@"payment"];
+//            selectedShipping = [noti.userInfo objectForKey:@"shipping"];
+//            currentVC = [noti.userInfo valueForKey:@"controller"];
+//            [order addEntriesFromDictionary:noti.object];
+//            [self showDropIn:[selectedPayment objectForKey:@"token"]];
 //            BTPaymentViewController* btPaymentVC = [[BTPaymentViewController alloc] init];
 //            btPaymentVC.payment = payment;
 //            btPaymentVC.shipping = shipping;
@@ -71,10 +74,23 @@
 //                [popoverVC setPermittedArrowDirections:0];
 //                [currentVC presentViewController:navi animated:YES completion:nil];
 //            }
+//        }
+        
+        if(dropInNonce){
+            [order addEntriesFromDictionary:noti.object];
+            [self postNonceToServer:dropInNonce];
         }
     }else if([noti.name isEqualToString:DidPlaceOrderBefore]){
         order = [[SimiOrderModel alloc] initWithDictionary:[noti.userInfo objectForKey:@"order"]];
     }
+}
+
+- (void)placeOrderWithBraintreePayment:(NSNotification *)noti{
+    selectedPayment = [noti.userInfo objectForKey:@"payment"];
+    selectedShipping = [noti.userInfo objectForKey:@"shipping"];
+    currentVC = [noti.userInfo valueForKey:@"controller"];
+    [order addEntriesFromDictionary:noti.object];
+    [self showDropIn:[selectedPayment objectForKey:@"token"]];
 }
 
 -(void) showDropIn:(NSString*) clientTokenOrTokenizationKey{
@@ -94,12 +110,12 @@
         } else if (result.cancelled) {
             NSLog(@"CANCELLED");
             [currentVC.navigationController popToRootViewControllerAnimated:NO];
-        } else {
-            //             Use the BTDropInResult properties to update your UI
-            //             result.paymentOptionType
-            //             result.paymentMethod
-            //             result.paymentIcon
-            //             result.paymentDescription
+        }else {
+//                         Use the BTDropInResult properties to update your UI
+//                         result.paymentOptionType
+//                         result.paymentMethod
+//                         result.paymentIcon
+//                         result.paymentDescription
             if(result.paymentOptionType == BTUIKPaymentOptionTypeApplePay){
                 PKPaymentAuthorizationViewController *viewController = [[PKPaymentAuthorizationViewController alloc] initWithPaymentRequest:[self applePaymentRequest]];
                 viewController.delegate = self;
@@ -107,13 +123,16 @@
                 applePayCompleted = NO;
             }else {
                 if(result.paymentMethod.nonce){
-                    [self postNonceToServer:result.paymentMethod.nonce];
+                    dropInNonce = result.paymentMethod.nonce;
+                    [[NSNotificationCenter defaultCenter] postNotificationName:@"BraintreeDidSendNonceToServer" object:nil userInfo:nil];
                 }
             }
         }
     }];
     if(dropIn)
-        [currentVC presentViewController:dropIn animated:YES completion:nil];
+        [currentVC.navigationController presentViewController:dropIn animated:YES completion:^{
+            
+        }];
     else
         [currentVC showAlertWithTitle:@"Braintree" message:SCLocalizedString(@"The provided authorization was invalid")];
 }
@@ -215,7 +234,8 @@
                                          completion(PKPaymentAuthorizationStatusFailure);
                                      }else{
                                          if (tokenizedApplePayPayment.nonce) {
-                                             [self postNonceToServer:tokenizedApplePayPayment.nonce];
+                                             dropInNonce = tokenizedApplePayPayment.nonce;
+                                             [[NSNotificationCenter defaultCenter] postNotificationName:@"BraintreeDidSendNonceToServer" object:nil userInfo:nil];
                                              applePayCompleted = YES;
                                          } else {
                                              [currentVC showAlertWithTitle:SCLocalizedString(@"Apple Pay") message:[NSString stringWithFormat:@"Authorization Fail"]];
@@ -329,9 +349,11 @@ requestsDismissalOfViewController:(UIViewController *)viewController {
 
 #pragma mark BTDropInViewControllerDelegate
 - (void)dropInViewController:(BTDropInViewController *)viewController didSucceedWithTokenization:(BTPaymentMethodNonce *)paymentMethodNonce{
-    if(paymentMethodNonce.nonce){
-        [self postNonceToServer:paymentMethodNonce.nonce];
-    }
+//    if(paymentMethodNonce.nonce){
+//        [self postNonceToServer:paymentMethodNonce.nonce];
+//    }
+    dropInNonce = paymentMethodNonce.nonce;
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"BraintreeDidSendNonceToServer" object:nil userInfo:nil];
 }
 
 - (void)dropInViewControllerDidCancel:(BTDropInViewController *)viewController{
