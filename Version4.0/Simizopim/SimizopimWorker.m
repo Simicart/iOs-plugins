@@ -21,8 +21,7 @@
     NSMutableArray * cells;
 }
 
-- (instancetype)init
-{
+- (instancetype)init{
     self = [super init];
     if (self) {
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didTapChatButton) name:@"tapToChatButton" object:nil];
@@ -39,10 +38,8 @@
     return self;
 }
 
--(void)didReceiveNotification:(NSNotification *)noti
-{
-    if([noti.name isEqualToString:@"SCLeftMenu_InitCellsAfter"])
-    {
+- (void)didReceiveNotification:(NSNotification *)noti{
+    if([noti.name isEqualToString:@"SCLeftMenu_InitCellsAfter"] && [SimiGlobalVar sharedInstance].isZopimChat){
         cells = noti.object;
         for (int i = 0; i < cells.count; i++) {
             SimiSection *section = [cells objectAtIndex:i];
@@ -55,8 +52,7 @@
                 [section sortItems];
             }
         }
-    }else if([noti.name isEqualToString:@"SCLeftMenu_DidSelectRow"])
-    {
+    }else if([noti.name isEqualToString:@"SCLeftMenu_DidSelectRow"]){
         SimiRow *row = [noti.userInfo valueForKey:@"simirow"];
         if ([row.identifier isEqualToString:LEFTMENU_ROW_CHAT]) {
             SCNavigationBarPhone *navi = noti.object;
@@ -66,8 +62,7 @@
     }
 }
 
--(void)didTapChatButton
-{
+- (void)didTapChatButton{
     NSString *accountKey = [self.zoPimConfig valueForKey:@"account_key"];
     NSString *showProfile = [self.zoPimConfig valueForKey:@"show_profile"];
     if ([showProfile isEqualToString:@"0"]) {
@@ -80,14 +75,13 @@
     }
 }
 
--(void)move:(UIPanGestureRecognizer *)sender {
+- (void)move:(UIPanGestureRecognizer *)sender {
     if (sender.state == UIGestureRecognizerStateChanged) {
         self.messageButton.center = [sender locationInView:[[[UIApplication sharedApplication] delegate] window]];
     }
 }
 
-- (void)startZopimChat:(NSString *)accountKey showProfile:(NSString *)showProfile name:(NSString *)name email:(NSString *)email phone:(NSString *)phone
-{
+- (void)startZopimChat:(NSString *)accountKey showProfile:(NSString *)showProfile name:(NSString *)name email:(NSString *)email phone:(NSString *)phone{
     [ZDCChat initializeWithAccountKey:accountKey];
     [ZDCChat startChat:^(ZDCConfig *config) {
         config.preChatDataRequirements.name = [name integerValue];;
@@ -101,14 +95,12 @@
     [ZDCLog setLogLevel:ZDCLogLevelWarn];
 }
 
-- (void) styleApp
-{
+- (void)styleApp{
     [[ZDCChatOverlay appearance] setOverlayTintColor:[UIColor colorWithRed:0.9 green:0.45 blue:0 alpha:1]];
     [[ZDCChatOverlay appearance] setMessageCountColor:THEME_BUTTON_TEXT_COLOR];
 }
 
-- (void)dealloc
-{
+- (void)dealloc{
     [[NSNotificationCenter defaultCenter]removeObserver:self];
 }
 @end
