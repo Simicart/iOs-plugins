@@ -172,6 +172,7 @@
 {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRemoveProductFromWishlist:) name:DidRemoveWishlistItem object:nil];
     [wishlistModelCollection removeItemWithWishlistItemID:[product objectForKey:@"wishlist_item_id"]];
+    [currentlyViewController startLoadingData];
 }
 
 - (void)didRemoveProductFromWishlist:(NSNotification *)noti
@@ -186,6 +187,7 @@
         UIAlertView * alert = [[UIAlertView alloc]initWithTitle:@"" message:responder.responseMessage  delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil];
         [alert show];
     }
+    [currentlyViewController stopLoadingData];
     [self removeObserverForNotification:noti];
 }
 
