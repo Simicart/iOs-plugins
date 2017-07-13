@@ -165,18 +165,18 @@
 }
 
 - (void)tapToWishlistItem:(NSDictionary *)wishlistItem{
-    if(PHONEDEVICE){
-        SCProductViewControllerCustomize* productVC = [SCProductViewControllerCustomize new];
-        productVC.productId = [wishlistItem objectForKey:@"product_id"];
-        [self.navigationController pushViewController:productVC animated:YES];
-    }else{
-        SCProductViewControllerPad* productVC = [SCProductViewControllerPad new];
-        productVC.productId = [wishlistItem objectForKey:@"product_id"];
-        productVC.arrayProductsID = [NSMutableArray arrayWithArray:@[productVC.productId]];
-        productVC.firstProductID = productVC.productId;
-        [self.navigationController pushViewController:productVC animated:YES];
-    }
-    
+    [SimiGlobalVar pushProductDetailWithNavigationController:self.navigationController andProductID:[wishlistItem objectForKey:@"product_id"] andProductIDs:[NSMutableArray arrayWithArray:@[[wishlistItem objectForKey:@"product_id"]]]];
+//    if(PHONEDEVICE){
+//        SCProductViewControllerCustomize* productVC = [SCProductViewControllerCustomize new];
+//        productVC.productId = [wishlistItem objectForKey:@"product_id"];
+//        [self.navigationController pushViewController:productVC animated:YES];
+//    }else{
+//        SCProductViewControllerPad* productVC = [SCProductViewControllerPad new];
+//        productVC.productId = [wishlistItem objectForKey:@"product_id"];
+//        productVC.arrayProductsID = [NSMutableArray arrayWithArray:@[productVC.productId]];
+//        productVC.firstProductID = productVC.productId;
+//        [self.navigationController pushViewController:productVC animated:YES];
+//    }
 }
 
 - (void)addToCartWithWishlistItem:(NSDictionary *)wishlistItem{

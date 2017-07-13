@@ -195,7 +195,7 @@ static NSString *product_paypalcheckout_row = @"product_paypalcheckout_row";
 - (void)didPlaceOrderBefore:(NSNotification *)noti
 {
     SimiModel *payment = [noti.userInfo valueForKey:@"payment"];
-    if ([[payment valueForKey:@"payment_method"] isEqualToString:@"PAYPAL_EXPRESS"]) {
+    if ([[payment valueForKey:@"payment_method"] isEqualToString:@"PAYPALUK_EXPRESS"]) {
         SimiResponder *responder = [noti.userInfo valueForKey:@"responder"];
         if ([responder.status isEqualToString:@"SUCCESS"]) {
             [self startPaypalCheckout];
@@ -231,8 +231,7 @@ static NSString *product_paypalcheckout_row = @"product_paypalcheckout_row";
 #pragma mark -
 #pragma mark dealloc
 
-- (void)dealloc
-{
+- (void)dealloc{
     [[NSNotificationCenter defaultCenter]removeObserver:self];
 }
 

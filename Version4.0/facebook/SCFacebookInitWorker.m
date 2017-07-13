@@ -42,6 +42,10 @@
 }
 -(id) init{
     if(self == [super init]){
+        //Customize
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(fbShareButtonClicked:) name:@"FBShareClickFromCustomize" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(fbCommentButtonClicked:) name:@"FBCommentClickFromCustomize" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(fbIntitFromCustomize:) name:@"FBInitFromCustomize" object:nil];
         //add notifications
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initViewMoreAction:) name:SCProductMoreViewController_InitViewMoreAction object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(beforeTouchMoreAction:) name:SCProductMoreViewController_BeforeTouchMoreAction object:nil];
@@ -165,8 +169,13 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(afterInitViewMore:) name:@"SCProductViewController-AfterInitViewMore" object:nil];
 }
 
-- (void)afterInitViewMore:(NSNotification*)noti
-{
+- (void)fbIntitFromCustomize:(NSNotification *)noti{
+    currentlyViewController = noti.object;
+    product = [noti.userInfo objectForKey:@"product"];
+    productURL = [NSString stringWithFormat:@"%@%@",kBaseURL, [product objectForKey:@"url_path"]];
+}
+
+- (void)afterInitViewMore:(NSNotification*)noti{
     [self removeObserverForNotification:noti];
     product = [noti.userInfo valueForKey:@"productModel"];
     if([product objectForKey:@"url_path"]){
@@ -217,8 +226,7 @@
     
     if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone){
         widthFacebookView = SCREEN_WIDTH - fbButton.frame.size.width - 30;
-    }
-    else{
+    }else{
         widthFacebookView = 250;
     }
     

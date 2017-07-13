@@ -36,6 +36,9 @@
 }
 -(id) init{
     if(self == [super init]){
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(addedOnSocialView:) name:@"WISHLISTBUTTONADDEDONSOCIALVIEW" object:nil];
+        
         //Product More View
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initViewMoreAction:) name:@"SCProductMoreViewController_InitViewMoreAction" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(beforeTouchMoreAction:) name:@"SCProductMoreViewController-BeforeTouchMoreAction" object:nil];
@@ -75,6 +78,20 @@
     }
     actionView.numberIcon += 1;
     [actionView.arrayIcon addObject:wishlistButton];
+}
+
+- (void)addedOnSocialView:(NSNotification *)noti{
+    currentlyViewController = noti.object;
+    wishlistButton = [noti.userInfo objectForKey:@"wishlistButton"];
+    product = [noti.userInfo objectForKey:@"product"];
+    [wishlistButton setImageEdgeInsets:UIEdgeInsetsMake(9, 9, 9, 9)];
+    [wishlistButton.layer setCornerRadius:wishlistButton.frame.size.height/2];
+    [wishlistButton.layer setShadowOffset:CGSizeMake(1, 1)];
+    [wishlistButton.layer setShadowRadius:2];
+    wishlistButton.layer.shadowOpacity = 0.5;
+    [wishlistButton setBackgroundColor:[UIColor whiteColor]];
+    [wishlistButton addTarget:self action:@selector(didTouchWishlistButton) forControlEvents:UIControlEventTouchUpInside];
+    [self updateWishlistIcon];
 }
 
 //Update product and wishlist button
