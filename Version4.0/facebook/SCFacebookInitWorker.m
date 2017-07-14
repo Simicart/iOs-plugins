@@ -174,8 +174,8 @@
     product = [noti.userInfo objectForKey:@"product"];
     UIView *socialView = [noti.userInfo objectForKey:@"socialView"];
     productURL = [NSString stringWithFormat:@"%@%@",kBaseURL, [product objectForKey:@"url_path"]];
-    FBSDKLikeControl* fbLikeControl = [[FBSDKLikeControl alloc]initWithFrame:CGRectMake(0,10,80, 80 - 20)];
-    fbLikeControl.transform = CGAffineTransformMakeScale(0.7, 0.7);
+    FBSDKLikeControl* fbLikeControl = [[FBSDKLikeControl alloc]initWithFrame:CGRectMake(0,20,80, 80 - 20)];
+    fbLikeControl.transform = CGAffineTransformMakeScale(0.85, 0.85);
     fbLikeControl.likeControlStyle = FBSDKLikeControlStyleBoxCount;
     //    }
     fbLikeControl.objectID = [NSString stringWithFormat:@"%@%@",kBaseURL, [product objectForKey:@"url_path"]];
