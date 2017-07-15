@@ -24,6 +24,10 @@
     self.delegate = self;
 }
 
+- (void)viewWillAppearBefore:(BOOL)animated{
+    
+}
+
 - (void)viewWillAppearAfter:(BOOL)animated
 {
     [super viewWillAppearAfter:YES];

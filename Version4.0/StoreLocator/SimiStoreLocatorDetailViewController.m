@@ -89,6 +89,10 @@
     [super viewDidLoadBefore];
 }
 
+- (void)viewWillAppearBefore:(BOOL)animated{
+    
+}
+
 - (void)initStoreName
 {
     lblStoreName = [[UILabel alloc]initWithFrame:CGRectMake(edgeSpace, heightScrViewContentSize, widthContent - 2*edgeSpace, heightLabel)];
@@ -187,7 +191,7 @@
 - (void)initStoreEmail
 {
     if (!([[sLModel valueForKey:@"email"] isEqualToString:@""] || [sLModel valueForKey:@"email"] == nil || [[sLModel valueForKey:@"email"] isKindOfClass:[NSNull class]])) {
-        _btnStoreEmail = [[UIButton alloc]initWithFrame:CGRectMake(edgeSpace, heightScrViewContentSize, widthContent - 2*edgeSpace, heightButton)];
+        _btnStoreEmail = [[UIButton alloc]initWithFrame:CGRectMake(edgeSpace, heightScrViewContentSize, widthContent - 2*edgeSpace - sizeStoreImage, heightButton)];
         [_btnStoreEmail setBackgroundColor:[UIColor clearColor]];
         [_btnStoreEmail addTarget:self action:@selector(btnStoreEmail_Click:) forControlEvents:UIControlEventTouchUpInside];
         [scrView addSubview:_btnStoreEmail];
@@ -214,7 +218,7 @@
 {
     if (!([[sLModel valueForKey:@"link"] isEqualToString:@""]|| [sLModel valueForKey:@"link"] == nil || [[sLModel valueForKey:@"link"] isKindOfClass:[NSNull class]]))
     {
-        _btnStoreWebsite = [[UIButton alloc]initWithFrame:CGRectMake(edgeSpace, heightScrViewContentSize, widthContent - 2*edgeSpace, heightButton)];
+        _btnStoreWebsite = [[UIButton alloc]initWithFrame:CGRectMake(edgeSpace, heightScrViewContentSize, widthContent - 2*edgeSpace - sizeStoreImage, heightButton)];
         [_btnStoreWebsite setBackgroundColor:[UIColor clearColor]];
         [_btnStoreWebsite addTarget:self action:@selector(btnStoreWebSite_Click:) forControlEvents:UIControlEventTouchUpInside];
         [scrView addSubview:_btnStoreWebsite];
