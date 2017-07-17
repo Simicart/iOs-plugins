@@ -11,26 +11,22 @@
 @interface SimiPaymentWebView ()
 @end
 
-@implementation SimiPaymentWebView
-{
+@implementation SimiPaymentWebView{
     NSURLRequest* failedRequest;
     UIActivityIndicatorView* simiLoading;
 }
 
-- (void)viewDidLoadBefore
-{
-    self.navigationItem.title = SCLocalizedString(self.navigationItem.title);
+- (void)viewDidLoadBefore{
+    self.navigationItem.title = SCLocalizedString(self.webTitle);
     UIBarButtonItem *cancel = [[UIBarButtonItem alloc] initWithTitle:SCLocalizedString(@"Cancel") style:UIBarButtonItemStylePlain target:self action:@selector(cancelPayment:)];
-    self.navigationItem.rightBarButtonItem = cancel;
+    self.navigationItem.leftBarButtonItem = cancel;
 }
 
-- (void)viewWillAppearBefore:(BOOL)animated
-{
+- (void)viewWillAppearBefore:(BOOL)animated{
     
 }
 
-- (void)viewDidAppearBefore:(BOOL)animated
-{
+- (void)viewDidAppearBefore:(BOOL)animated{
     if (_webView == nil) {
         _webView = [[UIWebView alloc] initWithFrame:self.view.bounds];
         _webView.scalesPageToFit = YES;
@@ -43,7 +39,7 @@
 }
 
 
--(void) cancelPayment:(id) sender{
+- (void)cancelPayment:(id)sender{
     UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:SCLocalizedString(@"Confirmation") message:[NSString stringWithFormat:@"%@?",SCLocalizedString(@"Are you sure that you want to cancel the order")] delegate:self cancelButtonTitle:SCLocalizedString(@"Close") otherButtonTitles:SCLocalizedString(@"OK"), nil];
     [alertView show];
     alertView.simiObjectName = @"cancelOrderAlert";
@@ -58,7 +54,7 @@
     }
 }
 
--(void) alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
     if([alertView.simiObjectName isEqualToString:@"cancelOrderAlert"]){
         if(buttonIndex == 0){
             
@@ -88,8 +84,7 @@
     NSLog(@"webViewDidFinishLoad");
 }
 
-- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
-{
+- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType{
     NSString* requestURL = [NSString stringWithFormat:@"%@",request];
     if(_payment){
         if([requestURL rangeOfString:[_payment valueForKey:@"url_success"] ].location != NSNotFound){
@@ -117,12 +112,12 @@
     NSLog(@"didFailLoadWithError: %@",error);
 }
 
--(void) didCancelOrder:(NSNotification *)noti{
+- (void)didCancelOrder:(NSNotification *)noti{
     [self removeObserverForNotification:noti];
     [self stopLoadingData];
     SimiResponder* responder = [noti.userInfo valueForKey:@"responder"];
     if([responder.status isEqualToString:@"SUCCESS"]){
-        [self showAlertWithTitle:@"" message:@"Your order is cancelled"];
+        [self showAlertWithTitle:@"Opps" message:@"Your order is cancelled"];
     }else{
         [self showAlertWithTitle:@"" message:responder.responseMessage];
     }
