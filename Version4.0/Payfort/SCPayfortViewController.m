@@ -46,7 +46,7 @@
     [[NSUserDefaults standardUserDefaults] synchronize];
     
     NSString* url = [request.URL absoluteString];
-    NSLog(@"URL: %@ %@",url,[self.order objectForKey:@"success_url"]);
+    NSLog(@"URL: %@,SUCCESS_URL: %@",url,[self.order objectForKey:@"success_url"]);
     if([url containsString:[self.order objectForKey:@"success_url"]]){
         SCPayfortModel *payfortModel = [SCPayfortModel new];
         [payfortModel updateOrderWithInvoiceNumber:[self.order objectForKey:@"invoice_number"]];
@@ -58,6 +58,9 @@
 }
 
 - (void)didUpdatePayfortPayment: (NSNotification *)noti {
+    [self stopLoadingData];
+    [self removeObserverForNotification:noti];
+    [self dismissViewControllerAnimated:YES completion:nil];
     SimiResponder *responder = [noti.userInfo objectForKey:@"responder"];
     if([responder.status isEqualToString:@"SUCCESS"]) {
         [self.order addData:originalOrder];
