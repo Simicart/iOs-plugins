@@ -19,17 +19,17 @@
     UIWebView *payfortWebView;
     SimiModel *originalOrder;
 }
-@synthesize order = _order;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     payfortWebView = [[UIWebView alloc] init];
     payfortWebView.delegate = self;
     [self.view addSubview:payfortWebView];
-    originalOrder = [_order copy];
+    originalOrder = [self.order copy];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
     payfortWebView.frame = self.view.bounds;
     [payfortWebView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[self.order objectForKey:@"redirect_url"]]]];
 }
@@ -60,7 +60,7 @@
 - (void)didUpdatePayfortPayment: (NSNotification *)noti {
     SimiResponder *responder = [noti.userInfo objectForKey:@"responder"];
     if([responder.status isEqualToString:@"SUCCESS"]) {
-        [_order addData:originalOrder];
+        [self.order addData:originalOrder];
         if (PHONEDEVICE) {
             SCThankYouPageViewController *thankVC = [[SCThankYouPageViewController alloc] init];
             thankVC.number = [originalOrder objectForKey:@"invoice_number"];
