@@ -8,8 +8,8 @@
 
 #import "SCPayfortViewController.h"
 #import "SCPayfortModel.h"
-#import "SCThankYouPageViewController.h"
-#import "SimiOrderModel.h"
+#import <SimiCartBundle/SCThankYouPageViewController.h>
+#import <SimiCartBundle/SimiOrderModel.h>
 
 @interface SCPayfortViewController ()
 
