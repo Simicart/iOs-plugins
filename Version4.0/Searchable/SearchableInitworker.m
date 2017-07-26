@@ -29,6 +29,7 @@
         if (![SimiGlobalVar sharedInstance].isFirebaseInited) {
             //Init Firebase configure
             [FIRApp configure];
+            [FIROptions defaultOptions].deepLinkURLScheme = @"axeapptest";
             [SimiGlobalVar sharedInstance].isFirebaseInited = YES;
         }
         if(SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9")){
@@ -144,8 +145,13 @@
     BOOL handled = [[FIRDynamicLinks dynamicLinks] handleUniversalLink:userActivity.webpageURL
                                                             completion:^(FIRDynamicLink * _Nullable dynamicLink,
                                                                          NSError * _Nullable error) {
-                                                                // ...
-                                                            }];
+        if(!error) {
+            NSString *dynamicLinkURL = dynamicLink.url.absoluteString;
+            NSString *productID = [[[[dynamicLinkURL componentsSeparatedByString:@"?"] objectAtIndex:1] componentsSeparatedByString:@"="] objectAtIndex:1];
+            [[[SimiGlobalVar sharedInstance] currentlyNavigationController] popToRootViewControllerAnimated:NO];
+            [SimiGlobalVar pushProductDetailWithNavigationController:[[SimiGlobalVar sharedInstance] currentlyNavigationController] andProductID:productID andProductIDs:@[productID]];
+        }
+    }];
     handledNumber = [NSNumber numberWithBool:handled];
 }
 
