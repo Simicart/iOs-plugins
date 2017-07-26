@@ -28,6 +28,7 @@
     self = [super init];
     if (self) {
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"DidPlaceOrder-Before" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(savePaymentMethodBefore:) name:@"SavePaymentMethod-Before" object:nil];
     }
     return self;
 }
@@ -38,6 +39,28 @@
         payment = [noti.userInfo valueForKey:@"payment"];
         if ([[payment valueForKey:@"payment_method"] isEqualToString:METHOD_AVENUE]) {
             [self didPlaceOrder:noti];
+        }
+    }
+}
+
+- (void)savePaymentMethodBefore:(NSNotification*)noti{
+    payment = [noti.userInfo valueForKey:@"payment"];
+    if ([[payment valueForKey:@"payment_method"] isEqualToString:METHOD_AVENUE]) {
+        SimiModel *shippingAddress = [noti.userInfo valueForKey:@"shipping_address"];
+        SimiModel *billingAddress = [noti.userInfo valueForKey:@"billing_address"];
+        if (![billingAddress valueForKey:@"state_name"] || [[billingAddress valueForKey:@"state_name"] isKindOfClass:[NSNull class]] || [[billingAddress valueForKey:@"state_name"] isEqualToString:@""]) {
+            viewController = noti.object;
+            viewController.isDiscontinue = YES;
+            UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"" message:SCLocalizedString(@"The billing address doesn't have a state. Please update it or select another address to place order.") delegate:nil cancelButtonTitle:SCLocalizedString(@"Ok") otherButtonTitles:nil];
+            [alert show];
+            return;
+        }
+        if (![shippingAddress valueForKey:@"state_name"] || [[shippingAddress valueForKey:@"state_name"] isKindOfClass:[NSNull class]] || [[shippingAddress valueForKey:@"state_name"] isEqualToString:@""]) {
+            viewController = noti.object;
+            viewController.isDiscontinue = YES;
+            UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"" message:SCLocalizedString(@"The shipping address doesn't have a state. Please update it or select another address to place order.") delegate:nil cancelButtonTitle:SCLocalizedString(@"Ok") otherButtonTitles:nil];
+            [alert show];
+            return;
         }
     }
 }

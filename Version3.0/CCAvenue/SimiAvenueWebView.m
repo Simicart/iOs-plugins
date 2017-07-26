@@ -29,6 +29,9 @@
     }
     return self;
 }
+- (void)viewDidLoadBefore{
+    
+}
 - (void)viewDidLoadAfter
 {
     [self setToSimiView];
@@ -46,13 +49,11 @@
     }else{
         [_webView loadHTMLString:content baseURL:nil];
     }
-    [self setContentSizeForViewInPopover:CGSizeMake(3*SCREEN_WIDTH/4, 3*SCREEN_HEIGHT/4)];
+    [self setPreferredContentSize:CGSizeMake(3*SCREEN_WIDTH/4, 3*SCREEN_HEIGHT/4)];
 }
 
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+- (void)viewWillAppearBefore:(BOOL)animated{
+    
 }
 
 - (void)setUrlPath:(NSString *)path{
