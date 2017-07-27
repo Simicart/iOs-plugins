@@ -225,7 +225,7 @@
             cell = [[SCBlueberryGenericTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:row.identifier andText:[_storeLocation objectForKey:@"phone"] andiCon:[UIImage imageNamed:@"ic_call"]];
             cell.selectionStyle = UITableViewCellSelectionStyleDefault;
         }else if([row.identifier isEqualToString:STORELOCATION_DETAIL_DIRECTIONS]){
-            cell = [[SCBlueberryGenericTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:row.identifier andText:SCLocalizedString(@"Get directions") andiCon:[UIImage imageNamed:@"ic_direction"]];
+            cell = [[SCBlueberryGenericTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:row.identifier andText:SCLocalizedString(@"Get Directions") andiCon:[UIImage imageNamed:@"ic_direction"]];
             cell.selectionStyle = UITableViewCellSelectionStyleDefault;
         }else if([row.identifier isEqualToString:STORELOCATION_DETAIL_EMAIL]){
             cell = [[SCBlueberryGenericTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:row.identifier andText:SCLocalizedString(@"Send email") andiCon:[UIImage imageNamed:@"ic_mail"]];
@@ -239,7 +239,7 @@
             [cell.contentView addSubview:titleLabel];
             
             SCBlueberryLabel* normalDayHoursTitleLabel = [[SCBlueberryLabel alloc] initWithFrame:ScaleFrame(CGRectMake(57, 50, 124, 25)) andFont:RegularWithSize(16) opacity:1 andTextColor:[UIColor blackColor]];
-            normalDayHoursTitleLabel.text = @"Monday - Friday";
+            normalDayHoursTitleLabel.text = @"Luni - Vineri";
             [cell.contentView addSubview:normalDayHoursTitleLabel];
             SCBlueberryLabel* normalDayHoursLabel = [[SCBlueberryLabel alloc] initWithFrame:ScaleFrame(CGRectMake(181, 50, 124, 25)) andFont:RegularWithSize(16) opacity:1 andTextColor:[UIColor blackColor]];
             normalDayHoursLabel.text = [NSString stringWithFormat:@"%@ - %@",[_storeLocation objectForKey:@"monday_open"],[_storeLocation objectForKey:@"monday_close"]];
