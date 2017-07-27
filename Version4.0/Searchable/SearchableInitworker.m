@@ -15,6 +15,7 @@
 
 #import <FirebaseCore/FirebaseCore.h>
 #import <FirebaseDynamicLinks/FirebaseDynamicLinks.h>
+#import <SimiCartBundle/SimiCMSModel.h>
 
 #define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
 
@@ -29,7 +30,6 @@
         if (![SimiGlobalVar sharedInstance].isFirebaseInited) {
             //Init Firebase configure
             [FIRApp configure];
-            [FIROptions defaultOptions].deepLinkURLScheme = @"axeapptest";
             [SimiGlobalVar sharedInstance].isFirebaseInited = YES;
         }
         if(SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"9")){
@@ -147,13 +147,64 @@
                                                                          NSError * _Nullable error) {
         if(!error) {
             NSString *dynamicLinkURL = dynamicLink.url.absoluteString;
-            NSString *productID = [[[[dynamicLinkURL componentsSeparatedByString:@"?"] objectAtIndex:1] componentsSeparatedByString:@"="] objectAtIndex:1];
-            [[[SimiGlobalVar sharedInstance] currentlyNavigationController] popToRootViewControllerAnimated:NO];
-            [SimiGlobalVar pushProductDetailWithNavigationController:[[SimiGlobalVar sharedInstance] currentlyNavigationController] andProductID:productID andProductIDs:@[productID]];
+            NSString *deepLinkPath = [[dynamicLinkURL componentsSeparatedByString:@"?"] objectAtIndex:1];
+            NSDictionary *deepLinkValues = [self convertFromDeeplinkPath:deepLinkPath];
+            if([deepLinkValues objectForKey:@"simi_product_id"]){
+                NSString *productID = [deepLinkValues objectForKey:@"simi_product_id"];
+                [[[SimiGlobalVar sharedInstance] currentlyNavigationController] popToRootViewControllerAnimated:NO];
+                [SimiGlobalVar pushProductDetailWithNavigationController:[[SimiGlobalVar sharedInstance] currentlyNavigationController] andProductID:productID andProductIDs:@[productID]];
+            } else if([deepLinkValues objectForKey:@"simi_cate_name"] && [deepLinkValues objectForKey:@"simi_has_child"] && [deepLinkValues objectForKey:@"simi_cate_name"]) {
+                NSString *categoryID = [deepLinkValues objectForKey:@"simi_cate_name"];
+                BOOL hasChild = [[deepLinkValues objectForKey:@"simi_has_child"] boolValue];
+                NSString *categoryName = [deepLinkValues objectForKey:@"simi_cate_name"];
+                if(PHONEDEVICE) {
+                    if(hasChild) {
+                        SCCategoryViewController *nextController = [[SCCategoryViewController alloc]init];
+                        nextController.openFrom = CategoryOpenFromParentCategory;
+                        [nextController setCategoryId:categoryID];
+                        [nextController setCategoryRealName:categoryName];
+                        [[[SimiGlobalVar sharedInstance] currentlyNavigationController] popToRootViewControllerAnimated:NO];
+                        [[[SimiGlobalVar sharedInstance] currentlyNavigationController] pushViewController:nextController animated:YES];
+                    }else {
+                        SCProductListViewController *nextController = [[SCProductListViewController alloc]init];;
+                        [nextController setCategoryID: categoryID];
+                        nextController.nameOfProductList = categoryName;
+                        [[[SimiGlobalVar sharedInstance] currentlyNavigationController] popToRootViewControllerAnimated:NO];
+                        [[[SimiGlobalVar sharedInstance] currentlyNavigationController] pushViewController:nextController animated:YES];
+                    }
+                }else {
+                    
+                }
+            } else if([deepLinkValues objectForKey:@"simi_cms_id"]) {
+                NSString *cmsID = [deepLinkValues objectForKey:@"simi_cms_id"];
+                [[[SimiGlobalVar sharedInstance] currentlyNavigationController] popToRootViewControllerAnimated:NO];
+                [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didGetCMSPage:) name:DidGetCMSPage object:nil];
+                [[SimiCMSModel new] getCMSPageWithID:cmsID];
+                [((SimiViewController *)[[SimiGlobalVar sharedInstance] currentlyNavigationController].viewControllers.lastObject) startLoadingData];
+            }
         }
     }];
     handledNumber = [NSNumber numberWithBool:handled];
 }
 
+- (void)didGetCMSPage: (NSNotification *)noti {
+    SimiCMSModel *cmsModel = noti.object;
+    [((SimiViewController *)[[SimiGlobalVar sharedInstance] currentlyNavigationController].viewControllers.lastObject) stopLoadingData];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:DidGetCMSPage object:nil];
+        SCWebViewController *webViewController = [[SCWebViewController alloc] init];
+    webViewController.title = [cmsModel objectForKey:@"cms_title"];
+    webViewController.content = [cmsModel valueForKey:@"cms_content"];
+    [[[SimiGlobalVar sharedInstance] currentlyNavigationController] pushViewController:webViewController animated:YES];
+}
+
+- (NSDictionary *)convertFromDeeplinkPath:(NSString *)deeplinkPath {
+    NSArray *deepLinkItems = [deeplinkPath componentsSeparatedByString:@"&"];
+    NSMutableDictionary *deeplinkValues = [NSMutableDictionary new];
+    for(NSString *deepLinkItem in deepLinkItems) {
+        NSArray *deepLinkItemValue = [deepLinkItem componentsSeparatedByString:@"="];
+        [deeplinkValues setValue:[deepLinkItemValue objectAtIndex:1] forKey:[deepLinkItemValue objectAtIndex:0]];
+    }
+    return deeplinkValues;
+}
 
 @end
