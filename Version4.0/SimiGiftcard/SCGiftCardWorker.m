@@ -50,17 +50,34 @@
 }
 
 - (void)cartViewInitCells:(NSNotification *)noti {
-    SimiTable *cartCell = noti.object;
-    SimiSection *totalSection = [cartCell getSectionByIdentifier:CART_TOTALS];
-    [totalSection addRowWithIdentifier:CART_VIEW_GIFTCARD height:60];
+    NSDictionary *giftCardData = [SimiGlobalVar sharedInstance].cart.giftCardData;
+    if([[giftCardData objectForKey:@"use_giftcard"] boolValue]) {
+        SimiTable *cartCell = noti.object;
+        SimiSection *totalSection = [cartCell getSectionByIdentifier:CART_TOTALS];
+        [totalSection addRowWithIdentifier:CART_VIEW_GIFTCARD height:60 sortOrder:200];
+        [totalSection sortItems];
+    }
 }
 
 - (void)cartViewCellForRow:(NSNotification *)noti {
     UITableView *tableView = [noti.userInfo objectForKey:@"tableView"];
-    UITableViewCell *cell = [noti.userInfo objectForKey:@"cell"];
-    if(!cell) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CART_VIEW_GIFTCARD];
-        giftCardCb = [[SimiCheckbox alloc] initWithTitle:[NSString stringWithFormat:@"%@(%@)",SCLocalizedString(@"Use Gift Card credit to check out"),]];
+    SimiRow *row = [noti.userInfo objectForKey:@"row"];
+    if([row.identifier isEqualToString:CART_VIEW_GIFTCARD]) {
+        NSDictionary *giftCardData = [SimiGlobalVar sharedInstance].cart.giftCardData;
+        NSDictionary *customerData = [giftCardData objectForKey:@"customer"];
+        UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CART_VIEW_GIFTCARD];
+        if(!cell) {
+            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CART_VIEW_GIFTCARD];
+            giftCardCreditCb = [[SimiCheckbox alloc] initWithTitle:[NSString stringWithFormat:@"%@(%@)",SCLocalizedString(@"Use Gift Card credit to check out"),[customerData objectForKey:@"balance"]]];
+            giftCardCreditCb.frame = CGRectMake(10, 0, tableView.frame.size.width - 20, 30);
+            [cell.contentView addSubview:giftCardCreditCb];
+            
+            giftCardCb = [[SimiCheckbox alloc] initWithTitle:[NSString stringWithFormat:@"%@",SCLocalizedString(@"Use Gift Card to check out")]];
+            giftCardCreditCb.frame = CGRectMake(10, 30, tableView.frame.size.width - 20, 30);
+            [cell.contentView addSubview:giftCardCb];
+        }
+        UITableViewCell *aCell = [noti.userInfo objectForKey:@"cell"];
+        aCell = cell;
     }
 }
 
