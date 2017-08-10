@@ -26,10 +26,12 @@
         float sizeImageStock = 80;
         stockStatusLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(imageSize - sizeImageStock - 10, imageSize - 35, sizeImageStock * 1.4, 14) andFontName:THEME_FONT_NAME_REGULAR andFontSize:8 andTextColor:THEME_OUT_STOCK_TEXT_COLOR text:[SCLocalizedString(@"Out of stock") uppercaseString]];
         [stockStatusLabel setBackgroundColor:[UIColor clearColor]];
+        [stockStatusLabel setTransform:CGAffineTransformMakeRotation(- M_PI_4)];
+        [stockStatusLabel setTextAlignment:NSTextAlignmentCenter];
         stockStatusImageView = [[UIImageView alloc]initWithFrame:CGRectMake(imageSize - sizeImageStock, imageSize - sizeImageStock, sizeImageStock, sizeImageStock)];
         [stockStatusImageView setImage:[UIImage imageNamed:@"stockstatus_background"]];
-        [stockStatusImageView addSubview:stockStatusLabel];
         [productImageView addSubview:stockStatusImageView];
+        [productImageView addSubview:stockStatusLabel];
     }
     return self;
 }
@@ -38,8 +40,9 @@
     if (_productModel == nil) {
         _productModel = productModel;
         stockStatus = [[self.productModel valueForKey:@"is_salable"] boolValue];
-        if (!stockStatus) {
+        if (stockStatus) {
             [stockStatusImageView setHidden:YES];
+            [stockStatusLabel setHidden:YES];
         }
         if ([[self.productModel valueForKey:@"images"] isKindOfClass:[NSArray class]]) {
             NSArray *images = [self.productModel valueForKey:@"images"];

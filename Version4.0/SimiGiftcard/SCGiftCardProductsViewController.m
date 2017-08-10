@@ -8,13 +8,16 @@
 
 #import "SCGiftCardProductsViewController.h"
 #import "SCGiftCardCollectionViewCell.h"
+#import "SCGiftCardProductViewController.h"
 
 @interface SCGiftCardProductsViewController ()
 
 @end
 
 @implementation SCGiftCardProductsViewController
+
 - (void)viewDidLoadBefore{
+    [super viewDidLoadBefore];
     totalNumberProduct = 1000;
     UICollectionViewFlowLayout* flowLayout = [UICollectionViewFlowLayout new];
     flowLayout.minimumLineSpacing = [SimiGlobalVar scaleValue:20];
@@ -128,7 +131,10 @@
 #pragma mark -
 #pragma mark UICollectionView Delegate
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath{
-    
+    SimiGiftCardModel *giftCardModel = [self.productModelCollection objectAtIndex:indexPath.row];
+    SCGiftCardProductViewController *productViewController = [SCGiftCardProductViewController new];
+    productViewController.productId = [giftCardModel valueForKey:@"entity_id"];
+    [self.navigationController pushViewController:productViewController animated:YES];
 }
 
 @end

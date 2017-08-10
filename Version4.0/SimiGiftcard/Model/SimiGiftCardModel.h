@@ -8,6 +8,10 @@
 
 #import "SimiProductModel.h"
 static NSString *DidGetGiftCardDetail = @"DidGetGiftCardDetail";
+static NSString *DidUploadImage = @"DidUploadImage";
+
 @interface SimiGiftCardModel : SimiProductModel
 - (void)getGiftCardWithID:(NSString*)giftcardID params:(NSDictionary*)params;
+
+- (void)uploadImageWithParams:(NSDictionary *)params;
 @end

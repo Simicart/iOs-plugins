@@ -14,4 +14,5 @@
 
 - (void)getGiftCardProductCollectionWithParams:(NSDictionary *)params target:(id)target selector:(SEL)selector;
 
+- (void)uploadImageWithParams:(NSDictionary *)params target:(id)target selector:(SEL)selector;
 @end
