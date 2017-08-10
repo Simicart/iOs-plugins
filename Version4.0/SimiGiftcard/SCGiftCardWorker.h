@@ -8,6 +8,6 @@
 
 #import <Foundation/Foundation.h>
 static NSString *LEFTMENU_ROW_GIFTCARD = @"LEFTMENU_ROW_GIFTCARD";
-@interface SCGiftCardWorker : NSObject
+@interface SCGiftCardWorker : NSObject<UIPickerViewDelegate, UIPickerViewDataSource>
 
 @end
