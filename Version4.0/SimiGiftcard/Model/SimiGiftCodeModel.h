@@ -7,8 +7,7 @@
 //
 
 #import <SimiCartBundle/SimiCartBundle.h>
-#define DidUseGiftCode @"DidUseGiftCode"
 
 @interface SimiGiftCodeModel : SimiModel
-- (void)useGiftCodeWithParams: (NSDictionary *)params;
+
 @end

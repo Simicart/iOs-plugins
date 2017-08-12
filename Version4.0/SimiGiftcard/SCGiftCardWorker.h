@@ -7,7 +7,11 @@
 //
 
 #import <Foundation/Foundation.h>
-static NSString *LEFTMENU_ROW_GIFTCARD = @"LEFTMENU_ROW_GIFTCARD";
-@interface SCGiftCardWorker : NSObject<UIPickerViewDelegate, UIPickerViewDataSource>
+#import "SCGiftCardOnCartWorker.h"
+#import "SCGiftCardOnOrderWorker.h"
 
+static NSString *LEFTMENU_ROW_GIFTCARD = @"LEFTMENU_ROW_GIFTCARD";
+@interface SCGiftCardWorker : NSObject
+@property (strong, nonatomic) SCGiftCardOnCartWorker *giftCardOnCartWorker;
+@property (strong, nonatomic) SCGiftCardOnOrderWorker *giftCardOnOrderWorker;
 @end

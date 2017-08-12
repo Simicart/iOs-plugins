@@ -8,8 +8,6 @@
 
 #import <SimiCartBundle/SimiCartBundle.h>
 
-#define DidUseGiftCard @"DidUseGiftCard"
 
 @interface SimiGiftCardCreditModel : SimiModel
-- (void)useGiftCardCreditWithParams: (NSDictionary *)params;
 @end
