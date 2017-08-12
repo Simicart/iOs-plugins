@@ -15,8 +15,17 @@
     keyResponse = @"simigiftcard";
     [self preDoRequest];
     NSMutableDictionary *currentParams = [NSMutableDictionary dictionaryWithDictionary:params];
+    NSArray *fields = @[@"entity_id",@"type_id",@"sku",@"has_options",@"required_options",@"status",@"name",@"url_path",@"description",@"short_description",@"is_salable",@"additional",@"images",@"app_prices",@"app_tier_prices",@"app_reviews",@"app_options",@"wishlist_item_id",@"product_label",@"simigift_template_ids",@"giftcard_prices"];
+    [currentParams setObject:[fields componentsJoinedByString:@","] forKey:@"fields"];
     [currentParams setValue:giftcardID forKey:@"entity_id"];
     [[SimiGiftCardAPI new] getGiftCardProductWithParams:currentParams target:self selector:@selector(didFinishRequest:responder:)];
+}
+
+- (void)uploadImageWithParams:(NSDictionary *)params{
+    currentNotificationName = DidUploadImage;
+    keyResponse = @"images";
+    [self preDoRequest];
+    [[SimiGiftCardAPI new] uploadImageWithParams:params target:self selector:@selector(didFinishRequest:responder:)];
 }
 
 - (float)heightPriceOnGrid{

@@ -20,4 +20,9 @@
     [self requestWithMethod:GET URL:urlPath params:params target:target selector:selector header:nil];
 }
 
+- (void)uploadImageWithParams:(NSDictionary *)params target:(id)target selector:(SEL)selector{
+    NSString *urlPath = [NSString stringWithFormat:@"%@%@%@", kBaseURL, kSimiConnectorURL, @"simigiftcards/uploadimage"];
+    [self requestWithMethod:POST URL:urlPath params:nil uploadDataParams:[params valueForKey:@"image_content"] uploadKey:@"image" uploadFileName:@"image_name.png" target:target selector:selector header:nil];
+}
+
 @end

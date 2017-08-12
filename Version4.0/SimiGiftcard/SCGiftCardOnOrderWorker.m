@@ -20,7 +20,7 @@
     UITableView *orderTableView;
     SCOrderViewController *orderVC;
     SimiCheckbox *giftCardCreditCb, *giftCodeCb;
-    SimiTextField *giftCodeTextField, *giftCardCreditTextField, *giftExistingCodeTextField;
+    SimiTextField *giftCodeTextField, *giftCardCreditTextField, *existingCodeTextField;
     NSString *giftCodeSelected;
     BOOL useGiftCode, useGiftCardCredit;
 }
@@ -124,6 +124,9 @@
                 cellY += giftCardLabel.frame.size.height;
                 if(!giftCodeTextField) {
                     giftCodeTextField = [[SimiTextField alloc] init];
+                    UIToolbar *giftCodeToolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 140, SCREEN_WIDTH, 40)];
+                    giftCodeToolbar.items = @[[[UIBarButtonItem alloc] initWithTitle:SCLocalizedString(@"Cancel") style:UIBarButtonItemStylePlain target:self action:@selector(cancelGiftCodeSelection:)],[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil],[[UIBarButtonItem alloc] initWithTitle:SCLocalizedString(@"Done") style:UIBarButtonItemStyleDone target:self action:@selector(doneGiftCodeSelection:)]];
+                    giftCodeTextField.inputAccessoryView = giftCodeToolbar;
                 }
                 [cell.contentView addSubview:giftCodeTextField];
                 giftCodeTextField.frame = CGRectMake(padding, cellY, viewWidth, 40);
@@ -132,18 +135,18 @@
                 giftCardExistingLabel.text = @"or select from your existing Gift Card code(s)";
                 [cell.contentView addSubview:giftCardExistingLabel];
                 cellY += 30;
-                if(!giftExistingCodeTextField) {
-                    giftExistingCodeTextField = [[SimiTextField alloc] init];
-                    UIPickerView *giftCardPicker = [[UIPickerView alloc] init];
-                    giftCardPicker.delegate = self;
-                    giftCardPicker.dataSource = self;
-                    giftExistingCodeTextField.inputView = giftCardPicker;
-                    UIToolbar *giftCardToolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 140, SCREEN_WIDTH, 40)];
-                    giftCardToolbar.items = @[[[UIBarButtonItem alloc] initWithTitle:SCLocalizedString(@"Cancel") style:UIBarButtonItemStylePlain target:self action:@selector(cancelGiftCardSelection:)],[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil],[[UIBarButtonItem alloc] initWithTitle:SCLocalizedString(@"Select") style:UIBarButtonItemStyleDone target:self action:@selector(doneGiftCardSelection:)]];
-                    giftExistingCodeTextField.inputAccessoryView = giftCardToolbar;
+                if(!existingCodeTextField) {
+                    existingCodeTextField = [[SimiTextField alloc] init];
+                    UIPickerView *existingCodePicker = [[UIPickerView alloc] init];
+                    existingCodePicker.delegate = self;
+                    existingCodePicker.dataSource = self;
+                    existingCodeTextField.inputView = existingCodePicker;
+                    UIToolbar *existingCodeToolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 140, SCREEN_WIDTH, 40)];
+                    existingCodeToolbar.items = @[[[UIBarButtonItem alloc] initWithTitle:SCLocalizedString(@"Cancel") style:UIBarButtonItemStylePlain target:self action:@selector(cancelExistingCodeSelection:)],[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil],[[UIBarButtonItem alloc] initWithTitle:SCLocalizedString(@"Select") style:UIBarButtonItemStyleDone target:self action:@selector(doneExistingCodeSelection:)]];
+                    existingCodeTextField.inputAccessoryView = existingCodeToolbar;
                 }
-                [cell.contentView addSubview:giftExistingCodeTextField];
-                giftExistingCodeTextField.frame = CGRectMake(padding, cellY, viewWidth, 40);
+                [cell.contentView addSubview:existingCodeTextField];
+                existingCodeTextField.frame = CGRectMake(padding, cellY, viewWidth, 40);
                 cellY += 40;
                 SimiButton *applyGiftCodeButton = [[SimiButton alloc] initWithFrame:CGRectMake(padding, cellY + 5, 100, 40) title:@"APPLY" titleFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE]];
                 [applyGiftCodeButton addTarget:self action:@selector(applyGiftCode:) forControlEvents:UIControlEventTouchUpInside];
@@ -176,6 +179,9 @@
                 if(!giftCardCreditTextField) {
                     giftCardCreditTextField = [[SimiTextField alloc] initWithFrame:CGRectMake(padding, 60, viewWidth, 40) placeHolder:@"" font:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE] textColor:THEME_CONTENT_COLOR];
                     giftCardCreditTextField.keyboardType = UIKeyboardTypeDecimalPad;
+                    UIToolbar *giftCardCreditToolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 140, SCREEN_WIDTH, 40)];
+                    giftCardCreditToolbar.items = @[[[UIBarButtonItem alloc] initWithTitle:SCLocalizedString(@"Cancel") style:UIBarButtonItemStylePlain target:self action:@selector(cancelGiftCardCreditSelection:)],[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil],[[UIBarButtonItem alloc] initWithTitle:SCLocalizedString(@"Done") style:UIBarButtonItemStyleDone target:self action:@selector(doneGiftCardCreditSelection:)]];
+                    giftCardCreditTextField.inputAccessoryView = giftCardCreditToolbar;
                 }
                 if([[credit objectForKey:@"use_credit"] boolValue]) {
                     giftCardCreditTextField.text = [NSString stringWithFormat:@"%@", [credit objectForKey:@"use_credit_amount"]];
@@ -197,14 +203,32 @@
     }
 }
 
-- (void)cancelGiftCardSelection: (id)sender {
-    giftExistingCodeTextField.text = @"";
-    giftCodeSelected = @"";
-    [giftExistingCodeTextField endEditing:YES];
+- (void)cancelGiftCodeSelection: (id)sender {
+    giftCodeTextField.text = @"";
+    [giftCodeTextField endEditing:YES];
 }
 
-- (void)doneGiftCardSelection: (id)sender {
-    [giftExistingCodeTextField endEditing:YES];
+- (void)doneGiftCodeSelection: (id)sender {
+    [giftCodeTextField endEditing:YES];
+}
+
+- (void)cancelExistingCodeSelection: (id)sender {
+    existingCodeTextField.text = @"";
+    giftCodeSelected = @"";
+    [existingCodeTextField endEditing:YES];
+}
+
+- (void)doneExistingCodeSelection: (id)sender {
+    [existingCodeTextField endEditing:YES];
+}
+
+- (void)cancelGiftCardCreditSelection: (id)sender {
+    giftCardCreditTextField.text = @"";
+    [giftCardCreditTextField endEditing:YES];
+}
+
+- (void)doneGiftCardCreditSelection: (id)sender {
+    [giftCardCreditTextField endEditing:YES];
 }
 
 - (void)giftCardCreditCbChangedValue: (SimiCheckbox *)checkbox {
@@ -250,7 +274,7 @@
         }
         if(![giftCodeSelected isEqualToString:@""]) {
             [params addEntriesFromDictionary:@{@"existed_giftcode":giftCodeSelected}];
-            giftExistingCodeTextField.text = @"";
+            existingCodeTextField.text = @"";
         }
     }else {
         [params addEntriesFromDictionary:@{@"giftvoucher":@"0"}];
@@ -446,7 +470,7 @@
     NSArray* listCode = [[[order objectForKey:@"gift_card"] objectForKey:@"customer"] objectForKey:@"list_code"];
     if(listCode.count > 0) {
         NSDictionary *code = [listCode objectAtIndex:row];
-        giftExistingCodeTextField.text = [code objectForKey:@"hidden_code"];
+        existingCodeTextField.text = [code objectForKey:@"hidden_code"];
         giftCodeSelected = [code objectForKey:@"gift_code"];
     }
 }
