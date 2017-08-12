@@ -18,6 +18,14 @@
 - (void)viewDidLoadAfter{
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
+    if ([SCGiftCardGlobalVar sharedInstance].timeZoneModelCollection.count > 0) {
+        timeZoneModelCollection = [SCGiftCardGlobalVar sharedInstance].timeZoneModelCollection;
+        timeZoneTitles = [NSMutableArray new];
+        timeZoneSelectedIndex = 0;
+        for (NSDictionary *timeZoneUnit in timeZoneModelCollection) {
+            [timeZoneTitles addObject:[timeZoneUnit valueForKey:@"label"]];
+        }
+    }
 }
 
 - (void)setCells:(SimiTable *)cells{
@@ -54,6 +62,7 @@
                 NSArray *simiGiftTemplateIds = [self.product valueForKey:@"simigift_template_ids"];
                 if (simiGiftTemplateIds.count > 0) {
                     NSDictionary *giftTemplate = [simiGiftTemplateIds objectAtIndex:0];
+                    giftCardTemplateID = [NSString stringWithFormat:@"%@",[giftTemplate valueForKey:@"giftcard_template_id"]];
                     if ([[giftTemplate valueForKey:@"images"] isKindOfClass:[NSArray class]]) {
                         giftCardTemplateImages = [giftTemplate valueForKey:@"images"];
                     }
@@ -214,6 +223,22 @@
                 dayToSendTextField.delegate = self;
                 [cell.contentView addSubview:dayToSendTextField];
                 cellHeight += textFieldHeight;
+                
+                if (timeZoneTitles.count > 0) {
+                    SimiLabel *timeZoneLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(paddingEdge, cellHeight, textFieldWidth, labelHeight) andFontName:THEME_FONT_NAME_REGULAR andFontSize:16 andTextColor:THEME_CONTENT_COLOR text:@"Select time zone"];
+                    [cell.contentView addSubview:timeZoneLabel];
+                    cellHeight += labelHeight;
+                    
+                    UIImageView *dropdownImageView = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, 20, 40)];
+                    [dropdownImageView setContentMode:UIViewContentModeScaleAspectFit];
+                    [dropdownImageView setImage:[UIImage imageNamed:@"ic_dropdown"]];
+                    selectTimeZoneTextField = [[SimiTextField alloc]initWithFrame:CGRectMake(paddingEdge, cellHeight, textFieldWidth, textFieldHeight) placeHolder:@"" font:[UIFont fontWithName:THEME_FONT_NAME size:16] textColor:THEME_CONTENT_COLOR borderWidth:1 borderColor:[UIColor lightGrayColor] cornerRadius:6 leftView:[[UIView alloc]initWithFrame:CGRectMake(0, 0, 10, textFieldHeight)] rightView:dropdownImageView];
+                    selectTimeZoneTextField.delegate = self;
+                    selectTimeZoneTextField.text = [timeZoneTitles objectAtIndex:timeZoneSelectedIndex];
+                    [cell.contentView addSubview:selectTimeZoneTextField];
+                    cellHeight += textFieldHeight;
+                }
+                row.height = cellHeight+20;
             }
         }else if ([row.identifier isEqualToString:giftcard_recommendinfo_row]){
             if (cell == nil) {
@@ -246,7 +271,8 @@
                 priceLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(paddingEdge, heightCell, tableWidth - paddingEdge*2, 30) andFontName:THEME_FONT_NAME_REGULAR andFontSize:20 andTextColor:THEME_PRICE_COLOR];
                 [cell.contentView addSubview:priceLabel];
                 heightCell += 30;
-                if ([[giftCardPrices valueForKey:@"type_value"] isEqualToString:@"fixed"]){
+                giftCardTypeValue = [NSString stringWithFormat:@"%@",[giftCardPrices valueForKey:@"type_value"]];
+                if ([giftCardTypeValue isEqualToString:@"fixed"]){
                     NSString *price = [NSString stringWithFormat:@"%@",[giftCardPrices valueForKey:@"price"]];
                     [priceLabel setText:[[SimiFormatter sharedInstance]priceWithPrice:price]];
                     SimiLabel *giftCardValueLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(paddingEdge, heightCell, tableWidth - paddingEdge*2, 25) andFontName:THEME_FONT_NAME_REGULAR andFontSize:16];
@@ -254,7 +280,7 @@
                     [giftCardValueLabel setText:[NSString stringWithFormat:@"%@: %@",SCLocalizedString(@"Gift Card value"), [[SimiFormatter sharedInstance] priceWithPrice:giftCardValue]]];
                     [cell.contentView addSubview:giftCardValueLabel];
                     heightCell += 35;
-                }else if([[giftCardPrices valueForKey:@"type_value"] isEqualToString:@"dropdown"]){
+                }else if([giftCardTypeValue isEqualToString:@"dropdown"]){
                     valueSelectedIndex = 0;
                     priceValues = [giftCardPrices valueForKey:@"prices_dropdown"];
                     giftCardValues = [giftCardPrices valueForKey:@"options"];
@@ -386,7 +412,7 @@
     [collectionView registerClass:[GiftCardTemplateCollectionViewCell class] forCellWithReuseIdentifier:identifier];
     GiftCardTemplateCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:identifier forIndexPath:indexPath];
     [cell setImagePath:[data valueForKey:@"url"]];
-    if (indexPath.row == selectTemplateImageIndex) {
+    if (indexPath.row == templateImageSelectedIndex) {
         cell.imageView.layer.borderWidth = 2;
     }else{
         cell.imageView.layer.borderWidth = 0;
@@ -403,8 +429,8 @@
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath{
-    if (indexPath.row != selectTemplateImageIndex) {
-        selectTemplateImageIndex = indexPath.row;
+    if (indexPath.row != templateImageSelectedIndex) {
+        templateImageSelectedIndex = indexPath.row;
         self.useUploadImage = NO;
     }
 }
@@ -451,16 +477,16 @@
 - (void)setUseUploadImage:(BOOL)useUploadImage{
     _useUploadImage = useUploadImage;
     if (useUploadImage) {
-        selectTemplateImageIndex = -1;
+        templateImageSelectedIndex = -1;
         uploadImageView.layer.borderWidth = 2;
         uploadImageView.layer.borderColor = [UIColor orangeColor].CGColor;
         [giftCardImageView setImage:uploadImageView.image];
     }else{
-        if (selectTemplateImageIndex == -1) {
-            selectTemplateImageIndex = 0;
+        if (templateImageSelectedIndex == -1) {
+            templateImageSelectedIndex = 0;
         }
         uploadImageView.layer.borderWidth = 0;
-        [giftCardImageView sd_setImageWithURL:[NSURL URLWithString:[[giftCardTemplateImages objectAtIndex:selectTemplateImageIndex] valueForKey:@"url"]] placeholderImage:[UIImage imageNamed:@"logo"]];
+        [giftCardImageView sd_setImageWithURL:[NSURL URLWithString:[[giftCardTemplateImages objectAtIndex:templateImageSelectedIndex] valueForKey:@"url"]] placeholderImage:[UIImage imageNamed:@"logo"]];
     }
     [templatesCollectionView reloadData];
 }
@@ -556,6 +582,11 @@
         [giftValuePicker showActionSheetPicker];
         return NO;
     }
+    if ([textField isEqual:selectTimeZoneTextField]) {
+        ActionSheetStringPicker *timeZonePicker = [[ActionSheetStringPicker alloc]initWithTitle:SCLocalizedString(@"Choose Time Zone") rows:timeZoneTitles initialSelection:timeZoneSelectedIndex target:self successAction:@selector(didSelectTimeZoneValue:element:) cancelAction:@selector(cancelActionSheet:) origin:textField];
+        [timeZonePicker showActionSheetPicker];
+        return NO;
+    }
     return YES;
 }
 
@@ -574,8 +605,78 @@
     [giftCardValueTextField setText:[giftCardValueTitles objectAtIndex:valueSelectedIndex]];
 }
 
+- (void)didSelectTimeZoneValue:(NSNumber *)selectedIndex element:(id)element{
+    timeZoneSelectedIndex = [selectedIndex integerValue];
+    [selectTimeZoneTextField setText:[timeZoneTitles objectAtIndex:timeZoneSelectedIndex]];
+}
+
 - (void)cancelActionSheet:(id)sender{
     
+}
+
+#pragma mark Add To Cart
+- (void)addToCart{
+    BOOL canAddToCart = NO;
+    if (isSendGiftcardToFriend) {
+        if ([self isEnterAllRequireFields]) {
+            canAddToCart =  YES;
+        }
+    }else
+        canAddToCart = YES;
+    if (canAddToCart) {
+        [self startLoadingData];
+        NSMutableDictionary* cartItem = [[NSMutableDictionary alloc]initWithDictionary:@{@"product":[self.product valueForKey:@"entity_id"],@"giftcard_template_id":giftCardTemplateID, @"qty":[NSString stringWithFormat:@"%d",self.qty]}];
+        if (self.useUploadImage) {
+            [cartItem setValue:@"1" forKey:@"giftcard_use_custom_image"];
+            [cartItem setValue:[uploadImageModel valueForKey:@"file"] forKey:@"giftcard_template_image"];
+        }else{
+            [cartItem setValue:@"0" forKey:@"giftcard_use_custom_image"];
+            [cartItem setValue:[[giftCardTemplateImages objectAtIndex:templateImageSelectedIndex] valueForKey:@"image"] forKey:@"giftcard_template_image"];
+        }
+        if (isSendThroughPostOffice) {
+            [cartItem setValue:@"1" forKey:@"recipient_ship"];
+        }else
+            [cartItem setValue:@"0" forKey:@"recipient_ship"];
+        
+        if (isSendGiftcardToFriend) {
+            [cartItem setValue:@"1" forKey:@"send_friend"];
+            [cartItem setValue:senderNameTextField.text forKey:@"customer_name"];
+            [cartItem setValue:recipientNameTextField.text forKey:@"recipient_name"];
+            [cartItem setValue:recipientEmailTextField.text forKey:@"recipient_email"];
+            [cartItem setValue:customMessageTextView.text forKey:@"message"];
+            [cartItem setValue:dayToSendTextField.text forKey:@"day_to_send"];
+            [cartItem setValue:[[timeZoneModelCollection objectAtIndex:timeZoneSelectedIndex] valueForKey:@"value"] forKey:@"timezone_to_send"];
+            if (getNotificationCheckbox.checkState == M13CheckboxStateChecked) {
+                [cartItem setValue:@"1" forKey:@"notify_success"];
+            }else{
+                [cartItem setValue:@"0" forKey:@"notify_success"];
+            }
+        }else
+            [cartItem setValue:@"0" forKey:@"send_friend"];
+        if ([giftCardTypeValue isEqualToString:@"fixed"]) {
+            [cartItem setValue:[giftCardPrices valueForKey:@"price"] forKey:@"price_amount"];
+            [cartItem setValue:[giftCardPrices valueForKey:@"value"] forKey:@"amount"];
+        }else if([giftCardTypeValue isEqualToString:@"dropdown"]){
+            NSString *currentGiftValue = [NSString stringWithFormat:@"%@",[giftCardValues objectAtIndex:valueSelectedIndex]];
+            NSString *price = [NSString stringWithFormat:@"%@",[priceValues valueForKey:currentGiftValue]];
+            [cartItem setValue:price forKey:@"price_amount"];
+            [cartItem setValue:currentGiftValue forKey:@"amount"];
+        }
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"AddToCart" object:nil userInfo:@{@"data":cartItem}];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didAddToCart:) name:@"DidAddToCart" object:nil];
+    }
+}
+
+- (BOOL)isEnterAllRequireFields{
+    if ([recipientNameTextField.text isEqualToString:@""] || [recipientEmailTextField.text isEqualToString:@""] || [dayToSendTextField.text isEqualToString:@""]) {
+        [self showToastMessage:@"Please enter all required fields" duration:1.5];
+        return NO;
+    }
+    if (![SimiGlobalVar validateEmail:recipientEmailTextField.text]) {
+        [self showToastMessage:@"Email is not valid" duration:1.5];
+        return NO;
+    }
+    return YES;
 }
 @end
 

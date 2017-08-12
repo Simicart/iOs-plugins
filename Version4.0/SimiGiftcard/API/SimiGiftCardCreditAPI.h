@@ -9,5 +9,9 @@
 #import <SimiCartBundle/SimiCartBundle.h>
 
 @interface SimiGiftCardCreditAPI : SimiAPI
+- (void)getCustomerCreditWithParams:(NSDictionary *)params target:(id)target selector:(SEL)selector;
+- (void)removeGiftCodeFromCustomerWithParams:(NSDictionary *)params target:(id)target selector:(SEL)selector;
+- (void)redeemGiftCodeWithParams:(NSDictionary *)params target:(id)target selector:(SEL)selector;
+- (void)addGiftCodeWithParams:(NSDictionary *)params target:(id)target selector:(SEL)selector;
 
 @end

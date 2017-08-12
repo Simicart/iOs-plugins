@@ -11,6 +11,7 @@
 #import "SimiCheckbox.h"
 #import "SimiTextField.h"
 #import "ActionSheetPicker.h"
+#import "SCGiftCardGlobalVar.h"
 
 static NSString *giftcard_template_row = @"giftcard_template_row";
 static NSString *giftcard_sendpostoffice_checkbox_row = @"giftcard_sendpostoffice_checkbox_row";
@@ -21,7 +22,7 @@ static NSString *giftcard_insertinfo_row = @"giftcard_insertinfo_row";
 @interface SCGiftCardProductViewController : SCProductSecondDesignViewController<UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextFieldDelegate, UITextViewDelegate>{
     UIImageView *giftCardImageView;
     NSArray *giftCardTemplateImages;
-    NSInteger selectTemplateImageIndex;
+    NSInteger templateImageSelectedIndex;
     UICollectionView *templatesCollectionView;
     UIImageView *uploadImageView;
     SimiGiftCardModel *uploadImageModel;
@@ -45,6 +46,13 @@ static NSString *giftcard_insertinfo_row = @"giftcard_insertinfo_row";
     NSMutableArray *giftCardValueTitles;
     NSInteger valueSelectedIndex;
     SimiTextField *giftCardValueTextField;
+    NSString *giftCardTemplateID;
+    
+    SimiGiftCardTimeZoneModelCollection *timeZoneModelCollection;
+    NSMutableArray *timeZoneTitles;
+    NSInteger timeZoneSelectedIndex;
+    
+    NSString *giftCardTypeValue;
 }
 
 @property (nonatomic) BOOL useUploadImage;

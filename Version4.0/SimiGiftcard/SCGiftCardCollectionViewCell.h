@@ -7,6 +7,7 @@
 //
 
 #import "SimiGiftCardModel.h"
+#import "SCGiftCardPriceView.h"
 
 @interface SCGiftCardCollectionViewCell : UICollectionViewCell{
     UIImageView *productImageView;
@@ -15,6 +16,7 @@
     BOOL stockStatus;
     UIImageView *stockStatusImageView;
     SimiLabel *stockStatusLabel;
+    SCGiftCardPriceView *giftPriceView;
 }
 @property (strong, nonatomic) SimiGiftCardModel *productModel;
 @end

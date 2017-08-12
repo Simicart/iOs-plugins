@@ -32,6 +32,9 @@
         [stockStatusImageView setImage:[UIImage imageNamed:@"stockstatus_background"]];
         [productImageView addSubview:stockStatusImageView];
         [productImageView addSubview:stockStatusLabel];
+        
+        giftPriceView = [[SCGiftCardPriceView alloc]initWithFrame:CGRectMake(0, imageSize + 20, imageSize, 20)];
+        [self addSubview:giftPriceView];
     }
     return self;
 }
@@ -54,6 +57,7 @@
         if ([self.productModel valueForKey:@"name"]) {
             [nameLabel setText:[NSString stringWithFormat:@"%@",[self.productModel valueForKeyPath:@"name"]]];
         }
+        [giftPriceView setProductModel:self.productModel andWidthView:CGRectGetWidth(productImageView.frame)];
     }
 }
 @end

@@ -6,8 +6,7 @@
 //  Copyright © 2017 Trueplus. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
-static NSString *LEFTMENU_ROW_GIFTCARD = @"LEFTMENU_ROW_GIFTCARD";
+#import "SCGiftCardGlobalVar.h"
 @interface SCGiftCardWorker : NSObject
 
 @end
