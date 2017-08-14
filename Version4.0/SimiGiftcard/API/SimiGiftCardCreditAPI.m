@@ -20,12 +20,12 @@
 }
 
 - (void)redeemGiftCodeWithParams:(NSDictionary *)params target:(id)target selector:(SEL)selector{
-    NSString *urlPath = [NSString stringWithFormat:@"%@%@%@", kBaseURL, kSimiConnectorURL, @"simicustomercredits/self/addredeem"];
+    NSString *urlPath = [NSString stringWithFormat:@"%@%@%@", kBaseURL, kSimiConnectorURL, @"simicustomercredits/addredeem"];
     [self requestWithMethod:PUT URL:urlPath params:params target:target selector:selector header:nil];
 }
 
 - (void)addGiftCodeWithParams:(NSDictionary *)params target:(id)target selector:(SEL)selector{
-    NSString *urlPath = [NSString stringWithFormat:@"%@%@%@", kBaseURL, kSimiConnectorURL, @"simicustomercredits/self/addlist"];
+    NSString *urlPath = [NSString stringWithFormat:@"%@%@%@", kBaseURL, kSimiConnectorURL, @"simicustomercredits/addlist"];
     [self requestWithMethod:PUT URL:urlPath params:params target:target selector:selector header:nil];
 }
 @end

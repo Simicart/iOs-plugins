@@ -283,7 +283,7 @@
                 }else if([giftCardTypeValue isEqualToString:@"dropdown"]){
                     valueSelectedIndex = 0;
                     priceValues = [giftCardPrices valueForKey:@"prices_dropdown"];
-                    giftCardValues = [giftCardPrices valueForKey:@"options"];
+                    giftCardValues = [giftCardPrices valueForKey:@"options_value"];
                     giftCardValueTitles = [NSMutableArray new];
                     for (int i = 0; i < giftCardValues.count; i++) {
                         NSString *value = [NSString stringWithFormat:@"%@",[giftCardValues objectAtIndex:i]];

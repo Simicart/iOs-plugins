@@ -63,9 +63,14 @@
             SimiLabel *titleLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(padding, padding, cellWidth - padding*2, 30) andFontName:THEME_FONT_NAME_REGULAR andFontSize:20 andTextColor:THEME_CONTENT_COLOR text:@"Balance"];
             [cell.contentView addSubview:titleLabel];
             
+            NSString *currencySymbol = @"";
+            if ([self.giftCardCreditModel valueForKey:@"currency_symbol"] && ![[self.giftCardCreditModel valueForKey:@"currency_symbol"] isKindOfClass:[NSNull class]]) {
+                currencySymbol = [self.giftCardCreditModel valueForKey:@"currency_symbol"];
+            }
+            
             SimiLabel *myCreditLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(padding, padding + 25, cellWidth - padding*2, 30) andFontName:THEME_FONT_NAME andFontSize:18 andTextColor:THEME_CONTENT_COLOR];
             NSString *balance = [NSString stringWithFormat:@"%@",[self.giftCardCreditModel valueForKey:@"balance"]];
-            balance = [[SimiFormatter sharedInstance] priceWithPrice:balance];
+            balance = [[SimiFormatter sharedInstance] priceWithPrice:balance andCurrency:currencySymbol];
             [myCreditLabel setText:[NSString stringWithFormat:@"%@: %@", SCLocalizedString(@"My credit balance"), balance]];
             [cell.contentView addSubview:myCreditLabel];
             
@@ -117,6 +122,11 @@
     float valueWidth = 140;
     float cellWidth = SCREEN_WIDTH;
     if(self){
+        NSString *currencySymbol = @"";
+        if ([info valueForKey:@"currency_symbol"] && ![[info valueForKey:@"currency_symbol"] isKindOfClass:[NSNull class]]) {
+            currencySymbol = [info valueForKey:@"currency_symbol"];
+        }
+        
         SimiLabel *actionLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(padding, height, titleWidth, labelHeight) andFontName:THEME_FONT_NAME_REGULAR andFontSize:14 andTextColor:THEME_CONTENT_COLOR text:@"Action"];
         [self.contentView addSubview:actionLabel];
         
@@ -128,7 +138,7 @@
         SimiLabel *balanceChangeLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(padding, height, titleWidth, labelHeight) andFontName:THEME_FONT_NAME_REGULAR andFontSize:14 andTextColor:THEME_CONTENT_COLOR text:@"Balance Change"];
         [self.contentView addSubview:balanceChangeLabel];
         
-        NSString *balanceChangeValue = [[SimiFormatter sharedInstance]priceWithPrice:[info valueForKey:@"balance_change"]];
+        NSString *balanceChangeValue = [[SimiFormatter sharedInstance]priceWithPrice:[info valueForKey:@"balance_change"] andCurrency:currencySymbol];
         SimiLabel *balanceChangeValueLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(titleWidth+padding*2, height, valueWidth, labelHeight) andFontName:THEME_FONT_NAME andFontSize:14 andTextColor:THEME_CONTENT_COLOR text:balanceChangeValue];
         [self.contentView addSubview:balanceChangeValueLabel];
         height += labelHeight;
@@ -154,7 +164,7 @@
         SimiLabel *currentBalanceLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(padding, height, titleWidth, labelHeight) andFontName:THEME_FONT_NAME_REGULAR andFontSize:14 andTextColor:THEME_CONTENT_COLOR text:@"Current Balance"];
         [self.contentView addSubview:currentBalanceLabel];
         
-        NSString *currentBalanceValue = [[SimiFormatter sharedInstance]priceWithPrice:[info valueForKey:@"currency_balance"]];
+        NSString *currentBalanceValue = [[SimiFormatter sharedInstance]priceWithPrice:[info valueForKey:@"currency_balance"] andCurrency:currencySymbol];
         SimiLabel *currentBalanceValueLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(titleWidth+padding*2, height, valueWidth, labelHeight) andFontName:THEME_FONT_NAME andFontSize:14 andTextColor:THEME_CONTENT_COLOR text:currentBalanceValue];
         [self.contentView addSubview:currentBalanceValueLabel];
         height += labelHeight;
