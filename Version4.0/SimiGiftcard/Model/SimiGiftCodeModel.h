@@ -8,6 +8,8 @@
 
 #import <SimiCartBundle/SimiCartBundle.h>
 
-@interface SimiGiftCodeModel : SimiModel
+static NSString *DidGetGiftCodeDetail = @"DidGetGiftCodeDetail";
 
+@interface SimiGiftCodeModel : SimiModel
+- (void)getGiftCodeDetailWithParams:(NSDictionary *)params;
 @end

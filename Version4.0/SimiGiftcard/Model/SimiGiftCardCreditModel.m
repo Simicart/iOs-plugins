@@ -26,14 +26,14 @@
 
 - (void)redeemGiftCodeWithParams:(NSDictionary *)params{
     currentNotificationName = DidRedeemGiftCode;
-    keyResponse = @"simicustomercredit";
+    keyResponse = @"message";
     [self preDoRequest];
     [[SimiGiftCardCreditAPI new]redeemGiftCodeWithParams:params target:self selector:@selector(didFinishRequest:responder:)];
 }
 
 - (void)addGiftCodeWithParams:(NSDictionary *)params{
     currentNotificationName = DidAddGiftCodeToList;
-    keyResponse = @"simicustomercredit";
+    keyResponse = @"message";
     [self preDoRequest];
     [[SimiGiftCardCreditAPI new]addGiftCodeWithParams:params target:self selector:@selector(didFinishRequest:responder:)];
 }

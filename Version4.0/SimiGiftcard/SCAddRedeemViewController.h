@@ -8,16 +8,10 @@
 #import "SimiTextField.h"
 #import "SimiGiftCardCreditModel.h"
 
-@protocol  SCAddRedeemViewControllerDelegate<NSObject>
-- (void)didRedeemOrAddGiftCode:(SimiGiftCardCreditModel*)creditModel;
-@end
-
 @interface SCAddRedeemViewController : SimiViewController{
     SimiTextField *giftCodeTextField;
     SimiGiftCardCreditModel *giftCardCreditModel;
     SimiButton *redeemGiftCardButton;
     SimiButton *addToListButton;
 }
-@property (weak, nonatomic) id<SCAddRedeemViewControllerDelegate> delegate;
-
 @end

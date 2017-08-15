@@ -31,6 +31,7 @@
         
         giftCodeTextField = [[SimiTextField alloc]initWithFrame:CGRectMake(padding, height, viewWidth - 2*padding, 40) placeHolder:@"Enter Gift Card Code" font:[UIFont fontWithName:THEME_FONT_NAME size:16] textColor:THEME_CONTENT_COLOR borderWidth:1 borderColor:[UIColor lightGrayColor] cornerRadius:6 leftView:[[UIView alloc]initWithFrame:CGRectMake(0, 0, 10, 40)] rightView:nil];
         giftCodeTextField.delegate = self;
+        giftCodeTextField.clearButtonMode = UITextFieldViewModeWhileEditing;
         [giftCodeTextField addTarget:self action:@selector(textChange) forControlEvents:UIControlEventEditingChanged];
         [self.view addSubview:giftCodeTextField];
         height += 60;
@@ -66,9 +67,7 @@
     [self removeObserverForNotification:noti];
     SimiResponder *responder = [noti.userInfo valueForKey:@"responder"];
     if ([responder.status isEqualToString:@"SUCCESS"]) {
-        [self showToastMessage:[giftCardCreditModel valueForKey:@"message"] duration:1.5];
-        [self.delegate didRedeemOrAddGiftCode:giftCardCreditModel];
-        [self.navigationController popViewControllerAnimated:YES];
+        [self showToastMessage:[giftCardCreditModel valueForKey:@"success"] duration:1.5];
     }else
         [self showToastMessage:responder.responseMessage duration:1.5];
 }

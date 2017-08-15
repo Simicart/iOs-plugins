@@ -9,8 +9,9 @@
 #import "SCMyGiftCardViewController.h"
 #import "SCMyCreditDetailViewController.h"
 #import "SCAddRedeemViewController.h"
+#import "SCGiftCodeDetailViewController.h"
 
-@interface SCMyGiftCardViewController ()<SCAddRedeemViewControllerDelegate>
+@interface SCMyGiftCardViewController ()
 
 @end
 
@@ -26,8 +27,8 @@
         myGiftCardTableView.dataSource = self;
         myGiftCardTableView.tableFooterView = [UIView new];
         [self.view addSubview:myGiftCardTableView];
-        [self getCustomerCreditInfo];
     }
+    [self getCustomerCreditInfo];
 }
 
 - (void)getCustomerCreditInfo{
@@ -60,7 +61,7 @@
         [mainSection addRowWithIdentifier:mygiftcard_creditinfo_row height:110];
         if (giftCodes.count > 0) {
             for (int i = 0; i < giftCodes.count; i++) {
-                SimiRow *row = [mainSection addRowWithIdentifier:mygiftcard_credithistory_row height:140 sortOrder:0];
+                SimiRow *row = [mainSection addRowWithIdentifier:mygiftcard_giftcode_row height:150 sortOrder:0];
                 row.data = [[NSMutableDictionary alloc]initWithDictionary:[giftCodes objectAtIndex:i]];
             }
         }
@@ -92,11 +93,15 @@
             [addorRedeemaGiftCard addTarget:self action:@selector(openAddOrRedeemScreen:) forControlEvents:UIControlEventTouchUpInside];
             [cell.contentView addSubview:addorRedeemaGiftCard];
         }
+        NSString *currencySymbol = @"";
+        if ([giftCardCreditModel valueForKey:@"currency_symbol"] && ![[giftCardCreditModel valueForKey:@"currency_symbol"] isKindOfClass:[NSNull class]]) {
+            currencySymbol = [giftCardCreditModel valueForKey:@"currency_symbol"];
+        }
         NSString *balance = [NSString stringWithFormat:@"%@",[giftCardCreditModel valueForKey:@"balance"]];
-        balance = [[SimiFormatter sharedInstance] priceWithPrice:balance];
+        balance = [[SimiFormatter sharedInstance] priceWithPrice:balance andCurrency:currencySymbol];
         [myCreditLabel setText:[NSString stringWithFormat:@"%@: %@", SCLocalizedString(@"My credit balance"), balance]];
-    }else if ([row.identifier isEqualToString:mygiftcard_credithistory_row]){
-        NSString *identifer = [NSString stringWithFormat:@"%@_%@",mygiftcard_credithistory_row,[row.data valueForKey:@"giftvoucher_id"]];
+    }else if ([row.identifier isEqualToString:mygiftcard_giftcode_row]){
+        NSString *identifer = [NSString stringWithFormat:@"%@_%@",mygiftcard_giftcode_row,[row.data valueForKey:@"giftvoucher_id"]];
         GiftCodeDetailTableViewCell *aCell = [tableView dequeueReusableCellWithIdentifier:identifer];
         if (aCell == nil) {
             aCell = [[GiftCodeDetailTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifer giftCodeInfo:row.data];
@@ -127,6 +132,13 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    SimiSection *simiSection = [self.cells objectAtIndex:indexPath.section];
+    SimiRow *row = [simiSection objectAtIndex:indexPath.row];
+    if ([row.identifier isEqualToString:mygiftcard_giftcode_row]) {
+        SCGiftCodeDetailViewController *giftCodeDetailViewController = [SCGiftCodeDetailViewController new];
+        giftCodeDetailViewController.giftCodeId = [row.data valueForKey:@"giftvoucher_id"];
+        [self.navigationController pushViewController:giftCodeDetailViewController animated:YES];
+    }
 }
 
 - (void)viewCustomerCreditDetail:(UIButton*)sender{
@@ -137,7 +149,6 @@
 
 - (void)openAddOrRedeemScreen:(UIButton*)sender{
     SCAddRedeemViewController *redeemViewController = [SCAddRedeemViewController new];
-    redeemViewController.delegate = self;
     [self.navigationController pushViewController:redeemViewController animated:YES];
 }
 - (void)removeGiftCodeWithId:(NSString *)customerVoucherId{
@@ -161,15 +172,6 @@
     }else
         [self showToastMessage:responder.responseMessage duration:1.5];
 }
-
-- (void)didRedeemOrAddGiftCode:(SimiGiftCardCreditModel *)creditModel{
-    giftCardCreditModel = creditModel;
-    giftCodes = @[];
-    if ([[giftCardCreditModel valueForKey:@"listcode"] isKindOfClass:[NSArray class]]) {
-        giftCodes = [giftCardCreditModel valueForKey:@"listcode"];
-    }
-    [self setCells:nil];
-}
 @end
 
 @implementation GiftCodeDetailTableViewCell
@@ -180,8 +182,8 @@
     float height = 5;
     float padding = 10;
     float titleWidth = 120;
-    float valueWidth = 140;
     float cellWidth = SCREEN_WIDTH;
+    float valueWidth = cellWidth - titleWidth - padding*3 - 40;
     if(self){
         NSArray *actions = [info valueForKey:@"action"];
         if ([actions containsObject:@"Remove"]) {
@@ -195,11 +197,12 @@
         SimiLabel *giftCardCodeLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(padding, height, titleWidth, labelHeight) andFontName:THEME_FONT_NAME_REGULAR andFontSize:14 andTextColor:THEME_CONTENT_COLOR text:@"Gift Card Code"];
         [self.contentView addSubview:giftCardCodeLabel];
         
-        SimiTextField *giftCardCodeTextField = [[SimiTextField alloc]initWithFrame:CGRectMake(titleWidth+padding*2, height, valueWidth, 30) placeHolder:@"" font:[UIFont fontWithName:THEME_FONT_NAME size:14] textColor:THEME_CONTENT_COLOR borderWidth:1 borderColor:[UIColor lightGrayColor] cornerRadius:4 leftView:[[UIView alloc]initWithFrame:CGRectMake(0, 0, 10, 30)] rightView:nil];
-        giftCardCodeTextField.delegate = self;
-        [giftCardCodeTextField setText:[info valueForKey:@"gift_code"]];
-        [self.contentView addSubview:giftCardCodeTextField];
-        height += 30;
+        SimiTextView *giftCardCodeTextView = [[SimiTextView alloc]initWithFrame:CGRectMake(titleWidth+padding*2, height, valueWidth, 40) font:[UIFont systemFontOfSize:14 weight:UIFontWeightSemibold] borderWidth:1 borderColor:[UIColor lightGrayColor] paddingLeft:10];
+        giftCardCodeTextView.layer.cornerRadius = 6;
+        giftCardCodeTextView.editable = NO;
+        giftCardCodeTextView.text = [info valueForKey:@"gift_code"];
+        [self.contentView addSubview:giftCardCodeTextView];
+        height += 40;
         
         SimiLabel *balanceLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(padding, height, titleWidth, labelHeight) andFontName:THEME_FONT_NAME_REGULAR andFontSize:14 andTextColor:THEME_CONTENT_COLOR text:@"Balance"];
         [self.contentView addSubview:balanceLabel];
@@ -272,11 +275,17 @@
             break;
     }
     [statusValueLabel setText:statusValue];
-    NSString *balanceValue = [[SimiFormatter sharedInstance]priceWithPrice:[giftCodeInfo valueForKey:@"balance"]];
+    
+    NSString *currencySymbol = @"";
+    if ([giftCodeInfo valueForKey:@"currency_symbol"] && ![[giftCodeInfo valueForKey:@"currency_symbol"] isKindOfClass:[NSNull class]]) {
+        currencySymbol = [giftCodeInfo valueForKey:@"currency_symbol"];
+    }
+
+    NSString *balanceValue = [[SimiFormatter sharedInstance]priceWithPrice:[giftCodeInfo valueForKey:@"balance"] andCurrency:currencySymbol];
     [balanceValueLabel setText:balanceValue];
 }
 
-- (BOOL)textFieldShouldBeginEditing:(UITextField *)textField{
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string{
     return NO;
 }
 @end

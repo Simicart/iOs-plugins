@@ -9,9 +9,9 @@
 #import <SimiCartBundle/SimiCartBundle.h>
 #import "SimiGiftCardCreditModel.h"
 #import "SimiTable.h"
-#import "SimiTextField.h"
+#import "SimiTextView.h"
 static NSString *mygiftcard_creditinfo_row = @"mygiftcard_creditinfo_row";
-static NSString *mygiftcard_credithistory_row = @"mygiftcard_credithistory_row";
+static NSString *mygiftcard_giftcode_row = @"mygiftcard_giftcode_row";
 
 @protocol GiftCodeDetailCellDelegate <NSObject>
 - (void)removeGiftCodeWithId:(NSString*)customerVoucherId;
@@ -26,7 +26,7 @@ static NSString *mygiftcard_credithistory_row = @"mygiftcard_credithistory_row";
 @property (strong, nonatomic) SimiTable *cells;
 @end
 
-@interface GiftCodeDetailTableViewCell: UITableViewCell<UITextFieldDelegate>{
+@interface GiftCodeDetailTableViewCell: UITableViewCell{
     SimiLabel *balanceValueLabel;
     SimiLabel *statusValueLabel;
 }

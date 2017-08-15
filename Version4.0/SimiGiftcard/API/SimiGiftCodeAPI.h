@@ -9,5 +9,5 @@
 #import <SimiCartBundle/SimiCartBundle.h>
 
 @interface SimiGiftCodeAPI : SimiAPI
-
+- (void)getGiftCodeDetailWithParams:(NSDictionary *)params target:(id)target selector:(SEL)selector;
 @end
