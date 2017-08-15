@@ -53,6 +53,11 @@ static NSString *giftcard_insertinfo_row = @"giftcard_insertinfo_row";
     NSInteger timeZoneSelectedIndex;
     
     NSString *giftCardTypeValue;
+    float minValue;
+    float maxValue;
+    float priceValue;
+    float giftCardValue;
+    float percentValue;
 }
 
 @property (nonatomic) BOOL useUploadImage;

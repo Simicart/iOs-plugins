@@ -276,8 +276,8 @@
                     NSString *price = [NSString stringWithFormat:@"%@",[giftCardPrices valueForKey:@"price"]];
                     [priceLabel setText:[[SimiFormatter sharedInstance]priceWithPrice:price]];
                     SimiLabel *giftCardValueLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(paddingEdge, heightCell, tableWidth - paddingEdge*2, 25) andFontName:THEME_FONT_NAME_REGULAR andFontSize:16];
-                    NSString *giftCardValue = [NSString stringWithFormat:@"%@",[giftCardPrices valueForKey:@"value"]];
-                    [giftCardValueLabel setText:[NSString stringWithFormat:@"%@: %@",SCLocalizedString(@"Gift Card value"), [[SimiFormatter sharedInstance] priceWithPrice:giftCardValue]]];
+                    NSString *giftCardValueString = [NSString stringWithFormat:@"%@",[giftCardPrices valueForKey:@"value"]];
+                    [giftCardValueLabel setText:[NSString stringWithFormat:@"%@: %@",SCLocalizedString(@"Gift Card value"), [[SimiFormatter sharedInstance] priceWithPrice:giftCardValueString]]];
                     [cell.contentView addSubview:giftCardValueLabel];
                     heightCell += 35;
                 }else if([giftCardTypeValue isEqualToString:@"dropdown"]){
@@ -304,6 +304,34 @@
                     giftCardValueTextField.delegate = self;
                     [cell.contentView addSubview:giftCardValueTextField];
                     heightCell += 50;
+                }else if ([giftCardTypeValue isEqualToString:@"range"]){
+                    minValue = [[giftCardPrices valueForKey:@"from"]floatValue];
+                    maxValue = [[giftCardPrices valueForKey:@"to"]floatValue];
+                    giftCardValue = minValue;
+                    if ([[giftCardPrices valueForKey:@"type_price"] isEqualToString:@"default"]) {
+                        percentValue = 100;
+                    }else{
+                        percentValue = [[giftCardPrices valueForKey:@"percent_value"]floatValue];
+                    }
+                    priceValue = giftCardValue*percentValue/100;
+                    [priceLabel setText:[[SimiFormatter sharedInstance]priceWithPrice:[NSString stringWithFormat:@"%f",priceValue]]];
+                    
+                    SimiLabel *titleLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(paddingEdge, heightCell, 140, 20) andFontName:THEME_FONT_NAME_REGULAR andFontSize:16 andTextColor:THEME_CONTENT_COLOR text:[NSString stringWithFormat:@"%@:",SCLocalizedString(@"Enter value")]];
+                    [cell.contentView addSubview:titleLabel];
+                    heightCell += 25;
+                    
+                    giftCardValueTextField = [[SimiTextField alloc]initWithFrame:CGRectMake(paddingEdge, heightCell, 140, 40) placeHolder:@"" font:[UIFont fontWithName:THEME_FONT_NAME_REGULAR size:16] textColor:THEME_CONTENT_COLOR borderWidth:1 borderColor:[UIColor lightGrayColor] cornerRadius:6 leftView:[[UIView alloc]initWithFrame:CGRectMake(0, 0, 10, 40)]  rightView:nil];
+                    giftCardValueTextField.keyboardType = UIKeyboardTypeNumberPad;
+                    giftCardValueTextField.text = [NSString stringWithFormat:@"%.f",giftCardValue];
+                    giftCardValueTextField.delegate = self;
+                    [cell.contentView addSubview:giftCardValueTextField];
+                    heightCell += 40;
+                    
+                    NSString *fromString = [[SimiFormatter sharedInstance]priceWithPrice:[NSString stringWithFormat:@"%f",minValue]];
+                    NSString *toString = [[SimiFormatter sharedInstance]priceWithPrice:[NSString stringWithFormat:@"%f",maxValue]];
+                    SimiLabel *priceRangeLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(paddingEdge, heightCell, 140, 20) andFontName:THEME_FONT_NAME_REGULAR andFontSize:16 andTextColor:THEME_CONTENT_COLOR text:[NSString stringWithFormat:@"%@-%@",fromString,toString]];
+                    [cell.contentView addSubview:priceRangeLabel];
+                    heightCell += 25;
                 }
                 
                 row.height = heightCell;
@@ -577,7 +605,7 @@
         [datePicker showActionSheetPicker];
         return NO;
     }
-    if ([textField isEqual:giftCardValueTextField]) {
+    if ([textField isEqual:giftCardValueTextField] && [giftCardTypeValue isEqualToString:@"dropdown"]) {
         ActionSheetStringPicker *giftValuePicker = [[ActionSheetStringPicker alloc]initWithTitle:SCLocalizedString(@"Choose Gift Card value") rows:giftCardValueTitles initialSelection:valueSelectedIndex target:self successAction:@selector(didSelectGiftCardValue:element:) cancelAction:@selector(cancelActionSheet:) origin:textField];
         [giftValuePicker showActionSheetPicker];
         return NO;
@@ -588,6 +616,21 @@
         return NO;
     }
     return YES;
+}
+
+- (void)textFieldDidEndEditing:(UITextField *)textField{
+    if ([textField isEqual:giftCardValueTextField] && [giftCardTypeValue isEqualToString:@"range"]) {
+        giftCardValue = [giftCardValueTextField.text floatValue];
+        if (giftCardValue > maxValue) {
+            giftCardValue = maxValue;
+        }
+        if (giftCardValue < minValue) {
+            giftCardValue = minValue;
+        }
+        textField.text = [NSString stringWithFormat:@"%f",giftCardValue];
+        priceValue = giftCardValue*percentValue/100;
+        [priceLabel setText:[[SimiFormatter sharedInstance]priceWithPrice:[NSString stringWithFormat:@"%f",priceValue]]];
+    }
 }
 
 - (void)didSelectDayToSend:(NSDate *)date element:(id)element{
