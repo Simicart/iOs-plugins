@@ -13,6 +13,7 @@
 
 #define ORDER_VIEW_GIFTCARD_CREDIT @"ORDER_VIEW_GIFTCARD_CREDIT"
 #define ORDER_VIEW_GIFTCODE @"CART_VIEW_GIFTCODE"
+#define ORDER_VIEW_GIFTCARD_NONUSE @"ORDER_VIEW_GIFTCARD_NONUSE"
 
 @implementation SCGiftCardOnOrderWorker {
     SimiTable *orderTable;
@@ -40,9 +41,9 @@
     order = [noti.userInfo objectForKey:@"order"];
     if([order objectForKey:@"gift_card"]) {
         NSDictionary *giftCardData = [order objectForKey:@"gift_card"];
+        orderTable = noti.object;
+        SimiSection *totalSection = [orderTable getSectionByIdentifier:ORDER_TOTALS_SECTION];
         if([[giftCardData objectForKey:@"use_giftcard"] boolValue]) {
-            orderTable = noti.object;
-            SimiSection *totalSection = [orderTable getSectionByIdentifier:ORDER_TOTALS_SECTION];
             NSDictionary *credit = [giftCardData objectForKey:@"credit"];
             NSDictionary *giftcode = [giftCardData objectForKey:@"giftcode"];
             if([[credit objectForKey:@"use_credit"] boolValue]) {
@@ -59,14 +60,16 @@
                 [totalSection addRowWithIdentifier:ORDER_VIEW_GIFTCODE height:30 sortOrder:2100];
                 useGiftCode = NO;
             }
-            [totalSection sortItems];
+        }else {
+            [totalSection addRowWithIdentifier:ORDER_VIEW_GIFTCARD_NONUSE height:30 sortOrder:2000];
         }
+        [totalSection sortItems];
     }
 }
 
 - (void)orderViewCellForRow:(NSNotification *)noti {
     SimiRow *row = [noti.userInfo objectForKey:@"row"];
-    if([row.identifier isEqualToString:ORDER_VIEW_GIFTCODE] || [row.identifier isEqualToString:ORDER_VIEW_GIFTCARD_CREDIT]) {
+    if([row.identifier isEqualToString:ORDER_VIEW_GIFTCODE] || [row.identifier isEqualToString:ORDER_VIEW_GIFTCARD_CREDIT] || [row.identifier isEqualToString:ORDER_VIEW_GIFTCARD_NONUSE]) {
         orderTableView = [noti.userInfo objectForKey:@"tableView"];
         orderVC = [noti.userInfo objectForKey:@"viewController"];
         NSDictionary *giftCardData = [order objectForKey:@"gift_card"];
@@ -89,8 +92,8 @@
             }
             [cell.contentView addSubview:giftCodeCb];
             giftCodeCb.frame = CGRectMake(padding, cellY, viewWidth, 30);
+            cellY += giftCodeCb.frame.size.height;
             if(useGiftCode) {
-                cellY += giftCodeCb.frame.size.height;
                 for(NSObject *giftCodeValue in giftCode.allValues) {
                     if([giftCodeValue isKindOfClass:[NSDictionary class]]) {
                         UIButton *editButton = [[UIButton alloc] initWithFrame:CGRectMake(padding, cellY - 5, 40, 40)];
@@ -133,8 +136,10 @@
                 cellY += 40;
                 SimiLabel *giftCardExistingLabel = [[SimiLabel alloc] initWithFrame:CGRectMake(padding, cellY, viewWidth, 30)];
                 giftCardExistingLabel.text = @"or select from your existing Gift Card code(s)";
+                giftCardExistingLabel.numberOfLines = 0;
+                [giftCardExistingLabel sizeToFit];
                 [cell.contentView addSubview:giftCardExistingLabel];
-                cellY += 30;
+                cellY += giftCardExistingLabel.frame.size.height;
                 if(!existingCodeTextField) {
                     existingCodeTextField = [[SimiTextField alloc] init];
                     UIPickerView *existingCodePicker = [[UIPickerView alloc] init];
@@ -147,11 +152,13 @@
                 }
                 [cell.contentView addSubview:existingCodeTextField];
                 existingCodeTextField.frame = CGRectMake(padding, cellY, viewWidth, 40);
-                cellY += 40;
-                SimiButton *applyGiftCodeButton = [[SimiButton alloc] initWithFrame:CGRectMake(padding, cellY + 5, 100, 40) title:@"APPLY" titleFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE]];
+                cellY += 40 + 5;
+                SimiButton *applyGiftCodeButton = [[SimiButton alloc] initWithFrame:CGRectMake(padding, cellY, 100, 40) title:@"APPLY" titleFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE]];
                 [applyGiftCodeButton addTarget:self action:@selector(applyGiftCode:) forControlEvents:UIControlEventTouchUpInside];
                 [cell.contentView addSubview:applyGiftCodeButton];
+                cellY += applyGiftCodeButton.frame.size.height + 5;
             }
+            row.height = cellY;
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
             cell.separatorInset = UIEdgeInsetsMake(0, 1000, 0, 0);
             cell.layoutMargins = UIEdgeInsetsZero;
@@ -160,6 +167,7 @@
         }else if([row.identifier isEqualToString:ORDER_VIEW_GIFTCARD_CREDIT]) {
             NSDictionary *credit = [giftCardData objectForKey:@"credit"];
             UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:ORDER_VIEW_GIFTCARD_CREDIT];
+            float cellY = 0;
             if(!giftCardCreditCb) {
                 giftCardCreditCb = [[SimiCheckbox alloc] initWithTitle:[NSString stringWithFormat:@"%@(%@)",SCLocalizedString(@"Use Gift Card credit to check out"),[customerData objectForKey:@"balance"]]];
                 [giftCardCreditCb addTarget:self action:@selector(giftCardCreditCbChangedValue:) forControlEvents:UIControlEventValueChanged];
@@ -169,15 +177,19 @@
             }else {
                 giftCardCreditCb.checkState = M13CheckboxStateUnchecked;
             }
-            giftCardCreditCb.frame = CGRectMake(padding, 0, viewWidth, 30);
+            giftCardCreditCb.frame = CGRectMake(padding, cellY, viewWidth, 30);
             giftCardCreditCb.titleLabel.text = [NSString stringWithFormat:@"%@(%@)",SCLocalizedString(@"Use Gift Card credit to check out"),[customerData objectForKey:@"balance"]];
             [cell.contentView addSubview:giftCardCreditCb];
+            cellY += giftCardCreditCb.frame.size.height;
             if(useGiftCardCredit) {
-                SimiLabel *giftCardCreditLabel = [[SimiLabel alloc] initWithFrame:CGRectMake(padding, 30, viewWidth, 30)];
+                SimiLabel *giftCardCreditLabel = [[SimiLabel alloc] initWithFrame:CGRectMake(padding, cellY, viewWidth, 30)];
                 giftCardCreditLabel.text = @"Enter Gift Card credit amount to pay for this order";
+                giftCardCreditLabel.numberOfLines = 0;
+                [giftCardCreditLabel sizeToFit];
                 [cell.contentView addSubview:giftCardCreditLabel];
+                cellY += giftCardCreditLabel.frame.size.height;
                 if(!giftCardCreditTextField) {
-                    giftCardCreditTextField = [[SimiTextField alloc] initWithFrame:CGRectMake(padding, 60, viewWidth, 40) placeHolder:@"" font:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE] textColor:THEME_CONTENT_COLOR];
+                    giftCardCreditTextField = [[SimiTextField alloc] initWithFrame:CGRectMake(padding, cellY, viewWidth, 40) placeHolder:@"" font:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE] textColor:THEME_CONTENT_COLOR];
                     giftCardCreditTextField.keyboardType = UIKeyboardTypeDecimalPad;
                     UIToolbar *giftCardCreditToolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 140, SCREEN_WIDTH, 40)];
                     giftCardCreditToolbar.items = @[[[UIBarButtonItem alloc] initWithTitle:SCLocalizedString(@"Cancel") style:UIBarButtonItemStylePlain target:self action:@selector(cancelGiftCardCreditSelection:)],[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil],[[UIBarButtonItem alloc] initWithTitle:SCLocalizedString(@"Done") style:UIBarButtonItemStyleDone target:self action:@selector(doneGiftCardCreditSelection:)]];
@@ -189,15 +201,35 @@
                     giftCardCreditTextField.text = @"";
                 }
                 [cell.contentView addSubview:giftCardCreditTextField];
-                SimiButton *applyGiftCardCreditButton = [[SimiButton alloc] initWithFrame:CGRectMake(padding, 105, 100, 40) title:@"APPLY" titleFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE]];
+                cellY += giftCardCreditTextField.frame.size.height + 5;
+                SimiButton *applyGiftCardCreditButton = [[SimiButton alloc] initWithFrame:CGRectMake(padding, cellY, 100, 40) title:@"APPLY" titleFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE]];
                 [applyGiftCardCreditButton addTarget:self action:@selector(applyGiftCardCredit:) forControlEvents:UIControlEventTouchUpInside];
                 [cell.contentView addSubview:applyGiftCardCreditButton];
+                cellY += applyGiftCardCreditButton.frame.size.height;
             }
+            row.height = cellY;
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
             cell.separatorInset = UIEdgeInsetsMake(0, 1000, 0, 0);
             cell.layoutMargins = UIEdgeInsetsZero;
             orderVC.isDiscontinue = YES;
             orderVC.simiObjectIdentifier = cell;
+        }else if([row.identifier isEqualToString:ORDER_VIEW_GIFTCARD_NONUSE]) {
+            UITableViewCell *cell = [orderTableView dequeueReusableCellWithIdentifier:ORDER_VIEW_GIFTCARD_NONUSE];
+            if(!cell) {
+                cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:ORDER_VIEW_GIFTCARD_NONUSE];
+                float cellY = 0;
+                SimiLabel *giftCardTitleLabel = [[SimiLabel alloc] initWithFrame:CGRectMake(padding, cellY, viewWidth, 30)];
+                giftCardTitleLabel.text = @"Gift Card";
+                [cell.contentView addSubview:giftCardTitleLabel];
+                cellY += 30;
+                SimiLabel *nonUseLabel = [[SimiLabel alloc] initWithFrame:CGRectMake(padding, cellY, viewWidth, 30)];
+                nonUseLabel.text = [giftCardData objectForKey:@"label"];
+                nonUseLabel.numberOfLines = 2;
+                [nonUseLabel sizeToFit];
+                [cell.contentView addSubview:nonUseLabel];
+                cellY += nonUseLabel.frame.size.height + 5;
+                row.height = cellY;
+            }
         }
         
     }
@@ -468,6 +500,11 @@
 #pragma mark UIPickerViewDelegate && UIPickerViewDataSource
 - (void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component {
     NSArray* listCode = [[[order objectForKey:@"gift_card"] objectForKey:@"customer"] objectForKey:@"list_code"];
+    if(row == 0) {
+        existingCodeTextField.text = @"";
+        giftCodeSelected = @"";
+        return;
+    }
     if(listCode.count > 0) {
         NSDictionary *code = [listCode objectAtIndex:row];
         existingCodeTextField.text = [code objectForKey:@"hidden_code"];
@@ -477,7 +514,11 @@
 
 - (NSInteger)pickerView:(UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component {
     NSArray* listCode = [[[order objectForKey:@"gift_card"] objectForKey:@"customer"] objectForKey:@"list_code"];
-    return listCode.count;
+    if(listCode.count > 0) {
+        return listCode.count + 1;
+    }else {
+        return 0;
+    }
 }
 
 - (NSInteger)numberOfComponentsInPickerView:(UIPickerView *)pickerView {
@@ -485,8 +526,11 @@
 }
 
 - (NSString *)pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component {
+    if(row == 0) {
+        return SCLocalizedString(@"Please select");
+    }
     NSArray* listCode = [[[order objectForKey:@"gift_card"] objectForKey:@"customer"] objectForKey:@"list_code"];
-    NSDictionary *code = [listCode objectAtIndex:row];
+    NSDictionary *code = [listCode objectAtIndex:row - 1];
     return [NSString stringWithFormat:@"%@(%@)",[code objectForKey:@"hidden_code"], [code objectForKey:@"balance"]];
 }
 
