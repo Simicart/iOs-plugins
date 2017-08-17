@@ -40,6 +40,24 @@
         [mainSection addRowWithIdentifier:product_nameandprice_row height:100];
         [mainSection addRowWithIdentifier:giftcard_sendpostoffice_checkbox_row height:44];
         [mainSection addRowWithIdentifier:giftcard_sendfriend_checkbox_row height:44];
+        [mainSection addRowWithIdentifier:product_description_row height:200];
+        if ([[self.product valueForKeyPath:@"additional"] isKindOfClass:[NSDictionary class]]) {
+            NSDictionary *additional = [self.product valueForKeyPath:@"additional"];
+            if (additional.count > 0) {
+                [mainSection addRowWithIdentifier:product_techspecs_row height:50];
+            }
+        }
+        
+        appReviews = [self.product valueForKey:@"app_reviews"];
+        if ([[appReviews valueForKey:@"number"]floatValue]) {
+            hadReviews = YES;
+        }
+        if(!hadReviews){
+            if ([SimiGlobalVar sharedInstance].isLogin || (![SimiGlobalVar sharedInstance].isLogin && [SimiGlobalVar sharedInstance].isReviewAllowGuest)) {
+                SimiSection *reviewSection = [_cells addSectionWithIdentifier:product_reviews_section headerTitle:SCLocalizedString(@"Review")];
+                [reviewSection addRowWithIdentifier:product_reviews_firstpeople_row height:50];
+            }
+        }
     }
     [self.productTableView reloadData];
 }
@@ -195,6 +213,7 @@
                 cellHeight += labelHeight;
                 
                 recipientEmailTextField = [[SimiTextField alloc]initWithFrame:CGRectMake(paddingEdge, cellHeight, textFieldWidth, textFieldHeight) placeHolder:@"" font:[UIFont fontWithName:THEME_FONT_NAME size:16] textColor:THEME_CONTENT_COLOR borderWidth:1 borderColor:[UIColor lightGrayColor] cornerRadius:6 leftView:[[UIView alloc]initWithFrame:CGRectMake(0, 0, 10, textFieldHeight)] rightView:nil];
+                recipientEmailTextField.keyboardType = UIKeyboardTypeEmailAddress;
                 recipientEmailTextField.delegate = self;
                 [cell.contentView addSubview:recipientEmailTextField];
                 cellHeight += textFieldHeight;
@@ -321,9 +340,13 @@
                     heightCell += 25;
                     
                     giftCardValueTextField = [[SimiTextField alloc]initWithFrame:CGRectMake(paddingEdge, heightCell, 140, 40) placeHolder:@"" font:[UIFont fontWithName:THEME_FONT_NAME_REGULAR size:16] textColor:THEME_CONTENT_COLOR borderWidth:1 borderColor:[UIColor lightGrayColor] cornerRadius:6 leftView:[[UIView alloc]initWithFrame:CGRectMake(0, 0, 10, 40)]  rightView:nil];
-                    giftCardValueTextField.keyboardType = UIKeyboardTypeNumberPad;
+                    giftCardValueTextField.keyboardType = UIKeyboardTypeDecimalPad;
                     giftCardValueTextField.text = [NSString stringWithFormat:@"%.f",giftCardValue];
                     giftCardValueTextField.delegate = self;
+                    UIToolbar *giftCardValueToolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 140, SCREEN_WIDTH, 40)];
+                    giftCardValueToolbar.items = @[[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil],[[UIBarButtonItem alloc] initWithTitle:SCLocalizedString(@"Done") style:UIBarButtonItemStyleDone target:self action:@selector(doneEditGiftCardValue:)]];
+                    giftCardValueTextField.inputAccessoryView = giftCardValueToolbar;
+                    
                     [cell.contentView addSubview:giftCardValueTextField];
                     heightCell += 40;
                     
@@ -588,31 +611,39 @@
     self.productTableView.contentInset = UIEdgeInsetsMake(0, 0, heightViewAction, 0);
 }
 
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView{
+    if (customMessageTextView.isFirstResponder) {
+        [customMessageTextView resignFirstResponder];
+        
+    }
+}
+
 - (BOOL)textFieldShouldReturn:(UITextField *)textField{
     [textField resignFirstResponder];
     return YES;
 }
 
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView{
-    if (customMessageTextView.isFirstResponder) {
-        [customMessageTextView resignFirstResponder];
-    }
+- (void)doneEditGiftCardValue:(UIButton*)sender{
+    [giftCardValueTextField resignFirstResponder];
 }
 
 - (BOOL)textFieldShouldBeginEditing:(UITextField *)textField{
     if ([textField isEqual:dayToSendTextField]) {
         ActionSheetDatePicker *datePicker = [[ActionSheetDatePicker alloc]initWithTitle:SCLocalizedString(@"Choose Day to Send") datePickerMode:UIDatePickerModeDate selectedDate:[NSDate date] minimumDate:[NSDate date] maximumDate:nil target:self action:@selector(didSelectDayToSend:element:) cancelAction:@selector(cancelActionSheet:) origin:textField];
         [datePicker showActionSheetPicker];
+        [self.view endEditing:YES];
         return NO;
     }
     if ([textField isEqual:giftCardValueTextField] && [giftCardTypeValue isEqualToString:@"dropdown"]) {
         ActionSheetStringPicker *giftValuePicker = [[ActionSheetStringPicker alloc]initWithTitle:SCLocalizedString(@"Choose Gift Card value") rows:giftCardValueTitles initialSelection:valueSelectedIndex target:self successAction:@selector(didSelectGiftCardValue:element:) cancelAction:@selector(cancelActionSheet:) origin:textField];
         [giftValuePicker showActionSheetPicker];
+        [self.view endEditing:YES];
         return NO;
     }
     if ([textField isEqual:selectTimeZoneTextField]) {
         ActionSheetStringPicker *timeZonePicker = [[ActionSheetStringPicker alloc]initWithTitle:SCLocalizedString(@"Choose Time Zone") rows:timeZoneTitles initialSelection:timeZoneSelectedIndex target:self successAction:@selector(didSelectTimeZoneValue:element:) cancelAction:@selector(cancelActionSheet:) origin:textField];
         [timeZonePicker showActionSheetPicker];
+        [self.view endEditing:YES];
         return NO;
     }
     return YES;
@@ -627,7 +658,7 @@
         if (giftCardValue < minValue) {
             giftCardValue = minValue;
         }
-        textField.text = [NSString stringWithFormat:@"%f",giftCardValue];
+        textField.text = [NSString stringWithFormat:@"%.2f",giftCardValue];
         priceValue = giftCardValue*percentValue/100;
         [priceLabel setText:[[SimiFormatter sharedInstance]priceWithPrice:[NSString stringWithFormat:@"%f",priceValue]]];
     }
@@ -672,9 +703,11 @@
         if (self.useUploadImage) {
             [cartItem setValue:@"1" forKey:@"giftcard_use_custom_image"];
             [cartItem setValue:[uploadImageModel valueForKey:@"file"] forKey:@"giftcard_template_image"];
+            [cartItem setValue:[uploadImageModel valueForKey:@"url"] forKey:@"url_image"];
         }else{
             [cartItem setValue:@"0" forKey:@"giftcard_use_custom_image"];
             [cartItem setValue:[[giftCardTemplateImages objectAtIndex:templateImageSelectedIndex] valueForKey:@"image"] forKey:@"giftcard_template_image"];
+            [cartItem setValue:[[giftCardTemplateImages objectAtIndex:templateImageSelectedIndex] valueForKey:@"url"] forKey:@"url_image"];
         }
         if (isSendThroughPostOffice) {
             [cartItem setValue:@"1" forKey:@"recipient_ship"];
@@ -702,6 +735,11 @@
         }else if([giftCardTypeValue isEqualToString:@"dropdown"]){
             NSString *currentGiftValue = [NSString stringWithFormat:@"%@",[giftCardValues objectAtIndex:valueSelectedIndex]];
             NSString *price = [NSString stringWithFormat:@"%@",[priceValues valueForKey:currentGiftValue]];
+            [cartItem setValue:price forKey:@"price_amount"];
+            [cartItem setValue:currentGiftValue forKey:@"amount"];
+        }else{
+            NSString *currentGiftValue = [NSString stringWithFormat:@"%.2f",giftCardValue];
+            NSString *price = [NSString stringWithFormat:@"%.2f",priceValue];
             [cartItem setValue:price forKey:@"price_amount"];
             [cartItem setValue:currentGiftValue forKey:@"amount"];
         }

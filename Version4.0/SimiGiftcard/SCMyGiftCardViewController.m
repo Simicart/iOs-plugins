@@ -27,6 +27,7 @@
         myGiftCardTableView.dataSource = self;
         myGiftCardTableView.tableFooterView = [UIView new];
         [self.view addSubview:myGiftCardTableView];
+        [self startLoadingData];
     }
     [self getCustomerCreditInfo];
 }
@@ -35,7 +36,6 @@
     giftCardCreditModel = [SimiGiftCardCreditModel new];
     [giftCardCreditModel getCustomerCreditWithParams:@{}];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didGetCustomerCreditInfo:) name:DidGetCustomerCredit object:giftCardCreditModel];
-    [self startLoadingData];
 }
 
 - (void)didGetCustomerCreditInfo:(NSNotification*)noti{

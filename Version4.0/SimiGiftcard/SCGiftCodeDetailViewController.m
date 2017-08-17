@@ -9,8 +9,12 @@
 #import "SCGiftCodeDetailViewController.h"
 #import "SimiTable.h"
 #import "SimiTextView.h"
+#import "SimiGiftCardCreditModel.h"
 
-@interface SCGiftCodeDetailViewController ()<UITextFieldDelegate>
+@interface SCGiftCodeDetailViewController ()<UITextFieldDelegate>{
+    SimiGiftCardCreditModel *giftCardCreditModel;
+    BOOL isReloadGiftCodeInfo;
+}
 @property (strong, nonatomic) SimiTable *cells;
 @end
 
@@ -45,6 +49,23 @@
         if ([[giftCodeModel valueForKey:@"history"] isKindOfClass:[NSArray class]]) {
             giftCodeHistories = [giftCodeModel valueForKey:@"history"];
         }
+        NSArray *action = [giftCodeModel valueForKey:@"actions"];
+        float heigtButton = 44;
+        if ([action containsObject:@"Redeem"]) {
+            redeemButton = [[SimiButton alloc]initWithFrame:CGRectMake(0, CGRectGetHeight(self.view.frame) - heigtButton, CGRectGetWidth(self.view.frame), heigtButton) title:@"REDEEM" titleFont:[UIFont fontWithName:THEME_FONT_NAME_REGULAR size:16] cornerRadius:0 borderWidth:0 borderColor:[UIColor clearColor] shadowOffset:CGSizeMake(1, 1) shadowRadius:4 shadowOpacity:0.7f];
+            [redeemButton addTarget:self action:@selector(redeemGiftCode:) forControlEvents:UIControlEventTouchUpInside];
+            [self.view addSubview:redeemButton];
+        }
+        if ([action containsObject:@"Email"]) {
+            emailToFriendButton = [[SimiButton alloc]initWithFrame:CGRectMake(0, CGRectGetHeight(self.view.frame) - heigtButton, CGRectGetWidth(self.view.frame), heigtButton) title:@"SEND TO FRIEND" titleFont:[UIFont fontWithName:THEME_FONT_NAME_REGULAR size:16] cornerRadius:0 borderWidth:0 borderColor:[UIColor clearColor] shadowOffset:CGSizeMake(1, 1) shadowRadius:4 shadowOpacity:0.7f];
+            [emailToFriendButton addTarget:self action:@selector(emailToFriend:) forControlEvents:UIControlEventTouchUpInside];
+            if (redeemButton != nil) {
+                float shortWidth = (CGRectGetWidth(self.view.frame) - 30)/2;
+                [redeemButton setFrame:CGRectMake(0, CGRectGetHeight(self.view.frame) - heigtButton, shortWidth, heigtButton)];
+                [emailToFriendButton setFrame:CGRectMake(shortWidth+30, CGRectGetHeight(self.view.frame) - heigtButton, shortWidth, heigtButton)];
+            }
+            [self.view addSubview:emailToFriendButton];
+        }
         [self setCells:nil];
     }else
         [self showAlertWithTitle:responder.status message:responder.responseMessage];
@@ -54,6 +75,7 @@
     if (cells) {
         _cells = cells;
     }else{
+        isReloadGiftCodeInfo = YES;
         _cells = [SimiTable new];
         SimiSection *mainSection = [_cells addSectionWithIdentifier:@"main_section"];
         [mainSection addRowWithIdentifier:giftcode_info_row height:180];
@@ -74,7 +96,8 @@
     UITableViewCell *cell = nil;
     if ([row.identifier isEqualToString:giftcode_info_row]) {
         cell = [tableView dequeueReusableCellWithIdentifier:row.identifier];
-        if (cell == nil) {
+        if (cell == nil || isReloadGiftCodeInfo) {
+            isReloadGiftCodeInfo = NO;
             cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:row.identifier];
             float labelHeight = 25;
             float height = 5;
@@ -94,7 +117,7 @@
             SimiLabel *giftCardCodeLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(padding, height, titleWidth, labelHeight) andFontName:THEME_FONT_NAME_REGULAR andFontSize:14 andTextColor:THEME_CONTENT_COLOR text:@"Gift Card Code"];
             [cell.contentView addSubview:giftCardCodeLabel];
             
-            SimiTextView *giftCardCodeTextView = [[SimiTextView alloc]initWithFrame:CGRectMake(titleWidth+padding*2, height, 170, 40) font:[UIFont systemFontOfSize:16 weight:UIFontWeightSemibold] borderWidth:1 borderColor:[UIColor lightGrayColor] paddingLeft:10];
+            SimiTextView *giftCardCodeTextView = [[SimiTextView alloc]initWithFrame:CGRectMake(titleWidth+padding*2, height, 170, 40) font:[UIFont systemFontOfSize:15 weight:UIFontWeightSemibold] borderWidth:1 borderColor:[UIColor lightGrayColor] paddingLeft:10];
             giftCardCodeTextView.layer.cornerRadius = 6;
             giftCardCodeTextView.editable = NO;
             giftCardCodeTextView.text = [giftCodeModel valueForKey:@"gift_code"];
@@ -158,6 +181,17 @@
             NSString *balanceValue = [[SimiFormatter sharedInstance]priceWithPrice:[giftCodeModel valueForKey:@"balance"] andCurrency:currencySymbol];
             [balanceValueLabel setText:balanceValue];
             
+            if ([giftCodeModel valueForKey:@"comment"]) {
+                SimiLabel *commentLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(padding, height, titleWidth, labelHeight) andFontName:THEME_FONT_NAME_REGULAR andFontSize:14 andTextColor:THEME_CONTENT_COLOR text:@"Comment"];
+                [cell.contentView addSubview:commentLabel];
+                
+                NSString *commentValue = [giftCodeModel valueForKey:@"comment"];
+                SimiLabel *commentValueLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(titleWidth+padding*2, height, valueWidth, labelHeight) andFontName:THEME_FONT_NAME andFontSize:14 andTextColor:THEME_CONTENT_COLOR text:commentValue];
+                [commentValueLabel resizLabelToFit];
+                [cell.contentView addSubview:commentValueLabel];
+                height += CGRectGetHeight(commentValueLabel.frame)+5;
+            }
+            
             SimiLabel *historyLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(padding, height, cellWidth - padding*2, labelHeight) andFontName:THEME_FONT_NAME_REGULAR andFontSize:20 andTextColor:THEME_CONTENT_COLOR text:@"History"];
             [cell.contentView addSubview:historyLabel];
             height += 30;
@@ -194,6 +228,33 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
+}
+
+#pragma mark Action
+- (void)redeemGiftCode:(UIButton*)sender{
+    giftCardCreditModel = [SimiGiftCardCreditModel new];
+    [giftCardCreditModel redeemGiftCodeWithParams:@{@"giftcode":[giftCodeModel valueForKey:@"gift_code"]}];
+    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(didCompletedAddOrRedeemGiftCode:) name:DidRedeemGiftCode object:giftCardCreditModel];
+    [self startLoadingData];
+}
+
+- (void)didCompletedAddOrRedeemGiftCode:(NSNotification*)noti{
+    [self stopLoadingData];
+    [self removeObserverForNotification:noti];
+    SimiResponder *responder = [noti.userInfo valueForKey:@"responder"];
+    if ([responder.status isEqualToString:@"SUCCESS"]) {
+        [self showToastMessage:[giftCardCreditModel valueForKey:@"success"] duration:1.5];
+        [redeemButton removeFromSuperview];
+        [emailToFriendButton removeFromSuperview];
+        redeemButton = nil;
+        emailToFriendButton = nil;
+        [self getGiftCodeDetailInfo];
+    }else
+        [self showToastMessage:responder.responseMessage duration:1.5];
+}
+
+- (void)emailToFriend:(UIButton*)sender{
+    
 }
 
 @end

@@ -15,6 +15,8 @@ static NSString *giftcode_history_row = @"giftcode_history_row";
     SimiGiftCodeModel* giftCodeModel;
     UITableView *giftCodeDetailTableView;
     NSArray *giftCodeHistories;
+    SimiButton *redeemButton;
+    SimiButton *emailToFriendButton;
 }
 @property (strong, nonatomic) NSString *giftCodeId;
 @end
