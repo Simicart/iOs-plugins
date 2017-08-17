@@ -10,6 +10,7 @@
 #import "SimiTable.h"
 #import "SimiTextView.h"
 #import "SimiGiftCardCreditModel.h"
+#import "SCEmailToFriendViewController.h"
 
 @interface SCGiftCodeDetailViewController ()<UITextFieldDelegate>{
     SimiGiftCardCreditModel *giftCardCreditModel;
@@ -254,7 +255,9 @@
 }
 
 - (void)emailToFriend:(UIButton*)sender{
-    
+    SCEmailToFriendViewController *viewController = [SCEmailToFriendViewController new];
+    viewController.giftCodeModel = giftCodeModel;
+    [self.navigationController pushViewController:viewController animated:YES];
 }
 
 @end

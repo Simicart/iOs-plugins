@@ -13,5 +13,6 @@
 - (void)removeGiftCodeFromCustomerWithParams:(NSDictionary *)params target:(id)target selector:(SEL)selector;
 - (void)redeemGiftCodeWithParams:(NSDictionary *)params target:(id)target selector:(SEL)selector;
 - (void)addGiftCodeWithParams:(NSDictionary *)params target:(id)target selector:(SEL)selector;
+- (void)sendEmailToFriendWithParams:(NSDictionary *)params target:(id)target selector:(SEL)selector;
 
 @end

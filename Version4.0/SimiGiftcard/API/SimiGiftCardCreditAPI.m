@@ -28,4 +28,9 @@
     NSString *urlPath = [NSString stringWithFormat:@"%@%@%@", kBaseURL, kSimiConnectorURL, @"simicustomercredits/addlist"];
     [self requestWithMethod:PUT URL:urlPath params:params target:target selector:selector header:nil];
 }
+
+- (void)sendEmailToFriendWithParams:(NSDictionary *)params target:(id)target selector:(SEL)selector{
+    NSString *urlPath = [NSString stringWithFormat:@"%@%@%@", kBaseURL, kSimiConnectorURL, @"simicustomercredits/sendemail"];
+    [self requestWithMethod:PUT URL:urlPath params:params target:target selector:selector header:nil];
+}
 @end

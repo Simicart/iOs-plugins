@@ -226,6 +226,7 @@
                 customMessageTextView.layer.borderWidth = 1;
                 customMessageTextView.layer.borderColor = [UIColor lightGrayColor].CGColor;
                 customMessageTextView.layer.cornerRadius = 6;
+                [customMessageTextView setFont:[UIFont fontWithName:THEME_FONT_NAME size:13]];
                 [cell.contentView addSubview:customMessageTextView];
                 cellHeight += 100;
                 

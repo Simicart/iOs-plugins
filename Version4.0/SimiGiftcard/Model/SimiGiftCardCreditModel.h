@@ -11,6 +11,7 @@ static NSString *DidGetCustomerCredit = @"DidGetCustomerCredit";
 static NSString *DidRemoveGiftCode = @"DidRemoveGiftCode";
 static NSString *DidRedeemGiftCode = @"DidRedeemGiftCode";
 static NSString *DidAddGiftCodeToList = @"DidAddGiftCodeToList";
+static NSString *DidSendGiftCodeToFriend = @"DidSendGiftCodeToFriend";
 
 @interface SimiGiftCardCreditModel : SimiModel
 - (void)getCustomerCreditWithParams:(NSDictionary *)params;
@@ -20,4 +21,6 @@ static NSString *DidAddGiftCodeToList = @"DidAddGiftCodeToList";
 - (void)redeemGiftCodeWithParams:(NSDictionary *)params;
 
 - (void)addGiftCodeWithParams:(NSDictionary *)params;
+
+- (void)sendEmailToFriendWithParams:(NSDictionary *)params;
 @end

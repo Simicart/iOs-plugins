@@ -37,4 +37,11 @@
     [self preDoRequest];
     [[SimiGiftCardCreditAPI new]addGiftCodeWithParams:params target:self selector:@selector(didFinishRequest:responder:)];
 }
+
+- (void)sendEmailToFriendWithParams:(NSDictionary *)params{
+    currentNotificationName = DidSendGiftCodeToFriend;
+    keyResponse = @"message";
+    [self preDoRequest];
+    [[SimiGiftCardCreditAPI new]sendEmailToFriendWithParams:params target:self selector:@selector(didFinishRequest:responder:)];
+}
 @end
