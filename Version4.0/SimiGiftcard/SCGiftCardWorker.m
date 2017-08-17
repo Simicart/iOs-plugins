@@ -80,11 +80,8 @@ static NSString *ACCOUNT_GIFTCARD_ROW = @"ACCOUNT_GIFTCARD_ROW";
 -(void)didSelectAccountCellAtIndexPath:(NSNotification *)noti{
     if ([[(SimiRow *)noti.object identifier] isEqualToString:ACCOUNT_GIFTCARD_ROW]) {
         SCAccountViewController *accountVC = [noti.userInfo objectForKey:@"self"];
-        if (PADDEVICE) {
-            [accountVC dismissViewControllerAnimated:YES completion:nil];
-        }
         SCMyGiftCardViewController *myGiftCardViewController = [SCMyGiftCardViewController new];
-        [[SimiGlobalVar sharedInstance].currentlyNavigationController pushViewController:myGiftCardViewController animated:YES];
+        [accountVC.navigationController pushViewController:myGiftCardViewController animated:YES];
         accountVC.isDiscontinue = YES;
     }
 }

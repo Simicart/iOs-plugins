@@ -22,12 +22,21 @@
     }
 }
 
+- (void)viewWillAppearBefore:(BOOL)animated{
+    if (PHONEDEVICE) {
+        [super viewWillAppearBefore:animated];
+    }
+}
+
 - (void)viewDidAppearBefore:(BOOL)animated{
     if (myCreditTableView == nil) {
         myCreditTableView = [[UITableView alloc]initWithFrame:self.view.bounds style:UITableViewStylePlain];
         myCreditTableView.delegate = self;
         myCreditTableView.dataSource = self;
         myCreditTableView.tableFooterView = [UIView new];
+        if (SIMI_SYSTEM_IOS >= 9) {
+            myCreditTableView.cellLayoutMarginsFollowReadableWidth = NO;
+        }
         [self.view addSubview:myCreditTableView];
     }
 }
@@ -58,7 +67,7 @@
         cell = [tableView dequeueReusableCellWithIdentifier:row.identifier];
         if (cell == nil) {
             float padding = 10;
-            float cellWidth = SCREEN_WIDTH;
+            float cellWidth = CGRectGetWidth(self.view.bounds);
             cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:row.identifier];
             SimiLabel *titleLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(padding, padding, cellWidth - padding*2, 30) andFontName:THEME_FONT_NAME_REGULAR andFontSize:20 andTextColor:THEME_CONTENT_COLOR text:@"Balance"];
             [cell.contentView addSubview:titleLabel];
@@ -121,6 +130,9 @@
     float titleWidth = 120;
     float valueWidth = 140;
     float cellWidth = SCREEN_WIDTH;
+    if (padding) {
+        cellWidth = 2*SCREEN_WIDTH/3;
+    }
     if(self){
         NSString *currencySymbol = @"";
         if ([info valueForKey:@"currency_symbol"] && ![[info valueForKey:@"currency_symbol"] isKindOfClass:[NSNull class]]) {

@@ -19,11 +19,17 @@
     giftCardCreditModel = [SimiGiftCardCreditModel new];
 }
 
+- (void)viewWillAppearBefore:(BOOL)animated{
+    if (PHONEDEVICE) {
+        [super viewWillAppearBefore:animated];
+    }
+}
+
 - (void)viewDidAppearBefore:(BOOL)animated{
     if (giftCodeTextField == nil) {
         float height = 10;
         float padding = 15;
-        float viewWidth = SCREEN_WIDTH;
+        float viewWidth = CGRectGetWidth(self.view.bounds);
         float buttonWidth = (viewWidth - padding*3)/2;
         SimiLabel *titleLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(padding, height, viewWidth - 2*padding, 25) andFontName:THEME_FONT_NAME_REGULAR andFontSize:20 andTextColor:THEME_CONTENT_COLOR text:@"Add/Redeem a Gift Card"];
         [self.view addSubview:titleLabel];

@@ -20,12 +20,21 @@
     self.navigationItem.title = SCLocalizedString(@"GIFT CARD");
 }
 
+- (void)viewWillAppearBefore:(BOOL)animated{
+    if (PHONEDEVICE) {
+        [super viewWillAppearBefore:animated];
+    }
+}
+
 - (void)viewDidAppearBefore:(BOOL)animated{
     if (myGiftCardTableView == nil) {
         myGiftCardTableView = [[UITableView alloc]initWithFrame:self.view.bounds style:UITableViewStylePlain];
         myGiftCardTableView.delegate = self;
         myGiftCardTableView.dataSource = self;
         myGiftCardTableView.tableFooterView = [UIView new];
+        if (SIMI_SYSTEM_IOS >= 9) {
+            myGiftCardTableView.cellLayoutMarginsFollowReadableWidth = NO;
+        }
         [self.view addSubview:myGiftCardTableView];
         [self startLoadingData];
     }
@@ -33,7 +42,9 @@
 }
 
 - (void)getCustomerCreditInfo{
-    giftCardCreditModel = [SimiGiftCardCreditModel new];
+    if (giftCardCreditModel == nil) {
+        giftCardCreditModel = [SimiGiftCardCreditModel new];
+    }
     [giftCardCreditModel getCustomerCreditWithParams:@{}];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didGetCustomerCreditInfo:) name:DidGetCustomerCredit object:giftCardCreditModel];
 }
@@ -78,9 +89,9 @@
         cell = [tableView dequeueReusableCellWithIdentifier:mygiftcard_creditinfo_row];
         if (cell == nil) {
             float padding = 10;
-            float cellWidth = SCREEN_WIDTH;
+            float cellWidth = CGRectGetWidth(self.view.bounds);
             float detailWidth = 100;
-            float redeemWidth = SCREEN_WIDTH - padding *3 - detailWidth;
+            float redeemWidth = cellWidth - padding *3 - detailWidth;
             cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:mygiftcard_creditinfo_row];
             myCreditLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(padding, padding, cellWidth - padding*2, 30) andFontName:THEME_FONT_NAME_REGULAR andFontSize:20 andTextColor:THEME_CONTENT_COLOR];
             [cell.contentView addSubview:myCreditLabel];
@@ -92,6 +103,7 @@
             SimiButton *addorRedeemaGiftCard = [[SimiButton alloc]initWithFrame:CGRectMake(padding*2 + detailWidth, padding*2+30, redeemWidth, 40) title:@"Add/Redeem A Gift Card" titleFont:[UIFont fontWithName:THEME_FONT_NAME_REGULAR size:14] cornerRadius:4 borderWidth:0 borderColor:0];
             [addorRedeemaGiftCard addTarget:self action:@selector(openAddOrRedeemScreen:) forControlEvents:UIControlEventTouchUpInside];
             [cell.contentView addSubview:addorRedeemaGiftCard];
+            [SimiGlobalVar sortViewForRTL:cell.contentView andWidth:cellWidth];
         }
         NSString *currencySymbol = @"";
         if ([giftCardCreditModel valueForKey:@"currency_symbol"] && ![[giftCardCreditModel valueForKey:@"currency_symbol"] isKindOfClass:[NSNull class]]) {
@@ -183,6 +195,9 @@
     float padding = 10;
     float titleWidth = 120;
     float cellWidth = SCREEN_WIDTH;
+    if (PADDEVICE) {
+        cellWidth = SCREEN_WIDTH*2/3;
+    }
     float valueWidth = cellWidth - titleWidth - padding*3 - 40;
     if(self){
         NSArray *actions = [info valueForKey:@"action"];
@@ -246,7 +261,7 @@
     [alertController addAction:[UIAlertAction actionWithTitle:SCLocalizedString(@"Ok") style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
         [self.delegate removeGiftCodeWithId:[self.giftCodeInfo valueForKey:@"customer_voucher_id"]];
     }]];
-    [[UIApplication sharedApplication].keyWindow.rootViewController presentViewController:alertController animated:YES completion:nil];
+    [(UIViewController*)self.delegate presentViewController:alertController animated:YES completion:nil];
 }
 
 - (void)setGiftCodeInfo:(NSDictionary *)giftCodeInfo{

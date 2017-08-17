@@ -24,12 +24,22 @@
     self.navigationItem.title = SCLocalizedString(@"GIFT CARD CODE DETAILS");
 }
 
+- (void)viewWillAppearBefore:(BOOL)animated{
+    if (PHONEDEVICE) {
+        [super viewWillAppearBefore:animated];
+    }
+}
+
 - (void)viewDidAppearBefore:(BOOL)animated{
     if (giftCodeDetailTableView == nil) {
         giftCodeDetailTableView = [[UITableView alloc]initWithFrame:self.view.bounds style:UITableViewStylePlain];
         giftCodeDetailTableView.delegate = self;
         giftCodeDetailTableView.dataSource = self;
         giftCodeDetailTableView.tableFooterView = [UIView new];
+        if (SIMI_SYSTEM_IOS >= 9) {
+            giftCodeDetailTableView.cellLayoutMarginsFollowReadableWidth = NO;
+        }
+        [giftCodeDetailTableView setContentInset:UIEdgeInsetsMake(0, 0, 60, 0)];
         [self.view addSubview:giftCodeDetailTableView];
     }
     [self getGiftCodeDetailInfo];
@@ -104,7 +114,7 @@
             float height = 5;
             float padding = 10;
             float titleWidth = 120;
-            float cellWidth = SCREEN_WIDTH;
+            float cellWidth = CGRectGetWidth(self.view.bounds);
             float valueWidth = cellWidth - titleWidth - padding*3;
             NSString *currencySymbol = @"";
             if ([giftCodeModel valueForKey:@"currency_symbol"] && ![[giftCodeModel valueForKey:@"currency_symbol"] isKindOfClass:[NSNull class]]) {
@@ -270,6 +280,9 @@
     float padding = 10;
     float titleWidth = 120;
     float cellWidth = SCREEN_WIDTH;
+    if (padding) {
+        cellWidth = SCREEN_WIDTH*2/3;
+    }
     float valueWidth = cellWidth - titleWidth - padding*3;
     if(self){
         SimiLabel *actionLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(padding, height, titleWidth, labelHeight) andFontName:THEME_FONT_NAME_REGULAR andFontSize:14 andTextColor:THEME_CONTENT_COLOR text:@"Action"];

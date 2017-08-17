@@ -59,8 +59,9 @@ static NSString *giftcard_insertinfo_row = @"giftcard_insertinfo_row";
     float giftCardValue;
     float percentValue;
 }
-
 @property (nonatomic) BOOL useUploadImage;
+
+- (void)selectUploadImage:(UIGestureRecognizer*)gesture;
 @end
 
 @interface GiftCardTemplateCollectionViewCell : UICollectionViewCell

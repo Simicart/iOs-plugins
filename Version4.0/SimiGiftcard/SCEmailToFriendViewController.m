@@ -39,7 +39,7 @@
     float height = 5;
     float padding = 10;
     float titleWidth = 120;
-    float cellWidth = SCREEN_WIDTH;
+    float cellWidth = CGRectGetWidth(self.view.bounds);
     float valueWidth = cellWidth - titleWidth - padding*3;
     float textFieldHeight = 40;
     float textFieldWidth = cellWidth - padding*2;
@@ -205,7 +205,7 @@
 
 #pragma mark Text Field Delegate
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView{
-    if (customMessageTextView.isFirstResponder) {
+    if (customMessageTextView.isFirstResponder && PHONEDEVICE) {
         [customMessageTextView resignFirstResponder];
         
     }

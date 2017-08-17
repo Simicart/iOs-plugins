@@ -8,7 +8,7 @@
 
 #import "SCGiftCardProductsViewController.h"
 #import "SCGiftCardCollectionViewCell.h"
-#import "SCGiftCardProductViewController.h"
+#import "SCGiftCardProductPadViewController.h"
 
 @interface SCGiftCardProductsViewController ()
 
@@ -22,12 +22,14 @@
     UICollectionViewFlowLayout* flowLayout = [UICollectionViewFlowLayout new];
     flowLayout.minimumLineSpacing = [SimiGlobalVar scaleValue:20];
     flowLayout.minimumInteritemSpacing = [SimiGlobalVar scaleValue:5];
-    flowLayout.itemSize = [SimiGlobalVar scaleSize:CGSizeMake(152.5, 152.5 + 4* 20)];
     self.productsCollectionView = [[UICollectionView alloc]initWithFrame:self.view.bounds collectionViewLayout:flowLayout];
     [self.productsCollectionView setBackgroundColor:[UIColor whiteColor]];
     self.productsCollectionView.delegate = self;
     self.productsCollectionView.dataSource = self;
     [self.productsCollectionView setContentInset:UIEdgeInsetsMake([SimiGlobalVar scaleValue:20], [SimiGlobalVar scaleValue:5], [SimiGlobalVar scaleValue:20], [SimiGlobalVar scaleValue:5])];
+    if (PADDEVICE) {
+        [self.productsCollectionView setContentInset:UIEdgeInsetsMake([SimiGlobalVar scaleValue:20], [SimiGlobalVar scaleValue:20], [SimiGlobalVar scaleValue:20], [SimiGlobalVar scaleValue:20])];
+    }
      __weak SCGiftCardProductsViewController *tempSelf = self;
     [self.productsCollectionView addInfiniteScrollingWithActionHandler:^{
         [tempSelf getProducts];
@@ -104,6 +106,10 @@
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath{
     float height = 0;
+    float itemWidth = [SimiGlobalVar scaleValue:152.5];
+    if (PADDEVICE) {
+        itemWidth = [SimiGlobalVar scaleValue:220];
+    }
     if (PHONEDEVICE) {
         int numberCollectionRow = (int)indexPath.row/2;
         for (int i = numberCollectionRow*2; i <= numberCollectionRow*2+1; i++) {
@@ -125,16 +131,23 @@
             }
         }
     }
-    return CGSizeMake([SimiGlobalVar scaleValue:152.5], [SimiGlobalVar scaleValue:152.5] + height + 20);
+    return CGSizeMake(itemWidth, itemWidth + height + 20);
 }
 
 #pragma mark -
 #pragma mark UICollectionView Delegate
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath{
-    SimiGiftCardModel *giftCardModel = [self.productModelCollection objectAtIndex:indexPath.row];
-    SCGiftCardProductViewController *productViewController = [SCGiftCardProductViewController new];
-    productViewController.productId = [giftCardModel valueForKey:@"entity_id"];
-    [self.navigationController pushViewController:productViewController animated:YES];
+    if (PHONEDEVICE) {
+        SimiGiftCardModel *giftCardModel = [self.productModelCollection objectAtIndex:indexPath.row];
+        SCGiftCardProductViewController *productViewController = [SCGiftCardProductViewController new];
+        productViewController.productId = [giftCardModel valueForKey:@"entity_id"];
+        [self.navigationController pushViewController:productViewController animated:YES];
+    }else{
+        SimiGiftCardModel *giftCardModel = [self.productModelCollection objectAtIndex:indexPath.row];
+        SCGiftCardProductPadViewController *productViewController = [SCGiftCardProductPadViewController new];
+        productViewController.productId = [giftCardModel valueForKey:@"entity_id"];
+        [self.navigationController pushViewController:productViewController animated:YES];
+    }
 }
 
 @end
