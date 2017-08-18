@@ -7,8 +7,10 @@
 //
 
 #import "BraintreeInitWorker.h"
-#import "BTPaymentViewController.h"
 #import <SimiCartBundle/SimiOrderModel.h>
+#import "SimiBraintreeModel.h"
+#import "BraintreeDropIn.h"
+#import "SCThankYouPageViewController.h"
 
 #define DidSelectPaymentMethod @"DidSelectPaymentMethod"
 #define DidPlaceOrderAfter @"DidPlaceOrder-After"
@@ -24,7 +26,7 @@
     SimiBraintreeModel* braintreeModel;
     BOOL applePayCompleted;
 }
--(instancetype) init{
+- (instancetype) init{
     if(self == [super init]){
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"ApplicationDidFinishLaunching" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"ApplicationOpenURL" object:nil];
@@ -36,7 +38,7 @@
     return self;
 }
 
--(void) didReceiveNotification:(NSNotification *)noti{
+- (void)didReceiveNotification:(NSNotification *)noti{
     if([noti.name isEqualToString:@"ApplicationDidFinishLaunching"]){
     }else if([noti.name isEqualToString:@"ApplicationOpenURL"]){
         NSURL *url = [noti.userInfo valueForKey:@"url"];
@@ -54,30 +56,13 @@
             currentVC = [noti.userInfo valueForKey:@"controller"];
             [order addEntriesFromDictionary:noti.object];
             [self showDropIn:[selectedPayment objectForKey:@"token"]];
-//            BTPaymentViewController* btPaymentVC = [[BTPaymentViewController alloc] init];
-//            btPaymentVC.payment = payment;
-//            btPaymentVC.shipping = shipping;
-//            SimiOrderModel* orderModel = [[SimiOrderModel alloc] init];
-//            btPaymentVC.order = orderModel;
-//            if(PHONEDEVICE)
-//                [currentVC.navigationController pushViewController:btPaymentVC animated:YES];
-//            else if(PADDEVICE){
-//                UINavigationController* navi = [[UINavigationController alloc] initWithRootViewController:btPaymentVC];
-//                navi.modalPresentationStyle = UIModalPresentationPopover;
-//                navi.modalInPopover = YES;
-//                UIPopoverPresentationController* popoverVC = navi.popoverPresentationController;
-//                popoverVC.sourceView = currentVC.view;
-//                popoverVC.sourceRect = CGRectMake(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 1, 1);
-//                [popoverVC setPermittedArrowDirections:0];
-//                [currentVC presentViewController:navi animated:YES completion:nil];
-//            }
         }
     }else if([noti.name isEqualToString:DidPlaceOrderBefore]){
         order = [[SimiOrderModel alloc] initWithDictionary:[noti.userInfo objectForKey:@"order"]];
     }
 }
 
--(void) showDropIn:(NSString*) clientTokenOrTokenizationKey{
+- (void)showDropIn:(NSString*) clientTokenOrTokenizationKey{
     BTDropInRequest *request = [[BTDropInRequest alloc] init];
     //    request.applePayDisabled = YES;
     request.threeDSecureVerification = YES;
@@ -120,14 +105,6 @@
 
 - (PKPaymentRequest *)applePaymentRequest {
     PKPaymentRequest *paymentRequest = [[PKPaymentRequest alloc] init];
-    
-    //    paymentRequest.requiredBillingAddressFields = PKAddressFieldName;
-    //    PKShippingMethod *shippingMethod = [PKShippingMethod summaryItemWithLabel:[_shipping valueForKey:@"s_method_title"] amount:[NSDecimalNumber decimalNumberWithString:[NSString stringWithFormat:@"%@",[_shipping valueForKey:@"s_method_fee"]]]];
-    //    shippingMethod.detail = [_shipping valueForKey:@"s_method_name"] ;
-    //    shippingMethod.identifier = [_shipping valueForKey:@"s_method_id"];
-    //    paymentRequest.shippingMethods = @[shippingMethod];
-    //    paymentRequest.requiredShippingAddressFields = PKAddressFieldAll;
-    //
     paymentRequest.merchantIdentifier = [selectedPayment valueForKey:@"apple_merchant"];
 #ifdef __IPHONE_9_0
     paymentRequest.supportedNetworks = @[PKPaymentNetworkVisa, PKPaymentNetworkMasterCard, PKPaymentNetworkAmex, PKPaymentNetworkDiscover];
@@ -140,45 +117,6 @@
     //Shipping and Billing is not required
     paymentRequest.requiredBillingAddressFields = NO;
     paymentRequest.requiredShippingAddressFields = NO;
-    //    if ([paymentRequest respondsToSelector:@selector(setShippingType:)]) {
-    //        paymentRequest.shippingType = PKShippingTypeDelivery;
-    //    }
-    //    {
-    //        //Shipping Contact
-    //        NSDictionary* shippingAddress = [order objectForKey:@"shipping_address"];
-    //        PKContact* shippingContact = [[PKContact alloc] init];
-    //        NSPersonNameComponents *name = [[NSPersonNameComponents alloc] init];
-    //        name.givenName = [shippingAddress objectForKey:@"firstname"];
-    //        name.familyName = [shippingAddress objectForKey:@"lastname"];
-    //        shippingContact.name = name;
-    //
-    //        CNMutablePostalAddress *address = [[CNMutablePostalAddress alloc] init];
-    //        address.street = [shippingAddress objectForKey:@"street"];
-    //        address.city = [shippingAddress objectForKey:@"city"];
-    //        address.state = [shippingAddress objectForKey:@"region"];
-    //        address.postalCode = [shippingAddress objectForKey:@"postcode"];
-    //
-    //        shippingContact.postalAddress = address;
-    //        paymentRequest.shippingContact = shippingContact;
-    //    }
-    //    {
-    //        //Billing Contact
-    //        NSDictionary* billingAddress = [order objectForKey:@"billing_address"];
-    //        PKContact* billingContact = [[PKContact alloc] init];
-    //        NSPersonNameComponents *name = [[NSPersonNameComponents alloc] init];
-    //        name.givenName = [billingAddress objectForKey:@"firstname"];
-    //        name.familyName = [billingAddress objectForKey:@"lastname"];
-    //        billingContact.name = name;
-    //
-    //        CNMutablePostalAddress *address = [[CNMutablePostalAddress alloc] init];
-    //        address.street = [billingAddress objectForKey:@"street"];
-    //        address.city = [billingAddress objectForKey:@"city"];
-    //        address.state = [billingAddress objectForKey:@"region"];
-    //        address.postalCode = [billingAddress objectForKey:@"postcode"];
-    //
-    //        billingContact.postalAddress = address;
-    //        paymentRequest.billingContact = billingContact;
-    //    }
     NSMutableDictionary* fees = [order objectForKey:@"total"];
     
     NSDecimalNumber* subTotal = [NSDecimalNumber decimalNumberWithString:[NSString stringWithFormat:@"%.2f",[[fees valueForKey:@"subtotal_incl_tax"] floatValue]]];
@@ -245,11 +183,7 @@
     [braintreeModel sendNonceToServer:paymentMethodNonce andOrder:order];
 }
 
-//-(void) viewWillDisappear:(BOOL)animated{
-//    [[SimiGlobalVar sharedInstance].currentlyNavigationController popToRootViewControllerAnimated:YES];
-//}
-
--(void) didSendNonceToServer:(NSNotification *)noti{
+- (void)didSendNonceToServer:(NSNotification *)noti{
     SimiResponder* responder = [noti.userInfo valueForKey:@"responder"];
     if([responder.status isEqualToString:@"SUCCESS"]){
         if([noti.name isEqualToString:BRAINTREE_SENDNONCETOSERVER]){
@@ -277,15 +211,11 @@
 
 #pragma mark - BTViewControllerPresentingDelegate
 // Required
-- (void)paymentDriver:(id)paymentDriver
-requestsPresentationOfViewController:(UIViewController *)viewController {
-//    [currentVC presentViewController:viewController animated:YES completion:nil];
+- (void)paymentDriver:(id)paymentDriver requestsPresentationOfViewController:(UIViewController *)viewController {
 }
 
 // Required
-- (void)paymentDriver:(id)paymentDriver
-requestsDismissalOfViewController:(UIViewController *)viewController {
-//    [viewController dismissViewControllerAnimated:YES completion:nil];
+- (void)paymentDriver:(id)paymentDriver requestsDismissalOfViewController:(UIViewController *)viewController {
 }
 
 
