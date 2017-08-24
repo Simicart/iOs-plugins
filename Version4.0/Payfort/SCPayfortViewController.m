@@ -66,13 +66,11 @@
         [self.order addData:originalOrder];
         if (PHONEDEVICE) {
             SCThankYouPageViewController *thankVC = [[SCThankYouPageViewController alloc] init];
-            thankVC.number = [originalOrder objectForKey:@"invoice_number"];
             thankVC.order = [[SimiOrderModel alloc] initWithDictionary:originalOrder];
             [[SimiGlobalVar sharedInstance].currentlyNavigationController pushViewController:thankVC animated:YES];
         }else {
             UINavigationController *currentlyNavigationController = [SimiGlobalVar sharedInstance].currentlyNavigationController;
             SCThankYouPageViewController *thankVC = [[SCThankYouPageViewController alloc] init];
-            thankVC.number = [originalOrder objectForKey:@"invoice_number"];
             thankVC.order = [[SimiOrderModel alloc] initWithDictionary:originalOrder];
             UINavigationController *navi = [[UINavigationController alloc]initWithRootViewController:thankVC];
             navi.modalPresentationStyle = UIModalPresentationPopover;
