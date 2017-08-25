@@ -15,12 +15,6 @@
 #import <SimiCartBundle/SimiCMSModel.h>
 #import "SCDeeplinkModel.h"
 
-typedef enum : NSUInteger {
-    OpenAppFromDynamicLink,
-    OpenAppFromUniversalLink,
-    OpenAppFromSearchableIOS,
-} OpenAppType;
-
 @implementation SCAppEngageInitworker {
     NSArray *productList;
 }
@@ -40,9 +34,8 @@ typedef enum : NSUInteger {
         //Searchable iOS
         if(SIMI_SYSTEM_IOS >= 9){
             [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didGetProducts:) name:@"DidGetProductCollection" object:nil];
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(openSearchableItem:) name:@"DidInit" object:nil];
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(openSearchableItem:) name:@"ContinueUserActivity" object:nil];
         }
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didInit:) name:@"DidInit" object:nil];
     }
     return self;
 }
@@ -79,17 +72,18 @@ typedef enum : NSUInteger {
         [NSThread detachNewThreadSelector: @selector(indexSearchableItems) toTarget:self withObject:NULL];
     }
 }
-- (void)openSearchableItem:(NSNotification*) noti{
-    NSUserActivity* searchableUserActivity = [SimiGlobalVar sharedInstance].searchableUserActivity;
-    if(searchableUserActivity) {
-        if(searchableUserActivity && [searchableUserActivity.userInfo objectForKey:@"kCSSearchableItemActivityIdentifier"]){
-            NSString* productID = [searchableUserActivity.userInfo objectForKey:@"kCSSearchableItemActivityIdentifier"];
+
+- (void)didInit: (NSNotification *)noti {
+    NSUserActivity* userActivity = [SimiGlobalVar sharedInstance].searchableUserActivity;
+    if(userActivity) {
+        if(userActivity && [userActivity.userInfo objectForKey:@"kCSSearchableItemActivityIdentifier"]){
+            NSString* productID = [userActivity.userInfo objectForKey:@"kCSSearchableItemActivityIdentifier"];
             [[[SimiGlobalVar sharedInstance] currentlyNavigationController] popToRootViewControllerAnimated:NO];
             [SimiGlobalVar pushProductDetailWithNavigationController:[[SimiGlobalVar sharedInstance] currentlyNavigationController] andProductID:productID andProductIDs:nil];
         }else {
-            [self openAppWithUserActivity:searchableUserActivity];
+            [self openAppWithUserActivity:userActivity];
         }
-        searchableUserActivity = nil;
+        userActivity = nil;
     }
 }
 
@@ -99,7 +93,7 @@ typedef enum : NSUInteger {
     NSNumber* number = noti.object;
     FIRDynamicLink *dynamicLink = [[FIRDynamicLinks dynamicLinks] dynamicLinkFromCustomSchemeURL:url];
     if (dynamicLink) {
-        [self handleDynamicLink:dynamicLink.url.absoluteString type:OpenAppFromDynamicLink];
+        [self handleDynamicLink:dynamicLink.url.absoluteString];
         number = [NSNumber numberWithBool:YES];
     }else{
         number = [NSNumber numberWithBool:NO];
@@ -109,18 +103,28 @@ typedef enum : NSUInteger {
 - (void)continueUserActivity:(NSNotification*) noti{
     NSUserActivity* userActivity = [noti.userInfo objectForKey:@"userActivity"];
     NSNumber* handledNumber = [noti.userInfo objectForKey:@"handled"];
-    NSString *activityURL = userActivity.webpageURL.absoluteURL.absoluteString;
-    if([activityURL containsString:@"app.goo.gl"]){
-        BOOL handled = [[FIRDynamicLinks dynamicLinks] handleUniversalLink:userActivity.webpageURL
-                                                                completion:^(FIRDynamicLink * _Nullable dynamicLink,
-                                                                             NSError * _Nullable error) {
-                                                                    if(!error) {
-                                                                        [self handleDynamicLink:dynamicLink.url.absoluteString type:OpenAppFromDynamicLink];
-                                                                    }
-                                                                }];
-        handledNumber = [NSNumber numberWithBool:handled];
-    }else{
-        [self handleDynamicLink:activityURL type:OpenAppFromUniversalLink];
+    if(userActivity) {
+        if(userActivity && [userActivity.userInfo objectForKey:@"kCSSearchableItemActivityIdentifier"]){
+            NSString* productID = [userActivity.userInfo objectForKey:@"kCSSearchableItemActivityIdentifier"];
+            [[[SimiGlobalVar sharedInstance] currentlyNavigationController] popToRootViewControllerAnimated:NO];
+            [SimiGlobalVar pushProductDetailWithNavigationController:[[SimiGlobalVar sharedInstance] currentlyNavigationController] andProductID:productID andProductIDs:nil];
+            handledNumber = [NSNumber numberWithBool:YES];
+        }else {
+            NSString *activityURL = userActivity.webpageURL.absoluteURL.absoluteString;
+            if([activityURL containsString:@"app.goo.gl"]){
+                BOOL handled = [[FIRDynamicLinks dynamicLinks] handleUniversalLink:userActivity.webpageURL
+                                                                        completion:^(FIRDynamicLink * _Nullable dynamicLink,
+                                                                                     NSError * _Nullable error) {
+                                                                            if(!error) {
+                                                                                [self handleDynamicLink:dynamicLink.url.absoluteString];
+                                                                            }
+                                                                        }];
+                handledNumber = [NSNumber numberWithBool:handled];
+            }else{
+                [self handleDynamicLink:activityURL];
+                handledNumber = [NSNumber numberWithBool:YES];
+            }
+        }
     }
 }
 
@@ -131,59 +135,66 @@ typedef enum : NSUInteger {
                                                  completion:^(FIRDynamicLink * _Nullable dynamicLink,
                                                               NSError * _Nullable error) {
                                                      if(!error) {
-                                                         [self handleDynamicLink:dynamicLink.url.absoluteString type:OpenAppFromDynamicLink];
+                                                         [self handleDynamicLink:dynamicLink.url.absoluteString];
                                                      }
                                                  }];
     }else{
-        [self handleDynamicLink:activityURL type:OpenAppFromUniversalLink];
+        [self handleDynamicLink:activityURL];
     }
 }
 
-- (void)handleDynamicLink: (NSString *)deeplinkLinkURL type: (OpenAppType)searchableType {
-    if(searchableType == OpenAppFromDynamicLink) {
-        NSString *deepLinkPath = [[deeplinkLinkURL componentsSeparatedByString:@"?"] objectAtIndex:1];
-        NSDictionary *deepLinkValues = [self convertFromDeeplinkPath:deepLinkPath];
-        if([deepLinkValues objectForKey:@"simi_product_id"]){
-            NSString *productID = [deepLinkValues objectForKey:@"simi_product_id"];
-            [[[SimiGlobalVar sharedInstance] currentlyNavigationController] popToRootViewControllerAnimated:NO];
-            [SimiGlobalVar pushProductDetailWithNavigationController:[[SimiGlobalVar sharedInstance] currentlyNavigationController] andProductID:productID andProductIDs:@[productID]];
-        } else if([deepLinkValues objectForKey:@"simi_cate_name"] && [deepLinkValues objectForKey:@"simi_has_child"] && [deepLinkValues objectForKey:@"simi_cate_name"]) {
-            NSString *categoryID = [deepLinkValues objectForKey:@"simi_cate_name"];
-            BOOL hasChild = [[deepLinkValues objectForKey:@"simi_has_child"] boolValue];
-            NSString *categoryName = [deepLinkValues objectForKey:@"simi_cate_name"];
-            if(PHONEDEVICE) {
-                if(hasChild) {
-                    SCCategoryViewController *nextController = [[SCCategoryViewController alloc]init];
-                    nextController.openFrom = CategoryOpenFromParentCategory;
-                    [nextController setCategoryId:categoryID];
-                    [nextController setCategoryRealName:categoryName];
-                    [[[SimiGlobalVar sharedInstance] currentlyNavigationController] popToRootViewControllerAnimated:NO];
-                    [[[SimiGlobalVar sharedInstance] currentlyNavigationController] pushViewController:nextController animated:YES];
+- (void)handleDynamicLink: (NSString *)deeplinkURL{
+    if(deeplinkURL && ![deeplinkURL isEqualToString:@""]){
+        NSArray *deeplinkPaths = [deeplinkURL componentsSeparatedByString:@"?"];
+        if(deeplinkPaths.count > 1) {
+            NSString *deepLinkPath = [[deeplinkURL componentsSeparatedByString:@"?"] objectAtIndex:1];
+            NSDictionary *deepLinkValues = [self convertFromDeeplinkPath:deepLinkPath];
+            if([deepLinkValues objectForKey:@"simi_product_id"]){
+                NSString *productID = [deepLinkValues objectForKey:@"simi_product_id"];
+                [[[SimiGlobalVar sharedInstance] currentlyNavigationController] popToRootViewControllerAnimated:NO];
+                [SimiGlobalVar pushProductDetailWithNavigationController:[[SimiGlobalVar sharedInstance] currentlyNavigationController] andProductID:productID andProductIDs:@[productID]];
+            } else if([deepLinkValues objectForKey:@"simi_cate_name"] && [deepLinkValues objectForKey:@"simi_has_child"] && [deepLinkValues objectForKey:@"simi_cate_name"]) {
+                NSString *categoryID = [deepLinkValues objectForKey:@"simi_cate_name"];
+                BOOL hasChild = [[deepLinkValues objectForKey:@"simi_has_child"] boolValue];
+                NSString *categoryName = [deepLinkValues objectForKey:@"simi_cate_name"];
+                if(PHONEDEVICE) {
+                    if(hasChild) {
+                        SCCategoryViewController *nextController = [[SCCategoryViewController alloc]init];
+                        nextController.openFrom = CategoryOpenFromParentCategory;
+                        [nextController setCategoryId:categoryID];
+                        [nextController setCategoryRealName:categoryName];
+                        [[[SimiGlobalVar sharedInstance] currentlyNavigationController] popToRootViewControllerAnimated:NO];
+                        [[[SimiGlobalVar sharedInstance] currentlyNavigationController] pushViewController:nextController animated:YES];
+                    }else {
+                        SCProductListViewController *nextController = [[SCProductListViewController alloc]init];;
+                        [nextController setCategoryID: categoryID];
+                        nextController.nameOfProductList = categoryName;
+                        [[[SimiGlobalVar sharedInstance] currentlyNavigationController] popToRootViewControllerAnimated:NO];
+                        [[[SimiGlobalVar sharedInstance] currentlyNavigationController] pushViewController:nextController animated:YES];
+                    }
                 }else {
-                    SCProductListViewController *nextController = [[SCProductListViewController alloc]init];;
-                    [nextController setCategoryID: categoryID];
-                    nextController.nameOfProductList = categoryName;
-                    [[[SimiGlobalVar sharedInstance] currentlyNavigationController] popToRootViewControllerAnimated:NO];
-                    [[[SimiGlobalVar sharedInstance] currentlyNavigationController] pushViewController:nextController animated:YES];
+                    
                 }
+            } else if([deepLinkValues objectForKey:@"simi_cms_id"]) {
+                NSString *cmsID = [deepLinkValues objectForKey:@"simi_cms_id"];
+                [[[SimiGlobalVar sharedInstance] currentlyNavigationController] popToRootViewControllerAnimated:NO];
+                [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didGetCMSPage:) name:DidGetCMSPage object:nil];
+                [[SimiCMSModel new] getCMSPageWithID:cmsID];
+                [((SimiViewController *)[[SimiGlobalVar sharedInstance] currentlyNavigationController].viewControllers.lastObject) startLoadingData];
             }else {
-                
+                [self getDeeplinkInformationWithURL:deeplinkURL];
             }
-        } else if([deepLinkValues objectForKey:@"simi_cms_id"]) {
-            NSString *cmsID = [deepLinkValues objectForKey:@"simi_cms_id"];
-            [[[SimiGlobalVar sharedInstance] currentlyNavigationController] popToRootViewControllerAnimated:NO];
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didGetCMSPage:) name:DidGetCMSPage object:nil];
-            [[SimiCMSModel new] getCMSPageWithID:cmsID];
-            [((SimiViewController *)[[SimiGlobalVar sharedInstance] currentlyNavigationController].viewControllers.lastObject) startLoadingData];
         }else {
-            
+            [self getDeeplinkInformationWithURL:deeplinkURL];
         }
-    }else if(searchableType == OpenAppFromUniversalLink){
-        SCDeeplinkModel *deeplink = [SCDeeplinkModel new];
-        [deeplink getDeeplinkInformation:deeplinkLinkURL];
-        [((SimiViewController *)([SimiGlobalVar sharedInstance].currentlyNavigationController.viewControllers.lastObject)) startLoadingData];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didGetDeeplinkInformation:) name:DidGetDeeplinkInformation object:nil];
     }
+}
+
+- (void)getDeeplinkInformationWithURL: (NSString *)deeplinkURL {
+    SCDeeplinkModel *deeplink = [SCDeeplinkModel new];
+    [deeplink getDeeplinkInformation:deeplinkURL];
+    [((SimiViewController *)([SimiGlobalVar sharedInstance].currentlyNavigationController.viewControllers.lastObject)) startLoadingData];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didGetDeeplinkInformation:) name:DidGetDeeplinkInformation object:nil];
 }
 
 - (void)didGetDeeplinkInformation: (NSNotification *)noti {
