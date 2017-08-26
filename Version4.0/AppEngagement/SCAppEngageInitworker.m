@@ -13,6 +13,7 @@
 #import <SimiCartBundle/SCProductListViewController.h>
 #import <SimiCartBundle/SCCategoryViewController.h>
 #import <SimiCartBundle/SimiCMSModel.h>
+#import <SimiCartBundle/SCWebViewController.h>
 #import "SCDeeplinkModel.h"
 
 @implementation SCAppEngageInitworker {
