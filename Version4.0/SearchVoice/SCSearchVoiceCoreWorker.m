@@ -11,40 +11,42 @@
 #import <SimiCartBundle/SCNavigationBarPad.h>
 #import "SCSearchVoiceViewController.h"
 #import "SCSearchVoicePadViewController.h"
+
 @implementation SCSearchVoiceCoreWorker {
-    NSNotification *currentNoti;
-    NSNotification *padNoti;
+    SimiViewController *viewController;
+    SCNavigationBarPad *controller;
     BOOL *showOnPad;
 }
 
 
-- (instancetype)init
-{
+- (instancetype)init{
     self = [super init];
     if (self) {
-        
-#pragma mark searchVoice Button
-        
         //Product More View
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(showSearchVoiceBtn:) name:@"SCHomeViewControllerViewWillAppear" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(showSearchVoiceBtn:) name:@"SCProductListViewControllerViewWillAppear" object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(searchVoicePad:) name:@"showSearchVoiceOnPad" object:nil];
-        [SimiGlobalVar sharedInstance].isSearchVoice = YES;
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initLeftItemsEnd:) name:@"SCNavigationBarPad-InitLeftItems-End" object:nil];
     }
     return self;
 }
 
-#pragma mark handles
-
--(void)searchVoicePad:(NSNotification *)noti {
-    padNoti = noti;
-    SCNavigationBarPad *naviPad = padNoti.object;
-    [naviPad.voiceSearchButton addTarget:self action:@selector(searchVoiceBtnHandle) forControlEvents:(UIControlEventTouchUpInside)];
+#pragma mark Notification Action
+- (void)initLeftItemsEnd:(NSNotification*)noti{
+    controller = [noti.userInfo valueForKey:@"controller"];
+    UIButton *voiceSearchButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 44, 44)];
+    [voiceSearchButton setImage:[[UIImage imageNamed:@"ic_small_micro"] imageWithColor:THEME_NAVIGATION_ICON_COLOR] forState:UIControlStateNormal];
+    [voiceSearchButton setImageEdgeInsets:UIEdgeInsetsMake(3, 3, 3, 3)];
+    [voiceSearchButton addTarget:self action:@selector(searchVoiceStart:) forControlEvents:UIControlEventTouchUpInside];
+    UIBarButtonItem *voiceSearchItem = [[UIBarButtonItem alloc] initWithCustomView:voiceSearchButton];
+    
+    UIBarButtonItem *itemSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
+    itemSpace.width = 20;
+    NSMutableArray *rightButtonItems = noti.object;
+    [rightButtonItems addObjectsFromArray:@[itemSpace,voiceSearchItem]];
 }
 
--(void)showSearchVoiceBtn:(NSNotification *)noti
-{
-    currentNoti = noti;
+- (void)showSearchVoiceBtn:(NSNotification *)noti{
+    viewController = noti.object;
     float insetPadding = [SimiGlobalVar scaleValue:5];
     if (PHONEDEVICE) {
         if ([noti.object isKindOfClass:[SCHomeViewController class]]) {
@@ -59,13 +61,13 @@
             [self.searchVoiceBtn setImageEdgeInsets:UIEdgeInsetsMake(insetPadding, insetPadding, insetPadding, insetPadding)];
             self.searchVoiceBtn.imageView.clipsToBounds = YES;
             self.searchVoiceBtn.enabled = YES;
-            [self.searchVoiceBtn addTarget:self action:@selector(searchVoiceBtnHandle) forControlEvents:(UIControlEventTouchUpInside)];
+            [self.searchVoiceBtn addTarget:self action:@selector(searchVoiceStart:) forControlEvents:(UIControlEventTouchUpInside)];
             [homeViewController.view addSubview:self.searchVoiceBtn];
         } else if ([noti.object isKindOfClass:[SCProductListViewController class]]) {
             SCProductListViewController *productListViewController = noti.object;
             [productListViewController.productSearchBar setFrame:[SimiGlobalVar scaleFrame:CGRectMake(5, 5, 310 - 28 - 5, 28)]];
             [productListViewController.searchBarBackground setFrame:productListViewController.productSearchBar.frame];
-            self.searchVoiceBtn = [[UIButton alloc] initWithFrame:[SimiGlobalVar scaleFrame:CGRectMake(282, 0, 38, 38)]];
+            self.searchVoiceBtn = [[UIButton alloc] initWithFrame:[SimiGlobalVar scaleFrame:CGRectMake(282, 0, 44, 44)]];
             self.searchVoiceBtn.backgroundColor = [UIColor clearColor];
             self.searchVoiceBtn.imageView.backgroundColor = THEME_SEARCH_BOX_BACKGROUND_COLOR;
             [self.searchVoiceBtn setAlpha:0.9f];
@@ -73,120 +75,95 @@
             [self.searchVoiceBtn setImageEdgeInsets:UIEdgeInsetsMake(insetPadding, insetPadding, insetPadding, insetPadding)];
             self.searchVoiceBtn.imageView.clipsToBounds = YES;
             self.searchVoiceBtn.enabled = YES;
-            [self.searchVoiceBtn addTarget:self action:@selector(searchVoiceBtnHandle) forControlEvents:(UIControlEventTouchUpInside)];
+            [self.searchVoiceBtn addTarget:self action:@selector(searchVoiceStart:) forControlEvents:(UIControlEventTouchUpInside)];
             [productListViewController.view addSubview:self.searchVoiceBtn];
         }
     }
 }
 
--(void)finishAction:(NSString *)result {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+#pragma mark SearchVoiceViewController Delegate
+- (void)finishAction:(NSString *)result {
+    if (PADDEVICE) {
         [self.searchVoicePadViewController dismissViewControllerAnimated:YES completion:nil];
+        if (controller.searchBar ==nil) {
+            controller.searchBar = [UISearchBar new];
+            controller.searchBar.placeholder = SCLocalizedString(@"Search");
+            for ( UIView * subview in [[controller.searchBar.subviews objectAtIndex:0] subviews] )
+            {
+                if ([subview isKindOfClass:NSClassFromString(@"UISearchBarTextField") ] ) {
+                    UITextField *searchView = (UITextField *)subview ;
+                    if ([[SimiGlobalVar sharedInstance] isReverseLanguage]) {
+                        [searchView setTextAlignment:NSTextAlignmentRight];
+                    }
+                }
+            }
+        }
+        
+        controller.searchBar.tintColor = THEME_SEARCH_TEXT_COLOR;
+        controller.searchBar.text = result;
+        [controller searchBarSearchButtonClicked:controller.searchBar];
     } else {
         [self.searchVoiceViewController dismissViewControllerAnimated:YES completion:nil];
-        if ([currentNoti.object isKindOfClass:[SCHomeViewController class]]) {
-            SCHomeViewController *homeViewController = currentNoti.object;
+        if ([viewController isKindOfClass:[SCHomeViewController class]]) {
+            SCHomeViewController *homeViewController = (SCHomeViewController *)viewController;
             homeViewController.searchBarHome.text = result;
             [homeViewController searchBarSearchButtonClicked:homeViewController.searchBarHome];
-        }else if ([currentNoti.object isKindOfClass:[SCProductListViewController class]]) {
-            SCProductListViewController *productListViewController = currentNoti.object;
+        }else if ([viewController isKindOfClass:[SCProductListViewController class]]) {
+            SCProductListViewController *productListViewController = (SCProductListViewController *)viewController;
             productListViewController.productSearchBar.text = result;
             [productListViewController searchBarSearchButtonClicked:productListViewController.productSearchBar];
         }
     }
 }
 
--(void)searchTextAction
-{
-    [self.searchVoiceViewController dismissViewControllerAnimated:YES completion:nil];
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        
-    } else {
-        if ([currentNoti.object isKindOfClass:[SCHomeViewController class]]) {
-            SCHomeViewController *homeViewController = currentNoti.object;
-            [homeViewController.searchBarHome becomeFirstResponder];
-        } else if ([currentNoti.object isKindOfClass:[SCProductListViewController class]]) {
-            SCProductListViewController *productListViewController = currentNoti.object;
-            [productListViewController.productSearchBar becomeFirstResponder];
-        }
+- (void)searchTextAction{
+    if (PHONEDEVICE) {
+        [self.searchVoiceViewController dismissViewControllerAnimated:YES completion:^{
+            if ([viewController isKindOfClass:[SCHomeViewController class]]) {
+                SCHomeViewController *homeViewController = (SCHomeViewController *)viewController;
+                [homeViewController.searchBarHome becomeFirstResponder];
+            } else if ([viewController isKindOfClass:[SCProductListViewController class]]) {
+                SCProductListViewController *productListViewController = (SCProductListViewController*)viewController;
+                [productListViewController.productSearchBar becomeFirstResponder];
+            }
+        }];
+    }else{
+        [self.searchVoicePadViewController dismissViewControllerAnimated:YES completion:^{
+            [controller didSelectSearchButton:controller.searchBar];
+        }];
     }
 }
 
--(void)tryAgainAction {
+- (void)tryAgainAction {
     
 }
 
--(void)cancelAction {
-    [self.searchVoiceViewController dismissViewControllerAnimated:YES completion:nil];
+- (void)cancelAction {
+    if (PHONEDEVICE) {
+        [self.searchVoiceViewController dismissViewControllerAnimated:YES completion:nil];
+    }else{
+        [self.searchVoicePadViewController dismissViewControllerAnimated:YES completion:nil];
+    }
 }
 
--(void)searchVoiceBtnHandle
-{
-    // check pad or phone
+- (void)searchVoiceStart:(UIButton*)sender{
     if (PADDEVICE) {
         if (self.searchVoicePadViewController == nil) {
             self.searchVoicePadViewController = [[SCSearchVoicePadViewController alloc] init];
         }
         self.searchVoicePadViewController.delegate = self;
-        UIViewController *currentVC = [(UITabBarController *)[[(SCAppDelegate *)[[UIApplication sharedApplication]delegate] window] rootViewController] selectedViewController];
-        UIViewController *viewController = [[(UINavigationController *)currentVC viewControllers] lastObject];
-        for (UIViewController *viewControllerTemp in viewController.navigationController.viewControllers) {
-            if ([viewControllerTemp isKindOfClass:[SCCartViewControllerPad class]]) {
-                [viewControllerTemp.navigationController popToViewController:viewControllerTemp animated:YES];
-                return;
-            }
-        }
-        [(UINavigationController *)currentVC presentViewController:self.searchVoicePadViewController animated:YES completion:nil];
+        [[SimiGlobalVar sharedInstance].currentlyNavigationController presentViewController:self.searchVoicePadViewController animated:YES completion:nil];
     } else {
-        SimiViewController *currentViewController = currentNoti.object;
+        SimiViewController *currentViewController = viewController;
         if (self.searchVoiceViewController == nil) {
             self.searchVoiceViewController = [[SCSearchVoiceViewController alloc] init];
         }
         self.searchVoiceViewController.delegate = self;
         [currentViewController presentViewController:self.searchVoiceViewController animated:YES completion:nil];
     }
-    
-}
-// implement pad delegate
--(void)iPadFinishAction:(NSString *)result {
-    [self.searchVoicePadViewController dismissViewControllerAnimated:YES completion:nil];
-    SCNavigationBarPad *naviPad = padNoti.object;
-    if (naviPad.searchBar ==nil) {
-        naviPad.searchBar = [UISearchBar new];
-        naviPad.searchBar.placeholder = SCLocalizedString(@"Search");
-        for ( UIView * subview in [[naviPad.searchBar.subviews objectAtIndex:0] subviews] )
-        {
-            if ([subview isKindOfClass:NSClassFromString(@"UISearchBarTextField") ] ) {
-                UITextField *searchView = (UITextField *)subview ;
-                if ([[SimiGlobalVar sharedInstance] isReverseLanguage]) {
-                    [searchView setTextAlignment:NSTextAlignmentRight];
-                }
-            }
-        }
-    }
-    
-    naviPad.searchBar.tintColor = THEME_SEARCH_TEXT_COLOR;
-    naviPad.searchBar.text = result;
-    [naviPad searchBarSearchButtonClicked:naviPad.searchBar];
 }
 
--(void)iPadSearchTextAction
-{
-    [self.searchVoicePadViewController dismissViewControllerAnimated:YES completion:nil];
-    SCNavigationBarPad *naviPad = padNoti.object;
-    [naviPad didSelectSearchButton:naviPad.searchBar];
-}
-
--(void)iPadTryAgainAction {
-    
-}
-
--(void)iPadCancelAction {
-    [self.searchVoicePadViewController dismissViewControllerAnimated:YES completion:nil];
-}
-
-- (void)dealloc
-{
+- (void)dealloc{
     [[NSNotificationCenter defaultCenter]removeObserver:self];
 }
 

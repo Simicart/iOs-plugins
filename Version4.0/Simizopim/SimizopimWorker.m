@@ -18,28 +18,26 @@
 
 @implementation SimizopimWorker
 {
-    NSMutableArray * cells;
+    NSMutableArray *cells;
 }
 
 - (instancetype)init{
     self = [super init];
     if (self) {
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didTapChatButton) name:@"tapToChatButton" object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"SCLeftMenu_InitCellsAfter" object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"SCLeftMenu_DidSelectRow" object:nil];
         self.zoPimConfig = [[SimiGlobalVar sharedInstance].allConfig valueForKeyPath:@"zopim_config"];
         NSString *enable = [self.zoPimConfig valueForKey:@"enable"];
         if ([enable isEqualToString:@"1"]) {
-            [SimiGlobalVar sharedInstance].isZopimChat = YES;
-        } else {
-            [SimiGlobalVar sharedInstance].isZopimChat = NO;
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"SCLeftMenu_InitCellsAfter" object:nil];
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"SCLeftMenu_DidSelectRow" object:nil];
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initRightItemsEnd:) name:@"SCNavigationBarPhone-InitRightItems-End" object:nil];
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initLeftItemsEnd:) name:@"SCNavigationBarPad-InitLeftItems-End" object:nil];
         }
     }
     return self;
 }
 
 - (void)didReceiveNotification:(NSNotification *)noti{
-    if([noti.name isEqualToString:@"SCLeftMenu_InitCellsAfter"] && [SimiGlobalVar sharedInstance].isZopimChat){
+    if([noti.name isEqualToString:@"SCLeftMenu_InitCellsAfter"]){
         cells = noti.object;
         for (int i = 0; i < cells.count; i++) {
             SimiSection *section = [cells objectAtIndex:i];
@@ -57,12 +55,32 @@
         if ([row.identifier isEqualToString:LEFTMENU_ROW_CHAT]) {
             SCNavigationBarPhone *navi = noti.object;
             navi.isDiscontinue = YES;
-            [self didTapChatButton];
+            [self didSelectChatBarItem:nil];
         }
     }
 }
 
-- (void)didTapChatButton{
+- (void)initRightItemsEnd:(NSNotification*)noti{
+    UIButton *chatButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 32, 32)];
+    [chatButton setImage:[[UIImage imageNamed:@"ic_livechat"] imageWithColor:THEME_NAVIGATION_ICON_COLOR] forState:UIControlStateNormal];
+    [chatButton addTarget:self action:@selector(didSelectChatBarItem:) forControlEvents:UIControlEventTouchUpInside];
+    UIBarButtonItem *chatItem = [[UIBarButtonItem alloc] initWithCustomView:chatButton];
+    NSMutableArray *rightButtonItems = noti.object;
+    [rightButtonItems addObject:chatItem];
+}
+
+- (void)initLeftItemsEnd:(NSNotification*)noti{
+    UIBarButtonItem *itemSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
+    itemSpace.width = 20;
+    UIButton *chatButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 32, 32)];
+    [chatButton setImage:[[UIImage imageNamed:@"ic_livechat"] imageWithColor:THEME_NAVIGATION_ICON_COLOR] forState:UIControlStateNormal];
+    [chatButton addTarget:self action:@selector(didSelectChatBarItem:) forControlEvents:UIControlEventTouchUpInside];
+    UIBarButtonItem *chatItem = [[UIBarButtonItem alloc] initWithCustomView:chatButton];
+    NSMutableArray *rightButtonItems = noti.object;
+    [rightButtonItems addObjectsFromArray:@[itemSpace,chatItem]];
+}
+
+- (void)didSelectChatBarItem:(UIButton*)sender{
     NSString *accountKey = [self.zoPimConfig valueForKey:@"account_key"];
     NSString *showProfile = [self.zoPimConfig valueForKey:@"show_profile"];
     if ([showProfile isEqualToString:@"0"]) {

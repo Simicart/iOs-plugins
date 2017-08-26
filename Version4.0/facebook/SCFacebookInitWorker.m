@@ -15,7 +15,6 @@
 #import <Bolts/Bolts.h>
 
 //Product More View notifications
-#define SCProductMoreViewController_ViewDidLoadBefore @"SCProductViewMoreController-ViewDidLoadBefore"
 #define SCProductMoreViewController_InitViewMoreAction @"SCProductMoreViewController_InitViewMoreAction"
 #define SCProductMoreViewController_BeforeTouchMoreAction @"SCProductMoreViewController-BeforeTouchMoreAction"
 //Login view controller notifications
@@ -45,10 +44,7 @@
     UIView* fbView;
     UIButton* fbButton;
     BOOL isShowFacebookView;
-//    UIActivityIndicatorView* activityView;
     UIWebView* commentWebView;
-//    NSString* commentHTMLString;
-//    UIButton* btnClearAllFacebookCookies;
     NSString* productURL;
 }
 -(id) init{

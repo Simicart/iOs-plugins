@@ -10,9 +10,7 @@
 #import "SCSearchVoiceViewController.h"
 
 @interface SCSearchVoiceViewController () {
-    // lionel added
-    AVAudioRecorder *recorder;
-    SpeechToTextModule *module;
+    
 }
 
 @end
@@ -44,7 +42,7 @@
     recorder.delegate = self;
     recorder.meteringEnabled = YES;
     [recorder prepareToRecord];
-    self.recordStatusLb.text = @"Say something to looking for...";
+    self.recordStatusLb.text = SCLocalizedString(@"Say something to looking for...");
     self.recordingButton.enabled = YES;
     [self.recordingButton setImage:[UIImage imageNamed:@"recording"] forState:(UIControlStateNormal)];
     self.recordingButton.hidden = NO;
@@ -144,7 +142,7 @@
 }
 
 - (void)tryRecordBtnHandle {
-    self.recordStatusLb.text = @"Say something to looking for...";
+    self.recordStatusLb.text = SCLocalizedString(@"Say something to looking for...");
     self.recordingButton.enabled = YES;
     [self.recordingButton setImage:[UIImage imageNamed:@"recording"] forState:(UIControlStateNormal)];
     self.recordingButton.hidden = NO;
@@ -169,8 +167,7 @@
 
 - (BOOL)didReceiveVoiceResponse:(NSData *)data {
     NSString *string = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-    NSRange needleRange = NSMakeRange(14,
-                                      string.length - 14);
+    NSRange needleRange = NSMakeRange(14, string.length - 14);
     NSString *needle = [string substringWithRange:needleRange];
     if (needle != nil && ![needle isEqualToString:@""]) {
         NSData* newData = [needle dataUsingEncoding:NSUTF8StringEncoding];
@@ -183,6 +180,9 @@
         NSArray *resultArray = [resultDic objectForKey:@"alternative"];
         NSNumber *resultIndex = [responseDict valueForKey:@"result_index"];
         NSString *stringResult = [[resultArray objectAtIndex:[resultIndex integerValue]] valueForKey:@"transcript"];
+        if (PADDEVICE) {
+             [self.navigationController popViewControllerAnimated:NO];
+        }
         [self.delegate finishAction:stringResult];
     } else {
         self.recordStatusLb.text = @"We didn't quite get that";

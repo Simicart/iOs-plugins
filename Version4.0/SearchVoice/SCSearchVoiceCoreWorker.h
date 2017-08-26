@@ -10,7 +10,7 @@
 #import "SCSearchVoiceViewController.h"
 #import "SCSearchVoicePadViewController.h"
 
-@interface SCSearchVoiceCoreWorker : NSObject<SCSearchVoiceViewControllerDelegate, SCSearchVoicePadViewControllerDelegate>
+@interface SCSearchVoiceCoreWorker : NSObject<SCSearchVoiceViewControllerDelegate>
 
 @property (strong, nonatomic) SCSearchVoiceViewController *searchVoiceViewController;
 @property (strong, nonatomic) SCSearchVoicePadViewController *searchVoicePadViewController;

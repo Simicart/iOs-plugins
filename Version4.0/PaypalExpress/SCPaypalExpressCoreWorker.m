@@ -27,7 +27,7 @@ static NSString *product_paypalcheckout_row = @"product_paypalcheckout_row";
         
         //add button to cart
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didChangeCart:) name:@"DidChangeCart" object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didChangeCart:) name:@"SCCartViewControllerViewDidAppearBeforeComplete" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didChangeCart:) name:@"SCCartViewControllerViewDidAppear" object:nil];
         
         //open webview after placed Order
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didPlaceOrderBefore:) name:@"DidPlaceOrder-Before" object:nil];
