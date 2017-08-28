@@ -394,7 +394,6 @@
             SimiRow *inviteRow = [[SimiRow alloc]initWithIdentifier:LEFTMENU_ROW_FACEBOOK_INVITE height:50 sortOrder:9999];
             inviteRow.image = [UIImage imageNamed:@"facebook_invite"];
             inviteRow.title = SCLocalizedString(@"Invite Friends");
-            inviteRow.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
             [moreSection addObject:inviteRow];
         }
     }

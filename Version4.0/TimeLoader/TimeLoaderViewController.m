@@ -21,7 +21,7 @@
 
 -(void)viewDidLoadBefore{
     [super viewDidLoadBefore];
-    timeLoaderTable = [[SimiTableView alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT) style:UITableViewStyleGrouped];
+    timeLoaderTable = [[SimiTableView alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT - 64) style:UITableViewStyleGrouped];
     timeLoaderTable.delegate = self;
     timeLoaderTable.dataSource = self;
     [self.view addSubview:timeLoaderTable];

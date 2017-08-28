@@ -45,7 +45,6 @@
                 SimiRow *row = [[SimiRow alloc]initWithIdentifier:LEFTMENU_ROW_CHAT height:50 sortOrder:80];
                 row.image = [UIImage imageNamed:@"ic_livechat"];
                 row.title = SCLocalizedString(@"Live Chat");
-                row.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
                 [section addObject:row];
                 [section sortItems];
             }

@@ -39,7 +39,6 @@
             SimiRow *row = [[SimiRow alloc]initWithIdentifier:LEFTMENU_ROW_STORELOCATOR height:50 sortOrder:60];
             row.image = [UIImage imageNamed:@"storelocator_locator"];
             row.title = SCLocalizedString(@"Store Locator");
-            row.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
             [section addObject:row];
             [section sortItems];
         }

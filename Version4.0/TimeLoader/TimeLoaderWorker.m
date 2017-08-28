@@ -15,12 +15,15 @@
 #import <SimiCartBundle/SCNavigationBarPad.h>
 #import "TimeLoaderViewController.h"
 #import "CategoryTimeLoaderViewController.h"
-static NSString *stringKeyTimeLoader = @"stringKeyTimeLoader";
+
 @implementation TimeLoaderWorker
 {
     SimiTable *cells;
     NSMutableDictionary *dictResult;
     NSMutableDictionary *dictStart;
+    
+    NSMutableDictionary *dictViewResult;
+    NSMutableDictionary *dictViewStart;
 }
 
 - (instancetype)init
@@ -32,11 +35,20 @@ static NSString *stringKeyTimeLoader = @"stringKeyTimeLoader";
             dictResult = [NSMutableDictionary new];
         }
         dictStart = [NSMutableDictionary new];
+        
+        dictViewResult = [[NSMutableDictionary alloc]initWithDictionary:[[NSUserDefaults standardUserDefaults]objectForKey:VIEW_TIME_LOADER]];
+        if(dictViewResult == nil) {
+            dictViewResult = [NSMutableDictionary new];
+        }
+        dictViewStart = [NSMutableDictionary new];
+        
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initCellsAfter:) name:@"SCLeftMenu_InitCellsAfter" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didSelectRow:) name:@"SCLeftMenu_DidSelectRow" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didStopTimeLoader:) name:@"TimeLoaderStop" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didStartTimeLoader:) name:@"TimeLoaderStart" object:nil];
         
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(startOpenView:) name:StartOpenView object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(finishLoadView:) name:FinishLoadView object:nil];
     }
     return self;
 }
@@ -64,7 +76,7 @@ static NSString *stringKeyTimeLoader = @"stringKeyTimeLoader";
         UIViewController *currentVC = [(UITabBarController *)[[(SCAppDelegate *)[[UIApplication sharedApplication] delegate] window] rootViewController] selectedViewController];
         CategoryTimeLoaderViewController *categoryTimeLoaderViewController = [[CategoryTimeLoaderViewController alloc]init];
         categoryTimeLoaderViewController.dictAPIDataTimeLoader = dictResult;
-        categoryTimeLoaderViewController.dictAPIScreenDataTimeLoader = nil;
+        categoryTimeLoaderViewController.dictAPIScreenDataTimeLoader = dictViewResult;
         [(UINavigationController *)currentVC pushViewController:categoryTimeLoaderViewController animated:YES];
         [[NSUserDefaults standardUserDefaults]setObject:dictResult forKey:stringKeyTimeLoader];
         [[NSUserDefaults standardUserDefaults] synchronize];
@@ -96,6 +108,32 @@ static NSString *stringKeyTimeLoader = @"stringKeyTimeLoader";
     NSNumber *duration = [NSNumber numberWithDouble:(methodStop - [[dictStart valueForKey:string] doubleValue])];
     [arrayResultForAPI addObject:duration];
     [dictResult setObject:arrayResultForAPI forKey:string];
+}
+
+- (void)startOpenView: (NSNotification *)noti {
+    NSString *string = [noti object];
+    double methodStart = [[NSDate date] timeIntervalSince1970];
+    [dictViewStart setValue:[NSNumber numberWithDouble:methodStart] forKey:string];
+}
+
+- (void)finishLoadView: (NSNotification *)noti {
+    NSString *string = [noti object];
+    NSMutableArray *arrayResultForAPI = nil;
+    BOOL hasArrayForKey = NO;
+    for(NSString* key in [dictViewResult allKeys]){
+        if([key isEqualToString:string]){
+            arrayResultForAPI = [[NSMutableArray alloc]initWithArray:[dictViewResult objectForKey:string]];
+            hasArrayForKey = YES;
+            break;
+        }
+    }
+    if (!hasArrayForKey) {
+        arrayResultForAPI = [NSMutableArray new];
+    }
+    double methodStop = [[NSDate date] timeIntervalSince1970];
+    NSNumber *duration = [NSNumber numberWithDouble:(methodStop - [[dictViewStart valueForKey:string] doubleValue])];
+    [arrayResultForAPI addObject:duration];
+    [dictViewResult setObject:arrayResultForAPI forKey:string];
 }
 
 - (void)dealloc
