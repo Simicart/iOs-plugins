@@ -8,9 +8,9 @@
 
 #import "BraintreeInitWorker.h"
 #import <SimiCartBundle/SimiOrderModel.h>
+#import <SimiCartBundle/SCThankYouPageViewController.h>
 #import "SimiBraintreeModel.h"
 #import "BraintreeDropIn.h"
-#import "SCThankYouPageViewController.h"
 
 #define DidSelectPaymentMethod @"DidSelectPaymentMethod"
 #define DidPlaceOrderAfter @"DidPlaceOrder-After"
