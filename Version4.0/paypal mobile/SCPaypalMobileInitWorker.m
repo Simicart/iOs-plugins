@@ -89,8 +89,9 @@
         }
         
         PayPalConfiguration *_payPalConfig = [[PayPalConfiguration alloc] init];
-        _payPalConfig.acceptCreditCards = YES;
+        _payPalConfig.acceptCreditCards = [[payment objectForKey:@"use_credit_card"] boolValue];
         _payPalConfig.languageOrLocale = LOCALE_IDENTIFIER;
+        _payPalConfig.payPalShippingAddressOption = PayPalShippingAddressOptionBoth;
         
         PayPalPayment *pay = [[PayPalPayment alloc] init];
         pay.amount = [[NSDecimalNumber alloc] initWithString:[NSString stringWithFormat:@"%@",[fee valueForKey:@"grand_total_incl_tax"]]];
@@ -98,6 +99,7 @@
         pay.bnCode = bnCode;
         pay.shortDescription = [NSString stringWithFormat:@"%@ #: %@", SCLocalizedString(@"Invoice"), [order valueForKey:@"invoice_number"]];
         pay.intent = PayPalPaymentIntentSale;
+        
         if ([[payment valueForKey:@"payment_action"] isEqualToString:@"order"]) {
             pay.intent = PayPalPaymentIntentOrder;
         }else if([[payment valueForKey:@"payment_action"] isEqualToString:@"authorization"])
@@ -105,10 +107,19 @@
             pay.intent = PayPalPaymentIntentAuthorize;
         }
         
+        NSDictionary *shippingAddress = [order objectForKey:@"shipping_address"];
+        PayPalShippingAddress *paypalShippingAddress = [[PayPalShippingAddress alloc] init];
+        paypalShippingAddress.city = [shippingAddress objectForKey:@"city"];
+        paypalShippingAddress.countryCode = [shippingAddress objectForKey:@"country_id"];
+        paypalShippingAddress.recipientName = [NSString stringWithFormat:@"%@ %@",[shippingAddress objectForKey:@"firstname"],[shippingAddress objectForKey:@"lastname"]];
+        paypalShippingAddress.postalCode = [shippingAddress objectForKey:@"postcode"];
+        paypalShippingAddress.state = [shippingAddress objectForKey:@"region"];
+        paypalShippingAddress.line1 = [shippingAddress objectForKey:@"street"];
+        pay.shippingAddress = paypalShippingAddress;
+        
         // Check whether payment is processable.
         if (pay.processable) {
-            PayPalPaymentViewController *paymentViewController;
-            paymentViewController = [[PayPalPaymentViewController alloc] initWithPayment:pay configuration:_payPalConfig delegate:self];
+            PayPalPaymentViewController *paymentViewController = [[PayPalPaymentViewController alloc] initWithPayment:pay configuration:_payPalConfig delegate:self];
             
             // Present the PayPalPaymentViewController.
             if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 7.0) {
@@ -167,6 +178,10 @@
         [[UINavigationBar appearance] setTintColor:[UIColor whiteColor]];
     }];
     [viewController startLoadingData];
+}
+
+- (void)payPalPaymentViewController:(PayPalPaymentViewController *)paymentViewController willCompletePayment:(PayPalPayment *)completedPayment completionBlock:(PayPalPaymentDelegateCompletionBlock)completionBlock {
+    
 }
 
 #pragma mark Proof of payment validation

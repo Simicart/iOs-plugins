@@ -253,11 +253,11 @@ static NSString *LEFTMENU_REWARDS_ROW     = @"leftmenu_rewards";
                 if (row.identifier == ACCOUNT_REWARDS_ROW)
                     return;
             }
-            SimiRow *wishlistRow = [[SimiRow alloc]initWithIdentifier:ACCOUNT_REWARDS_ROW height:rowHeight sortOrder:310];
-            wishlistRow.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-            wishlistRow.title = SCLocalizedString(@"My Rewards");
-            wishlistRow.image = [UIImage imageNamed:@"loyalty_reward"];
-            [section addRow:wishlistRow];
+            SimiRow *loyaltyRow = [[SimiRow alloc]initWithIdentifier:ACCOUNT_REWARDS_ROW height:rowHeight sortOrder:310];
+            loyaltyRow.title = SCLocalizedString(@"My Rewards");
+            loyaltyRow.image = [UIImage imageNamed:@"loyalty_reward"];
+            loyaltyRow.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+            [section addRow:loyaltyRow];
             [section sortItems];
         }
     }
@@ -289,10 +289,10 @@ static NSString *LEFTMENU_REWARDS_ROW     = @"leftmenu_rewards";
                         return;
                 }
                 
-                SimiRow *wishlistRow = [[SimiRow alloc]initWithIdentifier:LEFTMENU_REWARDS_ROW height:rowHeight sortOrder:310];
-                wishlistRow.title = SCLocalizedString(@"My Rewards");
-                wishlistRow.image = [UIImage imageNamed:@"loyalty_reward_invert"];
-                [section addRow:wishlistRow];
+                SimiRow *loyaltyRow = [[SimiRow alloc]initWithIdentifier:LEFTMENU_REWARDS_ROW height:rowHeight sortOrder:310];
+                loyaltyRow.title = SCLocalizedString(@"My Rewards");
+                loyaltyRow.image = [UIImage imageNamed:@"loyalty_reward_invert"];
+                [section addRow:loyaltyRow];
                 [section sortItems];
             }
         }

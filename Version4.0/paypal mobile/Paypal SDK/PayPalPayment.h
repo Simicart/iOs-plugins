@@ -1,7 +1,7 @@
 //
 //  PayPalPayment.h
 //
-//  Version 2.15.1
+//  Version 2.17.0
 //
 //  Copyright (c) 2014-2016 PayPal, Inc. All rights reserved.
 //  All rights reserved.
@@ -24,7 +24,7 @@ typedef NS_ENUM(NSInteger, PayPalPaymentIntent) {
 /// @see https://developer.paypal.com/webapps/developer/docs/api/#details-object for more details.
 @interface PayPalPaymentDetails : NSObject <NSCopying>
 
-/// Convenience constructor.
+/// Convenience constructor. NSDecimalNumber parameters must be initialized using a string value.
 /// See the documentation of the individual properties for more detail.
 /// @param subtotal Sum of amounts for all items in this transaction.
 /// @param shipping Shipping and handling amount for the overall transaction.
@@ -51,7 +51,7 @@ typedef NS_ENUM(NSInteger, PayPalPaymentIntent) {
 /// @see https://developer.paypal.com/docs/api/#item-object for more details.
 @interface PayPalItem : NSObject <NSCopying>
 
-/// Convenience constructor.
+/// Convenience constructor. NSDecimalNumber parameters must be initialized using a string value.
 /// See the documentation of the individual properties for more detail.
 /// @param name Name of the item.
 /// @param quantity Number of units.
@@ -138,7 +138,7 @@ typedef NS_ENUM(NSInteger, PayPalPaymentIntent) {
 
 @interface PayPalPayment : NSObject <NSCopying>
 
-/// Convenience constructor.
+/// Convenience constructor. NSDecimalNumber parameters must be initialized using a string value.
 /// See the documentation of the individual properties for more detail.
 /// @param amount The amount of the payment.
 /// @param currencyCode The ISO 4217 currency for the payment.
@@ -205,6 +205,9 @@ typedef NS_ENUM(NSInteger, PayPalPaymentIntent) {
 
 /// Optional text which will appear on the customer's credit card statement. (up to 22 characters)
 @property (nullable, nonatomic, copy, readwrite) NSString *softDescriptor;
+
+/// Optional third-party receiver for single payments. When specified, payments will be sent to this receiver, instead of the account of the provided client_id.
+@property (nullable, nonatomic, copy, readwrite) NSString *payeeEmail;
 
 /// Optional Build Notation code ("BN code"), obtained from partnerprogram@paypal.com,
 /// for your tracking purposes.
