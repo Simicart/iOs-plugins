@@ -23,15 +23,14 @@
 {
     self = [super init];
     if (self) {
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initCellsAfter:) name:@"SCLeftMenu_InitCellsAfter" object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didSelectRow:) name:@"SCLeftMenu_DidSelectRow" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initCellsAfter:) name:Simi_SCLeftMenuViewControler_InitCells_End object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didSelectRow:) name:Simi_SCLeftMenuViewControler_DidSelectCell object:nil];
     }
     [GMSServices provideAPIKey:@"AIzaSyAmBe73HHr9CU1lYU96CFg6PTwG2i6NDwU"];
     return self;
 }
 
-- (void)initCellsAfter:(NSNotification*)noti
-{
+- (void)initCellsAfter:(NSNotification*)noti{
     cells = noti.object;
     for (int i = 0; i < cells.count; i++) {
         SimiSection *section = [cells objectAtIndex:i];
@@ -46,20 +45,21 @@
     }
 }
 
-- (void)didSelectRow:(NSNotification*)noti
-{
-    SimiRow *row = [noti.userInfo valueForKey:@"simirow"];
+- (void)didSelectRow:(NSNotification*)noti{
+    NSIndexPath *indexPath = [noti.userInfo valueForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.indexpath];
+    cells = noti.object;
+    SimiSection *section = [cells objectAtIndex:indexPath.section];
+    SimiRow *row = [section objectAtIndex:indexPath.row];
     SCNavigationBarPhone *navi = noti.object;
     if ([row.identifier isEqualToString:LEFTMENU_ROW_STORELOCATOR]) {
+        UINavigationController *navigationController = kNavigationController;
         if (PADDEVICE) {
-            UIViewController *currentVC = [(UITabBarController *)[[(SCAppDelegate *)[[UIApplication sharedApplication] delegate] window] rootViewController] selectedViewController];
             SimiStoreLocatorViewControllerPad *storeLocatorViewController = [[SimiStoreLocatorViewControllerPad alloc]init];
-            [(UINavigationController *)currentVC pushViewController:storeLocatorViewController animated:YES];
+            [navigationController pushViewController:storeLocatorViewController animated:YES];
         }else
         {
-            UIViewController *currentVC = [(UITabBarController *)[[(SCAppDelegate *)[[UIApplication sharedApplication] delegate] window] rootViewController] selectedViewController];
             SimiStoreLocatorViewController *storeLocatorViewController = [[SimiStoreLocatorViewController alloc]init];
-            [(UINavigationController *)currentVC pushViewController:storeLocatorViewController animated:YES];
+            [navigationController pushViewController:storeLocatorViewController animated:YES];
         }
         navi.isDiscontinue = YES;
     }

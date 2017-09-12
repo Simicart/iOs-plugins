@@ -29,7 +29,7 @@
                 back.skipReloadData = NO;
                 [self.navigationController popViewControllerAnimated:YES];
             } else {
-                 UINavigationController *currentVC = (UINavigationController*)[(UITabBarController *)[[(SCAppDelegate *)[[UIApplication sharedApplication]delegate] window] rootViewController] selectedViewController];
+                 UINavigationController *currentVC = kNavigationController;
                 [currentVC pushViewController:[LoyaltyViewController new] animated:YES];
             }
         }

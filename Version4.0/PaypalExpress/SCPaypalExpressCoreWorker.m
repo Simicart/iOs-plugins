@@ -220,11 +220,10 @@ static NSString *product_paypalcheckout_row = @"product_paypalcheckout_row";
 }
 
 
--(void)startPaypalCheckout
-{
-    UIViewController *currentVC = [(UITabBarController *)[[(SCAppDelegate *)[[UIApplication sharedApplication]delegate] window] rootViewController] selectedViewController];
+-(void)startPaypalCheckout{
+    UINavigationController *currentVC = kNavigationController;
     webViewController = [SCPaypalExpressWebViewController new];
-    [(UINavigationController *)currentVC pushViewController:webViewController animated:YES];
+    [currentVC pushViewController:webViewController animated:YES];
 }
 
 

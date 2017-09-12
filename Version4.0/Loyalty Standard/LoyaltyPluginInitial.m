@@ -48,8 +48,8 @@ static NSString *LEFTMENU_REWARDS_ROW     = @"leftmenu_rewards";
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didSelectAccountCellAtIndexPath:) name:@"DidSelectAccountCellAtIndexPath" object:nil];
         
         //Left Menu
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(listMenuInitCellsAfter:) name:@"SCLeftMenu_InitCellsAfter" object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(listMenuDidSelectRow:) name:@"SCLeftMenu_DidSelectRow" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(listMenuInitCellsAfter:) name:Simi_SCLeftMenuViewControler_InitCells_End object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(listMenuDidSelectRow:) name:Simi_SCLeftMenuViewControler_DidSelectCell object:nil];
         
         //Product Info View
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(productInforViewSetInterfacecellAfter:) name:@"SCProductInforViewSetInterfacecell_After" object:nil];
@@ -288,22 +288,24 @@ static NSString *LEFTMENU_REWARDS_ROW     = @"leftmenu_rewards";
                         return;
                 }
                 
-                SimiRow *wishlistRow = [[SimiRow alloc]initWithIdentifier:LEFTMENU_REWARDS_ROW height:rowHeight sortOrder:310];
-                wishlistRow.title = SCLocalizedString(@"My Rewards");
-                wishlistRow.image = [UIImage imageNamed:@"loyalty_reward_invert"];
-                [section addRow:wishlistRow];
+                SimiRow *rewardsRow = [[SimiRow alloc]initWithIdentifier:LEFTMENU_REWARDS_ROW height:rowHeight sortOrder:310];
+                rewardsRow.title = SCLocalizedString(@"My Rewards");
+                rewardsRow.image = [UIImage imageNamed:@"loyalty_reward_invert"];
+                [section addRow:rewardsRow];
                 [section sortItems];
             }
         }
     }
 }
 
--(void)listMenuDidSelectRow:(NSNotification *)noti
-{
-    
-    if ([(SimiRow *)[noti.userInfo objectForKey:@"simirow"] identifier] == LEFTMENU_REWARDS_ROW) {
-        UIViewController *currentVC = [(UITabBarController *)[[(SCAppDelegate *)[[UIApplication sharedApplication]delegate] window] rootViewController] selectedViewController];
+-(void)listMenuDidSelectRow:(NSNotification *)noti{
+    SimiTable *cells = noti.object;
+    NSIndexPath *indexPath = [noti.userInfo valueForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.indexpath];
+    SimiSection *section = [cells objectAtIndex:indexPath.section];
+    SimiRow *row = [section objectAtIndex:indexPath.row];
+    if ([row.identifier isEqualToString:LEFTMENU_REWARDS_ROW]) {
         LoyaltyViewController *loyalty = [LoyaltyViewController new];
+        UINavigationController *currentVC = kNavigationController;
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             UINavigationController *navi = [[UINavigationController alloc]initWithRootViewController:loyalty];
             navi.modalPresentationStyle = UIModalPresentationPopover;
@@ -314,7 +316,7 @@ static NSString *LEFTMENU_REWARDS_ROW     = @"leftmenu_rewards";
             [currentVC presentViewController:navi animated:YES completion:nil];
         }
         else
-            [(UINavigationController *)currentVC pushViewController:loyalty animated:YES];
+            [currentVC pushViewController:loyalty animated:YES];
         [(SCNavigationBarPhone*)noti.object setIsDiscontinue:YES];
     }
 }

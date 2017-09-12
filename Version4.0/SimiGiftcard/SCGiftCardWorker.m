@@ -22,8 +22,8 @@ static NSString *ACCOUNT_GIFTCARD_ROW = @"ACCOUNT_GIFTCARD_ROW";
 - (instancetype)init{
     self = [super init];
     if (self) {
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(leftmenuInitCellsAfter:) name:@"SCLeftMenu_InitCellsAfter" object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(leftmenuDidSelectRow:) name:@"SCLeftMenu_DidSelectRow" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(leftmenuInitCellsAfter:) name:Simi_SCLeftMenuViewControler_InitCells_End object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(leftmenuDidSelectRow:) name:Simi_SCLeftMenuViewControler_DidSelectCell object:nil];
         self.giftCardOnCartWorker = [[SCGiftCardOnCartWorker alloc] init];
         self.giftCardOnOrderWorker = [[SCGiftCardOnOrderWorker alloc] init];
         
@@ -59,7 +59,10 @@ static NSString *ACCOUNT_GIFTCARD_ROW = @"ACCOUNT_GIFTCARD_ROW";
 }
 
 - (void)leftmenuDidSelectRow:(NSNotification*)noti{
-    SimiRow *row = [noti.userInfo valueForKey:@"simirow"];
+    NSIndexPath *indexPath = [noti.userInfo valueForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.indexpath];
+    cells = noti.object;
+    SimiSection *section = [cells objectAtIndex:indexPath.section];
+    SimiRow *row = [section objectAtIndex:indexPath.row];
     if ([row.identifier isEqualToString:LEFTMENU_ROW_GIFTCARD]) {
         SCGiftCardProductsViewController *giftCardProductViewController = [SCGiftCardProductsViewController new];
         [[SimiGlobalVar sharedInstance].currentlyNavigationController pushViewController:giftCardProductViewController animated:YES];
