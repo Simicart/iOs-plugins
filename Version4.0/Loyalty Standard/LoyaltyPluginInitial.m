@@ -44,8 +44,8 @@ static NSString *LEFTMENU_REWARDS_ROW     = @"leftmenu_rewards";
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"InitializedCartCell-Before" object:nil];
         
         //My Account Screen
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializedAccountCellAfter:) name:@"SCAccountViewController-InitCellsAfter" object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didSelectAccountCellAtIndexPath:) name:@"DidSelectAccountCellAtIndexPath" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializedAccountCellAfter:) name:Simi_SCAccountViewController_InitCells_End object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didSelectAccountCellAtIndexPath:) name:Simi_SCAccountViewController_DidSelectCell object:nil];
         
         //Left Menu
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(listMenuInitCellsAfter:) name:Simi_SCLeftMenuViewControler_InitCells_End object:nil];
@@ -57,7 +57,7 @@ static NSString *LEFTMENU_REWARDS_ROW     = @"leftmenu_rewards";
         // Spend Point when Checkout
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orderViewControllerViewDidLoad:) name:@"SCOrderViewControllerViewDidLoad" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:Simi_DidGetOrderConfig object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"Simi_DidSetCouponCode" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:Simi_DidSetCouponCode object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:Simi_DidSaveShippingMethod object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"DidSpendPointsOrder" object:nil];
         
@@ -239,8 +239,7 @@ static NSString *LEFTMENU_REWARDS_ROW     = @"leftmenu_rewards";
 }
 
 #pragma mark Add to My Account Screen
--(void)initializedAccountCellAfter:(NSNotification *)noti
-{
+-(void)initializedAccountCellAfter:(NSNotification *)noti{
     NSArray * cells = noti.object;
     for (SimiSection *section in cells) {
         if (section.identifier != ACCOUNT_MAIN_SECTION)
@@ -262,10 +261,13 @@ static NSString *LEFTMENU_REWARDS_ROW     = @"leftmenu_rewards";
     }
 }
 
--(void)didSelectAccountCellAtIndexPath:(NSNotification *)noti
-{
-    if ([(SimiRow *)noti.object identifier] == ACCOUNT_REWARDS_ROW) {
-        SCAccountViewController *accountVC = [noti.userInfo objectForKey:@"self"];
+-(void)didSelectAccountCellAtIndexPath:(NSNotification *)noti{
+    NSIndexPath *indexPath = [noti.userInfo valueForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.indexpath];
+    SimiTable *cells = noti.object;
+    SimiSection *section = [cells objectAtIndex:indexPath.section];
+    SimiRow *row = [section objectAtIndex:indexPath.row];
+    if ([row.identifier isEqualToString:ACCOUNT_REWARDS_ROW]) {
+        SCAccountViewController *accountVC = [noti.userInfo objectForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.viewcontroller];
         LoyaltyViewController *loyalty = [LoyaltyViewController new];
         [accountVC.navigationController pushViewController:loyalty animated:YES];
         accountVC.isDiscontinue = YES;

@@ -44,8 +44,8 @@
         
         
         //My Account Screen
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializedAccountCellAfter:) name:@"SCAccountViewController-InitCellsAfter" object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didSelectAccountCellAtIndexPath:) name:@"DidSelectAccountCellAtIndexPath" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializedAccountCellAfter:) name:Simi_SCAccountViewController_InitCells_End object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didSelectAccountCellAtIndexPath:) name:Simi_SCAccountViewController_DidSelectCell object:nil];
         
         //Left Menu
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(listMenuInitCellsAfter:) name:Simi_SCLeftMenuViewControler_InitCells_End object:nil];
@@ -168,8 +168,7 @@
 }
 
 #pragma mark Add to My Account Screen
--(void)initializedAccountCellAfter:(NSNotification *)noti
-{
+-(void)initializedAccountCellAfter:(NSNotification *)noti{
     SimiTable* cells = [[SimiTable alloc] initWithArray:noti.object];
     SimiSection* section = [cells getSectionByIdentifier:ACCOUNT_MAIN_SECTION];
     SimiRow *wishlistRow = [[SimiRow alloc]initWithIdentifier:ACCOUNT_WISHLIST_ROW height:45 sortOrder:310];
@@ -179,9 +178,12 @@
     [section addRow:wishlistRow];
 }
 
--(void)didSelectAccountCellAtIndexPath:(NSNotification *)noti
-{
-    if ([[(SimiRow *)noti.object identifier] isEqualToString:ACCOUNT_WISHLIST_ROW]) {
+-(void)didSelectAccountCellAtIndexPath:(NSNotification *)noti{
+    NSIndexPath *indexPath = [noti.userInfo valueForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.indexpath];
+    SimiTable *cells = noti.object;
+    SimiSection *section = [cells objectAtIndex:indexPath.section];
+    SimiRow *row = [section objectAtIndex:indexPath.row];
+    if ([row.identifier isEqualToString:ACCOUNT_WISHLIST_ROW]) {
         SCAccountViewController *accountVC = [noti.userInfo objectForKey:@"self"];
         if (PADDEVICE) {
             [accountVC dismissViewControllerAnimated:YES completion:nil];
