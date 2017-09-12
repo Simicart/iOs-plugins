@@ -8,7 +8,6 @@
 
 #import "SimizopimWorker.h"
 #import "ChatStyling.h"
-#import <SimiCartBundle/SCThemeWorker.h>
 #import <SimiCartBundle/SimiSection.h>
 #import <SimiCartBundle/SimiRow.h>
 #import <SimiCartBundle/SCAppDelegate.h>

@@ -23,7 +23,6 @@
 
 #import <SimiCartBundle/SCOrderViewControllerPad.h>
 #import <SimiCartBundle/SCLeftMenuViewController.h>
-#import <SimiCartBundle/SCThemeWorker.h>
 #import <SimiCartBundle/SCProductInfoView.h>
 
 
@@ -57,9 +56,9 @@ static NSString *LEFTMENU_REWARDS_ROW     = @"leftmenu_rewards";
         
         // Spend Point when Checkout
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orderViewControllerViewDidLoad:) name:@"SCOrderViewControllerViewDidLoad" object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"DidGetOrderConfig" object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"DidSetCouponCode" object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"DidSaveShippingMethod" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:Simi_DidGetOrderConfig object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"Simi_DidSetCouponCode" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:Simi_DidSaveShippingMethod object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"DidSpendPointsOrder" object:nil];
         
         //Order screen init order table on iphone
@@ -73,7 +72,7 @@ static NSString *LEFTMENU_REWARDS_ROW     = @"leftmenu_rewards";
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializeOrderCellAfter:) name:@"InitializedOrderCell-After" object:nil];
         
         //Update Point balance after checkout
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"DidPlaceOrder" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:Simi_DidPlaceOrder object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"LoadedProgramOverview" object:nil];
     }
     return self;
@@ -87,7 +86,7 @@ static NSString *LEFTMENU_REWARDS_ROW     = @"leftmenu_rewards";
 - (void)didReceiveNotification:(NSNotification *)noti
 {
 #pragma mark set Order Table
-    if (([noti.name isEqualToString:@"DidGetOrderConfig"] || [noti.name isEqualToString:@"DidSpendPointsOrder"] || [noti.name isEqualToString:@"DidSetCouponCode"] || [noti.name isEqualToString:@"DidSaveShippingMethod"] || [noti.name isEqualToString:@"SCOrderViewController-InitTableBefore"] || [noti.name isEqualToString:@"SCOrderViewController-InitTableAfter"]||[noti.name isEqualToString:@"SCOrderViewController-InitRightTableAfter"]) && self.orderViewController) {
+    if (([noti.name isEqualToString:Simi_DidGetOrderConfig] || [noti.name isEqualToString:@"DidSpendPointsOrder"] || [noti.name isEqualToString:@"Simi_DidSetCouponCode"] || [noti.name isEqualToString:Simi_DidSaveShippingMethod] || [noti.name isEqualToString:@"SCOrderViewController-InitTableBefore"] || [noti.name isEqualToString:@"SCOrderViewController-InitTableAfter"]||[noti.name isEqualToString:@"SCOrderViewController-InitRightTableAfter"]) && self.orderViewController) {
         SimiOrderModel *order = [self.orderViewController order];
         SimiTable *orderTable = [self.orderViewController orderTable];
         if (PADDEVICE) {
@@ -181,7 +180,7 @@ static NSString *LEFTMENU_REWARDS_ROW     = @"leftmenu_rewards";
             controller.simiObjectIdentifier = cell;
         }
 #pragma mark Did Place Order
-    } else if ([noti.name isEqualToString:@"DidPlaceOrder"]) {
+    } else if ([noti.name isEqualToString:Simi_DidPlaceOrder]) {
         if ([noti.object objectForKey:@"loyalty_balance"]) {
             SimiCustomerModel *customer = [globalVar customer];
             if ([globalVar isLogin] && customer) {

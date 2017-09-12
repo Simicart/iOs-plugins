@@ -9,6 +9,7 @@
 #import "SCSearchVoiceCoreWorker.h"
 #import <SimiCartBundle/SCHomeViewController.h>
 #import <SimiCartBundle/SCNavigationBarPad.h>
+#import <SimiCartBundle/SCProductListViewController.h>
 #import "SCSearchVoiceViewController.h"
 #import "SCSearchVoicePadViewController.h"
 

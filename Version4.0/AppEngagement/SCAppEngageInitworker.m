@@ -80,7 +80,7 @@
         if(userActivity && [userActivity.userInfo objectForKey:@"kCSSearchableItemActivityIdentifier"]){
             NSString* productID = [userActivity.userInfo objectForKey:@"kCSSearchableItemActivityIdentifier"];
             [[[SimiGlobalVar sharedInstance] currentlyNavigationController] popToRootViewControllerAnimated:NO];
-            [SimiGlobalVar pushProductDetailWithNavigationController:[[SimiGlobalVar sharedInstance] currentlyNavigationController] andProductID:productID andProductIDs:nil];
+            [[SCAppController sharedInstance]openProductWithNavigationController:[[SimiGlobalVar sharedInstance] currentlyNavigationController] productId:productID moreParams:nil];
         }else {
             [self openAppWithUserActivity:userActivity];
         }
@@ -108,7 +108,7 @@
         if(userActivity && [userActivity.userInfo objectForKey:@"kCSSearchableItemActivityIdentifier"]){
             NSString* productID = [userActivity.userInfo objectForKey:@"kCSSearchableItemActivityIdentifier"];
             [[[SimiGlobalVar sharedInstance] currentlyNavigationController] popToRootViewControllerAnimated:NO];
-            [SimiGlobalVar pushProductDetailWithNavigationController:[[SimiGlobalVar sharedInstance] currentlyNavigationController] andProductID:productID andProductIDs:nil];
+            [[SCAppController sharedInstance]openProductWithNavigationController:[[SimiGlobalVar sharedInstance] currentlyNavigationController] productId:productID moreParams:nil];
             handledNumber = [NSNumber numberWithBool:YES];
         }else {
             NSString *activityURL = userActivity.webpageURL.absoluteURL.absoluteString;
@@ -153,7 +153,7 @@
             if([deepLinkValues objectForKey:@"simi_product_id"]){
                 NSString *productID = [deepLinkValues objectForKey:@"simi_product_id"];
                 [[[SimiGlobalVar sharedInstance] currentlyNavigationController] popToRootViewControllerAnimated:NO];
-                [SimiGlobalVar pushProductDetailWithNavigationController:[[SimiGlobalVar sharedInstance] currentlyNavigationController] andProductID:productID andProductIDs:@[productID]];
+                [[SCAppController sharedInstance]openProductWithNavigationController:[[SimiGlobalVar sharedInstance] currentlyNavigationController]  productId:productID moreParams:nil];
             } else if([deepLinkValues objectForKey:@"simi_cate_name"] && [deepLinkValues objectForKey:@"simi_has_child"] && [deepLinkValues objectForKey:@"simi_cate_name"]) {
                 NSString *categoryID = [deepLinkValues objectForKey:@"simi_cate_name"];
                 BOOL hasChild = [[deepLinkValues objectForKey:@"simi_has_child"] boolValue];
@@ -179,7 +179,7 @@
             } else if([deepLinkValues objectForKey:@"simi_cms_id"]) {
                 NSString *cmsID = [deepLinkValues objectForKey:@"simi_cms_id"];
                 [[[SimiGlobalVar sharedInstance] currentlyNavigationController] popToRootViewControllerAnimated:NO];
-                [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didGetCMSPage:) name:DidGetCMSPage object:nil];
+                [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didGetCMSPage:) name:Simi_DidGetCMSPages object:nil];
                 [[SimiCMSModel new] getCMSPageWithID:cmsID];
                 [((SimiViewController *)[[SimiGlobalVar sharedInstance] currentlyNavigationController].viewControllers.lastObject) startLoadingData];
             }else {
@@ -229,11 +229,11 @@
         }else if([[deeplink objectForKey:@"type"] isEqualToString:@"2"]) {
             NSString *productID = [deeplink objectForKey:@"id"];
             [[[SimiGlobalVar sharedInstance] currentlyNavigationController] popToRootViewControllerAnimated:NO];
-            [SimiGlobalVar pushProductDetailWithNavigationController:[[SimiGlobalVar sharedInstance] currentlyNavigationController] andProductID:productID andProductIDs:@[productID]];
+            [[SCAppController sharedInstance]openProductWithNavigationController:[[SimiGlobalVar sharedInstance] currentlyNavigationController] productId:productID moreParams:nil];
         }else if([[deeplink objectForKey:@"type"] isEqualToString:@"3"]) {
             NSString *cmsID = [deeplink objectForKey:@"id"];
             [[[SimiGlobalVar sharedInstance] currentlyNavigationController] popToRootViewControllerAnimated:NO];
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didGetCMSPage:) name:DidGetCMSPage object:nil];
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didGetCMSPage:) name:Simi_DidGetCMSPages object:nil];
             [[SimiCMSModel new] getCMSPageWithID:cmsID];
             [((SimiViewController *)[[SimiGlobalVar sharedInstance] currentlyNavigationController].viewControllers.lastObject) startLoadingData];
         }else if([[deeplink objectForKey:@"type"] isEqualToString:@"4"]) {
@@ -247,7 +247,7 @@
 - (void)didGetCMSPage: (NSNotification *)noti {
     SimiCMSModel *cmsModel = noti.object;
     [((SimiViewController *)[[SimiGlobalVar sharedInstance] currentlyNavigationController].viewControllers.lastObject) stopLoadingData];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:DidGetCMSPage object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:Simi_DidGetCMSPages object:nil];
     SCWebViewController *webViewController = [[SCWebViewController alloc] init];
     webViewController.title = [cmsModel objectForKey:@"cms_title"];
     webViewController.content = [cmsModel valueForKey:@"cms_content"];

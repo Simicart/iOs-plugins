@@ -7,7 +7,6 @@
 //
 
 #import "SearchableInitworker.h"
-#import <SimiCartBundle/SCThemeWorker.h>
 #import <FirebaseCore/FirebaseCore.h>
 #import <FirebaseDynamicLinks/FirebaseDynamicLinks.h>
 #import <SimiCartBundle/SimiCMSModel.h>
@@ -59,25 +58,18 @@
             if([deepLinkValues objectForKey:@"simi_product_id"]){
                 NSString *productID = [deepLinkValues objectForKey:@"simi_product_id"];
                 [[[SimiGlobalVar sharedInstance] currentlyNavigationController] popToRootViewControllerAnimated:NO];
-                [SimiGlobalVar pushProductDetailWithNavigationController:[[SimiGlobalVar sharedInstance] currentlyNavigationController] andProductID:productID andProductIDs:@[productID]];
+                [[SCAppController sharedInstance]openProductWithNavigationController:[[SimiGlobalVar sharedInstance] currentlyNavigationController] productId:productID moreParams:nil];
             } else if([deepLinkValues objectForKey:@"simi_cate_name"] && [deepLinkValues objectForKey:@"simi_has_child"] && [deepLinkValues objectForKey:@"simi_cate_name"]) {
                 NSString *categoryID = [deepLinkValues objectForKey:@"simi_cate_name"];
                 BOOL hasChild = [[deepLinkValues objectForKey:@"simi_has_child"] boolValue];
                 NSString *categoryName = [deepLinkValues objectForKey:@"simi_cate_name"];
                 if(PHONEDEVICE) {
                     if(hasChild) {
-                        SCCategoryViewController *nextController = [[SCCategoryViewController alloc]init];
-                        nextController.openFrom = CategoryOpenFromParentCategory;
-                        [nextController setCategoryId:categoryID];
-                        [nextController setCategoryRealName:categoryName];
                         [[[SimiGlobalVar sharedInstance] currentlyNavigationController] popToRootViewControllerAnimated:NO];
-                        [[[SimiGlobalVar sharedInstance] currentlyNavigationController] pushViewController:nextController animated:YES];
+                        [[SCAppController sharedInstance]openCategoryWithNavigationController:[[SimiGlobalVar sharedInstance] currentlyNavigationController] categoryId:categoryID categoryName:categoryName openCategoryFrom:CategoryOpenFromParentCategory moreParams:nil];
                     }else {
-                        SCProductListViewController *nextController = [[SCProductListViewController alloc]init];;
-                        [nextController setCategoryID: categoryID];
-                        nextController.nameOfProductList = categoryName;
                         [[[SimiGlobalVar sharedInstance] currentlyNavigationController] popToRootViewControllerAnimated:NO];
-                        [[[SimiGlobalVar sharedInstance] currentlyNavigationController] pushViewController:nextController animated:YES];
+                        [[SCAppController sharedInstance]openProductListWithNavigationController:[[SimiGlobalVar sharedInstance] currentlyNavigationController] productsId:categoryID productsName:categoryName getProductsFrom:ProductListGetProductTypeFromCategory moreParams:nil];
                     }
                 }else {
                     
@@ -85,7 +77,7 @@
             } else if([deepLinkValues objectForKey:@"simi_cms_id"]) {
                 NSString *cmsID = [deepLinkValues objectForKey:@"simi_cms_id"];
                 [[[SimiGlobalVar sharedInstance] currentlyNavigationController] popToRootViewControllerAnimated:NO];
-                [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didGetCMSPage:) name:DidGetCMSPage object:nil];
+                [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didGetCMSPage:) name:Simi_DidGetCMSPages object:nil];
                 [[SimiCMSModel new] getCMSPageWithID:cmsID];
                 [((SimiViewController *)[[SimiGlobalVar sharedInstance] currentlyNavigationController].viewControllers.lastObject) startLoadingData];
             }
@@ -97,7 +89,7 @@
 - (void)didGetCMSPage: (NSNotification *)noti {
     SimiCMSModel *cmsModel = noti.object;
     [((SimiViewController *)[[SimiGlobalVar sharedInstance] currentlyNavigationController].viewControllers.lastObject) stopLoadingData];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:DidGetCMSPage object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:Simi_DidGetCMSPages object:nil];
         SCWebViewController *webViewController = [[SCWebViewController alloc] init];
     webViewController.title = [cmsModel objectForKey:@"cms_title"];
     webViewController.content = [cmsModel valueForKey:@"cms_content"];

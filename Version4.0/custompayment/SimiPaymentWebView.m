@@ -65,7 +65,7 @@
         }else if(buttonIndex == 1){
             SimiOrderModel *orderModel = [SimiOrderModel new];
             [orderModel cancelOrderWithId:_orderID];
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didCancelOrder:) name:@"DidCancelOrder" object:orderModel];
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didCancelOrder:) name:Simi_DidCancelOrder object:orderModel];
             [self startLoadingData];
         }
     }

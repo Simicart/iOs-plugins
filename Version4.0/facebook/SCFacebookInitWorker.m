@@ -63,8 +63,8 @@
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:SCLoginViewController_InitCellsAfter object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:ApplicationOpenURL object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:SCLoginViewController_InitCellAfter object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didLogin:) name:DidLogin object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didLogout:) name:DidLogout object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didLogin:) name:Simi_DidLogin object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didLogout:) name:Simi_DidLogout object:nil];
         
         //App Invite
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didInitLeftMenuRows:) name:SCLeftMenu_InitCellsAfter object:nil];
@@ -256,7 +256,7 @@
             }
         }
         if([urlParamsDictionary objectForKey:@"product_id"] && ![[NSString stringWithFormat:@"%@",[urlParamsDictionary objectForKey:@"product_id"]] isEqualToString:@""]){
-            [SimiGlobalVar pushProductDetailWithNavigationController:[SimiGlobalVar sharedInstance].currentlyNavigationController andProductID:[NSString stringWithFormat:@"%@",[urlParamsDictionary objectForKey:@"product_id"]] andProductIDs:[[NSMutableArray alloc] initWithArray:@[[NSString stringWithFormat:@"%@",[urlParamsDictionary objectForKey:@"product_id"]]]]];
+            [[SCAppController sharedInstance]openProductWithNavigationController:[SimiGlobalVar sharedInstance].currentlyNavigationController productId:[NSString stringWithFormat:@"%@",[urlParamsDictionary objectForKey:@"product_id"]] moreParams:nil];
         }else if([urlParamsDictionary objectForKey:@"category_id"] && ![[NSString stringWithFormat:@"%@",[urlParamsDictionary objectForKey:@"category_id"]] isEqualToString:@""]){
             NSString* categoryId = [NSString stringWithFormat:@"%@",[urlParamsDictionary objectForKey:@"category_id"]];
             BOOL hasChild = [[urlParamsDictionary objectForKey:@"has_child"] boolValue];

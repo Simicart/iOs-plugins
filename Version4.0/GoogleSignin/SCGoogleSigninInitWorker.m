@@ -14,8 +14,6 @@
 #define SCLoginViewController_InitCellAfter @"SCLoginViewController_InitCellAfter"
 #define SCLoginViewController_InitCellsAfter @"SCLoginViewController_InitCellsAfter"
 #define GoogleLoginCell @"GoogleLoginCell"
-#define DidLogout @"DidLogout"
-#define DidLogin @"DidLogin"
 
 @implementation SCGoogleSigninInitWorker{
     SimiCustomerModel* customerModel;

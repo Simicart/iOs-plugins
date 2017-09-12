@@ -745,7 +745,7 @@
             [cartItem setValue:currentGiftValue forKey:@"amount"];
         }
         [[NSNotificationCenter defaultCenter] postNotificationName:@"AddToCart" object:nil userInfo:@{@"data":cartItem}];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didAddToCart:) name:@"DidAddToCart" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didAddToCart:) name:Simi_DidAddToCart object:nil];
     }
 }
 

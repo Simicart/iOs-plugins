@@ -6,7 +6,6 @@
 //  Copyright (c) 2014 Trueplus. All rights reserved.
 //
 
-#import <SimiCartBundle/SCThemeWorker.h>
 #import <SimiCartBundle/SCOrderViewController.h>
 #import <SimiCartBundle/SCCartViewController.h>
 #import "SCPaypalExpressWebViewController.h"
