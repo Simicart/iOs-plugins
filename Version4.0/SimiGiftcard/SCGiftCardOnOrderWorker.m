@@ -8,7 +8,7 @@
 
 #import "SCGiftCardOnOrderWorker.h"
 #import <SimiCartBundle/SimiTable.h>
-#import <SimiCartBundle/SCOrderViewController.h>
+#import <SimiCartBundle/SCOrderViewControllerPad.h>
 #import "SimiOrderModel+SimiGiftCard.h"
 
 #define ORDER_VIEW_GIFTCARD_CREDIT @"ORDER_VIEW_GIFTCARD_CREDIT"
@@ -27,18 +27,19 @@
 }
 - (id)init {
     if(self == [super init]) {
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orderViewInitCells:) name:@"SCOrderViewController-InitTableAfter" object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orderViewCellForRow:) name:@"InitializedOrderCell-Before" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orderViewInitCells:) name:Simi_SCOrderViewController_InitCells_End object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orderViewCellForRow:) name:Simi_SCOrderViewController_InitializedCell_End object:nil];
         if(PADDEVICE) {
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orderViewInitCells:) name:@"SCOrderViewController-InitRightTableAfter" object:nil];
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orderViewCellForRow:) name:@"InitializedOrderCell-Before" object:nil];
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orderViewInitCells:) name:Simi_SCOrderViewControllerPad_InitCells_End object:nil];
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orderViewCellForRow:) name:Simi_SCOrderViewControllerPad_InitializedCell_End object:nil];
         }
     }
     return self;
 }
 
 - (void)orderViewInitCells: (NSNotification *)noti {
-    order = [noti.userInfo objectForKey:@"order"];
+    orderVC = [noti.userInfo valueForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.viewcontroller];
+    order = orderVC.order;
     if([order objectForKey:@"gift_card"]) {
         NSDictionary *giftCardData = [order objectForKey:@"gift_card"];
         orderTable = noti.object;
@@ -68,10 +69,16 @@
 }
 
 - (void)orderViewCellForRow:(NSNotification *)noti {
-    SimiRow *row = [noti.userInfo objectForKey:@"row"];
+    NSIndexPath *indexPath = [noti.userInfo valueForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.indexpath];
+    SimiTable *cells = noti.object;
+    SimiSection *section = [cells objectAtIndex:indexPath.section];
+    SimiRow *row = [section objectAtIndex:indexPath.row];
     if([row.identifier isEqualToString:ORDER_VIEW_GIFTCODE] || [row.identifier isEqualToString:ORDER_VIEW_GIFTCARD_CREDIT] || [row.identifier isEqualToString:ORDER_VIEW_GIFTCARD_NONUSE]) {
-        orderTableView = [noti.userInfo objectForKey:@"tableView"];
-        orderVC = [noti.userInfo objectForKey:@"viewController"];
+        orderVC = [noti.userInfo objectForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.viewcontroller];
+        orderTableView = orderVC.tableViewOrder;
+        if (PADDEVICE) {
+            orderTableView = [((SCOrderViewControllerPad*)orderVC) tableRight];
+        }
         NSDictionary *giftCardData = [order objectForKey:@"gift_card"];
         NSDictionary *customerData = [giftCardData objectForKey:@"customer"];
         float padding = 10;
@@ -111,13 +118,6 @@
                         deleteButton.simiObjectIdentifier = giftCodeValue;
                         [deleteButton addTarget:self action:@selector(giftCodeSelectedDelete:) forControlEvents:UIControlEventTouchUpInside];
                         [cell.contentView addSubview:deleteButton];
-                        //                        UIButton *giftCodeButton = [[UIButton alloc] initWithFrame:CGRectMake(padding + 40, cellY, viewWidth - 80, 30)];
-                        //                        NSAttributedString *titleAttributedString = [[NSAttributedString alloc] initWithString:titleString attributes:@{NSUnderlineStyleAttributeName: [NSNumber numberWithInteger:NSUnderlineStyleSingle]}];
-                        //                        [giftCodeButton setAttributedTitle:titleAttributedString forState:UIControlStateNormal];
-                        //                        [giftCodeButton setTitleColor:THEME_CONTENT_COLOR forState:UIControlStateNormal];
-                        //                        giftCodeButton.simiObjectIdentifier = giftCodeValue;
-                        //                        [giftCodeButton addTarget:self action:@selector(giftCodeSelectedEditing:) forControlEvents:UIControlEventTouchUpInside];
-                        //                        [cell.contentView addSubview:giftCodeButton];
                         cellY += 30;
                     }
                 }
@@ -163,7 +163,7 @@
             cell.separatorInset = UIEdgeInsetsMake(0, 1000, 0, 0);
             cell.layoutMargins = UIEdgeInsetsZero;
             orderVC.isDiscontinue = YES;
-            orderVC.simiObjectIdentifier = cell;
+            row.tableCell = cell;
         }else if([row.identifier isEqualToString:ORDER_VIEW_GIFTCARD_CREDIT]) {
             NSDictionary *credit = [giftCardData objectForKey:@"credit"];
             UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:ORDER_VIEW_GIFTCARD_CREDIT];
@@ -212,7 +212,7 @@
             cell.separatorInset = UIEdgeInsetsMake(0, 1000, 0, 0);
             cell.layoutMargins = UIEdgeInsetsZero;
             orderVC.isDiscontinue = YES;
-            orderVC.simiObjectIdentifier = cell;
+            row.tableCell = cell;
         }else if([row.identifier isEqualToString:ORDER_VIEW_GIFTCARD_NONUSE]) {
             UITableViewCell *cell = [orderTableView dequeueReusableCellWithIdentifier:ORDER_VIEW_GIFTCARD_NONUSE];
             if(!cell) {

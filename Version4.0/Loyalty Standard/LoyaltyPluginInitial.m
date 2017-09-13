@@ -56,41 +56,24 @@ static NSString *LEFTMENU_REWARDS_ROW     = @"leftmenu_rewards";
         //Product Info View
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(productInforViewSetInterfacecellAfter:) name:@"SCProductInforViewSetInterfacecell_After" object:nil];
         
-        // Spend Point when Checkout
+        // Order Review
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orderViewControllerViewDidLoad:) name:@"SCOrderViewControllerViewDidLoad" object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initLoyaltyCell:) name:Simi_DidGetOrderConfig object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initLoyaltyCell:) name:Simi_DidSetCouponCode object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initLoyaltyCell:) name:Simi_DidSaveShippingMethod object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initLoyaltyCell:) name:@"DidSpendPointsOrder" object:nil];
-        
-        //Order screen init order table on iphone
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initLoyaltyCell:) name:@"SCOrderViewController-InitTableBefore" object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initLoyaltyCell:) name:@"SCOrderViewController-InitTableAfter" object:nil];
-        
-        //Order screen init order table on ipad
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initLoyaltyCell:) name:@"SCOrderViewController-InitRightTableAfter" object:nil];
-        
-        //Order screen init cell
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializeOrderCellAfter:) name:@"InitializedOrderCell-After" object:nil];
-        
-        //Update Point balance after checkout
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orderReviewDidPlaceOrder:) name:Simi_DidPlaceOrder object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(loadedProgramOverview:) name:@"LoadedProgramOverview" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initLoyaltyCell:) name:Simi_SCOrderViewController_InitCells_End object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initLoyaltyCell:) name:Simi_SCOrderViewControllerPad_InitCells_End object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializeOrderCellAfter:) name:Simi_SCOrderViewController_InitializedCell_End object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializeOrderCellAfter:) name:Simi_SCOrderViewControllerPad_InitializedCell_End object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didSpendPointsOrder:) name:@"DidSpendPointsOrder" object:nil];
     }
     return self;
 }
 
-- (void)dealloc
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
+#pragma mark Loyalty on Cart
 - (void)initCartCells:(NSNotification *)noti{
     SimiCartModelCollection *cart = [globalVar cart];
     loyaltyData = [cart.responseObject valueForKey:@"loyalty"];
     if (cart.count && loyaltyData.count > 0) {
         // Add Row to show Loyalty Labels
-        SimiTable *cartCells = (SimiTable *)noti.object;
+        SimiTable *cartCells = noti.object;
         SimiSection *loyaltySection = [cartCells addSectionWithIdentifier:LOYALTY_CART];
         [loyaltySection addRowWithIdentifier:LOYALTY_CART height:44];
     }
@@ -102,7 +85,7 @@ static NSString *LEFTMENU_REWARDS_ROW     = @"leftmenu_rewards";
     SimiSection *section = [cells objectAtIndex:indexPath.section];
     SimiRow *row = [section objectAtIndex:indexPath.row];
     if ([row.identifier isEqualToString:LOYALTY_CART]) {
-        SCCartViewController *cartViewController = noti.object;
+        SCCartViewController *cartViewController = [noti.userInfo valueForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.viewcontroller];
         UITableView *tableView = cartViewController.tableViewCart;
         UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:LOYALTY_CART];
         if (cell == nil) {
@@ -150,12 +133,21 @@ static NSString *LEFTMENU_REWARDS_ROW     = @"leftmenu_rewards";
     }
 }
 
+#pragma mark Loyalty on Order
+-(void)orderViewControllerViewDidLoad:(NSNotification *)noti{
+    self.orderViewController = noti.object;
+}
+
+- (void)didSpendPointsOrder:(NSNotification*)noti{
+    [self.orderViewController didGetOrderConfig:noti];
+}
+
 - (void)initLoyaltyCell:(NSNotification *)noti{
     if (self.orderViewController) {
         SimiOrderModel *order = [self.orderViewController order];
-        SimiTable *orderTable = [self.orderViewController orderTable];
+        SimiTable *orderTable = self.orderViewController.cells;
         if (PADDEVICE) {
-            orderTable = [(SCOrderViewControllerPad *)self.orderViewController orderTableRight];
+            orderTable = self.orderViewController.cells;
         }
         NSArray *rules = [[order valueForKey:@"loyalty"] objectForKey:@"loyalty_rules"];
         if ([rules count]) {
@@ -178,213 +170,21 @@ static NSString *LEFTMENU_REWARDS_ROW     = @"leftmenu_rewards";
                 break;
             }
         }
-        if ([noti.name isEqualToString:@"DidSpendPointsOrder"]) {
-            [self.orderViewController didGetOrderConfig:noti];
-        }
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             [[(SCOrderViewControllerPad *)self.orderViewController tableRight] reloadData];
         }
     }
 }
 
-- (void)orderReviewDidPlaceOrder:(NSNotification *)noti{
-    if ([noti.object objectForKey:@"loyalty_balance"]) {
-        SimiCustomerModel *customer = [globalVar customer];
-        if ([globalVar isLogin] && customer) {
-            [customer setValue:[noti.object objectForKey:@"loyalty_balance"] forKey:@"loyalty_balance"];
-            [self.loyaltyMenuRow setTitle:[self rewardMenuLabel]];
-        }
-    }
-}
-
-- (void)loadedProgramOverview:(NSNotification *)noti{
-    if ([noti.object objectForKey:@"loyalty_redeem"]) {
-        SimiCustomerModel *customer = [globalVar customer];
-        if ([globalVar isLogin] && customer) {
-            [customer setValue:[noti.object objectForKey:@"loyalty_redeem"] forKey:@"loyalty_balance"];
-            [self.loyaltyMenuRow setTitle:[self rewardMenuLabel]];
-        }
-    }
-}
-
-- (void)changeSpendingPoints:(UISlider *)slider
-{
-    UILabel *points = (UILabel *)slider.simiObjectIdentifier;
-    NSInteger pointStep = [(NSNumber *)points.simiObjectIdentifier integerValue];
-    NSInteger pointValue = (NSInteger)roundf(slider.value / pointStep);
-    pointValue *= pointStep;
-    points.text = [[SCLocalizedString(@"Spending") stringByAppendingString:@": "] stringByAppendingString:[NSString stringWithFormat:@"%ld", (long)pointValue]];
-}
-
-- (void)stopSpendingPointsSlide:(UISlider *)slider
-{
-    UILabel *points = (UILabel *)slider.simiObjectIdentifier;
-    NSInteger pointStep = [(NSNumber *)points.simiObjectIdentifier integerValue];
-    NSInteger pointValue = (NSInteger)roundf(slider.value / pointStep);
-    pointValue *= pointStep;
-    slider.value = (float)pointValue;
-    
-    SimiOrderModel *order = [self.orderViewController order];
-    if ([[[order valueForKey:@"loyalty"] objectForKey:@"loyalty_spend"] integerValue] == pointValue) {
-        return;
-    }
-    NSDictionary *rule = [[[order valueForKey:@"loyalty"] objectForKey:@"loyalty_rules"] objectAtIndex:0];
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self.orderViewController selector:@selector(didReceiveNotification:) name:@"DidSpendPointsOrder" object:order];
-    [order spendPoints:pointValue ruleId:[rule objectForKey:@"id"]];
-    [self.orderViewController startLoadingData];
-}
-
-- (NSString *)rewardMenuLabel
-{
-    SimiCustomerModel *customer = [globalVar customer];
-    if ([globalVar isLogin] && customer && [customer objectForKey:@"loyalty_balance"]) {
-        return [[SCLocalizedString(@"My Rewards") stringByAppendingString:@" "] stringByAppendingString:[customer objectForKey:@"loyalty_balance"]];
-    }
-    return SCLocalizedString(@"My Rewards");
-}
-
-#pragma mark Add to My Account Screen
--(void)initializedAccountCellAfter:(NSNotification *)noti{
-    NSArray * cells = noti.object;
-    for (SimiSection *section in cells) {
-        if (section.identifier != ACCOUNT_MAIN_SECTION)
-            return;
-        if ([section isKindOfClass:[SimiSection class]]) {
-            float rowHeight;
-            for (SimiRow *row in section.rows) {
-                rowHeight = row.height;
-                if (row.identifier == ACCOUNT_REWARDS_ROW)
-                    return;
-            }
-            SimiRow *wishlistRow = [[SimiRow alloc]initWithIdentifier:ACCOUNT_REWARDS_ROW height:rowHeight sortOrder:310];
-            wishlistRow.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-            wishlistRow.title = SCLocalizedString(@"My Rewards");
-            wishlistRow.image = [UIImage imageNamed:@"loyalty_reward"];
-            [section addRow:wishlistRow];
-            [section sortItems];
-        }
-    }
-}
-
--(void)didSelectAccountCellAtIndexPath:(NSNotification *)noti{
-    NSIndexPath *indexPath = [noti.userInfo valueForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.indexpath];
-    SimiTable *cells = noti.object;
-    SimiSection *section = [cells objectAtIndex:indexPath.section];
-    SimiRow *row = [section objectAtIndex:indexPath.row];
-    if ([row.identifier isEqualToString:ACCOUNT_REWARDS_ROW]) {
-        SCAccountViewController *accountVC = [noti.userInfo objectForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.viewcontroller];
-        LoyaltyViewController *loyalty = [LoyaltyViewController new];
-        [accountVC.navigationController pushViewController:loyalty animated:YES];
-        accountVC.isDiscontinue = YES;
-    }
-}
-
-#pragma mark Add to Left Menu
--(void)listMenuInitCellsAfter:(NSNotification *)noti
-{
-    NSArray * cells = noti.object;
-    if ([globalVar isLogin]) {
-        for (SimiSection *section in cells) {
-            if ([section isKindOfClass:[SimiSection class]]) {
-                if (section.identifier != LEFTMENU_SECTION_MAIN)
-                    return;
-                float rowHeight = 50;
-                for (SimiRow *row in section.rows) {
-                    rowHeight = row.height;
-                    if (row.identifier == LEFTMENU_REWARDS_ROW)
-                        return;
-                }
-                
-                SimiRow *rewardsRow = [[SimiRow alloc]initWithIdentifier:LEFTMENU_REWARDS_ROW height:rowHeight sortOrder:310];
-                rewardsRow.title = SCLocalizedString(@"My Rewards");
-                rewardsRow.image = [UIImage imageNamed:@"loyalty_reward_invert"];
-                [section addRow:rewardsRow];
-                [section sortItems];
-            }
-        }
-    }
-}
-
--(void)listMenuDidSelectRow:(NSNotification *)noti{
-    SimiTable *cells = noti.object;
-    NSIndexPath *indexPath = [noti.userInfo valueForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.indexpath];
-    SimiSection *section = [cells objectAtIndex:indexPath.section];
-    SimiRow *row = [section objectAtIndex:indexPath.row];
-    if ([row.identifier isEqualToString:LEFTMENU_REWARDS_ROW]) {
-        LoyaltyViewController *loyalty = [LoyaltyViewController new];
-        UINavigationController *currentVC = kNavigationController;
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-            UINavigationController *navi = [[UINavigationController alloc]initWithRootViewController:loyalty];
-            navi.modalPresentationStyle = UIModalPresentationPopover;
-            UIPopoverPresentationController *popover = navi.popoverPresentationController;
-            popover.sourceRect = CGRectMake(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 1, 1);
-            popover.sourceView = currentVC.view;
-            popover.permittedArrowDirections = 0;
-            [currentVC presentViewController:navi animated:YES completion:nil];
-        }
-        else
-            [currentVC pushViewController:loyalty animated:YES];
-        [(SCNavigationBarPhone*)noti.object setIsDiscontinue:YES];
-    }
-}
-
-#pragma mark Set Product Info View
--(void)productInforViewSetInterfacecellAfter:(NSNotification *)noti
-{
-    SCProductInfoView *productInfoView = noti.object;
-    UIView *loyalty = [productInfoView viewWithTag:LOYALTY_TAG];
-    if (loyalty == nil) {
-        loyalty = [[UIView alloc] initWithFrame:CGRectMake(productInfoView.productNameLabel.frame.origin.x , productInfoView.heightCell+10, productInfoView.productNameLabel.frame.size.width, 44)];
-        loyalty.tag = LOYALTY_TAG;
-        [productInfoView addSubview:loyalty];
-        
-        UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 13, 18, 18)];
-        imageView.contentMode = UIViewContentModeScaleAspectFit;
-        [imageView sd_setImageWithURL:[NSURL URLWithString:[productInfoView.product objectForKey:@"loyalty_image"]] placeholderImage:nil options:SDWebImageRetryFailed];
-        [loyalty addSubview:imageView];
-        
-        UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(24, 0, loyalty.frame.size.width - 24, 44)];
-        label.font = [UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE_REGULAR];
-        label.text = [productInfoView.product objectForKey:@"loyalty_label"];
-        label.numberOfLines = 2;
-        [loyalty addSubview:label];
-    }
-}
-
-#pragma mark Add to Order Screen
-
--(void)orderViewControllerViewDidLoad:(NSNotification *)noti
-{
-    self.orderViewController = noti.object;
-}
-
-- (void)initOrderRightTableAfter:(NSNotification *)noti
-{
-    SimiOrderModel *order = [self.orderViewController order];
-    NSArray *rules = [[order objectForKey:@"fee"] objectForKey:@"loyalty_rules"];
-    if ([rules count]) {
-        NSDictionary *rule = [rules objectAtIndex:0];
-        SimiTable *orderTable = [self.orderViewController orderTable];
-        SimiSection *shipment = [orderTable getSectionByIdentifier:ORDER_TOTALS_SECTION];
-        shipment.headerTitle = SCLocalizedString(@"Shipment Details");
-        shipment = [orderTable getSectionByIdentifier:ORDER_SHIPMENT_SECTION];
-        shipment.headerTitle = SCLocalizedString(@"Shipping Method");
-        if ([orderTable getSectionIndexByIdentifier:LOYALTY_CHECKOUT] == NSNotFound) {
-            SimiSection *section = [orderTable addSectionWithIdentifier:LOYALTY_CHECKOUT atIndex:0];
-            section.headerTitle = SCLocalizedString(@"Spend my Points");
-            CGFloat height = [[rule objectForKey:@"optionType"] isEqualToString:@"slider"] ? 105 : 40;
-            if (![globalVar isLogin]) height = 40;
-            [section addRowWithIdentifier:LOYALTY_CHECKOUT height:height];
-        }
-    }
-}
-
 - (void)initializeOrderCellAfter:(NSNotification *)noti
 {
-    SimiRow *row = noti.object;
+    NSIndexPath *indexPath = [noti.userInfo valueForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.indexpath];
+    SimiTable *cells = noti.object;
+    SimiSection *section = [cells objectAtIndex:indexPath.section];
+    SimiRow *row = [section objectAtIndex:indexPath.row];
+    SCOrderViewController *orderViewController = [noti.userInfo valueForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.viewcontroller];
     if ([row.identifier isEqualToString:LOYALTY_CHECKOUT]) {
-        UITableViewCell *cell = (UITableViewCell *)[noti.userInfo objectForKey:@"cell"];
+        UITableViewCell *cell = [noti.userInfo objectForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.cell];
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         if (![globalVar isLogin]) {
             cell.textLabel.font = [UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE];
@@ -398,7 +198,10 @@ static NSString *LEFTMENU_REWARDS_ROW     = @"leftmenu_rewards";
             NSDictionary *rule = [rules objectAtIndex:0];
             if ([[rule objectForKey:@"optionType"] isEqualToString:@"slider"]) {
                 // Slider
-                UITableView *tableView = (UITableView *)[noti.userInfo objectForKey:@"tableView"];
+                UITableView *tableView = orderViewController.tableViewOrder;
+                if (PADDEVICE) {
+                    tableView = [((SCOrderViewControllerPad*)orderViewController)tableRight];
+                }
                 CGFloat width = tableView.frame.size.width - 30;
                 UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(15, 11, width, 22)];
                 label.font = [UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE];
@@ -448,7 +251,156 @@ static NSString *LEFTMENU_REWARDS_ROW     = @"leftmenu_rewards";
                 cell.textLabel.text = [NSString stringWithFormat:SCLocalizedString(@"You need to earn more %@ to use this rule"), [rule objectForKey:@"needPointLabel"]];
             }
         }
+        self.orderViewController.isDiscontinue = YES;
+        row.tableCell = cell;
     }
 }
 
+- (void)changeSpendingPoints:(UISlider *)slider
+{
+    UILabel *points = (UILabel *)slider.simiObjectIdentifier;
+    NSInteger pointStep = [(NSNumber *)points.simiObjectIdentifier integerValue];
+    NSInteger pointValue = (NSInteger)roundf(slider.value / pointStep);
+    pointValue *= pointStep;
+    points.text = [[SCLocalizedString(@"Spending") stringByAppendingString:@": "] stringByAppendingString:[NSString stringWithFormat:@"%ld", (long)pointValue]];
+}
+
+- (void)stopSpendingPointsSlide:(UISlider *)slider
+{
+    UILabel *points = (UILabel *)slider.simiObjectIdentifier;
+    NSInteger pointStep = [(NSNumber *)points.simiObjectIdentifier integerValue];
+    NSInteger pointValue = (NSInteger)roundf(slider.value / pointStep);
+    pointValue *= pointStep;
+    slider.value = (float)pointValue;
+    
+    SimiOrderModel *order = [self.orderViewController order];
+    if ([[[order valueForKey:@"loyalty"] objectForKey:@"loyalty_spend"] integerValue] == pointValue) {
+        return;
+    }
+    NSDictionary *rule = [[[order valueForKey:@"loyalty"] objectForKey:@"loyalty_rules"] objectAtIndex:0];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self.orderViewController selector:@selector(didReceiveNotification:) name:@"DidSpendPointsOrder" object:order];
+    [order spendPoints:pointValue ruleId:[rule objectForKey:@"id"]];
+    [self.orderViewController startLoadingData];
+}
+
+- (NSString *)rewardMenuLabel
+{
+    SimiCustomerModel *customer = [globalVar customer];
+    if ([globalVar isLogin] && customer && [customer objectForKey:@"loyalty_balance"]) {
+        return [[SCLocalizedString(@"My Rewards") stringByAppendingString:@" "] stringByAppendingString:[customer objectForKey:@"loyalty_balance"]];
+    }
+    return SCLocalizedString(@"My Rewards");
+}
+
+#pragma mark Add to My Account Screen
+-(void)initializedAccountCellAfter:(NSNotification *)noti{
+    SimiTable *cells = noti.object;
+    for (SimiSection *section in cells) {
+        if (section.identifier != ACCOUNT_MAIN_SECTION)
+            return;
+        if ([section isKindOfClass:[SimiSection class]]) {
+            float rowHeight;
+            for (SimiRow *row in section.rows) {
+                rowHeight = row.height;
+                if (row.identifier == ACCOUNT_REWARDS_ROW)
+                    return;
+            }
+            SimiRow *wishlistRow = [[SimiRow alloc]initWithIdentifier:ACCOUNT_REWARDS_ROW height:rowHeight sortOrder:310];
+            wishlistRow.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+            wishlistRow.title = SCLocalizedString(@"My Rewards");
+            wishlistRow.image = [UIImage imageNamed:@"loyalty_reward"];
+            [section addRow:wishlistRow];
+            [section sortItems];
+        }
+    }
+}
+
+-(void)didSelectAccountCellAtIndexPath:(NSNotification *)noti{
+    NSIndexPath *indexPath = [noti.userInfo valueForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.indexpath];
+    SimiTable *cells = noti.object;
+    SimiSection *section = [cells objectAtIndex:indexPath.section];
+    SimiRow *row = [section objectAtIndex:indexPath.row];
+    if ([row.identifier isEqualToString:ACCOUNT_REWARDS_ROW]) {
+        SCAccountViewController *accountVC = [noti.userInfo objectForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.viewcontroller];
+        LoyaltyViewController *loyalty = [LoyaltyViewController new];
+        [accountVC.navigationController pushViewController:loyalty animated:YES];
+        accountVC.isDiscontinue = YES;
+    }
+}
+
+#pragma mark Add to Left Menu
+-(void)listMenuInitCellsAfter:(NSNotification *)noti
+{
+    SimiTable *cells = noti.object;
+    if ([globalVar isLogin]) {
+        for (SimiSection *section in cells) {
+            if ([section isKindOfClass:[SimiSection class]]) {
+                if (section.identifier != LEFTMENU_SECTION_MAIN)
+                    return;
+                float rowHeight = 50;
+                for (SimiRow *row in section.rows) {
+                    rowHeight = row.height;
+                    if (row.identifier == LEFTMENU_REWARDS_ROW)
+                        return;
+                }
+                
+                SimiRow *rewardsRow = [[SimiRow alloc]initWithIdentifier:LEFTMENU_REWARDS_ROW height:rowHeight sortOrder:310];
+                rewardsRow.title = SCLocalizedString(@"My Rewards");
+                rewardsRow.image = [UIImage imageNamed:@"loyalty_reward_invert"];
+                [section addRow:rewardsRow];
+                [section sortItems];
+            }
+        }
+    }
+}
+
+-(void)listMenuDidSelectRow:(NSNotification *)noti{
+    SimiTable *cells = noti.object;
+    NSIndexPath *indexPath = [noti.userInfo valueForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.indexpath];
+    SimiSection *section = [cells objectAtIndex:indexPath.section];
+    SimiRow *row = [section objectAtIndex:indexPath.row];
+    if ([row.identifier isEqualToString:LEFTMENU_REWARDS_ROW]) {
+        LoyaltyViewController *loyalty = [LoyaltyViewController new];
+        UINavigationController *currentVC = kNavigationController;
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            UINavigationController *navi = [[UINavigationController alloc]initWithRootViewController:loyalty];
+            navi.modalPresentationStyle = UIModalPresentationPopover;
+            UIPopoverPresentationController *popover = navi.popoverPresentationController;
+            popover.sourceRect = CGRectMake(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 1, 1);
+            popover.sourceView = currentVC.view;
+            popover.permittedArrowDirections = 0;
+            [currentVC presentViewController:navi animated:YES completion:nil];
+        }
+        else
+            [currentVC pushViewController:loyalty animated:YES];
+    }
+}
+
+#pragma mark Loytalty on Product
+-(void)productInforViewSetInterfacecellAfter:(NSNotification *)noti
+{
+    SCProductInfoView *productInfoView = noti.object;
+    UIView *loyalty = [productInfoView viewWithTag:LOYALTY_TAG];
+    if (loyalty == nil) {
+        loyalty = [[UIView alloc] initWithFrame:CGRectMake(productInfoView.productNameLabel.frame.origin.x , productInfoView.heightCell+10, productInfoView.productNameLabel.frame.size.width, 44)];
+        loyalty.tag = LOYALTY_TAG;
+        [productInfoView addSubview:loyalty];
+        
+        UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 13, 18, 18)];
+        imageView.contentMode = UIViewContentModeScaleAspectFit;
+        [imageView sd_setImageWithURL:[NSURL URLWithString:[productInfoView.product objectForKey:@"loyalty_image"]] placeholderImage:nil options:SDWebImageRetryFailed];
+        [loyalty addSubview:imageView];
+        
+        UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(24, 0, loyalty.frame.size.width - 24, 44)];
+        label.font = [UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE_REGULAR];
+        label.text = [productInfoView.product objectForKey:@"loyalty_label"];
+        label.numberOfLines = 2;
+        [loyalty addSubview:label];
+    }
+}
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
 @end
