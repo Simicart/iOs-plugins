@@ -40,28 +40,24 @@ static NSString *LEFTMENU_REWARDS_ROW     = @"leftmenu_rewards";
     if (self = [super init]) {
         globalVar = [SimiGlobalVar sharedInstance];
         // Show Label on Shopping Cart
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initCartCells:) name:Simi_SCCartViewController_InitCells_Begin object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializedCartCell:) name:Simi_SCCartViewController_InitializedCell_End object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initCartCells:) name:Simi_SCCartViewControllerPad_InitCells_Begin object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializedCartCell:) name:Simi_SCCartViewControllerPad_InitializedCell_End object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initCartCells:) name:[NSString stringWithFormat:@"%@%@",SCCartViewController_RootEventName, SimiTableViewController_SubKey_InitCells_Begin] object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializedCartCell:) name:[NSString stringWithFormat:@"%@%@",SCCartViewController_RootEventName, SimiTableViewController_SubKey_InitializedCell_End] object:nil];
         
         //My Account Screen
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializedAccountCellAfter:) name:Simi_SCAccountViewController_InitCells_End object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didSelectAccountCellAtIndexPath:) name:Simi_SCAccountViewController_DidSelectCell object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializedAccountCellAfter:) name:[NSString stringWithFormat:@"%@%@",SCAccountViewController_RootEventName,SimiTableViewController_SubKey_InitCells_End] object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didSelectAccountCellAtIndexPath:) name:[NSString stringWithFormat:@"%@%@",SCAccountViewController_RootEventName,SimiTableViewController_SubKey_DidSelectCell] object:nil];
         
         //Left Menu
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(listMenuInitCellsAfter:) name:Simi_SCLeftMenuViewControler_InitCells_End object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(listMenuDidSelectRow:) name:Simi_SCLeftMenuViewControler_DidSelectCell object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(listMenuInitCellsAfter:) name:[NSString stringWithFormat:@"%@%@",SCLeftMenuViewController_RootEventName,SimiTableViewController_SubKey_InitCells_End] object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(listMenuDidSelectRow:) name:[NSString stringWithFormat:@"%@%@",SCLeftMenuViewController_RootEventName,SimiTableViewController_SubKey_DidSelectCell] object:nil];
         
         //Product Info View
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(productInforViewSetInterfacecellAfter:) name:@"SCProductInforViewSetInterfacecell_After" object:nil];
         
         // Order Review
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orderViewControllerViewDidLoad:) name:@"SCOrderViewControllerViewDidLoad" object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initLoyaltyCell:) name:Simi_SCOrderViewController_InitCells_End object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initLoyaltyCell:) name:Simi_SCOrderViewControllerPad_InitCells_End object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializeOrderCellAfter:) name:Simi_SCOrderViewController_InitializedCell_End object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializeOrderCellAfter:) name:Simi_SCOrderViewControllerPad_InitializedCell_End object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initLoyaltyCell:) name:[NSString stringWithFormat:@"%@%@",SCOrderViewController_RootEventName,SimiTableViewController_SubKey_InitCells_End] object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializeOrderCellAfter:) name:[NSString stringWithFormat:@"%@%@",SCOrderViewController_RootEventName,SimiTableViewController_SubKey_InitializedCell_End] object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didSpendPointsOrder:) name:@"DidSpendPointsOrder" object:nil];
     }
     return self;

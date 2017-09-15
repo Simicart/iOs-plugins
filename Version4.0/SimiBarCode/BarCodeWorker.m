@@ -28,25 +28,23 @@
 {
     self = [super init];
     if (self) {
-        [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(didInitCellsAfter:) name:Simi_SCLeftMenuViewControler_InitCells_End object:nil];
-        [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(didSelectRow:) name:Simi_SCLeftMenuViewControler_DidSelectCell object:nil];
+        [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(didInitCellsAfter:) name:[NSString stringWithFormat:@"%@%@",SCLeftMenuViewController_RootEventName,SimiTableViewController_SubKey_InitCells_End] object:nil];
+        [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(didSelectRow:) name:[NSString stringWithFormat:@"%@%@",SCLeftMenuViewController_RootEventName,SimiTableViewController_SubKey_DidSelectCell] object:nil];
     }
     return self;
 }
 
 - (void)didInitCellsAfter:(NSNotification*)noti{
-    if ([noti.name isEqualToString:Simi_SCLeftMenuViewControler_InitCells_End]){
-        SimiTable *cells = noti.object;
-        for (int i = 0; i < cells.count; i++) {
-            SimiSection *section = [cells objectAtIndex:i];
-            if ([section.identifier isEqualToString:LEFTMENU_SECTION_MORE]) {
-                SimiRow *row = [[SimiRow alloc]initWithIdentifier:LEFTMENU_ROW_BARCODE height:50 sortOrder:50];
-                row.image = [UIImage imageNamed:@"barcode_icon"];
-                row.title = SCLocalizedString(@"Scan Now");
-                row.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-                [section addObject:row];
-                [section sortItems];
-            }
+    SimiTable *cells = noti.object;
+    for (int i = 0; i < cells.count; i++) {
+        SimiSection *section = [cells objectAtIndex:i];
+        if ([section.identifier isEqualToString:LEFTMENU_SECTION_MORE]) {
+            SimiRow *row = [[SimiRow alloc]initWithIdentifier:LEFTMENU_ROW_BARCODE height:50 sortOrder:50];
+            row.image = [UIImage imageNamed:@"barcode_icon"];
+            row.title = SCLocalizedString(@"Scan Now");
+            row.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+            [section addObject:row];
+            [section sortItems];
         }
     }
 }

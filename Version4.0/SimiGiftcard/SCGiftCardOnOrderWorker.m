@@ -27,12 +27,8 @@
 }
 - (id)init {
     if(self == [super init]) {
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orderViewInitCells:) name:Simi_SCOrderViewController_InitCells_End object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orderViewCellForRow:) name:Simi_SCOrderViewController_InitializedCell_End object:nil];
-        if(PADDEVICE) {
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orderViewInitCells:) name:Simi_SCOrderViewControllerPad_InitCells_End object:nil];
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orderViewCellForRow:) name:Simi_SCOrderViewControllerPad_InitializedCell_End object:nil];
-        }
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orderViewInitCells:) name:[NSString stringWithFormat:@"%@%@",SCOrderViewController_RootEventName, SimiTableViewController_SubKey_InitCells_End] object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orderViewCellForRow:) name:[NSString stringWithFormat:@"%@%@",SCOrderViewController_RootEventName, SimiTableViewController_SubKey_InitializedCell_End] object:nil];
     }
     return self;
 }

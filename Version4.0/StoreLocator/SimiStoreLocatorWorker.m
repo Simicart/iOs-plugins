@@ -23,8 +23,8 @@
 {
     self = [super init];
     if (self) {
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initCellsAfter:) name:Simi_SCLeftMenuViewControler_InitCells_End object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didSelectRow:) name:Simi_SCLeftMenuViewControler_DidSelectCell object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initCellsAfter:) name:[NSString stringWithFormat:@"%@%@",SCLeftMenuViewController_RootEventName,SimiTableViewController_SubKey_InitCells_End] object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didSelectRow:) name:[NSString stringWithFormat:@"%@%@",SCLeftMenuViewController_RootEventName,SimiTableViewController_SubKey_DidSelectCell] object:nil];
     }
     [GMSServices provideAPIKey:@"AIzaSyAmBe73HHr9CU1lYU96CFg6PTwG2i6NDwU"];
     return self;

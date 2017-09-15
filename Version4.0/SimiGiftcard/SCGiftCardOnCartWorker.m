@@ -28,10 +28,8 @@
 - (instancetype)init{
     self = [super init];
     if (self) {
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(cartViewInitCells:) name:Simi_SCCartViewController_InitCells_End object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(cartViewInitCells:) name:Simi_SCCartViewControllerPad_InitCells_End object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(cartViewCellForRow:) name:Simi_SCCartViewController_InitializedCell_End object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(cartViewCellForRow:) name:Simi_SCCartViewControllerPad_InitializedCell_End object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(cartViewInitCells:) name:[NSString stringWithFormat:@"%@%@",SCCartViewController_RootEventName,SimiTableViewController_SubKey_InitCells_End] object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(cartViewCellForRow:) name:[NSString stringWithFormat:@"%@%@",SCCartViewController_RootEventName,SimiTableViewController_SubKey_InitializedCell_End] object:nil];
     }
     return self;
 }
