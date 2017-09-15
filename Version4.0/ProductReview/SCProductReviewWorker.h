@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-
+#import "SCProductReviewController.h"
 static NSString *product_reviews_section = @"product_reviews_section";
 static NSString *product_reviews_normal_row = @"product_reviews_normal_row";
 static NSString *product_reviews_viewall_row = @"product_reviews_viewall_row";

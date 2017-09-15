@@ -63,7 +63,7 @@ static NSString *LEFTMENU_REWARDS_ROW     = @"leftmenu_rewards";
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"DidSpendPointsOrder" object:nil];
         
         //Order screen init order table on iphone
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"SCOrderViewController-InitTableBefore" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:SCOrderViewControllerInitTableBefore object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"SCOrderViewController-InitTableAfter" object:nil];
         
         //Order screen init order table on ipad
@@ -87,7 +87,7 @@ static NSString *LEFTMENU_REWARDS_ROW     = @"leftmenu_rewards";
 - (void)didReceiveNotification:(NSNotification *)noti
 {
 #pragma mark set Order Table
-    if (([noti.name isEqualToString:@"DidGetOrderConfig"] || [noti.name isEqualToString:@"DidSpendPointsOrder"] || [noti.name isEqualToString:@"DidSetCouponCode"] || [noti.name isEqualToString:@"DidSaveShippingMethod"] || [noti.name isEqualToString:@"SCOrderViewController-InitTableBefore"] || [noti.name isEqualToString:@"SCOrderViewController-InitTableAfter"]||[noti.name isEqualToString:@"SCOrderViewController-InitRightTableAfter"]) && self.orderViewController) {
+    if (([noti.name isEqualToString:@"DidGetOrderConfig"] || [noti.name isEqualToString:@"DidSpendPointsOrder"] || [noti.name isEqualToString:@"DidSetCouponCode"] || [noti.name isEqualToString:@"DidSaveShippingMethod"] || [noti.name isEqualToString:SCOrderViewControllerInitTableBefore] || [noti.name isEqualToString:@"SCOrderViewController-InitTableAfter"]||[noti.name isEqualToString:@"SCOrderViewController-InitRightTableAfter"]) && self.orderViewController) {
         SimiOrderModel *order = [self.orderViewController order];
         SimiTable *orderTable = [self.orderViewController orderTable];
         if (PADDEVICE) {
@@ -373,7 +373,7 @@ static NSString *LEFTMENU_REWARDS_ROW     = @"leftmenu_rewards";
 
 - (void)initializeOrderCellAfter:(NSNotification *)noti
 {
-    SimiRow *row = noti.object;
+    SimiRow *row = [noti.userInfo objectForKey:@"row"];
     if ([row.identifier isEqualToString:LOYALTY_CHECKOUT]) {
         UITableViewCell *cell = (UITableViewCell *)[noti.userInfo objectForKey:@"cell"];
         cell.selectionStyle = UITableViewCellSelectionStyleNone;

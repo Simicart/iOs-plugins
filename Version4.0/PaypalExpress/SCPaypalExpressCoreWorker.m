@@ -33,7 +33,7 @@ static NSString *product_paypalcheckout_row = @"product_paypalcheckout_row";
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didPlaceOrderBefore:) name:@"DidPlaceOrder-Before" object:nil];
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initProductCellsAfter:) name:@"InitProductCells-After" object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializedProductCellAfter:) name:@"InitializedProductCell-After" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializedProductCellAfter:) name:InitializedProductCellAfter object:nil];
         
         paypalExpressConfig = [[SimiGlobalVar sharedInstance].allConfig valueForKey:@"paypal_express_config"];
     }

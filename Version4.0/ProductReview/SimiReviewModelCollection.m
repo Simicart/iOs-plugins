@@ -16,7 +16,7 @@
     keyResponse = @"reviews";
     modelActionType = ModelActionTypeInsert;
     [self preDoRequest];
-    [(SimiReviewAPI *)[self getAPI] getReviewCollectionWithParams:@{@"filter[product_id]": productId, @"offset": [NSString stringWithFormat:@"%ld", (long)offset], @"limit": [NSString stringWithFormat:@"%ld", (long)limit]} target:self selector:@selector(didFinishRequest:responder:)];
+    [(SimiReviewAPI *)[self getAPI] getReviewCollectionWithParams:@{@"filter[product_id]": productId, @"offset": [NSString stringWithFormat:@"%ld", (long)offset], @"limit": [NSString stringWithFormat:@"%ld", (long)limit],@"order":@"entity_id",@"dir":@"desc"} target:self selector:@selector(didFinishRequest:responder:)];
 }
 
 @end

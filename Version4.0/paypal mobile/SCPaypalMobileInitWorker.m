@@ -9,10 +9,10 @@
 #import "SCPaypalMobileInitWorker.h"
 #import "SimiOrderModel+PayPal.h"
 #import <SimiCartBundle/SCAppDelegate.h>
+#import <SimiCartBundle/SCOrderViewController.h>
 
 #define ALERT_VIEW_ERROR 0
 
-#define DidPlaceOrder_After @"DidPlaceOrder-After"
 #define PAYPAL_MOBILE @"PAYPAL_MOBILE"
 
 @implementation SCPaypalMobileInitWorker{
@@ -29,7 +29,7 @@
 {
     self = [super init];
     if (self) {
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"DidPlaceOrder-After" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:DidPlaceOrderAfter object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"DidSelectPaymentMethod" object:nil];
     }
     return self;
@@ -60,7 +60,7 @@
             @finally {
                 
             }
-        }else if ([noti.name isEqualToString:DidPlaceOrder_After]){
+        }else if ([noti.name isEqualToString:DidPlaceOrderAfter]){
             [self didPlaceOrder:noti];
         }
     }

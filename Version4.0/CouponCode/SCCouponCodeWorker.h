@@ -8,6 +8,6 @@
 
 #import <Foundation/Foundation.h>
 
-@interface SCCouponCodeWorker : NSObject
+@interface SCCouponCodeWorker : NSObject<UITextFieldDelegate>
 
 @end

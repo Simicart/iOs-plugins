@@ -19,14 +19,14 @@
 {
     self = [super init];
     if (self) {
-        [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(didReceiveNotification:) name:@"SCOrderViewController-BeforePlaceOrder" object:nil];
+        [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(didReceiveNotification:) name:DidPlaceOrderBefore object:nil];
     }
     return self;
 }
 
 - (void)didReceiveNotification:(NSNotification *)noti
 {
-    if ([noti.name isEqualToString:@"SCOrderViewController-BeforePlaceOrder"]) {
+    if ([noti.name isEqualToString:DidPlaceOrderBefore]) {
         orderViewController = noti.object;
         order = [noti.userInfo valueForKey:@"order"];
         payment = [noti.userInfo valueForKey:@"payment"];

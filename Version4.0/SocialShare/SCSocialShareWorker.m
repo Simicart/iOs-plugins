@@ -10,9 +10,6 @@
 #import <SimiCartBundle/SCProductMoreViewController.h>
 #import <SimiCartBundle/SCProductSecondDesignViewController.h>
 
-#define SCProductMoreViewController_InitViewMoreAction @"SCProductMoreViewController_InitViewMoreAction"
-#define SCProductMoreViewController_BeforeTouchMoreAction @"SCProductMoreViewController-BeforeTouchMoreAction"
-
 @implementation SCSocialShareWorker {
     MoreActionView* moreActionView;
     SimiProductModel *product;
@@ -21,8 +18,10 @@
 }
 - (id)init {
     if(self == [super init]) {
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initViewMoreAction:) name:SCProductMoreViewController_InitViewMoreAction object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(beforeTouchMoreAction:) name:SCProductMoreViewController_BeforeTouchMoreAction object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initViewMoreAction:) name:SCProductMoreViewControllerInitViewMoreAction object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(beforeTouchMoreAction:) name:SCProductMoreViewControllerBeforeTouchMoreAction object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initViewMoreAction:) name:SCProductViewControllerInitViewMoreAction object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(beforeTouchMoreAction:) name:SCProductViewControllerBeforeTouchMoreAction object:nil];
     }
     return self;
 }
@@ -41,8 +40,8 @@
     moreActionView.numberIcon += 1;
     [moreActionView.arrayIcon addObject:shareButton];
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(afterInitViewMore:) name:@"SCProductMoreViewController-AfterInitViewMore" object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(afterInitViewMore:) name:@"SCProductViewController-AfterInitViewMore" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(afterInitViewMore:) name:SCProductMoreViewControllerAfterInitViewMore object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(afterInitViewMore:) name:SCProductViewControllerAfterInitViewMore object:nil];
 }
 
 - (void)afterInitViewMore: (NSNotification *)noti {

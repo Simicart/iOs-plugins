@@ -13,8 +13,6 @@
 #import "SCThankYouPageViewController.h"
 
 #define DidSelectPaymentMethod @"DidSelectPaymentMethod"
-#define DidPlaceOrderAfter @"DidPlaceOrder-After"
-#define DidPlaceOrderBefore @"SCOrderViewController-BeforePlaceOrder"
 #define BRAINTREE_PAYMENT_METHOD @"simibraintree"
 
 @implementation BraintreeInitWorker
