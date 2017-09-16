@@ -63,6 +63,12 @@
     [self stopLoadingData];
     if ([responder.status isEqualToString:@"SUCCESS"]) {
         listShippingMethods = [[NSMutableArray alloc]initWithArray:[paypalShippingModel valueForKey:@"methods"]];
+        for(int i = 0; i < listShippingMethods.count; i++) {
+            SimiModel *shippingMethod = [listShippingMethods objectAtIndex:i];
+            if([[shippingMethod objectForKey:@"s_method_selected"] boolValue]) {
+                checkedData = [NSIndexPath indexPathForRow:i inSection:0];
+            }
+        }
         [shippingMethodTableView reloadData];
     }
     else {

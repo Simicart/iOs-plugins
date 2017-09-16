@@ -38,7 +38,7 @@
     
     //Wishlist Share View
     float wishlistShareViewHeight = 40;
-    wishlistShareView = [[UIView alloc] initWithFrame:CGRectMake(0, paddingY, SCREEN_WIDTH, wishlistShareViewHeight)];
+    wishlistShareView = [[UIView alloc] initWithFrame:CGRectMake(0, SEARCH_BAR_HEIGHT + 5, SCREEN_WIDTH, wishlistShareViewHeight)];
     wishlistShareView.backgroundColor = COLOR_WITH_HEX(@"#e8e8e8");
     UILabel* wishlistShareLabel = [[UILabel alloc] init];
     wishlistShareLabel.text = SCLocalizedString(@"Share Wishlist");
@@ -63,7 +63,7 @@
         collectionViewLayout.itemSize = CGSizeMake(SCREEN_WIDTH, COLLECTIONVIEWCELLHEIGHT);
     else if(PADDEVICE)
         collectionViewLayout.itemSize = CGSizeMake(SCREEN_WIDTH/2 - paddingX, COLLECTIONVIEWCELLHEIGHT);
-    wishlistCollectionView = [[UICollectionView alloc] initWithFrame:CGRectMake(0, wishlistShareViewHeight + paddingY, self.view.bounds.size.width, self.view.bounds.size.height - wishlistShareViewHeight - paddingY * 2 - 64) collectionViewLayout:collectionViewLayout];
+    wishlistCollectionView = [[UICollectionView alloc] initWithFrame:CGRectMake(0, SEARCH_BAR_HEIGHT + wishlistShareViewHeight + 5, self.view.bounds.size.width, self.view.bounds.size.height - wishlistShareViewHeight - paddingY * 2 - 64 - SEARCH_BAR_HEIGHT) collectionViewLayout:collectionViewLayout];
     wishlistCollectionView.backgroundColor = [UIColor whiteColor];
     wishlistCollectionView.delegate = self;
     wishlistCollectionView.dataSource = self;
@@ -79,6 +79,7 @@
     emptyLabel.font = [UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE];
     [self.view addSubview:emptyLabel];
     [SimiGlobalVar sortViewForRTL:self.view andWidth:SCREEN_WIDTH];
+    [self addSearchView];
 }
 
 - (void)viewWillAppearBefore:(BOOL)animated{
