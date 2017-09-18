@@ -7,11 +7,11 @@
 //
 
 #import "SCProductReviewController.h"
-#import "SCProductInfoView.h"
+#import <SimiCartBundle/SCProductInfoView.h>
 #import "SCProductReviewView.h"
-#import "UIScrollView+SVInfiniteScrolling.h"
+#import <SimiCartBundle/UIScrollView+SVInfiniteScrolling.h>
 #import "SCProductReviewShortCell.h"
-#import "SimiSection.h"
+#import <SimiCartBundle/SimiSection.h>
 #import "SCAddProductReviewViewController.h"
 
 NSString *REVIEW_PRODUCT_CELL = @"REVIEW_PRODUCT_CELL";

@@ -9,7 +9,7 @@
 #import "SCAddProductReviewViewController.h"
 #import "SimiReviewModel.h"
 #import "ASStarRatingView.h"
-#import "SimiTextView.h"
+#import <SimiCartBundle/SimiTextView.h>
 
 
 @interface SCAddProductReviewViewController ()

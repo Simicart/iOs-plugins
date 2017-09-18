@@ -37,6 +37,7 @@
     shareButton.layer.shadowOpacity = 0.5;
     [shareButton setBackgroundColor:THEME_APP_BACKGROUND_COLOR];
     [shareButton addTarget:self action:@selector(didTouchShareButton:) forControlEvents:UIControlEventTouchUpInside];
+    shareButton.tag = 2000;
     moreActionView.numberIcon += 1;
     [moreActionView.arrayIcon addObject:shareButton];
     

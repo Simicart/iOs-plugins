@@ -51,6 +51,7 @@
     reviewButton.layer.shadowOpacity = 0.5;
     [reviewButton setBackgroundColor:[UIColor whiteColor]];
     [reviewButton addTarget:self action:@selector(didTouchReviewButton:) forControlEvents:UIControlEventTouchUpInside];
+    reviewButton.tag = 1000;
     moreActionView.numberIcon += 1;
     [moreActionView.arrayIcon addObject:reviewButton];
     

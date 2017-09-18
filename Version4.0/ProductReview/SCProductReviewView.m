@@ -11,7 +11,6 @@
 //
 
 #import "SCProductReviewView.h"
-#import "SimiGlobalVar.h"
 
 @implementation SCProductReviewView{
     float maginLeftX;
