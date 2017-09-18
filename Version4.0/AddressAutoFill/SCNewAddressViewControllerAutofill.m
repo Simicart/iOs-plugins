@@ -200,7 +200,7 @@
 #pragma mark Scroll view delegate
 - (void)scrollViewWillBeginDecelerating:(UIScrollView *)scrollView
 {
-    [anAddressView.form scrollViewWillBeginDecelerating:scrollView];
+//    [anAddressView.form scrollViewWillBeginDecelerating:scrollView];
 }
 
 @end

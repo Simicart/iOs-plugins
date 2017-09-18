@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 SimiTeam. All rights reserved.
 //
 
-#import "SimiModel.h"
+#import <SimiCartBundle/SimiModel.h>
 
 #define DidSubmitProductReview @"DidSubmitProductReview"
 

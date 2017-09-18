@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 SimiTeam. All rights reserved.
 //
 
-#import "SimiModelCollection.h"
+#import <SimiCartBundle/SimiModelCollection.h>
 
 @interface SimiReviewModelCollection : SimiModelCollection
 

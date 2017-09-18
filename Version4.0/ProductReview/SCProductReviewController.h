@@ -6,7 +6,7 @@
 //  Copyright (c) 2013 Tan Hoang. All rights reserved.
 //
 
-#import "SimiProductModel.h"
+#import <SimiCartBundle/SimiProductModel.h>
 #import "SimiReviewModelCollection.h"
 
 

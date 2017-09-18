@@ -106,7 +106,7 @@
         if(productMoreVC) {
             [productMoreVC.navigationController pushViewController:reviewController animated:YES];
         }else if(productVC) {
-            
+            [productVC presentWithRootViewController:reviewController];
         }
     }
 }
@@ -117,7 +117,7 @@
         reviewCollection = [[SimiReviewModelCollection alloc] init];
     }
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didGetReviewCollection:) name:@"DidGetReviewCollection" object:reviewCollection];
-    [reviewCollection getReviewCollectionWithProductId:[product valueForKey:@"entity_id"] offset:reviewCollection.count limit:6];
+    [reviewCollection getReviewCollectionWithProductId:[product valueForKey:@"entity_id"] offset:0 limit:6];
 }
 
 - (void)didGetReviewCollection:(NSNotification *)noti{

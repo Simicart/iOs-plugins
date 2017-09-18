@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 SimiTeam. All rights reserved.
 //
 
-#import "SimiAPI.h"
+#import <SimiCartBundle/SimiAPI.h>
 
 @interface SimiReviewAPI : SimiAPI
 - (void)getReviewCollectionWithParams:(NSDictionary *)params target:(id)target selector:(SEL)selector;
