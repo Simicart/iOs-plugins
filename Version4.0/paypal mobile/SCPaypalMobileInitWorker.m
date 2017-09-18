@@ -9,10 +9,10 @@
 #import "SCPaypalMobileInitWorker.h"
 #import "SimiOrderModel+PayPal.h"
 #import <SimiCartBundle/SCAppDelegate.h>
+#import <SimiCartBundle/SCOrderViewController.h>
 
 #define ALERT_VIEW_ERROR 0
 
-#define DidPlaceOrder_After @"DidPlaceOrder-After"
 #define PAYPAL_MOBILE @"PAYPAL_MOBILE"
 
 @implementation SCPaypalMobileInitWorker{
@@ -29,7 +29,7 @@
 {
     self = [super init];
     if (self) {
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"DidPlaceOrder-After" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:DidPlaceOrderAfter object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"DidSelectPaymentMethod" object:nil];
     }
     return self;
@@ -60,7 +60,7 @@
             @finally {
                 
             }
-        }else if ([noti.name isEqualToString:DidPlaceOrder_After]){
+        }else if ([noti.name isEqualToString:DidPlaceOrderAfter]){
             [self didPlaceOrder:noti];
         }
     }
@@ -98,14 +98,6 @@
         pay.currencyCode = [[SimiGlobalVar sharedInstance] currencyCode];
         pay.bnCode = bnCode;
         pay.shortDescription = [NSString stringWithFormat:@"%@ #: %@", SCLocalizedString(@"Invoice"), [order valueForKey:@"invoice_number"]];
-        pay.intent = PayPalPaymentIntentSale;
-        
-        if ([[payment valueForKey:@"payment_action"] isEqualToString:@"order"]) {
-            pay.intent = PayPalPaymentIntentOrder;
-        }else if([[payment valueForKey:@"payment_action"] isEqualToString:@"authorization"])
-        {
-            pay.intent = PayPalPaymentIntentAuthorize;
-        }
         
         NSDictionary *shippingAddress = [order objectForKey:@"shipping_address"];
         PayPalShippingAddress *paypalShippingAddress = [[PayPalShippingAddress alloc] init];
@@ -116,6 +108,7 @@
         paypalShippingAddress.state = [shippingAddress objectForKey:@"region"];
         paypalShippingAddress.line1 = [shippingAddress objectForKey:@"street"];
         pay.shippingAddress = paypalShippingAddress;
+        
         
         // Check whether payment is processable.
         if (pay.processable) {
@@ -162,35 +155,20 @@
         NSLog(@"PayPal Payment Success!");
     }
     // Payment was processed successfully; send to server for verification and fulfillment
-    [self sendCompletedPaymentToServer:completedPayment];
+    [self updatePaymentToServerWithStatus:PaymentStatusApproved andProof:completedPayment.confirmation];
 }
 
 - (void)payPalPaymentDidCancel:(PayPalPaymentViewController *)paymentViewController {
-    if (SIMI_DEBUG_ENABLE) {
-        NSLog(@"PayPal Payment Canceled");
-    }
+    [self updatePaymentToServerWithStatus:PaymentStatusCancelled andProof:@{}];
+}
+
+
+- (void)updatePaymentToServerWithStatus: (PaymentStatus) paymentStatus andProof: (NSDictionary *)proof {
     if (paypalOrder == nil) {
         paypalOrder = [SimiOrderModel new];
     }
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdatePaymentStatus:) name:DidSavePaypalPayment object:paypalOrder];
-    [paypalOrder savePaymentWithStatus:[NSString stringWithFormat:@"%ld",(long)PaymentStatusCancelled] invoiceNumber:[NSString stringWithFormat:@"%@",[order valueForKey:@"invoice_number"]] proof:nil];
-    [viewController dismissViewControllerAnimated:YES completion:^{
-        [[UINavigationBar appearance] setTintColor:[UIColor whiteColor]];
-    }];
-    [viewController startLoadingData];
-}
-
-- (void)payPalPaymentViewController:(PayPalPaymentViewController *)paymentViewController willCompletePayment:(PayPalPayment *)completedPayment completionBlock:(PayPalPaymentDelegateCompletionBlock)completionBlock {
-    
-}
-
-#pragma mark Proof of payment validation
-- (void)sendCompletedPaymentToServer:(PayPalPayment *)completedPayment {
-    if (paypalOrder == nil) {
-        paypalOrder = [SimiOrderModel new];
-    }
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdatePaymentStatus:) name:DidSavePaypalPayment object:paypalOrder];
-    [paypalOrder savePaymentWithStatus:[NSString stringWithFormat:@"%ld",(long)PaymentStatusApproved] invoiceNumber:[NSString stringWithFormat:@"%@",[order valueForKey:@"invoice_number"]] proof:completedPayment.confirmation];
+    [paypalOrder savePaymentWithStatus:[NSString stringWithFormat:@"%ld",(long)paymentStatus] invoiceNumber:[NSString stringWithFormat:@"%@",[order valueForKey:@"invoice_number"]] proof:proof];
     [viewController dismissViewControllerAnimated:YES completion:^{
         [[UINavigationBar appearance] setTintColor:[UIColor whiteColor]];
     }];
@@ -200,15 +178,7 @@
 #pragma mark Alert View Delegate
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex{
     if (alertView.tag == ALERT_VIEW_ERROR) {
-        if (paypalOrder == nil) {
-            paypalOrder = [SimiOrderModel new];
-        }
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdatePaymentStatus:) name:DidSavePaypalPayment object:paypalOrder];
-        [paypalOrder savePaymentWithStatus:[NSString stringWithFormat:@"%ld",(long)PaymentStatusCancelled] invoiceNumber:nil proof:nil];
-        [viewController dismissViewControllerAnimated:YES completion:^{
-            [[UINavigationBar appearance] setTintColor:[UIColor whiteColor]];
-        }];
-        [viewController startLoadingData];
+        [self updatePaymentToServerWithStatus:PaymentStatusCancelled andProof:@{}];
     }
 }
 

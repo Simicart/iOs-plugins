@@ -71,6 +71,7 @@
         wishlistButton.layer.shadowOpacity = 0.5;
         [wishlistButton setBackgroundColor:[UIColor whiteColor]];
         [wishlistButton addTarget:self action:@selector(didTouchWishlistButton) forControlEvents:UIControlEventTouchUpInside];
+        wishlistButton.tag = 3000;
     }
     actionView.numberIcon += 1;
     [actionView.arrayIcon addObject:wishlistButton];

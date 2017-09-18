@@ -47,17 +47,7 @@
                 [mainSection addRowWithIdentifier:product_techspecs_row height:50];
             }
         }
-        
-        appReviews = [self.product valueForKey:@"app_reviews"];
-        if ([[appReviews valueForKey:@"number"]floatValue]) {
-            hadReviews = YES;
-        }
-        if(!hadReviews){
-            if ([SimiGlobalVar sharedInstance].isLogin || (![SimiGlobalVar sharedInstance].isLogin && [SimiGlobalVar sharedInstance].isReviewAllowGuest)) {
-                SimiSection *reviewSection = [_cells addSectionWithIdentifier:product_reviews_section headerTitle:SCLocalizedString(@"Review")];
-                [reviewSection addRowWithIdentifier:product_reviews_firstpeople_row height:50];
-            }
-        }
+        [[NSNotificationCenter defaultCenter] postNotificationName:InitProductCellsAfter object:_cells userInfo:@{@"controller":self,@"product":self.product}];
     }
     [self.productTableView reloadData];
 }
@@ -401,59 +391,11 @@
             }
         }
 #pragma mark Reviews
-    }else if ([section.identifier isEqualToString:product_reviews_section])
-    {
-        if ([row.identifier isEqualToString:product_reviews_normal_row]) {
-            SimiModel *reviewModel = [self.reviewCollection objectAtIndex:indexPath.row];
-            NSString *cellIdentifier = [NSString stringWithFormat:@"%@_%@",row.identifier,[reviewModel valueForKey:@"review_id"]];
-            cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
-            if (cell == nil) {
-                SCProductReviewShortCell *cellShort = [[SCProductReviewShortCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier reviewData:reviewModel numberTitleLine:1 numberBodyLine:2];
-                row.height = cellShort.cellHeight;
-                cell = cellShort;
-                cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-            }
-        }
-        else if([row.identifier isEqualToString:product_reviews_add_row]){
-            cell = [tableView dequeueReusableCellWithIdentifier:row.identifier];
-            if (cell == nil) {
-                cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:row.identifier];
-                cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-                SimiLabel *titleLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(paddingEdge, 10, tableWidth - paddingEdge*3, 30) andFontName:THEME_FONT_NAME_REGULAR];
-                [titleLabel setText:SCLocalizedString(@"Add Your Review")];
-                [cell.contentView addSubview:titleLabel];
-                [SimiGlobalVar sortViewForRTL:cell.contentView andWidth:tableWidth - paddingEdge];
-            }
-        }
-        else if ([row.identifier isEqualToString:product_reviews_firstpeople_row])
-        {
-            cell = [tableView dequeueReusableCellWithIdentifier:row.identifier];
-            if (cell == nil) {
-                cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:row.identifier];
-                cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-                SimiLabel *titleLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(paddingEdge, 10, tableWidth - paddingEdge*3, 30) andFontName:THEME_FONT_NAME_REGULAR];
-                [titleLabel setText:SCLocalizedString(@"Be the first to review this product")];
-                [cell.contentView addSubview:titleLabel];
-                [SimiGlobalVar sortViewForRTL:cell.contentView andWidth:tableWidth - paddingEdge];
-            }
-        }else if ([row.identifier isEqualToString:product_reviews_viewall_row])
-        {
-            cell = [tableView dequeueReusableCellWithIdentifier:row.identifier];
-            if (cell == nil) {
-                cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:row.identifier];
-                cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-                SimiLabel *titleLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(paddingEdge, 10, tableWidth - paddingEdge*3, 30) andFontName:THEME_FONT_NAME_REGULAR];
-                [titleLabel setTextAlignment:NSTextAlignmentCenter];
-                [titleLabel setText:SCLocalizedString(@"View all")];
-                [cell.contentView addSubview:titleLabel];
-                [SimiGlobalVar sortViewForRTL:cell.contentView andWidth:tableWidth-paddingEdge];
-            }
-        }
     }
     if (cell == nil) {
         cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:row.identifier];
     }
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"InitializedProductCell-After" object:self userInfo:@{@"tableView": tableView, @"indexPath": indexPath, @"section": section, @"row": row, @"cell": cell}];
+    [[NSNotificationCenter defaultCenter] postNotificationName:InitializedProductCellAfter object:self userInfo:@{@"tableView": tableView, @"indexPath": indexPath, @"section": section, @"row": row, @"cell": cell}];
     return cell;
 }
 

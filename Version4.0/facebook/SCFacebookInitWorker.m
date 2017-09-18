@@ -292,6 +292,7 @@
     fbButton.layer.shadowOpacity = 0.5;
     [fbButton setBackgroundColor:[UIColor whiteColor]];
     [fbButton addTarget:self action:@selector(fbButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
+    fbButton.tag = 4000;
     moreActionView.numberIcon += 1;
     [moreActionView.arrayIcon addObject:fbButton];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(afterInitViewMore:) name:@"SCProductMoreViewController-AfterInitViewMore" object:nil];

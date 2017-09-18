@@ -85,17 +85,7 @@
                 [mainSection addRowWithIdentifier:product_techspecs_row height:50];
             }
         }
-        
-        appReviews = [self.product valueForKey:@"app_reviews"];
-        if ([[appReviews valueForKey:@"number"]floatValue]) {
-            hadReviews = YES;
-        }
-        if(!hadReviews){
-            if ([SimiGlobalVar sharedInstance].isLogin || (![SimiGlobalVar sharedInstance].isLogin && [SimiGlobalVar sharedInstance].isReviewAllowGuest)) {
-                SimiSection *reviewSection = [_cells addSectionWithIdentifier:product_reviews_section headerTitle:SCLocalizedString(@"Review")];
-                [reviewSection addRowWithIdentifier:product_reviews_firstpeople_row height:50];
-            }
-        }
+        [[NSNotificationCenter defaultCenter] postNotificationName:InitProductCellsAfter object:_cells userInfo:@{@"controller":self,@"product":self.product}];
     }
     [self.productTableView reloadData];
 }

@@ -10,6 +10,7 @@
 #import "SimiOrderModel+Ipay.h"
 #import "SimiIpayViewController.h"
 #import <SimiCartBundle/SCAppDelegate.h>
+#import <SimiCartBundle/SCOrderViewController.h>
 
 #define METHOD_IPAY @"SIMIIPAY88"
 #define ALERT_VIEW_ERROR 0
@@ -27,14 +28,14 @@
 {
     self = [super init];
     if (self) {
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didPlaceOrderAfter:) name:@"DidPlaceOrder-After" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didPlaceOrderAfter:) name:DidPlaceOrderAfter object:nil];
     }
     return self;
 }
 
 - (void)didPlaceOrderAfter:(NSNotification *)noti
 {
-    if ([noti.name isEqualToString:@"DidPlaceOrder-After"]){
+    if ([noti.name isEqualToString:DidPlaceOrderAfter]){
         payment = [noti.userInfo valueForKey:@"payment"];
         if ([[payment valueForKey:@"payment_method"] isEqualToString:METHOD_IPAY]) {
             [self didPlaceOrder:noti];
