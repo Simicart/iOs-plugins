@@ -11,7 +11,7 @@
 #import <SimiCartBundle/SCCategoryViewController.h>
 #import <SimiCartBundle/SCProductListViewController.h>
 
-#define SIMI_MIXPANEL_TOKEN @"56ac1bab6cde3e1e795cd8772151bbc5"
+#define SIMI_MIXPANEL_TOKEN @"fc01282c24cfecb65b8c8518102284c2"
 
 @implementation SCMixpabelWorker
 {
