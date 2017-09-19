@@ -389,13 +389,16 @@
 -(void) didInitLeftMenuRows:(NSNotification*) noti{
     if([[SimiGlobalVar sharedInstance].allConfig objectForKey:@"facebook_connect"]){
         NSDictionary* fbConnect = [[SimiGlobalVar sharedInstance].allConfig objectForKey:@"facebook_connect"];
-        if([fbConnect objectForKey:@"invite_link"] && ![[NSString stringWithFormat:@"%@",[fbConnect objectForKey:@"invite_link"]] isEqualToString:@""]){
-            SimiTable* leftMenuCells = noti.object;
-            SimiSection* moreSection = [leftMenuCells getSectionByIdentifier:LEFTMENU_SECTION_MORE];
-            SimiRow *inviteRow = [[SimiRow alloc]initWithIdentifier:LEFTMENU_ROW_FACEBOOK_INVITE height:50 sortOrder:9999];
-            inviteRow.image = [UIImage imageNamed:@"facebook_invite"];
-            inviteRow.title = SCLocalizedString(@"Invite Friends");
-            [moreSection addObject:inviteRow];
+        if(![[fbConnect objectForKey:@"invite_link"] isEqual:[NSNull null]]) {
+            NSString *inviteLink = [NSString stringWithFormat:@"%@",[fbConnect objectForKey:@"invite_link"]];
+            if(![inviteLink isEqualToString:@""]){
+                SimiTable* leftMenuCells = noti.object;
+                SimiSection* moreSection = [leftMenuCells getSectionByIdentifier:LEFTMENU_SECTION_MORE];
+                SimiRow *inviteRow = [[SimiRow alloc]initWithIdentifier:LEFTMENU_ROW_FACEBOOK_INVITE height:50 sortOrder:9999];
+                inviteRow.image = [UIImage imageNamed:@"facebook_invite"];
+                inviteRow.title = SCLocalizedString(@"Invite Friends");
+                [moreSection addObject:inviteRow];
+            }
         }
     }
 }

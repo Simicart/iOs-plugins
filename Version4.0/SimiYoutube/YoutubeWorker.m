@@ -13,7 +13,7 @@
 #import <SimiCartBundle/SCProductMoreViewController.h>
 #import <SimiCartBundle/SCProductSecondDesignViewController.h>
 #import "YTPlayerView.h"
-#import "SimiTable.h"
+#import <SimiCartBundle/SimiTable.h>
 
 static NSString *PRODUCT_ROW_YOUTUBE = @"PRODUCT_ROW_YOUTUBE";
 @implementation YoutubeWorker
