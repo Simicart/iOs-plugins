@@ -55,7 +55,7 @@
                 cartCouponTextField.delegate = self;
                 [cartCouponTextField setClearButtonMode:UITextFieldViewModeWhileEditing];
                 
-                UIToolbar *couponCodeToolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, 40)];
+                UIToolbar *couponCodeToolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, 44)];
                 couponCodeToolbar.items = @[[[UIBarButtonItem alloc] initWithTitle:SCLocalizedString(@"Done") style:UIBarButtonItemStyleDone target:self action:@selector(doneEditCouponCode:)]];
                 cartCouponTextField.inputAccessoryView = couponCodeToolbar;
                 
@@ -128,7 +128,7 @@
             orderCouponTextField.delegate = self;
             [orderCouponTextField setClearButtonMode:UITextFieldViewModeWhileEditing];
             
-            UIToolbar *couponCodeToolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, 40)];
+            UIToolbar *couponCodeToolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, 44)];
             couponCodeToolbar.items = @[[[UIBarButtonItem alloc] initWithTitle:SCLocalizedString(@"Done") style:UIBarButtonItemStyleDone target:self action:@selector(doneEditCouponCode:)]];
             orderCouponTextField.inputAccessoryView = couponCodeToolbar;
             
