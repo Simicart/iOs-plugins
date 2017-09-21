@@ -14,6 +14,7 @@ static NSString *product_paypalcheckout_row = @"product_paypalcheckout_row";
 @implementation SCPaypalExpressCoreWorker
 {
     NSDictionary *paypalExpressConfig;
+    SCOrderViewController *orderVC;
 }
 @synthesize btnPaypalCart, btnPaypalProduct, btnPaypalProductNew;
 @synthesize productViewController, productActionView, productActionViewFrame;
@@ -34,6 +35,8 @@ static NSString *product_paypalcheckout_row = @"product_paypalcheckout_row";
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initProductCellsAfter:) name:@"InitProductCells-After" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializedProductCellAfter:) name:@"InitializedProductCell-After" object:nil];
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didCompleteCheckOutWithPaypalExpress:) name:@"DidCompleteCheckOutWithPaypalExpress" object:nil];
         
         paypalExpressConfig = [[SimiGlobalVar sharedInstance].allConfig valueForKey:@"paypal_express_config"];
     }
@@ -195,6 +198,7 @@ static NSString *product_paypalcheckout_row = @"product_paypalcheckout_row";
 - (void)didPlaceOrderBefore:(NSNotification *)noti
 {
     SimiModel *payment = [noti.userInfo valueForKey:@"payment"];
+    orderVC = [noti.userInfo objectForKey:@"controller"];
     if ([[payment valueForKey:@"payment_method"] isEqualToString:@"PAYPALUK_EXPRESS"]) {
         SimiResponder *responder = [noti.userInfo valueForKey:@"responder"];
         if ([responder.status isEqualToString:@"SUCCESS"]) {
@@ -227,8 +231,54 @@ static NSString *product_paypalcheckout_row = @"product_paypalcheckout_row";
     [(UINavigationController *)currentVC pushViewController:webViewController animated:YES];
 }
 
+- (void)didCompleteCheckOutWithPaypalExpress: (NSNotification *)noti {
+    [[SimiGlobalVar sharedInstance].currentlyNavigationController popToRootViewControllerAnimated:YES];
+    SimiOrderModel *order = [SimiOrderModel new];
+    SimiModel *paypalModel = noti.object;
+    [order getOrderWithId:[paypalModel objectForKey:@"order_id"]];
+    [((SimiViewController *)[SimiGlobalVar sharedInstance].currentlyNavigationController.viewControllers.lastObject) startLoadingData];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didGetOrder:) name:@"DidGetOrder" object:nil];
+}
 
-#pragma mark -
+- (void)didGetOrder: (NSNotification *)noti {
+    SimiOrderModel *order = noti.object;
+    [[NSNotificationCenter defaultCenter] removeObserverForNotification:noti];
+    [((SimiViewController *)[SimiGlobalVar sharedInstance].currentlyNavigationController.viewControllers.lastObject) stopLoadingData];
+    SimiResponder *responder = [noti.userInfo objectForKey:@"responder"];
+    if([responder.status isEqualToString:@"SUCCESS"]) {
+        if (PHONEDEVICE) {
+            if (orderVC.checkOutType != CheckOutTypeNewCustomer) {
+                SCThankYouPageViewController *thankVC = [[SCThankYouPageViewController alloc] init];
+                thankVC.number = [order objectForKey:@"increment_id"];
+                thankVC.order = order;
+                if(orderVC.checkOutType == CheckOutTypeGuest){
+                    thankVC.isGuest = YES;
+                }else
+                    thankVC.isGuest = NO;
+                [[SimiGlobalVar sharedInstance].currentlyNavigationController pushViewController:thankVC animated:YES];
+            }
+        }else{
+            if (orderVC.checkOutType != CheckOutTypeNewCustomer) {
+                UINavigationController *currentlyNavigationController = [SimiGlobalVar sharedInstance].currentlyNavigationController;
+                SCThankYouPageViewController *thankVC = [[SCThankYouPageViewController alloc] init];
+                thankVC.number = [order objectForKey:@"increment_id"];
+                thankVC.order = order;
+                if(orderVC.checkOutType == CheckOutTypeGuest){
+                    thankVC.isGuest = YES;
+                }else
+                    thankVC.isGuest = NO;
+                UINavigationController *navi = [[UINavigationController alloc]initWithRootViewController:thankVC];
+                navi.modalPresentationStyle = UIModalPresentationPopover;
+                UIPopoverPresentationController *popover = navi.popoverPresentationController;
+                popover.sourceRect = CGRectMake(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 1, 1);
+                popover.sourceView = currentlyNavigationController.view;
+                popover.permittedArrowDirections = 0;
+                [currentlyNavigationController presentViewController:navi animated:YES completion:nil];
+            }
+        }
+    }
+}
+
 #pragma mark dealloc
 
 - (void)dealloc{

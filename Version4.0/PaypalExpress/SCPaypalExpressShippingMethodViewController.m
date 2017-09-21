@@ -56,8 +56,7 @@
     [paypalShippingModel getShippingMethods];
 }
 
-- (void)didGetShippingMethods:(NSNotification *)noti
-{
+- (void)didGetShippingMethods:(NSNotification *)noti {
     SimiResponder *responder = [noti.userInfo valueForKey:@"responder"];
     [self removeObserverForNotification:noti];
     [self stopLoadingData];
@@ -70,8 +69,7 @@
             }
         }
         [shippingMethodTableView reloadData];
-    }
-    else {
+    } else {
         UIAlertView * alert = [[UIAlertView alloc]initWithTitle:SCLocalizedString(@"Error") message:responder.responseMessage delegate:self cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles: nil];
         [alert show];
     }
@@ -206,6 +204,7 @@
         SCCartViewControllerPad * cartVC = [[SCThemeWorker sharedInstance].navigationBarPad cartViewControllerPad];
         [cartVC getCart];
     }
+    [self.navigationController dismissViewControllerAnimated:YES completion:nil];
     if ([responder.status isEqualToString:@"SUCCESS"]) {
         UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:SCLocalizedString(responder.status) message:SCLocalizedString(@"Thank you for your purchase") delegate:nil cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles: nil];
         [alertView show];
@@ -214,7 +213,6 @@
         UIAlertView * alert = [[UIAlertView alloc]initWithTitle:@"" message:responder.responseMessage delegate:self cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles: nil];
         [alert show];
     }
-    [self.navigationController dismissViewControllerAnimated:YES completion:nil];
-    [[NSNotificationCenter defaultCenter]postNotificationName:@"DidCompleteCheckOutWithPaypalExpress" object:nil];
+    [[NSNotificationCenter defaultCenter]postNotificationName:@"DidCompleteCheckOutWithPaypalExpress" object:paypalModel];
 }
 @end

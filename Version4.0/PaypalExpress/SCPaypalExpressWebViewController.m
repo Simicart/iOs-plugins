@@ -41,13 +41,13 @@
     paypalExpCheckOutWebView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin ;
     [self.view addSubview:paypalExpCheckOutWebView];
     [self startLoadingData];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(completeCheckOut:) name:@"DidCompleteCheckOutWithPaypalExpress" object:nil];
+//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(completeCheckOut:) name:@"DidCompleteCheckOutWithPaypalExpress" object:nil];
 }
 
-- (void)completeCheckOut:(NSNotification*)noti
-{
-    [self.navigationController popToRootViewControllerAnimated:YES];
-}
+//- (void)completeCheckOut:(NSNotification*)noti
+//{
+//    [self.navigationController popToRootViewControllerAnimated:YES];
+//}
 
 - (void)paypalStart
 {
