@@ -65,6 +65,7 @@
                 
                 [cell addSubview:cartCouponTextField];
                 [cell addSubview:applyCouponCodeButton];
+                [SimiGlobalVar sortViewForRTL:cell andWidth:CGRectGetWidth(tableView.frame)];
             }
             if([[SimiGlobalVar sharedInstance].cart.priceData valueForKey:@"coupon_code"])
             {
@@ -138,6 +139,7 @@
             
             [cell addSubview:orderCouponTextField];
             [cell addSubview:applyCouponCodeButton];
+            [SimiGlobalVar sortViewForRTL:cell andWidth:CGRectGetWidth(tableView.frame)];
         }
         if([orderVC.totalData valueForKey:@"coupon_code"])
         {
