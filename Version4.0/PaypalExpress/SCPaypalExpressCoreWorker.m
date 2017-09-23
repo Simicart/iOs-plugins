@@ -232,25 +232,14 @@ static NSString *product_paypalcheckout_row = @"product_paypalcheckout_row";
 }
 
 - (void)didCompleteCheckOutWithPaypalExpress: (NSNotification *)noti {
-    [[SimiGlobalVar sharedInstance].currentlyNavigationController popToRootViewControllerAnimated:YES];
-    SimiOrderModel *order = [SimiOrderModel new];
     SimiModel *paypalModel = noti.object;
-    [order getOrderWithId:[paypalModel objectForKey:@"order_id"]];
-    [((SimiViewController *)[SimiGlobalVar sharedInstance].currentlyNavigationController.viewControllers.lastObject) startLoadingData];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didGetOrder:) name:@"DidGetOrder" object:nil];
-}
-
-- (void)didGetOrder: (NSNotification *)noti {
-    SimiOrderModel *order = noti.object;
     [[NSNotificationCenter defaultCenter] removeObserverForNotification:noti];
-    [((SimiViewController *)[SimiGlobalVar sharedInstance].currentlyNavigationController.viewControllers.lastObject) stopLoadingData];
     SimiResponder *responder = [noti.userInfo objectForKey:@"responder"];
     if([responder.status isEqualToString:@"SUCCESS"]) {
         if (PHONEDEVICE) {
             if (orderVC.checkOutType != CheckOutTypeNewCustomer) {
                 SCThankYouPageViewController *thankVC = [[SCThankYouPageViewController alloc] init];
-                thankVC.number = [order objectForKey:@"increment_id"];
-                thankVC.order = order;
+                thankVC.number = [paypalModel objectForKey:@"order_id"];
                 if(orderVC.checkOutType == CheckOutTypeGuest){
                     thankVC.isGuest = YES;
                 }else
@@ -261,8 +250,7 @@ static NSString *product_paypalcheckout_row = @"product_paypalcheckout_row";
             if (orderVC.checkOutType != CheckOutTypeNewCustomer) {
                 UINavigationController *currentlyNavigationController = [SimiGlobalVar sharedInstance].currentlyNavigationController;
                 SCThankYouPageViewController *thankVC = [[SCThankYouPageViewController alloc] init];
-                thankVC.number = [order objectForKey:@"increment_id"];
-                thankVC.order = order;
+                thankVC.number = [paypalModel objectForKey:@"order_id"];
                 if(orderVC.checkOutType == CheckOutTypeGuest){
                     thankVC.isGuest = YES;
                 }else

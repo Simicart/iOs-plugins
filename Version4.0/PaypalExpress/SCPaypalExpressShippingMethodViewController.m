@@ -199,20 +199,13 @@
     if (PHONEDEVICE) {
         SCCartViewController * cartVC = [[SCThemeWorker sharedInstance].navigationBarPhone cartViewController];
         [cartVC getCart];
-    }else
-    {
+    }else {
         SCCartViewControllerPad * cartVC = [[SCThemeWorker sharedInstance].navigationBarPad cartViewControllerPad];
         [cartVC getCart];
     }
     [self.navigationController dismissViewControllerAnimated:YES completion:nil];
-    if ([responder.status isEqualToString:@"SUCCESS"]) {
-        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:SCLocalizedString(responder.status) message:SCLocalizedString(@"Thank you for your purchase") delegate:nil cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles: nil];
-        [alertView show];
-    }
-    else {
-        UIAlertView * alert = [[UIAlertView alloc]initWithTitle:@"" message:responder.responseMessage delegate:self cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles: nil];
-        [alert show];
-    }
+    [[SimiGlobalVar sharedInstance].currentlyNavigationController popToRootViewControllerAnimated:YES];
+    NSLog(@"Did Place Order With Message: %@",responder.responseMessage);
     [[NSNotificationCenter defaultCenter]postNotificationName:@"DidCompleteCheckOutWithPaypalExpress" object:paypalModel];
 }
 @end
