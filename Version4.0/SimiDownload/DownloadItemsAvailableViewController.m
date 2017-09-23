@@ -39,8 +39,7 @@
 }
 
 #pragma mark Get List Download Items
-- (void)getListDownloadItems
-{
+- (void)getListDownloadItems {
     if (_downloadModelCollection == nil) {
         _downloadModelCollection = [DownloadModelCollection new];
     }
@@ -53,52 +52,40 @@
 {
     SimiResponder *responder = [noti.userInfo valueForKey:@"responder"];
     if ([[responder.status uppercaseString]isEqualToString:@"SUCCESS"]) {
-        [self setCells:nil];
-    }else {
-        [self showToastMessage:responder.responseMessage];
-    }
-    [self stopLoadingData];
-    [self removeObserverForNotification:noti];
-    
-//    if ([[responder.status uppercaseString]isEqualToString:@"SUCCESS"]) {
-//        if (_downloadModelCollection.count > 0) {
-//
-//            _countSuccess = 0;
-//            for (int i = 0; i < _downloadModelCollection.count; i++) {
-//                SimiModel *model = [_downloadModelCollection objectAtIndex:i];
-//                NSURL *url = [NSURL URLWithString:[model valueForKey:@"order_link"]];
-//                NSMutableURLRequest *request = [NSMutableURLRequest
-//                                                requestWithURL:url
-//                                                cachePolicy:NSURLRequestReloadIgnoringCacheData
-//                                                timeoutInterval:30.0];
-//
-//                [request setHTTPMethod:@"HEAD"];
-//                NSOperationQueue *queue = [[NSOperationQueue alloc] init];
-//                [NSURLConnection sendAsynchronousRequest:request queue:queue completionHandler:^(NSURLResponse *response, NSData *data, NSError *connectionError) {
-//                    NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse*)response;
-//                    [model setValue:response.suggestedFilename forKey:@"filename"];
-//                    if (response == nil || ![httpResponse.allHeaderFields valueForKey:@"Content-Disposition"] || [[NSString stringWithFormat:@"%@",[model valueForKey:@"order_status"]] isEqualToString:@"expired"]) {
-//                        [model setValue:@"YES" forKey:downloadNotAvailable];
-//                    }
-//                    _countSuccess += 1;
-//                    if (_countSuccess == _downloadModelCollection.count) {
-//                        dispatch_async(dispatch_get_main_queue(), ^{
-//                            [self stopLoadingData];
-//                            [self setCells:nil];
-//                            return;
-//                        });
-//                    }
-//                }];
-//            }
-//        }else
-//            dispatch_async(dispatch_get_main_queue(), ^{
-//                [self stopLoadingData];
-//            });
-//    }else
-//        dispatch_async(dispatch_get_main_queue(), ^{
-//            [self stopLoadingData];
-//        });
-//    [self removeObserverForNotification:noti];
+        if (_downloadModelCollection.count > 0) {
+
+            _countSuccess = 0;
+            for (int i = 0; i < _downloadModelCollection.count; i++) {
+                SimiModel *model = [_downloadModelCollection objectAtIndex:i];
+                NSURL *url = [NSURL URLWithString:[model valueForKey:@"order_link"]];
+                NSMutableURLRequest *request = [NSMutableURLRequest
+                                                requestWithURL:url
+                                                cachePolicy:NSURLRequestReloadIgnoringCacheData
+                                                timeoutInterval:30.0];
+                [request setHTTPMethod:@"HEAD"];
+                NSOperationQueue *queue = [[NSOperationQueue alloc] init];
+                [NSURLConnection sendAsynchronousRequest:request queue:queue completionHandler:^(NSURLResponse *response, NSData *data, NSError *connectionError) {
+                    NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse*)response;
+                    [model setValue:response.suggestedFilename forKey:@"filename"];
+                    _countSuccess += 1;
+                    if (_countSuccess == _downloadModelCollection.count) {
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            [self stopLoadingData];
+                            [self setCells:nil];
+                            return;
+                        });
+                    }
+                }];
+            }
+        }else
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self stopLoadingData];
+            });
+    }else
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self stopLoadingData];
+            [self showToastMessage:responder.responseMessage];
+        });
 }
 
 #pragma mark Set Cells
@@ -126,16 +113,16 @@
             for (int j = 0; j < _downloadModelCollection.count; j++) {
                 NSString *stringDownloadedFileName = [_downloadedFilesArray objectAtIndex:i];
                 SimiModel *model = [_downloadModelCollection objectAtIndex:j];
-                if ([(NSString*)[model valueForKey:@"item_id"] isEqualToString:stringDownloadedFileName]) {
+                if ([(NSString*)[model valueForKey:@"filename"] isEqualToString:stringDownloadedFileName]) {
                     [model setValue:@"YES" forKey:fileDownloaded];
                 }
             }
         }
         for (int i = 0; i < self.downloadingArray.count; i++) {
             for (int j = 0; j < _downloadModelCollection.count; j++) {
-                NSString *stringDownloadingFileName = [self.downloadingArray objectAtIndex:i];
+                NSString *stringDownloadingFileName = [[self.downloadingArray objectAtIndex:i] objectForKey:@"fileName"];
                 SimiModel *model = [_downloadModelCollection objectAtIndex:j];
-                if ([(NSString*)[model valueForKey:@"item_id"] isEqualToString:stringDownloadingFileName]) {
+                if ([(NSString*)[model valueForKey:@"filename"] isEqualToString:stringDownloadingFileName]) {
                     [model setValue:@"YES" forKey:fileDownloading];
                 }
             }
@@ -181,12 +168,11 @@
     return simiRow.height;
 }
 
-- (void)downloadItem:(SimiRow *)row atIndex:(NSInteger)index
-{
+- (void)downloadItem:(SimiRow *)row atIndex:(NSInteger)index {
     NSString *stringPath = [row.data valueForKey:@"order_link"];
-    NSString *stringFileName = [row.data valueForKey:@"order_file"];
+    NSString *stringFileName = [row.data valueForKey:@"filename"];
     [self.delegate addDownloadTask:stringFileName fileURL:stringPath];
-    [[_downloadModelCollection objectAtIndex:index]setValue:@"YES" forKey:fileDownloading];
+    [[_downloadModelCollection objectAtIndex:index] setValue:@"YES" forKey:fileDownloading];
 }
 @end
 

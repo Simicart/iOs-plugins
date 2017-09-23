@@ -44,13 +44,13 @@
                 }
                 if (PHONEDEVICE) {
                     SimiRow *row = [[SimiRow alloc]initWithIdentifier:LEFTMENU_ROW_DOWNLOAD height:45 sortOrder:emailContactSortOrder];
-                    row.image = [UIImage imageNamed:@""];
+                    row.image = [UIImage imageNamed:@"ic_down"];
                     row.title = SCLocalizedString(@"Manage DownLoad");
                     [section addObject:row];
                 }else
                 {
                     SimiRow *row = [[SimiRow alloc]initWithIdentifier:LEFTMENU_ROW_DOWNLOAD height:60 sortOrder:emailContactSortOrder];
-                    row.image = [UIImage imageNamed:@""];
+                    row.image = [UIImage imageNamed:@"ic_down"];
                     row.title = SCLocalizedString(@"My Downloadable products");
                     [section addObject:row];
                 }
@@ -79,14 +79,13 @@
                 if (_downloadControllViewController == nil) {
                     _downloadControllViewController = [[DownloadControlViewController alloc]init];
                 }
-//                SCNavigationBarPad *navi = noti.object;
-//                navi.popController = nil;
-//                navi.popController = [[UIPopoverController alloc] initWithContentViewController:[[UINavigationController alloc] initWithRootViewController:_downloadControllViewController]];
-//                _downloadControllViewController.isInPopover = YES;
-//                _downloadControllViewController.popover = navi.popController;
-//                [navi.popController presentPopoverFromRect:CGRectMake(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 1, 1) inView:currentVC.view permittedArrowDirections:0 animated:YES];
-//                _downloadControllViewController.navigationItem.title = @"Manage Downloadable Products";
-//                navi.isDiscontinue = YES;
+                UINavigationController *navi = [[UINavigationController alloc]initWithRootViewController:_downloadControllViewController];
+                navi.modalPresentationStyle = UIModalPresentationPopover;
+                UIPopoverPresentationController *popover = navi.popoverPresentationController;
+                popover.sourceRect = CGRectMake(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 1, 1);
+                popover.sourceView = [SimiGlobalVar sharedInstance].currentlyNavigationController.view;
+                popover.permittedArrowDirections = 0;
+                [[SimiGlobalVar sharedInstance].currentlyNavigationController presentViewController:navi animated:YES completion:nil];
             }
         }
     }
