@@ -234,35 +234,32 @@ static NSString *product_paypalcheckout_row = @"product_paypalcheckout_row";
 - (void)didCompleteCheckOutWithPaypalExpress: (NSNotification *)noti {
     SimiModel *paypalModel = noti.object;
     [[NSNotificationCenter defaultCenter] removeObserverForNotification:noti];
-    SimiResponder *responder = [noti.userInfo objectForKey:@"responder"];
-    if([responder.status isEqualToString:@"SUCCESS"]) {
-        if (PHONEDEVICE) {
-            if (orderVC.checkOutType != CheckOutTypeNewCustomer) {
-                SCThankYouPageViewController *thankVC = [[SCThankYouPageViewController alloc] init];
-                thankVC.number = [paypalModel objectForKey:@"order_id"];
-                if(orderVC.checkOutType == CheckOutTypeGuest){
-                    thankVC.isGuest = YES;
-                }else
-                    thankVC.isGuest = NO;
-                [[SimiGlobalVar sharedInstance].currentlyNavigationController pushViewController:thankVC animated:YES];
-            }
-        }else{
-            if (orderVC.checkOutType != CheckOutTypeNewCustomer) {
-                UINavigationController *currentlyNavigationController = [SimiGlobalVar sharedInstance].currentlyNavigationController;
-                SCThankYouPageViewController *thankVC = [[SCThankYouPageViewController alloc] init];
-                thankVC.number = [paypalModel objectForKey:@"order_id"];
-                if(orderVC.checkOutType == CheckOutTypeGuest){
-                    thankVC.isGuest = YES;
-                }else
-                    thankVC.isGuest = NO;
-                UINavigationController *navi = [[UINavigationController alloc]initWithRootViewController:thankVC];
-                navi.modalPresentationStyle = UIModalPresentationPopover;
-                UIPopoverPresentationController *popover = navi.popoverPresentationController;
-                popover.sourceRect = CGRectMake(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 1, 1);
-                popover.sourceView = currentlyNavigationController.view;
-                popover.permittedArrowDirections = 0;
-                [currentlyNavigationController presentViewController:navi animated:YES completion:nil];
-            }
+    if (PHONEDEVICE) {
+        if (orderVC.checkOutType != CheckOutTypeNewCustomer) {
+            SCThankYouPageViewController *thankVC = [[SCThankYouPageViewController alloc] init];
+            thankVC.number = [paypalModel objectForKey:@"order_id"];
+            if(orderVC.checkOutType == CheckOutTypeGuest){
+                thankVC.isGuest = YES;
+            }else
+                thankVC.isGuest = NO;
+            [[SimiGlobalVar sharedInstance].currentlyNavigationController pushViewController:thankVC animated:YES];
+        }
+    }else{
+        if (orderVC.checkOutType != CheckOutTypeNewCustomer) {
+            UINavigationController *currentlyNavigationController = [SimiGlobalVar sharedInstance].currentlyNavigationController;
+            SCThankYouPageViewController *thankVC = [[SCThankYouPageViewController alloc] init];
+            thankVC.number = [paypalModel objectForKey:@"order_id"];
+            if(orderVC.checkOutType == CheckOutTypeGuest){
+                thankVC.isGuest = YES;
+            }else
+                thankVC.isGuest = NO;
+            UINavigationController *navi = [[UINavigationController alloc]initWithRootViewController:thankVC];
+            navi.modalPresentationStyle = UIModalPresentationPopover;
+            UIPopoverPresentationController *popover = navi.popoverPresentationController;
+            popover.sourceRect = CGRectMake(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 1, 1);
+            popover.sourceView = currentlyNavigationController.view;
+            popover.permittedArrowDirections = 0;
+            [currentlyNavigationController presentViewController:navi animated:YES completion:nil];
         }
     }
 }
