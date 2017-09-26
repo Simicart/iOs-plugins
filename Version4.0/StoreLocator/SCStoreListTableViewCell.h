@@ -30,17 +30,17 @@
 
 @property (nonatomic, strong) UIView *viewButton;
 @property (nonatomic, strong) UILabel *lblCall;
-@property (nonatomic, strong) UILabel *lblMail;
+//@property (nonatomic, strong) UILabel *lblMail;
 @property (nonatomic, strong) UILabel *lblMap;
 @property (nonatomic, strong) UIButton* btnCall;
-@property (nonatomic, strong) UIButton* btnMail;
+//@property (nonatomic, strong) UIButton* btnMail;
 @property (nonatomic, strong) UIButton* btnMap;
 @property (nonatomic, strong) SimiModel *storeLocatorModel;
 @property (nonatomic, weak) id<SCStoreListTableViewCellDelegate> delegate;
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier andStoreData:(SimiModel*)storeLocatorModel_;
 - (void)btnCall_Click:(id)sender;
-- (void)btnMail_Click:(id)sender;
+//- (void)btnMail_Click:(id)sender;
 - (void)btnMap_Click:(id)sender;
 
 @end

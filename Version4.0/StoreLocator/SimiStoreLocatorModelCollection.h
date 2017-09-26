@@ -10,7 +10,12 @@
 #import <SimiCartBundle/SimiModelCollection.h>
 #import "SimiStoreLocatorAPI.h"
 
+#define DidGetSearchAutoCompleteStores @"DidGetSearchAutoCompleteStores"
+#define DidGetStoreListWithValue @"DidGetStoreListWithValue"
+
 @interface SimiStoreLocatorModelCollection : SimiModelCollection
 - (void)getStoreListWithLatitude:(NSString*)lat longitude:(NSString*)lng offset:(NSString*)offset limit:(NSString*)limit;
 - (void)getStoreListWithLatitude:(NSString *)lat longitude:(NSString *)lng offset:(NSString *)offset limit:(NSString *)limit country:(NSString*)country city:(NSString*)city state:(NSString*)state zipcode:(NSString*)zipcode tag:(NSString*)tag;
+- (void)getSearchAutoCompleteStoreWithKey: (NSString *)keyword;
+- (void)getStoreListWithValue: (NSString *)value;
 @end

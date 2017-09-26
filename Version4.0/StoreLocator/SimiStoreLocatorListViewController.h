@@ -42,5 +42,5 @@ typedef NS_ENUM(NSInteger, ListViewOption){
 
 - (void)getStoreLocatorList;
 - (void)didGetStoreLocatorList;
-
+- (void)getStoreLocatorListWithValue: (NSString *)value;
 @end

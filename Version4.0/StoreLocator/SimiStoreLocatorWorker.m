@@ -14,6 +14,7 @@
 #import "SimiStoreLocatorViewControllerPad.h"
 #import <SimiCartBundle/SCNavigationBarPhone.h>
 #import <SimiCartBundle/SCNavigationBarPad.h>
+#import "SCCustomizeLeftMenuViewController.h"
 @implementation SimiStoreLocatorWorker
 {
     SimiTable *cells;
@@ -34,13 +35,12 @@
     cells = noti.object;
     for (int i = 0; i < cells.count; i++) {
         SimiSection *section = [cells objectAtIndex:i];
-        if ([section.identifier isEqualToString:LEFTMENU_SECTION_MORE]) {
-            SimiRow *row = [[SimiRow alloc]initWithIdentifier:LEFTMENU_ROW_STORELOCATOR height:50 sortOrder:60];
-            row.image = [UIImage imageNamed:@"storelocator_locator"];
-            row.title = SCLocalizedString(@"Store Locator");
+        if ([section.identifier isEqualToString:LEFTMENU_SECTION_MAIN]) {
+            SimiRow *row = [[SimiRow alloc]initWithIdentifier:LEFTMENU_ROW_STORELOCATOR height:50 sortOrder:55];
+            row.image = [UIImage imageNamed:@"Locations"];
+            row.title = SCLocalizedString(@"Tim kiem cua hang");
             row.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
             [section addObject:row];
-            [section sortItems];
         }
     }
 }

@@ -26,4 +26,20 @@
     [self preDoRequest];
     [(SimiStoreLocatorAPI *)[self getAPI] getStoreListWithParams:@{@"lat":lat,@"lng":lng,@"offset":offset,@"limit":limit,@"country":country,@"city":city,@"state":state,@"zipcode":zipcode,@"tag":tag} target:self selector:@selector(didFinishRequest:responder:)];
 }
+
+- (void)getSearchAutoCompleteStoreWithKey: (NSString *)keyword {
+    currentNotificationName = DidGetSearchAutoCompleteStores;
+    keyResponse = @"searchautocompletes";
+    modelActionType = ModelActionTypeGet;
+    [self preDoRequest];
+    [[SimiAPI new] requestWithMethod:GET URL:[NSString stringWithFormat:@"%@simiconnector/rest/v2/searchautocompletes",kBaseURL] params:@{@"keyword":keyword} target:self selector:@selector(didFinishRequest:responder:) header:nil];
+}
+
+- (void)getStoreListWithValue:(NSString *)value {
+    currentNotificationName = DidGetStoreListWithValue;
+    keyResponse = @"storelocations";
+    modelActionType = ModelActionTypeGet;
+    [self preDoRequest];
+    [[SimiAPI new] requestWithMethod:GET URL:[NSString stringWithFormat:@"%@simiconnector/rest/v2/storelocations", kBaseURL] params:@{@"address":value} target:self selector:@selector(didFinishRequest:responder:) header:nil];
+}
 @end

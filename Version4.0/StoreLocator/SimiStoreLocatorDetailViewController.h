@@ -24,6 +24,7 @@
 @property (nonatomic) float currentLongitude;
 
 @property (nonatomic, strong)   UIScrollView *scrView;
+@property (nonatomic, strong) UIImageView *storeImageView;
 @property (nonatomic, strong)   UILabel *lblStoreName;
 @property (nonatomic, strong)   UILabel *lblStoreAddress;
 @property (nonatomic, strong)   UIImageView *imgIconAddress;

@@ -31,7 +31,7 @@
 - (void)viewWillAppearAfter:(BOOL)animated
 {
     [super viewWillAppearAfter:YES];
-    searchButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"storelocator_search.png"] style:UIBarButtonItemStylePlain target:self action:@selector(btnSearch_Click)];
+    searchButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Search"] style:UIBarButtonItemStylePlain target:self action:@selector(btnSearch_Click)];
     searchButton.width = 44;
     self.navigationItem.rightBarButtonItem = searchButton;
 }
@@ -50,14 +50,16 @@
 
 - (UIView *)simiTabView:(SimiTabViewController *)simiTabView viewForTabAtIndex:(NSUInteger)index;
 {
-    UILabel *lblStoreList = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, 100, 30)];
-    lblStoreList.text = SCLocalizedString(@"Store List");
-    lblStoreList.textColor = [UIColor orangeColor];
+    UILabel *lblStoreList = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH/2, 30)];
+    lblStoreList.text = SCLocalizedString(@"Danh sách cửa hàng");
+    lblStoreList.textAlignment = NSTextAlignmentCenter;
+    lblStoreList.textColor = THEME_CONTENT_COLOR;
     [lblStoreList setFont:[UIFont fontWithName:[NSString stringWithFormat:@"%@-%@",THEME_FONT_NAME,@"Bold"] size:16]];
     
-    UILabel *lblMapView = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, 100, 30)];
-    lblMapView.text = SCLocalizedString(@"Map View");
-    lblMapView.textColor = [UIColor orangeColor];
+    UILabel *lblMapView = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH/2, 30)];
+    lblMapView.text = SCLocalizedString(@"Bản đồ");
+    lblMapView.textAlignment = NSTextAlignmentCenter;
+    lblMapView.textColor = THEME_CONTENT_COLOR;
     [lblMapView setFont:[UIFont fontWithName:[NSString stringWithFormat:@"%@-%@",THEME_FONT_NAME,@"Bold"] size:16]];
     switch (index) {
         case 0:
@@ -177,27 +179,36 @@
 #pragma mark Search
 - (void)btnSearch_Click
 {
-    SimiStoreLocatorSearchViewController * sLSearchViewController = [SimiStoreLocatorSearchViewController new];
-    sLSearchViewController.delegate = self;
-    sLSearchViewController.currentLatitube = sLListViewController.currentLatitube;
-    sLSearchViewController.currentLongitube = sLListViewController.currentLongitube;
-    if (sLListViewController.dictSearch != nil) {
-        sLSearchViewController.stringCountrySearchCode = [sLListViewController.dictSearch valueForKey:@"countryCode"];
-        sLSearchViewController.stringCountrySearchName = [sLListViewController.dictSearch valueForKey:@"countryName"];
-        sLSearchViewController.stringCitySearch = [sLListViewController.dictSearch valueForKey:@"city"];
-        sLSearchViewController.stringStateSearch = [sLListViewController.dictSearch valueForKey:@"state"];
-        sLSearchViewController.stringZipCodeSearch = [sLListViewController.dictSearch valueForKey:@"zipcode"];
-        sLSearchViewController.stringTagSearch = [sLListViewController.dictSearch valueForKey:@"tag"];
-    }
-    
-    if (tagChoise != nil) {
-        sLSearchViewController.tagChoise = tagChoise;
-    }
-    
-    if (simiTagModelCollection != nil) {
-        sLSearchViewController.tagModelCollection = simiTagModelCollection;
-    }
-    [self.navigationController pushViewController:sLSearchViewController animated:YES];
+//    SimiStoreLocatorSearchViewController * sLSearchViewController = [SimiStoreLocatorSearchViewController new];
+//    sLSearchViewController.delegate = self;
+//    sLSearchViewController.currentLatitube = sLListViewController.currentLatitube;
+//    sLSearchViewController.currentLongitube = sLListViewController.currentLongitube;
+//    if (sLListViewController.dictSearch != nil) {
+//        sLSearchViewController.stringCountrySearchCode = [sLListViewController.dictSearch valueForKey:@"countryCode"];
+//        sLSearchViewController.stringCountrySearchName = [sLListViewController.dictSearch valueForKey:@"countryName"];
+//        sLSearchViewController.stringCitySearch = [sLListViewController.dictSearch valueForKey:@"city"];
+//        sLSearchViewController.stringStateSearch = [sLListViewController.dictSearch valueForKey:@"state"];
+//        sLSearchViewController.stringZipCodeSearch = [sLListViewController.dictSearch valueForKey:@"zipcode"];
+//        sLSearchViewController.stringTagSearch = [sLListViewController.dictSearch valueForKey:@"tag"];
+//    }
+//
+//    if (tagChoise != nil) {
+//        sLSearchViewController.tagChoise = tagChoise;
+//    }
+//
+//    if (simiTagModelCollection != nil) {
+//        sLSearchViewController.tagModelCollection = simiTagModelCollection;
+//    }
+//    [self.navigationController pushViewController:sLSearchViewController animated:YES];
+    SimiStoreLocatorSearchViewControllerCustomize *searchStoreLocatorVC = [SimiStoreLocatorSearchViewControllerCustomize new];
+    searchStoreLocatorVC.delegate = self;
+    [self.navigationController pushViewController:searchStoreLocatorVC animated:YES];
+}
+
+- (void)getStoreListWithValue:(NSString *)value {
+    [self selectTabAtIndex:0];
+    sLListViewController.listViewOption = ListViewOptionSearched;
+    [sLListViewController getStoreLocatorListWithValue:value];
 }
 
 #pragma  mark Search ViewController Delegate

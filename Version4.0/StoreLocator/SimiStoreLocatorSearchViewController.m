@@ -547,3 +547,84 @@
 }
 
 @end
+
+@implementation SimiStoreLocatorSearchViewControllerCustomize
+{
+    UISearchBar *searchBar;
+    UITableView *searchTableView;
+    SimiStoreLocatorModelCollection *storeCollection;
+}
+
+- (void)viewDidLoad {
+    searchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, 44)];
+    searchBar.delegate = self;
+    [self.view addSubview:searchBar];
+    searchBar.placeholder = SCLocalizedString(@"Tim kiem");
+    searchTableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 44, SCREEN_WIDTH, SCREEN_HEIGHT - 44 - 64) style:UITableViewStylePlain];
+    searchTableView.delegate = self;
+    searchTableView.dataSource = self;
+    searchTableView.tableFooterView = [UIView new];
+    [self.view addSubview:searchTableView];
+    storeCollection = [SimiStoreLocatorModelCollection new];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didGetSearchAutoCompleteStores:) name:DidGetSearchAutoCompleteStores object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
+    self.navigationItem.title = SCLocalizedString(@"Tim kiem cua hang");
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    NSDictionary *store = [storeCollection objectAtIndex:indexPath.row];
+    if([store objectForKey:@"value"]) {
+        [self.navigationController popViewControllerAnimated:YES];
+        [self.delegate getStoreListWithValue:[store objectForKey:@"value"]];
+    }
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    return storeCollection.count;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"storelocator_cell"];
+    NSDictionary *store = [storeCollection objectAtIndex:indexPath.row];
+    if([store isKindOfClass:[NSDictionary class]] && [store objectForKey:@"value"]) {
+        cell.textLabel.text = [NSString stringWithFormat:@"%@",[store objectForKey:@"value"]];
+        cell.textLabel.font = [UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE];
+    }
+    return cell;
+}
+
+- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText {
+    [storeCollection getSearchAutoCompleteStoreWithKey:searchText];
+}
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+    return 1;
+}
+
+- (void)didGetSearchAutoCompleteStores: (NSNotification *)noti {
+    SimiResponder *responder = [noti.userInfo objectForKey:@"responder"];
+    if([responder.status isEqualToString:@"SUCCESS"]) {
+        [searchTableView reloadData];
+    }
+}
+- (void)viewWillDisappearBefore:(BOOL)animated{
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
+    [searchTableView endEditing:YES];
+}
+
+#pragma mark - keyboard movements
+- (void)keyboardWillShow:(NSNotification *)notification
+{
+    CGSize keyboardSize = [[[notification userInfo] objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
+    searchTableView.contentInset = UIEdgeInsetsMake(0, 0, keyboardSize.height, 0);
+}
+
+- (void)keyboardWillHide:(NSNotification *)notification
+{
+    searchTableView.contentInset = UIEdgeInsetsMake(0, 0, 0, 0);
+}
+
+@end

@@ -24,12 +24,10 @@
                                             SimiStoreLocatorListViewControllerDelegate,
                                             SimiStoreLocatorDetailViewControllerDelegate,
                                             SimiStoreLocatorMapViewControllerDelegate,
-                                            SimiStoreLocatorSearchViewControllerDelegate>
-{
+SimiStoreLocatorSearchViewControllerDelegate, SimiStoreLocatorSearchViewControllerCustomizeDelegate>{
     SimiStoreLocatorListViewController *sLListViewController;
     SimiStoreLocatorMapViewController *sLMapViewController;
 }
-
 @property (nonatomic, strong) SimiStoreLocatorModelCollection *storeLocatorModelCollection;
 @property (nonatomic, strong) SimiModel *slModel;
 @property (nonatomic, strong) SimiTagModelCollection *simiTagModelCollection;

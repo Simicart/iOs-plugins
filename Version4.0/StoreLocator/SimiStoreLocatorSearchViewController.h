@@ -22,6 +22,9 @@
 - (void)cacheDataWithstoreLocatorModelCollection:(SimiStoreLocatorModelCollection*) collection simiTagModelCollection:(SimiTagModelCollection*)tagModelCollection tagChoise:(NSString*)tagString;
 @end
 
+@protocol SimiStoreLocatorSearchViewControllerCustomizeDelegate <NSObject>
+- (void)getStoreListWithValue: (NSString *)value;
+@end
 
 @interface SimiStoreLocatorSearchViewController : SimiViewController<UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIScrollViewDelegate>
 
@@ -79,4 +82,8 @@
 - (void)btnSearch_Click:(id)sender;
 - (void)btnTouchOutLayer_Click:(id)sender;
 - (void)btnClear:(id)sender;
+@end
+
+@interface SimiStoreLocatorSearchViewControllerCustomize: UIViewController<UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate>
+@property (weak, nonatomic) id<SimiStoreLocatorSearchViewControllerCustomizeDelegate> delegate;
 @end

@@ -37,7 +37,7 @@
     float heightOpenHourView;
 }
 @synthesize viewInfomation, viewOpenHours, viewSpecialsDay, viewHolidays;
-@synthesize lblOpenHours,lblInfomationContents,lblFriday,lblFridayContent,lblMonday,lblMondayContent,lblSaturday,lblSaturdayContent,lblStoreAddress,lblStoreEmail,lblStoreName,lblStorePhone,lblStoreWebSite,lblSunday,lblSundayContent,lblThursday,lblThursdayContent,lblTuesday,lblTuesdayContent,lblWednesday,lblWednesdayContent, lblSpecialsDay, lblSpecialsDayContent, lblHolidays, lblHolidaysContent, lblGetdirection;
+@synthesize lblOpenHours,lblInfomationContents,lblFriday,lblFridayContent,lblMonday,lblMondayContent,lblSaturday,lblSaturdayContent,lblStoreAddress,lblStoreEmail,lblStoreName,lblStorePhone,lblStoreWebSite,lblSunday,lblSundayContent,lblThursday,lblThursdayContent,lblTuesday,lblTuesdayContent,lblWednesday,lblWednesdayContent, lblSpecialsDay, lblSpecialsDayContent, lblHolidays, lblHolidaysContent, lblGetdirection, storeImageView;
 @synthesize scrView, imgStore, btnShowMoreLess, imgIconAddress;
 @synthesize sLModel, delegate, currentLatitude, currentLongitude;
 @synthesize imgStoreBackground, btnDirection, imgIconPhone;
@@ -64,17 +64,20 @@
     }
     [scrView setBackgroundColor:[UIColor whiteColor]];
     [self.view addSubview:scrView];
-    heightScrViewContentSize = 5;
+    heightScrViewContentSize = 0;
 
     sizeIcon = 20; // sice icon
     sizeStoreImage = 100; //  size map
-    space = 5; // Khoang cach line cac label
+    space = 10; // Khoang cach line cac label
     edgeSpace = 10; // Khoang cach hai mep view
     heightLabel = 20;
     heightButton = 30;
     
+    if(PHONEDEVICE)
+        [self initStoreMapImage];
     [self initStoreName];
-    [self initGoogleImage];
+    if(PADDEVICE)
+        [self initGoogleImage];
     [self initStoreAddress];
     [self initStorePhone];
     [self initStoreEmail];
@@ -91,6 +94,17 @@
 
 - (void)viewWillAppearBefore:(BOOL)animated{
     
+}
+
+- (void)initStoreMapImage {
+    storeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, heightScrViewContentSize, widthContent, 200)];
+    storeImageView.contentMode = UIViewContentModeScaleAspectFill;
+    NSString* stringURL = [NSString stringWithFormat:@"http://maps.googleapis.com/maps/api/staticmap?center=%@,%@&zoom=20&size=%dx%d",[sLModel valueForKey:@"latitude"],[sLModel valueForKey:@"longtitude"],(int)widthContent,200];
+    stringURL  = [NSString stringWithFormat:@"%@%@",stringURL,@"&markers=size:large%7Ccolor:red%7Clabel:S%7C"];
+    stringURL = [NSString stringWithFormat:@"%@%@,%@",stringURL,[sLModel valueForKey:@"latitude"],[sLModel valueForKey:@"longtitude"]];
+    [storeImageView sd_setImageWithURL:[NSURL URLWithString:stringURL]];
+    [scrView addSubview:storeImageView];
+    heightScrViewContentSize += CGRectGetHeight(storeImageView.frame) + space;
 }
 
 - (void)initStoreName
@@ -139,7 +153,7 @@
 - (void)initStoreAddress
 {
     imgIconAddress = [[UIImageView alloc]initWithFrame:CGRectMake(edgeSpace, heightScrViewContentSize, sizeIcon, sizeIcon)];
-    [imgIconAddress setImage:[UIImage imageNamed:@"storelocator_8"]];
+    [imgIconAddress setImage:[UIImage imageNamed:@"Locations"]];
     [scrView addSubview:imgIconAddress];
     
     lblStoreAddress = [[UILabel alloc]initWithFrame:CGRectMake(edgeSpace + sizeIcon*3/2, heightScrViewContentSize, widthContent - sizeStoreImage - edgeSpace*2 - sizeIcon*3/2, heightLabel)];
@@ -181,7 +195,7 @@
         [btnStorePhone addSubview:lblStorePhone];
         
         imgIconPhone = [[UIImageView alloc]initWithFrame:CGRectMake(0, 5, sizeIcon, sizeIcon)];
-        [imgIconPhone setImage:[UIImage imageNamed:@"storelocator_7"]];
+        [imgIconPhone setImage:[UIImage imageNamed:@"Call"]];
         [btnStorePhone addSubview:imgIconPhone];
         [SimiGlobalVar sortViewForRTL:btnStorePhone andWidth:CGRectGetWidth(btnStorePhone.frame)];
         heightScrViewContentSize += heightButton + space;
@@ -291,7 +305,7 @@
     lblOpenHours = [[UILabel alloc]initWithFrame:CGRectMake(labelTitleX, 0, CGRectGetWidth(viewOpenHours.frame) - sizeIcon - 10, heightButton)];
     [lblOpenHours setFont:[UIFont fontWithName:THEME_FONT_NAME_REGULAR size:THEME_FONT_SIZE + 3]];
     [lblOpenHours setTextColor:[[SimiGlobalVar sharedInstance]colorWithHexString:@"#4d535e"]];
-    [lblOpenHours setText:SCLocalizedString(@"Opening Hours")];
+    [lblOpenHours setText:[NSString stringWithFormat:@"%@:", SCLocalizedString(@"Giờ mở cửa")]];
     [viewOpenHours addSubview:lblOpenHours];
     lblOpenHours.simiObjectIdentifier = openHours;
     heightOpenHourView += heightButton;
@@ -440,6 +454,42 @@
             }
         }
     }
+    NSDateComponents *components = [[NSCalendar currentCalendar] components:NSCalendarUnitWeekday fromDate:[NSDate new]];
+    NSInteger weekday = [components weekday];
+    
+    switch (weekday) {
+        case 1:
+            lblSundayContent.textColor = [UIColor redColor];
+            lblSunday.textColor = [UIColor redColor];
+            break;
+        case 2:
+            lblMondayContent.textColor = [UIColor redColor];
+            lblMonday.textColor = [UIColor redColor];
+            break;
+        case 3:
+            lblTuesday.textColor = [UIColor redColor];
+            lblTuesdayContent.textColor = [UIColor redColor];
+            break;
+        case 4:
+            lblWednesday.textColor = [UIColor redColor];
+            lblWednesdayContent.textColor = [UIColor redColor];
+            break;
+        case 5:
+            lblThursday.textColor = [UIColor redColor];
+            lblTuesdayContent.textColor = [UIColor redColor];
+            break;
+        case 6:
+            lblFriday.textColor = [UIColor redColor];
+            lblFridayContent.textColor = [UIColor redColor];
+            break;
+        case 7:
+            lblSaturday.textColor = [UIColor redColor];
+            lblSaturdayContent.textColor = [UIColor redColor];
+            break;
+        default:
+            break;
+    }
+
     [SimiGlobalVar sortViewForRTL:viewOpenHours andWidth:CGRectGetWidth(viewOpenHours.frame)];
     heightScrViewContentSize += CGRectGetHeight(viewOpenHours.frame) + space;
 }

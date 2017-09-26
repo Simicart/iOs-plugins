@@ -41,9 +41,13 @@
         self.listViewOption = ListViewOptionNoneSearch;
     }
     
-    __block __weak id weakSelf = self;
+    __block __weak SimiStoreLocatorListViewController *weakSelf = self;
     [self.tableView addInfiniteScrollingWithActionHandler:^{
-        [weakSelf getStoreLocatorList];
+        if(listViewOption == ListViewOptionNoneSearch){
+            [weakSelf getStoreLocatorList];
+        }else {
+            [weakSelf.tableView.infiniteScrollingView stopAnimating];
+        }
     }];
     cLController = [[SimiCLController alloc]init];
     cLController.delegate = self;
@@ -53,7 +57,9 @@
     [cLController.locationManager startUpdatingLocation];
     isFirstRun = YES;
     offset = 0;
+    self.tableView.tableFooterView = [UIView new];
 }
+
 
 -(void)viewDidAppear:(BOOL)animated
 {
@@ -131,11 +137,8 @@
     float labelWidth = cellWidth - 100;
     float heightLabelAddress = [stringAddress boundingRectWithSize:CGSizeMake(labelWidth, 999) options:NSStringDrawingUsesFontLeading|NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE - 3]} context:nil].size.height;
     float heightCell = heightLabelAddress + 70;
-    if (heightCell < 120) {
-        heightCell = 120;
-    }
-    return heightCell;
     
+    return heightCell;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
@@ -167,7 +170,6 @@
     currentLongitube = lng;
     [self getStoreLocatorList];
 }
-
 
 #pragma mark - Get Store Locator
 - (void) getStoreLocatorList
@@ -205,6 +207,25 @@
             break;
         default:
             break;
+    }
+}
+
+- (void)getStoreLocatorListWithValue:(NSString *)value {
+    [sLModelCollection getStoreListWithValue:value];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didGetStoreListWithValue:) name:DidGetStoreListWithValue object:nil];
+    [self.tableView.infiniteScrollingView startAnimating];
+}
+
+- (void)didGetStoreListWithValue: (NSNotification *)noti {
+    [self removeObserverForNotification:noti];
+    [self.tableView.infiniteScrollingView stopAnimating];
+    SimiResponder *responder = [noti.userInfo objectForKey:@"responder"];
+    [self.tableView reloadData];
+    if([responder.status isEqualToString:@"SUCCESS"]) {
+        
+    }else {
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:SCLocalizedString(@"") message:responder.responseMessage delegate:nil cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles:nil, nil];
+        [alert show];
     }
 }
 
