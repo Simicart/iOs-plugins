@@ -560,7 +560,7 @@
     searchBar.delegate = self;
     [self.view addSubview:searchBar];
     searchBar.placeholder = SCLocalizedString(@"Tim kiem");
-    searchTableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 44, SCREEN_WIDTH, SCREEN_HEIGHT - 44 - 64) style:UITableViewStylePlain];
+    searchTableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 44, SCREEN_WIDTH, SCREEN_HEIGHT - 44 - 44) style:UITableViewStylePlain];
     searchTableView.delegate = self;
     searchTableView.dataSource = self;
     searchTableView.tableFooterView = [UIView new];
@@ -609,10 +609,11 @@
         [searchTableView reloadData];
     }
 }
-- (void)viewWillDisappearBefore:(BOOL)animated{
+
+- (void)viewWillDisappear:(BOOL)animated {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
-    [searchTableView endEditing:YES];
+    [self.view endEditing:YES];
 }
 
 #pragma mark - keyboard movements
