@@ -10,7 +10,8 @@
 
 @implementation DownloadModelCollection
 - (void)getDownloadItemsWithParams:(NSDictionary *)params{
-    currentNotificationName = @"DidGetDownloadItems";
+    currentNotificationName = DidGetDownloadItems;
+    keyResponse = @"downloadableproducts";
     [self preDoRequest];
     [(DownloadAPI *)[self getAPI] getDownloadItemsWithParams:params target:self selector:@selector(didFinishRequest:responder:)];
 }

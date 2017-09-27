@@ -8,6 +8,9 @@
 
 #import <SimiCartBundle/SimiCartBundle.h>
 #import "DownloadAPI.h"
+
+#define DidGetDownloadItems @"DidGetDownloadItems"
+
 @interface DownloadModelCollection : SimiModelCollection
 - (void)getDownloadItemsWithParams:(NSDictionary *)params;
 @end

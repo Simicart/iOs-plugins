@@ -7,12 +7,16 @@
 //
 
 #import "DownloadItemsAvailableViewController.h"
+
+#define fileDownloaded @"order_link_isDownloaded"
+#define fileDownloading @"order_link_isDownloading"
+#define SectionControlAvailable @"SectionControlAvailable"
+
 @interface DownloadItemsAvailableViewController ()
 
 @end
-static NSString *SectionControlAvailable = @"SectionControlAvailable";
-static NSString *rowDownloadAvailabel = @"rowDownloadAvailabel";
-static NSString *downloadNotAvailable = @"downloadNotAvailable";
+//static NSString *rowDownloadAvailabel = @"rowDownloadAvailabel";
+//static NSString *downloadNotAvailable = @"downloadNotAvailable";
 
 @implementation DownloadItemsAvailableViewController
 -(void)viewDidLoadBefore
@@ -35,12 +39,11 @@ static NSString *downloadNotAvailable = @"downloadNotAvailable";
 }
 
 #pragma mark Get List Download Items
-- (void)getListDownloadItems
-{
+- (void)getListDownloadItems {
     if (_downloadModelCollection == nil) {
         _downloadModelCollection = [DownloadModelCollection new];
     }
-    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(didGetDownloadItems:) name:@"DidGetDownloadItems" object:nil];
+    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(didGetDownloadItems:) name:DidGetDownloadItems object:nil];
     [_downloadModelCollection getDownloadItemsWithParams:@{}];
     [self startLoadingData];
 }
@@ -50,6 +53,7 @@ static NSString *downloadNotAvailable = @"downloadNotAvailable";
     SimiResponder *responder = [noti.userInfo valueForKey:@"responder"];
     if ([[responder.status uppercaseString]isEqualToString:@"SUCCESS"]) {
         if (_downloadModelCollection.count > 0) {
+
             _countSuccess = 0;
             for (int i = 0; i < _downloadModelCollection.count; i++) {
                 SimiModel *model = [_downloadModelCollection objectAtIndex:i];
@@ -58,15 +62,11 @@ static NSString *downloadNotAvailable = @"downloadNotAvailable";
                                                 requestWithURL:url
                                                 cachePolicy:NSURLRequestReloadIgnoringCacheData
                                                 timeoutInterval:30.0];
-                
                 [request setHTTPMethod:@"HEAD"];
                 NSOperationQueue *queue = [[NSOperationQueue alloc] init];
                 [NSURLConnection sendAsynchronousRequest:request queue:queue completionHandler:^(NSURLResponse *response, NSData *data, NSError *connectionError) {
                     NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse*)response;
                     [model setValue:response.suggestedFilename forKey:@"filename"];
-                    if (response == nil || ![httpResponse.allHeaderFields valueForKey:@"Content-Disposition"] || [[model valueForKey:@"order_status"] isEqualToString:@"expired"]) {
-                        [model setValue:@"YES" forKey:downloadNotAvailable];
-                    }
                     _countSuccess += 1;
                     if (_countSuccess == _downloadModelCollection.count) {
                         dispatch_async(dispatch_get_main_queue(), ^{
@@ -84,8 +84,8 @@ static NSString *downloadNotAvailable = @"downloadNotAvailable";
     }else
         dispatch_async(dispatch_get_main_queue(), ^{
             [self stopLoadingData];
+            [self showToastMessage:responder.responseMessage];
         });
-    [self removeObserverForNotification:noti];
 }
 
 #pragma mark Set Cells
@@ -105,8 +105,8 @@ static NSString *downloadNotAvailable = @"downloadNotAvailable";
             [_downloadedFilesArray removeObject:@".DS_Store"];
         for (int j = 0; j < _downloadModelCollection.count; j++) {
             SimiModel *model = [_downloadModelCollection objectAtIndex:j];
-            [model setValue:@"NO" forKey:@"order_link_isDownloaded"];
-            [model setValue:@"NO" forKey:@"order_link_isDownloading"];
+            [model setValue:@"NO" forKey:fileDownloaded];
+            [model setValue:@"NO" forKey:fileDownloading];
         }
 
         for (int i = 0; i < _downloadedFilesArray.count; i++) {
@@ -114,23 +114,23 @@ static NSString *downloadNotAvailable = @"downloadNotAvailable";
                 NSString *stringDownloadedFileName = [_downloadedFilesArray objectAtIndex:i];
                 SimiModel *model = [_downloadModelCollection objectAtIndex:j];
                 if ([(NSString*)[model valueForKey:@"filename"] isEqualToString:stringDownloadedFileName]) {
-                    [model setValue:@"YES" forKey:@"order_link_isDownloaded"];
+                    [model setValue:@"YES" forKey:fileDownloaded];
                 }
             }
         }
         for (int i = 0; i < self.downloadingArray.count; i++) {
             for (int j = 0; j < _downloadModelCollection.count; j++) {
-                NSString *stringDownloadingFileName = [[self.downloadingArray objectAtIndex:i]valueForKey:@"fileName"];
+                NSString *stringDownloadingFileName = [[self.downloadingArray objectAtIndex:i] objectForKey:@"fileName"];
                 SimiModel *model = [_downloadModelCollection objectAtIndex:j];
                 if ([(NSString*)[model valueForKey:@"filename"] isEqualToString:stringDownloadingFileName]) {
-                    [model setValue:@"YES" forKey:@"order_link_isDownloading"];
+                    [model setValue:@"YES" forKey:fileDownloading];
                 }
             }
         }
         if (_downloadModelCollection.count > 0) {
             for (int i = 0; i < _downloadModelCollection.count; i++) {
                 SimiModel *model = [_downloadModelCollection objectAtIndex:i];
-                SimiRow *row = [[SimiRow alloc]initWithIdentifier:rowDownloadAvailabel height:50];
+                SimiRow *row = [[SimiRow alloc]initWithIdentifier:[NSString stringWithFormat:@"%@",[model objectForKey:@"item_id"]] height:50];
                 row.data = model;
                 row.height = 160;
                 [section addRow:row];
@@ -152,7 +152,7 @@ static NSString *downloadNotAvailable = @"downloadNotAvailable";
 {
     SimiSection *simiSection = [_cells objectAtIndex:indexPath.section];
     SimiRow *simiRow = [simiSection objectAtIndex:indexPath.row];
-    NSString *cellIdentifier = [NSString stringWithFormat:@"%@%@",rowDownloadAvailabel,[simiRow.data valueForKey:@"order_id"]];
+    NSString *cellIdentifier = simiRow.identifier;
     DownloadItemsAvailableTableViewCell *cell = [[DownloadItemsAvailableTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier withData:simiRow withIndex:indexPath.row];
     cell.delegate = self;
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
@@ -168,12 +168,11 @@ static NSString *downloadNotAvailable = @"downloadNotAvailable";
     return simiRow.height;
 }
 
-- (void)downloadItem:(SimiRow *)row atIndex:(NSInteger)index
-{
+- (void)downloadItem:(SimiRow *)row atIndex:(NSInteger)index {
     NSString *stringPath = [row.data valueForKey:@"order_link"];
     NSString *stringFileName = [row.data valueForKey:@"filename"];
     [self.delegate addDownloadTask:stringFileName fileURL:stringPath];
-    [[_downloadModelCollection objectAtIndex:index]setValue:@"YES" forKey:@"order_link_isDownloading"];
+    [[_downloadModelCollection objectAtIndex:index] setValue:@"YES" forKey:fileDownloading];
 }
 @end
 
@@ -262,14 +261,15 @@ static NSString *downloadNotAvailable = @"downloadNotAvailable";
         }
         
         UIButton *downloadButton = [[UIButton alloc]initWithFrame:CGRectMake(padding, heightCell, widthCell - padding*2, heightLabel*2)];
+        downloadButton.simiObjectIdentifier = self.rowData;
         [downloadButton addTarget:self action:@selector(downloadItem:) forControlEvents:UIControlEventTouchUpInside];
         [downloadButton addTarget:self action:@selector(changeColor:) forControlEvents:UIControlEventTouchDown];
         [downloadButton setTitle:@"Download" forState:UIControlStateNormal];
-        if ([[model valueForKey:@"order_link_isDownloaded"]boolValue]) {
+        if ([[model valueForKey:fileDownloaded]boolValue]) {
             [downloadButton setTitle:@"Downloaded" forState:UIControlStateNormal];
             [downloadButton setEnabled:NO];
             [downloadButton setAlpha:0.5];
-        }else if ([[model valueForKey:@"order_link_isDownloading"]boolValue])
+        }else if ([[model valueForKey:fileDownloading] boolValue])
         {
             [downloadButton setTitle:@"Downloading" forState:UIControlStateNormal];
             [downloadButton setEnabled:NO];
@@ -286,7 +286,8 @@ static NSString *downloadNotAvailable = @"downloadNotAvailable";
 {
     UIButton *downloadButton = (UIButton*)sender;
     [downloadButton setBackgroundColor:[UIColor orangeColor]];
-    if ([[self.rowData.data valueForKey:downloadNotAvailable] boolValue]) {
+    SimiRow *rowData = (SimiRow *)downloadButton.simiObjectIdentifier;
+    if ([[NSString stringWithFormat:@"%@",[rowData.data objectForKey:@"order_status"]] isEqualToString:@"expired"]) {
         UIAlertView *alert = [[UIAlertView alloc]initWithTitle:nil message:SCLocalizedString(@"The link is not available") delegate:nil cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles:nil];
         [alert show];
         return;
@@ -294,7 +295,7 @@ static NSString *downloadNotAvailable = @"downloadNotAvailable";
     [downloadButton setTitle:@"Downloading" forState:UIControlStateNormal];
     [downloadButton setEnabled:NO];
     [downloadButton setAlpha:0.5];
-    [self.delegate downloadItem:self.rowData atIndex:self.index];
+    [self.delegate downloadItem:rowData atIndex:self.index];
 }
 
 - (void)changeColor:(id)sender

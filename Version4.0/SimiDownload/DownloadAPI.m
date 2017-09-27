@@ -7,11 +7,11 @@
 //
 
 #import "DownloadAPI.h"
-NSString *const kSimiGetDownloadItems = @"customer/get_download_products";
+NSString *const kSimiGetDownloadItems = @"downloadableproducts";
 @implementation DownloadAPI
 - (void)getDownloadItemsWithParams:(NSDictionary *)params target:(id)target selector:(SEL)selector
 {
     NSString *url = [NSString stringWithFormat:@"%@%@%@", kBaseURL, kSimiConnectorURL, kSimiGetDownloadItems];
-    [self requestWithURL:url params:params target:target selector:selector header:nil];
+    [self requestWithMethod:GET URL:url params:params target:target selector:selector header:nil];
 }
 @end

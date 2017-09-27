@@ -22,7 +22,7 @@
 {
     self = [super init];
     if (self) {
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initCellsAfter:) name:@"SCLeftMenu_InitCellsAfter" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initCellsAfter:) name:SCLeftMenuInitCellsAfter object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didSelectRow:) name:@"SCLeftMenu_DidSelectRow" object:nil];
     }
     return self;
@@ -30,27 +30,27 @@
 
 - (void)initCellsAfter:(NSNotification*)noti
 {
-    if ([noti.name isEqualToString:@"SCLeftMenu_InitCellsAfter"]) {
+    if ([noti.name isEqualToString:SCLeftMenuInitCellsAfter]) {
         cells = (SimiTable *)noti.object;
         for (int i = 0; i < cells.count; i++) {
             SimiSection *section = [cells objectAtIndex:i];
-            if ([section.identifier isEqualToString:@"LEFTMENU_SECTION_MAIN"] && [[SimiGlobalVar sharedInstance]isLogin]) {
+            if ([section.identifier isEqualToString:LEFTMENU_SECTION_MAIN] && [[SimiGlobalVar sharedInstance]isLogin]) {
                 int emailContactSortOrder = 0;
                 for (int j = 0; j < section.count; j++) {
                     SimiRow *row = [section objectAtIndex:j];
-                    if ([row.identifier isEqualToString:@"LEFTMENU_ROW_ORDERHISTORY"]) {
+                    if ([row.identifier isEqualToString:LEFTMENU_ROW_ORDERHISTORY]) {
                         emailContactSortOrder = (int)row.sortOrder + 10;
                     }
                 }
-                if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+                if (PHONEDEVICE) {
                     SimiRow *row = [[SimiRow alloc]initWithIdentifier:LEFTMENU_ROW_DOWNLOAD height:45 sortOrder:emailContactSortOrder];
-                    row.image = [UIImage imageNamed:@""];
+                    row.image = [UIImage imageNamed:@"ic_down"];
                     row.title = SCLocalizedString(@"Manage DownLoad");
                     [section addObject:row];
                 }else
                 {
                     SimiRow *row = [[SimiRow alloc]initWithIdentifier:LEFTMENU_ROW_DOWNLOAD height:60 sortOrder:emailContactSortOrder];
-                    row.image = [UIImage imageNamed:@""];
+                    row.image = [UIImage imageNamed:@"ic_down"];
                     row.title = SCLocalizedString(@"My Downloadable products");
                     [section addObject:row];
                 }
@@ -66,7 +66,7 @@
     SimiRow *row = [noti.userInfo valueForKey:@"simirow"];
     if ([noti.name isEqualToString:@"SCLeftMenu_DidSelectRow"]) {
         if ([row.identifier isEqualToString:LEFTMENU_ROW_DOWNLOAD]) {
-            if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+            if (PHONEDEVICE) {
                 NSObject *navi = noti.object;
                 if (_downloadControllViewController == nil) {
                     _downloadControllViewController = [[DownloadControlViewController alloc]init];
@@ -79,14 +79,13 @@
                 if (_downloadControllViewController == nil) {
                     _downloadControllViewController = [[DownloadControlViewController alloc]init];
                 }
-                SCNavigationBarPad *navi = noti.object;
-                navi.popController = nil;
-                navi.popController = [[UIPopoverController alloc] initWithContentViewController:[[UINavigationController alloc] initWithRootViewController:_downloadControllViewController]];
-                _downloadControllViewController.isInPopover = YES;
-                _downloadControllViewController.popover = navi.popController;
-                [navi.popController presentPopoverFromRect:CGRectMake(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 1, 1) inView:currentVC.view permittedArrowDirections:0 animated:YES];
-                _downloadControllViewController.navigationItem.title = @"Manage Downloadable Products";
-                navi.isDiscontinue = YES;
+                UINavigationController *navi = [[UINavigationController alloc]initWithRootViewController:_downloadControllViewController];
+                navi.modalPresentationStyle = UIModalPresentationPopover;
+                UIPopoverPresentationController *popover = navi.popoverPresentationController;
+                popover.sourceRect = CGRectMake(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 1, 1);
+                popover.sourceView = [SimiGlobalVar sharedInstance].currentlyNavigationController.view;
+                popover.permittedArrowDirections = 0;
+                [[SimiGlobalVar sharedInstance].currentlyNavigationController presentViewController:navi animated:YES completion:nil];
             }
         }
     }
