@@ -336,8 +336,8 @@ NSString * const RequestStatusFailed = @"RequestStatusFailed";
                     [self.downloadingArray removeObjectAtIndex:indexOfObject];
                     
                     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:indexOfObject inSection:0];
-                    [_tableItemsDownloading deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationLeft];
-                    
+//                    [_tableItemsDownloading deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationLeft];
+                    [_tableItemsDownloading reloadData];
                     if([self.delegate respondsToSelector:@selector(downloadRequestFinished:)])
                         [self.delegate downloadRequestFinished:fileName];
                 });
