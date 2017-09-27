@@ -50,12 +50,14 @@
 
 - (UIView *)simiTabView:(SimiTabViewController *)simiTabView viewForTabAtIndex:(NSUInteger)index;
 {
-    UILabel *lblStoreList = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, 100, 30)];
+    UILabel *lblStoreList = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH/2, 30)];
+    lblStoreList.textAlignment = NSTextAlignmentCenter;
     lblStoreList.text = SCLocalizedString(@"Store List");
     lblStoreList.textColor = [UIColor orangeColor];
     [lblStoreList setFont:[UIFont fontWithName:[NSString stringWithFormat:@"%@-%@",THEME_FONT_NAME,@"Bold"] size:16]];
     
-    UILabel *lblMapView = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, 100, 30)];
+    UILabel *lblMapView = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH/2, 30)];
+    lblMapView.textAlignment = NSTextAlignmentCenter;
     lblMapView.text = SCLocalizedString(@"Map View");
     lblMapView.textColor = [UIColor orangeColor];
     [lblMapView setFont:[UIFont fontWithName:[NSString stringWithFormat:@"%@-%@",THEME_FONT_NAME,@"Bold"] size:16]];
