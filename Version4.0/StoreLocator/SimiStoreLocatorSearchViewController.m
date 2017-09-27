@@ -619,7 +619,7 @@
 #pragma mark - keyboard movements
 - (void)keyboardWillShow:(NSNotification *)notification
 {
-    CGSize keyboardSize = [[[notification userInfo] objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
+    CGSize keyboardSize = [[[notification userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue].size;
     searchTableView.contentInset = UIEdgeInsetsMake(0, 0, keyboardSize.height, 0);
 }
 

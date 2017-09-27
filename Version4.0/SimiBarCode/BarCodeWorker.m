@@ -38,9 +38,10 @@
     SimiTable *cells = noti.object;
     for (int i = 0; i < cells.count; i++) {
         SimiSection *section = [cells objectAtIndex:i];
-        if ([section.identifier isEqualToString:LEFTMENU_SECTION_MORE]) {
-            SimiRow *row = [[SimiRow alloc]initWithIdentifier:LEFTMENU_ROW_BARCODE height:50 sortOrder:50];
-            row.image = [UIImage imageNamed:@"barcode_icon"];
+        if ([section.identifier isEqualToString:LEFTMENU_SECTION_MAIN]) {
+            SimiRow *pointTrackingRow = [section getRowByIdentifier:@"LEFTMENU_ROW_POINTTRACKING"];
+            SimiRow *row = [[SimiRow alloc]initWithIdentifier:LEFTMENU_ROW_BARCODE height:50 sortOrder:pointTrackingRow.sortOrder +10];
+            row.image = [UIImage imageNamed:@"ic_barcode"];
             row.title = SCLocalizedString(@"Scan Now");
             row.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
             [section addObject:row];

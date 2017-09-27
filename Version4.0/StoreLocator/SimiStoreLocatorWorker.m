@@ -36,7 +36,8 @@
     for (int i = 0; i < cells.count; i++) {
         SimiSection *section = [cells objectAtIndex:i];
         if ([section.identifier isEqualToString:LEFTMENU_SECTION_MAIN]) {
-            SimiRow *row = [[SimiRow alloc]initWithIdentifier:LEFTMENU_ROW_STORELOCATOR height:50 sortOrder:55];
+            SimiRow *pointTrackingRow = [section getRowByIdentifier:@"LEFTMENU_ROW_POINTTRACKING"];
+            SimiRow *row = [[SimiRow alloc]initWithIdentifier:LEFTMENU_ROW_STORELOCATOR height:50 sortOrder:pointTrackingRow.sortOrder + 20];
             row.image = [UIImage imageNamed:@"Locations"];
             row.title = SCLocalizedString(@"Tim kiem cua hang");
             row.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
