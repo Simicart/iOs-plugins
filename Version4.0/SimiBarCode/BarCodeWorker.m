@@ -30,6 +30,7 @@
     if (self) {
         [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(didInitCellsAfter:) name:[NSString stringWithFormat:@"%@%@",SCLeftMenuViewController_RootEventName,SimiTableViewController_SubKey_InitCells_End] object:nil];
         [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(didSelectRow:) name:[NSString stringWithFormat:@"%@%@",SCLeftMenuViewController_RootEventName,SimiTableViewController_SubKey_DidSelectCell] object:nil];
+        [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(didTapButtonScan) name:@"DidTapButtonScan" object:nil];
     }
     return self;
 }
@@ -60,22 +61,19 @@
     }
 }
 
-- (void)didTapButtonScan
-{
+- (void)didTapButtonScan{
     SimiNavigationController *navi = kNavigationController;
     if (_barCodeViewController == nil) {
         _barCodeViewController = [BarCodeViewController new];
     }
     if ([navi.viewControllers containsObject:_barCodeViewController]    ) {
         [navi popToViewController:_barCodeViewController animated:NO];
-    }else
-    {
+    }else{
         [navi pushViewController:_barCodeViewController animated:NO];
     }
 }
 
-- (void)dealloc
-{
+- (void)dealloc{
     [[NSNotificationCenter defaultCenter]removeObserver:self];
 }
 @end

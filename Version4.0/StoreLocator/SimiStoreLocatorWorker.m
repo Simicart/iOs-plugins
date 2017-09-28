@@ -26,6 +26,7 @@
     if (self) {
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initCellsAfter:) name:[NSString stringWithFormat:@"%@%@",SCLeftMenuViewController_RootEventName,SimiTableViewController_SubKey_InitCells_End] object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didSelectRow:) name:[NSString stringWithFormat:@"%@%@",SCLeftMenuViewController_RootEventName,SimiTableViewController_SubKey_DidSelectCell] object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(openStoreLocator:) name:@"OpenStoreLocator" object:nil];
     }
     [GMSServices provideAPIKey:@"AIzaSyAmBe73HHr9CU1lYU96CFg6PTwG2i6NDwU"];
     return self;
@@ -64,6 +65,12 @@
         }
         navi.isDiscontinue = YES;
     }
+}
+
+- (void)openStoreLocator:(NSNotification*)noti{
+    SimiStoreLocatorViewController *storeLocatorViewController = [[SimiStoreLocatorViewController alloc]init];
+    UINavigationController *navigationController = kNavigationController;
+    [navigationController pushViewController:storeLocatorViewController animated:YES];
 }
 
 - (void)dealloc

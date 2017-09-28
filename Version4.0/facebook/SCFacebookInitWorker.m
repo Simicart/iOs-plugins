@@ -65,8 +65,8 @@
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didLogout:) name:Simi_DidLogout object:nil];
         
         //App Invite
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didInitLeftMenuRows:) name:Simi_SCLeftMenuViewControler_InitCells_End object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didSelectInviteFriends:) name:Simi_SCLeftMenuViewControler_DidSelectCell object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didInitLeftMenuRows:) name:[NSString stringWithFormat:@"%@%@",SCLeftMenuViewController_RootEventName,SimiTableViewController_SubKey_InitCells_End] object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didSelectInviteFriends:) name:[NSString stringWithFormat:@"%@%@",SCLeftMenuViewController_RootEventName,SimiTableViewController_SubKey_DidSelectCell] object:nil];
         //Catch when done init the app
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didInitApp:) name:@"DidInit" object:nil];
         //ApplicationDidBecomeActive
