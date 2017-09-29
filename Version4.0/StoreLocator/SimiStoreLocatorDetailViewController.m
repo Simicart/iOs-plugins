@@ -454,41 +454,41 @@
             }
         }
     }
-    NSDateComponents *components = [[NSCalendar currentCalendar] components:NSCalendarUnitWeekday fromDate:[NSDate new]];
-    NSInteger weekday = [components weekday];
-    
-    switch (weekday) {
-        case 1:
-            lblSundayContent.textColor = [UIColor redColor];
-            lblSunday.textColor = [UIColor redColor];
-            break;
-        case 2:
-            lblMondayContent.textColor = [UIColor redColor];
-            lblMonday.textColor = [UIColor redColor];
-            break;
-        case 3:
-            lblTuesday.textColor = [UIColor redColor];
-            lblTuesdayContent.textColor = [UIColor redColor];
-            break;
-        case 4:
-            lblWednesday.textColor = [UIColor redColor];
-            lblWednesdayContent.textColor = [UIColor redColor];
-            break;
-        case 5:
-            lblThursday.textColor = [UIColor redColor];
-            lblTuesdayContent.textColor = [UIColor redColor];
-            break;
-        case 6:
-            lblFriday.textColor = [UIColor redColor];
-            lblFridayContent.textColor = [UIColor redColor];
-            break;
-        case 7:
-            lblSaturday.textColor = [UIColor redColor];
-            lblSaturdayContent.textColor = [UIColor redColor];
-            break;
-        default:
-            break;
-    }
+//    NSDateComponents *components = [[NSCalendar currentCalendar] components:NSCalendarUnitWeekday fromDate:[NSDate new]];
+//    NSInteger weekday = [components weekday];
+//
+//    switch (weekday) {
+//        case 1:
+//            lblSundayContent.textColor = [UIColor redColor];
+//            lblSunday.textColor = [UIColor redColor];
+//            break;
+//        case 2:
+//            lblMondayContent.textColor = [UIColor redColor];
+//            lblMonday.textColor = [UIColor redColor];
+//            break;
+//        case 3:
+//            lblTuesday.textColor = [UIColor redColor];
+//            lblTuesdayContent.textColor = [UIColor redColor];
+//            break;
+//        case 4:
+//            lblWednesday.textColor = [UIColor redColor];
+//            lblWednesdayContent.textColor = [UIColor redColor];
+//            break;
+//        case 5:
+//            lblThursday.textColor = [UIColor redColor];
+//            lblThursdayContent.textColor = [UIColor redColor];
+//            break;
+//        case 6:
+//            lblFriday.textColor = [UIColor redColor];
+//            lblFridayContent.textColor = [UIColor redColor];
+//            break;
+//        case 7:
+//            lblSaturday.textColor = [UIColor redColor];
+//            lblSaturdayContent.textColor = [UIColor redColor];
+//            break;
+//        default:
+//            break;
+//    }
 
     [SimiGlobalVar sortViewForRTL:viewOpenHours andWidth:CGRectGetWidth(viewOpenHours.frame)];
     heightScrViewContentSize += CGRectGetHeight(viewOpenHours.frame) + space;
