@@ -8,6 +8,7 @@
 
 #import <SimiCartBundle/SCAppDelegate.h>
 #import <SimiCartBundle/SimiOrderModel.h>
+#import <SimiCartBundle/SCOrderViewController.h>
 #import "SimiPaymentWorker.h"
 
 #define METHOD_PAYMENT @"SIMICUSTOMPAYMENT"
@@ -35,8 +36,8 @@
 {
     self = [super init];
     if (self) {
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"DidPlaceOrder-Before" object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"DidGetCustomPayments" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:DidPlaceOrderBefore object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:DidGetCustomPayments object:nil];
         [[self customPayment] getCustomPaymentsWithParams:nil];
     }
     return self;
@@ -44,7 +45,7 @@
 
 - (void)didReceiveNotification:(NSNotification *)noti
 {
-    if ([noti.name isEqualToString:@"DidPlaceOrder-Before"]){
+    if ([noti.name isEqualToString:DidPlaceOrderBefore]){
         payment = [noti.userInfo valueForKey:@"payment"];
         for(NSDictionary* payment1 in _customPayment){
             if ([[NSString stringWithFormat:@"%@",[payment1 valueForKey:@"paymentmethod"]] caseInsensitiveCompare:[NSString stringWithFormat:@"%@",[payment valueForKey:@"payment_method"]]] == NSOrderedSame) {
@@ -52,7 +53,7 @@
                 break;
             }
         }
-    }else if([noti.name isEqualToString:@"DidGetCustomPayments"]){
+    }else if([noti.name isEqualToString:DidGetCustomPayments]){
         
     }
 }
