@@ -122,7 +122,7 @@
     [self stopLoadingData];
     SimiResponder* responder = [noti.userInfo valueForKey:@"responder"];
     if([responder.status isEqualToString:@"SUCCESS"]){
-        [self showToastMessage:@"Your order is cancelled"];
+        [((SimiViewController *)[SimiGlobalVar sharedInstance].currentViewController) showToastMessage:@"Your order is cancelled"];
         [self.navigationController dismissViewControllerAnimated:YES completion:nil];
     }else {
         [self showAlertWithTitle:@"" message:responder.responseMessage completionHandler:^{
