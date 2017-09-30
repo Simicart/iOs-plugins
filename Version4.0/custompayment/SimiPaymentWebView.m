@@ -122,10 +122,12 @@
     [self stopLoadingData];
     SimiResponder* responder = [noti.userInfo valueForKey:@"responder"];
     if([responder.status isEqualToString:@"SUCCESS"]){
-        [self showAlertWithTitle:@"" message:@"Your order is cancelled"];
-    }else{
-        [self showAlertWithTitle:@"" message:responder.responseMessage];
+        [self showToastMessage:@"Your order is cancelled"];
+        [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+    }else {
+        [self showAlertWithTitle:@"" message:responder.responseMessage completionHandler:^{
+            [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+        }];
     }
-    [self.navigationController dismissViewControllerAnimated:YES completion:nil];
 }
 @end
