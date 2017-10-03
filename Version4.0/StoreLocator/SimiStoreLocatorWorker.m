@@ -14,7 +14,6 @@
 #import "SimiStoreLocatorViewControllerPad.h"
 #import <SimiCartBundle/SCNavigationBarPhone.h>
 #import <SimiCartBundle/SCNavigationBarPad.h>
-#import "SCCustomizeLeftMenuViewController.h"
 @implementation SimiStoreLocatorWorker
 {
     SimiTable *cells;
