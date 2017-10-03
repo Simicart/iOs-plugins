@@ -27,18 +27,8 @@
 }
 - (id)init {
     if(self == [super init]) {
-<<<<<<< HEAD
-        if(PHONEDEVICE) {
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orderViewInitCells:) name:SCOrderViewControllerInitTableAfter object:nil];
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orderViewCellForRow:) name:InitializedOrderCellBefore object:nil];
-        }else if(PADDEVICE) {
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orderViewInitCells:) name:SCOrderViewControllerInitRightTableAfter object:nil];
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orderViewCellForRow:) name:InitializedOrderCellBefore object:nil];
-        }
-=======
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orderViewInitCells:) name:[NSString stringWithFormat:@"%@%@",SCOrderViewController_RootEventName, SimiTableViewController_SubKey_InitCells_End] object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orderViewCellForRow:) name:[NSString stringWithFormat:@"%@%@",SCOrderViewController_RootEventName, SimiTableViewController_SubKey_InitializedCell_End] object:nil];
->>>>>>> Version41
     }
     return self;
 }
@@ -80,16 +70,11 @@
     SimiSection *section = [cells objectAtIndex:indexPath.section];
     SimiRow *row = [section objectAtIndex:indexPath.row];
     if([row.identifier isEqualToString:ORDER_VIEW_GIFTCODE] || [row.identifier isEqualToString:ORDER_VIEW_GIFTCARD_CREDIT] || [row.identifier isEqualToString:ORDER_VIEW_GIFTCARD_NONUSE]) {
-<<<<<<< HEAD
-        orderTableView = [noti.userInfo objectForKey:@"tableView"];
-        orderVC = noti.object;
-=======
         orderVC = [noti.userInfo objectForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.viewcontroller];
         orderTableView = orderVC.tableViewOrder;
         if (PADDEVICE) {
             orderTableView = [((SCOrderViewControllerPad*)orderVC) tableRight];
         }
->>>>>>> Version41
         NSDictionary *giftCardData = [order objectForKey:@"gift_card"];
         NSDictionary *customerData = [giftCardData objectForKey:@"customer"];
         float padding = 10;

@@ -111,15 +111,9 @@ static NSString *LEFTMENU_REWARDS_ROW     = @"leftmenu_rewards";
         }
         SimiCartModelCollection *cart = [globalVar cart];
         
-<<<<<<< HEAD
-        //Order screen init order table on iphone
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:SCOrderViewControllerInitTableBefore object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"SCOrderViewController-InitTableAfter" object:nil];
-=======
         UIView *loyalty = [cell viewWithTag:LOYALTY_TAG];
         UIImageView *imageView = (UIImageView *)[loyalty viewWithTag:3821];
         UILabel *label = (UILabel *)[loyalty viewWithTag:3822];
->>>>>>> Version41
         
         loyaltyData = [cart.responseObject valueForKey:@"loyalty"];
         [imageView sd_setImageWithURL:[NSURL URLWithString:[loyaltyData objectForKey:@"loyalty_image"]] placeholderImage:nil options:SDWebImageRetryFailed];
@@ -140,19 +134,12 @@ static NSString *LEFTMENU_REWARDS_ROW     = @"leftmenu_rewards";
     self.orderViewController = noti.object;
 }
 
-<<<<<<< HEAD
-- (void)didReceiveNotification:(NSNotification *)noti
-{
-#pragma mark set Order Table
-    if (([noti.name isEqualToString:@"DidGetOrderConfig"] || [noti.name isEqualToString:@"DidSpendPointsOrder"] || [noti.name isEqualToString:@"DidSetCouponCode"] || [noti.name isEqualToString:@"DidSaveShippingMethod"] || [noti.name isEqualToString:SCOrderViewControllerInitTableBefore] || [noti.name isEqualToString:@"SCOrderViewController-InitTableAfter"]||[noti.name isEqualToString:@"SCOrderViewController-InitRightTableAfter"]) && self.orderViewController) {
-=======
 - (void)didSpendPointsOrder:(NSNotification*)noti{
     [self.orderViewController didGetOrderConfig:noti];
 }
 
 - (void)initLoyaltyCell:(NSNotification *)noti{
     if (self.orderViewController) {
->>>>>>> Version41
         SimiOrderModel *order = [self.orderViewController order];
         SimiTable *orderTable = self.orderViewController.cells;
         if (PADDEVICE) {
@@ -354,17 +341,11 @@ static NSString *LEFTMENU_REWARDS_ROW     = @"leftmenu_rewards";
                         return;
                 }
                 
-<<<<<<< HEAD
-                SimiRow *loyaltyRow = [[SimiRow alloc]initWithIdentifier:LEFTMENU_REWARDS_ROW height:rowHeight sortOrder:310];
-                loyaltyRow.title = SCLocalizedString(@"My Rewards");
-                loyaltyRow.image = [UIImage imageNamed:@"loyalty_reward_invert"];
-                [section addRow:loyaltyRow];
-=======
                 SimiRow *rewardsRow = [[SimiRow alloc]initWithIdentifier:LEFTMENU_REWARDS_ROW height:rowHeight sortOrder:310];
                 rewardsRow.title = SCLocalizedString(@"My Rewards");
                 rewardsRow.image = [UIImage imageNamed:@"loyalty_reward_invert"];
                 [section addRow:rewardsRow];
->>>>>>> Version41
+                
                 [section sortItems];
             }
         }
@@ -417,76 +398,6 @@ static NSString *LEFTMENU_REWARDS_ROW     = @"leftmenu_rewards";
 }
 - (void)dealloc
 {
-<<<<<<< HEAD
-    SimiRow *row = [noti.userInfo objectForKey:@"row"];
-    if ([row.identifier isEqualToString:LOYALTY_CHECKOUT]) {
-        UITableViewCell *cell = (UITableViewCell *)[noti.userInfo objectForKey:@"cell"];
-        cell.selectionStyle = UITableViewCellSelectionStyleNone;
-        if (![globalVar isLogin]) {
-            cell.textLabel.font = [UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE];
-            cell.textLabel.numberOfLines = 2;
-            cell.textLabel.text = SCLocalizedString(@"Please login before using points to spend");
-            return;
-        }
-        SimiOrderModel *order = [self.orderViewController order];
-        NSArray *rules = [[order valueForKey:@"loyalty"] objectForKey:@"loyalty_rules"];
-        if ([rules count]) {
-            NSDictionary *rule = [rules objectAtIndex:0];
-            if ([[rule objectForKey:@"optionType"] isEqualToString:@"slider"]) {
-                // Slider
-                UITableView *tableView = (UITableView *)[noti.userInfo objectForKey:@"tableView"];
-                CGFloat width = tableView.frame.size.width - 30;
-                UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(15, 11, width, 22)];
-                label.font = [UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE];
-                label.adjustsFontSizeToFitWidth = YES;
-                label.minimumScaleFactor = 0.7;
-                label.text = [NSString stringWithFormat:SCLocalizedString(@"Each of %@ gets %@ discount"), [rule objectForKey:@"pointStepLabel"], [rule objectForKey:@"pointStepDiscount"]];
-                [cell addSubview:label];
-                
-                UISlider *slider = [[UISlider alloc] initWithFrame:CGRectMake(15, 44, width, 28)];
-                slider.minimumValue = [[rule objectForKey:@"minPoints"] floatValue];
-                slider.maximumValue = [[rule objectForKey:@"maxPoints"] floatValue];
-                if ([[order valueForKey:@"loyalty"] objectForKey:@"loyalty_spend"]) {
-                    slider.value = [[[order valueForKey:@"loyalty"] objectForKey:@"loyalty_spend"] floatValue];
-                }else
-                    slider.value = 0;
-                [slider addTarget:self action:@selector(changeSpendingPoints:) forControlEvents:UIControlEventValueChanged];
-                [slider addTarget:self action:@selector(stopSpendingPointsSlide:) forControlEvents:UIControlEventTouchUpInside | UIControlEventTouchUpOutside];
-                [cell addSubview:slider];
-                
-                UILabel *points = [label clone];
-                points.font = [UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE];
-                points.textAlignment = NSTextAlignmentCenter;
-                points.frame = CGRectMake(15, 72, width, 22);
-                if ([[order valueForKey:@"loyalty"] objectForKey:@"loyalty_spend"]) {
-                    points.text = [[SCLocalizedString(@"Spending") stringByAppendingString:@": "] stringByAppendingString:[[[order valueForKey:@"loyalty"] objectForKey:@"loyalty_spend"] stringValue]];
-                }
-                [cell addSubview:points];
-                slider.simiObjectIdentifier = points;
-                points.simiObjectIdentifier = [rule objectForKey:@"pointStep"];
-                
-                UILabel *minLabel = [label clone];
-                minLabel.frame = CGRectMake(20, 72, 70, 22);
-                minLabel.text = [[rule objectForKey:@"minPoints"] stringValue];
-                minLabel.textColor = [UIColor grayColor];
-                [cell addSubview:minLabel];
-                
-                UILabel *maxLabel = [label clone];
-                maxLabel.frame = CGRectMake(width - 60, 72, 70, 22);
-                maxLabel.textAlignment = NSTextAlignmentRight;
-                maxLabel.text = [[rule objectForKey:@"maxPoints"] stringValue];
-                maxLabel.textColor = [UIColor grayColor];
-                [cell addSubview:maxLabel];
-            } else {
-                // Need Points
-                cell.textLabel.font = [UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE];
-                cell.textLabel.numberOfLines = 2;
-                cell.textLabel.text = [NSString stringWithFormat:SCLocalizedString(@"You need to earn more %@ to use this rule"), [rule objectForKey:@"needPointLabel"]];
-            }
-        }
-    }
-=======
     [[NSNotificationCenter defaultCenter] removeObserver:self];
->>>>>>> Version41
 }
 @end

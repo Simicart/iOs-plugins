@@ -34,22 +34,6 @@
     return self;
 }
 
-<<<<<<< HEAD
-- (void)didInitCellsAfter:(NSNotification*)noti
-{
-    if ([noti.name isEqualToString:@"SCLeftMenu_InitCellsAfter"])
-    {
-        cells = noti.object;
-        for (int i = 0; i < cells.count; i++) {
-            SimiSection *section = [cells objectAtIndex:i];
-            if ([section.identifier isEqualToString:LEFTMENU_SECTION_MORE]) {
-                SimiRow *row = [[SimiRow alloc]initWithIdentifier:LEFTMENU_ROW_BARCODE height:50 sortOrder:50];
-                row.image = [UIImage imageNamed:@"barcode_icon"];
-                row.title = SCLocalizedString(@"Scan Now");
-                [section addObject:row];
-                [section sortItems];
-            }
-=======
 - (void)didInitCellsAfter:(NSNotification*)noti{
     SimiTable *cells = noti.object;
     for (int i = 0; i < cells.count; i++) {
@@ -61,7 +45,6 @@
             row.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
             [section addObject:row];
             [section sortItems];
->>>>>>> Version41
         }
     }
 }
