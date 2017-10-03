@@ -18,8 +18,6 @@
 #define SCLoginViewController_InitCellAfter @"SCLoginViewController_InitCellAfter"
 #define SCLoginViewController_InitCellsAfter @"SCLoginViewController_InitCellsAfter"
 #define TwitterLoginCell @"TwitterLoginCell"
-#define DidLogout @"DidLogout"
-#define DidLogin @"DidLogin"
 
 @implementation TwitterInitWorker{
     SimiCustomerModel* customerModel;

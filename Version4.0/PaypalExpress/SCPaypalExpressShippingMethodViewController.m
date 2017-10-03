@@ -9,7 +9,6 @@
 #import "SCPaypalExpressShippingMethodViewController.h"
 #import <SimiCartBundle/SimiFormatter.h>
 #import <SimiCartBundle/SCCartViewControllerPad.h>
-#import <SimiCartBundle/SCThemeWorker.h>
 
 @interface SCPaypalExpressShippingMethodViewController ()
 {
@@ -199,11 +198,11 @@
     [self stopLoadingData];
     SimiResponder *responder = [noti.userInfo valueForKey:@"responder"];
     if (PHONEDEVICE) {
-        SCCartViewController * cartVC = [[SCThemeWorker sharedInstance].navigationBarPhone cartViewController];
+        SCCartViewController * cartVC = [[SCAppController sharedInstance].navigationBarPhone cartViewController];
         [cartVC getCart];
     }else
     {
-        SCCartViewControllerPad * cartVC = [[SCThemeWorker sharedInstance].navigationBarPad cartViewControllerPad];
+        SCCartViewControllerPad * cartVC = [[SCAppController sharedInstance].navigationBarPad cartViewControllerPad];
         [cartVC getCart];
     }
     if ([responder.status isEqualToString:@"SUCCESS"]) {

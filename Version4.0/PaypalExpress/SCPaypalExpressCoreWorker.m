@@ -43,7 +43,7 @@ static NSString *product_paypalcheckout_row = @"product_paypalcheckout_row";
 #pragma mark Add Button to Product View Controller
 -(void)sCProductViewControllerViewWillAppear: (NSNotification *)noti
 {
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didGetProductWithProductId:) name:@"DidGetProductWithID" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didGetProductWithProductId:) name:Simi_DidGetProductModel object:nil];
     productViewController = (SCProductViewController *)noti.object;
     productActionView = productViewController.viewAction;
     if (CGRectEqualToRect(productActionViewFrame,CGRectZero)) {
@@ -134,7 +134,7 @@ static NSString *product_paypalcheckout_row = @"product_paypalcheckout_row";
 -(void)didChangeCart: (NSNotification *)noti
 {
     if (PHONEDEVICE) {
-        SCCartViewController * cartVC = [[SCThemeWorker sharedInstance].navigationBarPhone cartViewController];
+        SCCartViewController * cartVC = [[SCAppController sharedInstance].navigationBarPhone cartViewController];
         if ((cartVC.cart == nil) || (cartVC.cart.count == 0)|| ![[paypalExpressConfig valueForKey:@"show_on_cart"]boolValue]) {
             btnPaypalCart.hidden = YES;
             return;
@@ -157,7 +157,7 @@ static NSString *product_paypalcheckout_row = @"product_paypalcheckout_row";
         }
     }
     else {
-        SCCartViewController * cartVC = [[SCThemeWorker sharedInstance].navigationBarPad cartViewControllerPad];
+        SCCartViewController * cartVC = [[SCAppController sharedInstance].navigationBarPad cartViewControllerPad];
         if ((cartVC.cart == nil) || (cartVC.cart.count == 0) || ![[paypalExpressConfig valueForKey:@"show_on_cart"]boolValue]){
             btnPaypalCart.hidden = YES;
             return;
@@ -184,7 +184,7 @@ static NSString *product_paypalcheckout_row = @"product_paypalcheckout_row";
     if (row.identifier == CART_CHECKOUT_ROW) {
         UITableViewCell *cell = [noti.userInfo objectForKey:@"cell"];
         [cell addSubview:btnPaypalCart];
-        SCCartViewController * cartVC = [[SCThemeWorker sharedInstance].navigationBarPad cartViewControllerPad];
+        SCCartViewController * cartVC = [[SCAppController sharedInstance].navigationBarPad cartViewControllerPad];
         [cartVC.btnCheckout setFrame:CGRectMake(220, 30, 180, 50)];
         [self removeObserverForNotification:noti];
     }
@@ -206,7 +206,7 @@ static NSString *product_paypalcheckout_row = @"product_paypalcheckout_row";
 #pragma mark Paypal Checkout Actions
 -(void)didClickProductPaypalButton:(id)sender
 {
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didAddToCart:) name:@"DidAddToCart" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didAddToCart:) name:Simi_DidAddToCart object:nil];
     [productViewController addToCart];
 }
 
@@ -220,11 +220,10 @@ static NSString *product_paypalcheckout_row = @"product_paypalcheckout_row";
 }
 
 
--(void)startPaypalCheckout
-{
-    UIViewController *currentVC = [(UITabBarController *)[[(SCAppDelegate *)[[UIApplication sharedApplication]delegate] window] rootViewController] selectedViewController];
+-(void)startPaypalCheckout{
+    UINavigationController *currentVC = kNavigationController;
     webViewController = [SCPaypalExpressWebViewController new];
-    [(UINavigationController *)currentVC pushViewController:webViewController animated:YES];
+    [currentVC pushViewController:webViewController animated:YES];
 }
 
 

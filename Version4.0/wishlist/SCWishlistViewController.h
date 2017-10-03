@@ -10,8 +10,6 @@
 #import <SimiCartBundle/SCProductViewControllerPad.h>
 #import "SCWishlistModelCollection.h"
 #import "SCWishlistCollectionViewCell.h"
-#import <SimiCartBundle/SCThemeWorker.h>
-
 
 @interface SCWishlistViewController : SimiViewController<UICollectionViewDelegate, UICollectionViewDataSource, SCWishlistCollectionViewCellDelegate>
 @end

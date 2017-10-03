@@ -18,7 +18,7 @@
 {
     SimiResponder *responder = [noti.userInfo valueForKey:@"responder"];
     if ([responder.status isEqualToString:@"SUCCESS"]) {
-        if ([noti.name isEqualToString:@"DidLogin"]) {
+        if ([noti.name isEqualToString:Simi_DidLogin]) {
             NSDictionary *info = [[NSBundle mainBundle] infoDictionary];
             NSString *bundleIdentifier = [NSString stringWithFormat:@"%@", [info objectForKey:@"CFBundleIdentifier"]];
             KeychainItemWrapper *wrapper = [[KeychainItemWrapper alloc] initWithIdentifier:bundleIdentifier accessGroup:nil];
@@ -29,7 +29,7 @@
                 back.skipReloadData = NO;
                 [self.navigationController popViewControllerAnimated:YES];
             } else {
-                 UINavigationController *currentVC = (UINavigationController*)[(UITabBarController *)[[(SCAppDelegate *)[[UIApplication sharedApplication]delegate] window] rootViewController] selectedViewController];
+                 UINavigationController *currentVC = kNavigationController;
                 [currentVC pushViewController:[LoyaltyViewController new] animated:YES];
             }
         }

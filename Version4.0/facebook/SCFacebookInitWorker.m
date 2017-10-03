@@ -24,8 +24,6 @@
 #define SCLoginViewController_InitCellAfter @"SCLoginViewController_InitCellAfter"
 #define FacebookLoginCell @"FacebookLoginCell"
 #define SimiFaceBookWorker_StartLoginWithFaceBook @"SimiFaceBookWorker_StartLoginWithFaceBook"
-#define SCLeftMenu_InitCellsAfter @"SCLeftMenu_InitCellsAfter"
-#define SCLeftMenu_DidSelectRow @"SCLeftMenu_DidSelectRow"
 
 #define LEFTMENU_ROW_FACEBOOK_INVITE @"LEFTMENU_ROW_FACEBOOK_INVITE"
 
@@ -63,12 +61,12 @@
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:SCLoginViewController_InitCellsAfter object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:ApplicationOpenURL object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:SCLoginViewController_InitCellAfter object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didLogin:) name:DidLogin object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didLogout:) name:DidLogout object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didLogin:) name:Simi_DidLogin object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didLogout:) name:Simi_DidLogout object:nil];
         
         //App Invite
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didInitLeftMenuRows:) name:SCLeftMenu_InitCellsAfter object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didSelectInviteFriends:) name:SCLeftMenu_DidSelectRow object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didInitLeftMenuRows:) name:Simi_SCLeftMenuViewControler_InitCells_End object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didSelectInviteFriends:) name:Simi_SCLeftMenuViewControler_DidSelectCell object:nil];
         //Catch when done init the app
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didInitApp:) name:@"DidInit" object:nil];
         //ApplicationDidBecomeActive
@@ -256,7 +254,7 @@
             }
         }
         if([urlParamsDictionary objectForKey:@"product_id"] && ![[NSString stringWithFormat:@"%@",[urlParamsDictionary objectForKey:@"product_id"]] isEqualToString:@""]){
-            [SimiGlobalVar pushProductDetailWithNavigationController:[SimiGlobalVar sharedInstance].currentlyNavigationController andProductID:[NSString stringWithFormat:@"%@",[urlParamsDictionary objectForKey:@"product_id"]] andProductIDs:[[NSMutableArray alloc] initWithArray:@[[NSString stringWithFormat:@"%@",[urlParamsDictionary objectForKey:@"product_id"]]]]];
+            [[SCAppController sharedInstance]openProductWithNavigationController:[SimiGlobalVar sharedInstance].currentlyNavigationController productId:[NSString stringWithFormat:@"%@",[urlParamsDictionary objectForKey:@"product_id"]] moreParams:nil];
         }else if([urlParamsDictionary objectForKey:@"category_id"] && ![[NSString stringWithFormat:@"%@",[urlParamsDictionary objectForKey:@"category_id"]] isEqualToString:@""]){
             NSString* categoryId = [NSString stringWithFormat:@"%@",[urlParamsDictionary objectForKey:@"category_id"]];
             BOOL hasChild = [[urlParamsDictionary objectForKey:@"has_child"] boolValue];
@@ -403,8 +401,11 @@
     }
 }
 
--(void) didSelectInviteFriends:(NSNotification*) noti{
-    SimiRow* inviteRow = (SimiRow*)[noti.userInfo objectForKey:@"simirow"];
+- (void)didSelectInviteFriends:(NSNotification*) noti{
+    SimiTable *cells = noti.object;
+    NSIndexPath *indexPath = [noti.userInfo valueForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.indexpath];
+    SimiSection *section = [cells objectAtIndex:indexPath.section];
+    SimiRow* inviteRow = [section objectAtIndex:indexPath.row];
     if([inviteRow.identifier isEqualToString:LEFTMENU_ROW_FACEBOOK_INVITE]){
         if([[SimiGlobalVar sharedInstance].allConfig objectForKey:@"facebook_connect"]){
             NSDictionary* fbConnect = [[SimiGlobalVar sharedInstance].allConfig objectForKey:@"facebook_connect"];
@@ -473,7 +474,7 @@
     if(productURL){
         UIView* commentView = [[UIView alloc]init];
         commentView.tag = COMMENT_VIEW_TAG;
-        UIViewController *currentVC = [(UITabBarController *)[[(SCAppDelegate *)[[UIApplication sharedApplication] delegate] window] rootViewController] selectedViewController];
+        UINavigationController *currentVC = kNavigationController;
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
             commentView.frame = [UIScreen mainScreen].bounds;
         }else
@@ -546,14 +547,11 @@
     }
 }
 
--(void)didClickCloseCommentView: (id) sender
-{
-    UIViewController *currentVC = [(UITabBarController *)[[(SCAppDelegate *)[[UIApplication sharedApplication] delegate] window] rootViewController] selectedViewController];
+-(void)didClickCloseCommentView: (id) sender{
+    UIViewController *currentVC = kNavigationController;
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         [[currentVC.view.subviews lastObject] removeFromSuperview];
-    }else
-    {
-//                [[currentVC.view.subviews lastObject] removeFromSuperview];
+    }else{
         UIButton* closeButton = (UIButton*) sender;
         UIView* commentView = closeButton.superview;
         [commentView removeFromSuperview];

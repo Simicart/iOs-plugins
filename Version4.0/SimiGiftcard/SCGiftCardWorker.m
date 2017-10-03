@@ -22,14 +22,15 @@ static NSString *ACCOUNT_GIFTCARD_ROW = @"ACCOUNT_GIFTCARD_ROW";
 - (instancetype)init{
     self = [super init];
     if (self) {
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(leftmenuInitCellsAfter:) name:@"SCLeftMenu_InitCellsAfter" object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(leftmenuDidSelectRow:) name:@"SCLeftMenu_DidSelectRow" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(leftmenuInitCellsAfter:) name:[NSString stringWithFormat:@"%@%@",SCLeftMenuViewController_RootEventName,SimiTableViewController_SubKey_InitCells_End] object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(leftmenuDidSelectRow:) name:[NSString stringWithFormat:@"%@%@",SCLeftMenuViewController_RootEventName,SimiTableViewController_SubKey_DidSelectCell] object:nil];
+        
         self.giftCardOnCartWorker = [[SCGiftCardOnCartWorker alloc] init];
         self.giftCardOnOrderWorker = [[SCGiftCardOnOrderWorker alloc] init];
         
         //My Account Screen
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializedAccountCellAfter:) name:@"SCAccountViewController-InitCellsAfter" object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didSelectAccountCellAtIndexPath:) name:@"DidSelectAccountCellAtIndexPath" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializedAccountCellAfter:) name:[NSString stringWithFormat:@"%@%@",SCAccountViewController_RootEventName,SimiTableViewController_SubKey_InitCells_End] object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didSelectAccountCellAtIndexPath:) name:[NSString stringWithFormat:@"%@%@",SCAccountViewController_RootEventName,SimiTableViewController_SubKey_DidSelectCell] object:nil];
     }
     return self;
 }
@@ -59,7 +60,10 @@ static NSString *ACCOUNT_GIFTCARD_ROW = @"ACCOUNT_GIFTCARD_ROW";
 }
 
 - (void)leftmenuDidSelectRow:(NSNotification*)noti{
-    SimiRow *row = [noti.userInfo valueForKey:@"simirow"];
+    NSIndexPath *indexPath = [noti.userInfo valueForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.indexpath];
+    cells = noti.object;
+    SimiSection *section = [cells objectAtIndex:indexPath.section];
+    SimiRow *row = [section objectAtIndex:indexPath.row];
     if ([row.identifier isEqualToString:LEFTMENU_ROW_GIFTCARD]) {
         SCGiftCardProductsViewController *giftCardProductViewController = [SCGiftCardProductsViewController new];
         [[SimiGlobalVar sharedInstance].currentlyNavigationController pushViewController:giftCardProductViewController animated:YES];
@@ -68,7 +72,7 @@ static NSString *ACCOUNT_GIFTCARD_ROW = @"ACCOUNT_GIFTCARD_ROW";
 
 #pragma mark Add to My Account Screen
 -(void)initializedAccountCellAfter:(NSNotification *)noti{
-    SimiTable *accountCells = [[SimiTable alloc] initWithArray:noti.object];
+    SimiTable *accountCells = noti.object;
     SimiSection* section = [accountCells getSectionByIdentifier:ACCOUNT_MAIN_SECTION];
     SimiRow *giftcardRow = [[SimiRow alloc]initWithIdentifier:ACCOUNT_GIFTCARD_ROW height:45 sortOrder:350];
     giftcardRow.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
@@ -78,8 +82,12 @@ static NSString *ACCOUNT_GIFTCARD_ROW = @"ACCOUNT_GIFTCARD_ROW";
 }
 
 -(void)didSelectAccountCellAtIndexPath:(NSNotification *)noti{
-    if ([[(SimiRow *)noti.object identifier] isEqualToString:ACCOUNT_GIFTCARD_ROW]) {
-        SCAccountViewController *accountVC = [noti.userInfo objectForKey:@"self"];
+    NSIndexPath *indexPath = [noti.userInfo valueForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.indexpath];
+    cells = noti.object;
+    SimiSection *section = [cells objectAtIndex:indexPath.section];
+    SimiRow *row = [section objectAtIndex:indexPath.row];
+    if ([row.identifier isEqualToString:ACCOUNT_GIFTCARD_ROW]) {
+        SCAccountViewController *accountVC = [noti.userInfo objectForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.viewcontroller];
         SCMyGiftCardViewController *myGiftCardViewController = [SCMyGiftCardViewController new];
         [accountVC.navigationController pushViewController:myGiftCardViewController animated:YES];
         accountVC.isDiscontinue = YES;

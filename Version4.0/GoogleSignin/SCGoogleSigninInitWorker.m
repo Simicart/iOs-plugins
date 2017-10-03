@@ -14,8 +14,6 @@
 #define SCLoginViewController_InitCellAfter @"SCLoginViewController_InitCellAfter"
 #define SCLoginViewController_InitCellsAfter @"SCLoginViewController_InitCellsAfter"
 #define GoogleLoginCell @"GoogleLoginCell"
-#define DidLogout @"DidLogout"
-#define DidLogin @"DidLogin"
 
 @implementation SCGoogleSigninInitWorker{
     SimiCustomerModel* customerModel;
@@ -28,8 +26,8 @@
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationOpenURL:) name:ApplicationOpenURL object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:SCLoginViewController_InitCellAfter object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:SCLoginViewController_InitCellsAfter object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didLogout:) name:DidLogout object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didLogin:) name:DidLogout object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didLogout:) name:Simi_DidLogin object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didLogin:) name:Simi_DidLogout object:nil];
         
         //Init GIDSignin attributes
         [GIDSignIn sharedInstance].delegate = self;

@@ -8,7 +8,6 @@
 
 #import "SimizopimWorker.h"
 #import "ChatStyling.h"
-#import <SimiCartBundle/SCThemeWorker.h>
 #import <SimiCartBundle/SimiSection.h>
 #import <SimiCartBundle/SimiRow.h>
 #import <SimiCartBundle/SCAppDelegate.h>
@@ -27,8 +26,8 @@
         self.zoPimConfig = [[SimiGlobalVar sharedInstance].allConfig valueForKeyPath:@"zopim_config"];
         NSString *enable = [self.zoPimConfig valueForKey:@"enable"];
         if ([enable isEqualToString:@"1"]) {
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"SCLeftMenu_InitCellsAfter" object:nil];
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"SCLeftMenu_DidSelectRow" object:nil];
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:Simi_SCLeftMenuViewControler_InitCells_End object:nil];
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:Simi_SCLeftMenuViewControler_DidSelectCell object:nil];
             [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initRightItemsEnd:) name:@"SCNavigationBarPhone-InitRightItems-End" object:nil];
             [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initLeftItemsEnd:) name:@"SCNavigationBarPad-InitLeftItems-End" object:nil];
         }
@@ -37,7 +36,7 @@
 }
 
 - (void)didReceiveNotification:(NSNotification *)noti{
-    if([noti.name isEqualToString:@"SCLeftMenu_InitCellsAfter"]){
+    if([noti.name isEqualToString:Simi_SCLeftMenuViewControler_InitCells_End]){
         cells = noti.object;
         for (int i = 0; i < cells.count; i++) {
             SimiSection *section = [cells objectAtIndex:i];
@@ -49,8 +48,11 @@
                 [section sortItems];
             }
         }
-    }else if([noti.name isEqualToString:@"SCLeftMenu_DidSelectRow"]){
-        SimiRow *row = [noti.userInfo valueForKey:@"simirow"];
+    }else if([noti.name isEqualToString:Simi_SCLeftMenuViewControler_DidSelectCell]){
+        NSIndexPath *indexPath = [noti.userInfo valueForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.indexpath];
+        cells = noti.object;
+        SimiSection *section = [cells objectAtIndex:indexPath.section];
+        SimiRow *row = [section objectAtIndex:indexPath.row];
         if ([row.identifier isEqualToString:LEFTMENU_ROW_CHAT]) {
             SCNavigationBarPhone *navi = noti.object;
             navi.isDiscontinue = YES;

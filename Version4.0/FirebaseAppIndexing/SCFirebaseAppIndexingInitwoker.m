@@ -58,7 +58,7 @@
     if(searchableUserActivity && [searchableUserActivity.userInfo objectForKey:@"kCSSearchableItemActivityIdentifier"]){
         NSString* productID = [searchableUserActivity.userInfo objectForKey:@"kCSSearchableItemActivityIdentifier"];
         [[[SimiGlobalVar sharedInstance] currentlyNavigationController] popToRootViewControllerAnimated:NO];
-        [SimiGlobalVar pushProductDetailWithNavigationController:[[SimiGlobalVar sharedInstance] currentlyNavigationController] andProductID:productID andProductIDs:nil];
+        [[SCAppController sharedInstance]openProductWithNavigationController:[[SimiGlobalVar sharedInstance] currentlyNavigationController] productId:productID moreParams:nil];
         searchableUserActivity = nil;
     }
 }

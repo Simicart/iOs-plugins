@@ -44,12 +44,12 @@
         
         
         //My Account Screen
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializedAccountCellAfter:) name:@"SCAccountViewController-InitCellsAfter" object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didSelectAccountCellAtIndexPath:) name:@"DidSelectAccountCellAtIndexPath" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializedAccountCellAfter:) name:[NSString stringWithFormat:@"%@%@",SCAccountViewController_RootEventName,SimiTableViewController_SubKey_InitCells_End] object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didSelectAccountCellAtIndexPath:) name:[NSString stringWithFormat:@"%@%@",SCAccountViewController_RootEventName,SimiTableViewController_SubKey_DidSelectCell] object:nil];
         
         //Left Menu
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(listMenuInitCellsAfter:) name:@"SCLeftMenu_InitCellsAfter" object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(listMenuDidSelectRow:) name:@"SCLeftMenu_DidSelectRow" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(listMenuInitCellsAfter:) name:[NSString stringWithFormat:@"%@%@",SCLeftMenuViewController_RootEventName,SimiTableViewController_SubKey_InitCells_End] object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(listMenuDidSelectRow:) name:[NSString stringWithFormat:@"%@%@",SCLeftMenuViewController_RootEventName,SimiTableViewController_SubKey_DidSelectCell] object:nil];
         
         wishlistModelCollection = [SCWishlistModelCollection new];
         wishlistModel = [SCWishlistModel new];
@@ -169,8 +169,7 @@
 }
 
 #pragma mark Add to My Account Screen
--(void)initializedAccountCellAfter:(NSNotification *)noti
-{
+-(void)initializedAccountCellAfter:(NSNotification *)noti{
     SimiTable* cells = [[SimiTable alloc] initWithArray:noti.object];
     SimiSection* section = [cells getSectionByIdentifier:ACCOUNT_MAIN_SECTION];
     SimiRow *wishlistRow = [[SimiRow alloc]initWithIdentifier:ACCOUNT_WISHLIST_ROW height:45 sortOrder:310];
@@ -180,9 +179,12 @@
     [section addRow:wishlistRow];
 }
 
--(void)didSelectAccountCellAtIndexPath:(NSNotification *)noti
-{
-    if ([[(SimiRow *)noti.object identifier] isEqualToString:ACCOUNT_WISHLIST_ROW]) {
+-(void)didSelectAccountCellAtIndexPath:(NSNotification *)noti{
+    NSIndexPath *indexPath = [noti.userInfo valueForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.indexpath];
+    SimiTable *cells = noti.object;
+    SimiSection *section = [cells objectAtIndex:indexPath.section];
+    SimiRow *row = [section objectAtIndex:indexPath.row];
+    if ([row.identifier isEqualToString:ACCOUNT_WISHLIST_ROW]) {
         SCAccountViewController *accountVC = [noti.userInfo objectForKey:@"self"];
         if (PADDEVICE) {
             [accountVC dismissViewControllerAnimated:YES completion:nil];
@@ -190,7 +192,7 @@
         if (wishlistViewController == nil) {
             wishlistViewController = [SCWishlistViewController new];
         }
-        UIViewController *currentVC = [(UITabBarController *)[[(SCAppDelegate *)[[UIApplication sharedApplication]delegate] window] rootViewController] selectedViewController];
+        UINavigationController *currentVC = kNavigationController;
         UIViewController *viewController = [[(UINavigationController *)currentVC viewControllers] lastObject];
         for (UIViewController *viewControllerTemp in viewController.navigationController.viewControllers) {
             if (viewControllerTemp == wishlistViewController) {
@@ -198,14 +200,13 @@
                 return;
             }
         }
-        [(UINavigationController *)currentVC pushViewController:wishlistViewController animated:YES];
+        [currentVC pushViewController:wishlistViewController animated:YES];
         accountVC.isDiscontinue = YES;
     }
 }
 
 #pragma mark Add to Left Menu
--(void)listMenuInitCellsAfter:(NSNotification *)noti
-{
+-(void)listMenuInitCellsAfter:(NSNotification *)noti{
     if([SimiGlobalVar sharedInstance].isLogin){
         SimiTable * cells = [[SimiTable alloc] initWithArray:noti.object];
         SimiSection* section = [cells getSectionByIdentifier:LEFTMENU_SECTION_MAIN];
@@ -216,13 +217,16 @@
     }
 }
 
--(void)listMenuDidSelectRow:(NSNotification *)noti
-{
-    if ([[(SimiRow *)[noti.userInfo objectForKey:@"simirow"] identifier] isEqualToString: LEFTMENU_WISHLIST_ROW]) {
+-(void)listMenuDidSelectRow:(NSNotification *)noti{
+    NSIndexPath *indexPath = [noti.userInfo valueForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.indexpath];
+    SimiTable *cells = noti.object;
+    SimiSection *section = [cells objectAtIndex:indexPath.section];
+    SimiRow *row = [section objectAtIndex:indexPath.row];
+    if ([row.identifier isEqualToString: LEFTMENU_WISHLIST_ROW]) {
         if (wishlistViewController == nil) {
             wishlistViewController = [SCWishlistViewController new];
         }
-        UIViewController *currentVC = [(UITabBarController *)[[(SCAppDelegate *)[[UIApplication sharedApplication]delegate] window] rootViewController] selectedViewController];
+        UINavigationController *currentVC = kNavigationController;
         UIViewController *viewController = [[(UINavigationController *)currentVC viewControllers] lastObject];
         for (UIViewController *viewControllerTemp in viewController.navigationController.viewControllers) {
             if (viewControllerTemp == wishlistViewController) {
@@ -230,7 +234,7 @@
                 return;
             }
         }
-        [(UINavigationController *)currentVC pushViewController:wishlistViewController animated:YES];
+        [currentVC pushViewController:wishlistViewController animated:YES];
         [(SCNavigationBarPhone*)noti.object setIsDiscontinue:YES];
     }
 }

@@ -322,7 +322,7 @@
         SimiResponder *responder = [noti.userInfo valueForKey:@"responder"];
         if ([[responder.status uppercaseString] isEqualToString:@"SUCCESS"]) {
             [self trackingWithProperties:@{@"action":@"scanned_product",@"product_id":[_barCodeModel valueForKey:@"product_entity_id"],@"product_name":[_barCodeModel valueForKey:@"product_name"]}];
-            [SimiGlobalVar pushProductDetailWithNavigationController:self.navigationController andProductID:[_barCodeModel valueForKey:@"product_entity_id"] andProductIDs:[NSMutableArray arrayWithArray:@[[_barCodeModel valueForKey:@"product_entity_id"]]]];
+            [[SCAppController sharedInstance]openProductWithNavigationController:self.navigationController productId:[_barCodeModel valueForKey:@"product_entity_id"] moreParams:nil];
         }else
         {
             [_previewView setHidden:NO];

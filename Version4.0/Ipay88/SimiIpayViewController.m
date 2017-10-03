@@ -95,7 +95,7 @@
 {
     SimiOrderModel *ipayCheckoutModel = [[SimiOrderModel alloc]init];
     [ipayCheckoutModel cancelOrderWithId:orderID];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didCancelPayment:) name:@"DidCancelOrder" object:ipayCheckoutModel];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didCancelPayment:) name:Simi_DidCancelOrder object:ipayCheckoutModel];
     [self startLoadingData];
 }
 

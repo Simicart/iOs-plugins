@@ -182,7 +182,7 @@
         [wishlistModelCollection addProductToCartWithWishlistID:[wishlistItem objectForKey:@"wishlist_item_id"]];
         [self startLoadingData];
     }else{
-        [SimiGlobalVar pushProductDetailWithNavigationController:self.navigationController andProductID:[NSString stringWithFormat:@"%@",[wishlistItem objectForKey:@"product_id"]] andProductIDs:[[NSMutableArray alloc] initWithObjects:[NSString stringWithFormat:@"%@",[wishlistItem objectForKey:@"product_id"]], nil]];
+        [[SCAppController sharedInstance]openProductWithNavigationController:self.navigationController productId:[wishlistItem objectForKey:@"product_id"] moreParams:nil];
     }
 }
 
@@ -208,9 +208,9 @@
 - (void)didAddProductFromWishlistToCart: (NSNotification* ) noti{
     [self stopLoadingData];
     if(PHONEDEVICE)
-        [[[[SCThemeWorker sharedInstance] navigationBarPhone] cartViewController] getCart];
+        [[[[SCAppController sharedInstance] navigationBarPhone] cartViewController] getCart];
     else if(PADDEVICE)
-        [[[[SCThemeWorker sharedInstance] navigationBarPad] cartViewControllerPad] getCart];
+        [[[[SCAppController sharedInstance] navigationBarPad] cartViewControllerPad] getCart];
     // get wishlist again
     [self getWishlistItemsFromBegin];
 }

@@ -15,7 +15,6 @@ static NSString *LOYALTY_CART   = @"loyalty";
 
 @interface LoyaltyPluginInitial : NSObject
 @property (weak, nonatomic) SCOrderViewController* orderViewController;
-@property (weak, nonatomic) id loyaltyMenuRow;
 @property (weak, nonatomic) id moreViewController;
 
 @end
