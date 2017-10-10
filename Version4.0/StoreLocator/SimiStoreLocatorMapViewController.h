@@ -13,6 +13,7 @@
 #import "SimiStoreLocatorModelCollection.h"
 #import "SimiStoreLocatorMaker.h"
 #import "SimiStoreLocatorPopup.h"
+#import "SimiStoreLocatorModel.h"
 
 typedef NS_ENUM(NSInteger, MapViewOption){
         MapViewNoneSelectedMarker,
@@ -26,7 +27,7 @@ typedef NS_ENUM(NSInteger, SearchOption){
 
 @protocol SimiStoreLocatorMapViewControllerDelegate <NSObject>
 @optional
-- (void)showViewDetailControllerFromMap:(SimiModel*) sLModel_;
+- (void)showViewDetailControllerFromMap:(SimiStoreLocatorModel*) sLModel_;
 
 @end
 @interface SimiStoreLocatorMapViewController : SimiViewController<GMSMapViewDelegate, SimiStoreLocatorPopupDelegate >
@@ -37,7 +38,7 @@ typedef NS_ENUM(NSInteger, SearchOption){
 @property (nonatomic, strong) SimiStoreLocatorModelCollection *sLModelCollectionSyncList;
 @property (nonatomic, strong) SimiStoreLocatorModelCollection *sLModelCollectionUpdate;
 @property (nonatomic, strong) SimiStoreLocatorModelCollection *sLModelCollectionAll;
-@property (nonatomic, strong) SimiModel *sLModel;
+@property (nonatomic, strong) SimiStoreLocatorModel *sLModel;
 @property (nonatomic, strong) NSDictionary *dictSearch;
 @property (nonatomic) float currentLatitube;
 @property (nonatomic) float currentLongitube;

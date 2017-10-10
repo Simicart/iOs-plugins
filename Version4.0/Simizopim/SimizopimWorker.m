@@ -23,11 +23,11 @@
 - (instancetype)init{
     self = [super init];
     if (self) {
-        self.zoPimConfig = [[SimiGlobalVar sharedInstance].allConfig valueForKeyPath:@"zopim_config"];
+        self.zoPimConfig = [[SimiGlobalVar sharedInstance].storeView valueForKeyPath:@"zopim_config"];
         NSString *enable = [self.zoPimConfig valueForKey:@"enable"];
         if ([enable isEqualToString:@"1"]) {
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:Simi_SCLeftMenuViewControler_InitCells_End object:nil];
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:Simi_SCLeftMenuViewControler_DidSelectCell object:nil];
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:[NSString stringWithFormat:@"%@%@",SCLeftMenuViewController_RootEventName, SimiTableViewController_SubKey_InitCells_End] object:nil];
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:[NSString stringWithFormat:@"%@%@",SCLeftMenuViewController_RootEventName, SimiTableViewController_SubKey_DidSelectCell] object:nil];
             [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initRightItemsEnd:) name:@"SCNavigationBarPhone-InitRightItems-End" object:nil];
             [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initLeftItemsEnd:) name:@"SCNavigationBarPad-InitLeftItems-End" object:nil];
         }
@@ -36,7 +36,7 @@
 }
 
 - (void)didReceiveNotification:(NSNotification *)noti{
-    if([noti.name isEqualToString:Simi_SCLeftMenuViewControler_InitCells_End]){
+    if([noti.name isEqualToString:[NSString stringWithFormat:@"%@%@",SCLeftMenuViewController_RootEventName, SimiTableViewController_SubKey_InitCells_End]]){
         cells = noti.object;
         for (int i = 0; i < cells.count; i++) {
             SimiSection *section = [cells objectAtIndex:i];
@@ -48,7 +48,7 @@
                 [section sortItems];
             }
         }
-    }else if([noti.name isEqualToString:Simi_SCLeftMenuViewControler_DidSelectCell]){
+    }else if([noti.name isEqualToString:[NSString stringWithFormat:@"%@%@",SCLeftMenuViewController_RootEventName, SimiTableViewController_SubKey_DidSelectCell]]){
         NSIndexPath *indexPath = [noti.userInfo valueForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.indexpath];
         cells = noti.object;
         SimiSection *section = [cells objectAtIndex:indexPath.section];

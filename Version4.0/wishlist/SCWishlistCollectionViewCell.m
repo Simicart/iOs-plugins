@@ -19,7 +19,7 @@
     UIButton* addToCartButton;
 }
 
--(void) setWishlistItem:(NSDictionary *)wishlistItem{
+-(void) setWishlistItem:(SCWishlistModel *)wishlistItem{
     _wishlistItem = wishlistItem;
     float paddingLeft = 5;
     float paddingTop = 5;
@@ -35,7 +35,7 @@
         wishlistImageView.userInteractionEnabled = YES;
         [self addSubview:wishlistImageView];
     }
-    [wishlistImageView sd_setImageWithURL:[NSURL URLWithString:[wishlistItem objectForKey:@"product_image"]] placeholderImage:[UIImage imageNamed:@"logo"]];
+    [wishlistImageView sd_setImageWithURL:[NSURL URLWithString:wishlistItem.productImage] placeholderImage:[UIImage imageNamed:@"logo"]];
     float wishlistItemY = 0;
     float labelHeight = 25;
     if(!wishlistItemInfoView){
@@ -55,7 +55,7 @@
         [addToCartButton addTarget:self action:@selector(addToCartButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
         addToCartButton.layer.cornerRadius = 3;
         [wishlistItemInfoView addSubview:addToCartButton];
-        if([[wishlistItem objectForKey:@"stock_status"] boolValue])
+        if(wishlistItem.stockStatus)
             [addToCartButton setTitle:SCLocalizedString(@"Add To Cart") forState:UIControlStateNormal];
         else{
             [addToCartButton setTitle:SCLocalizedString(@"Out Of Stock") forState:UIControlStateNormal];
@@ -63,8 +63,8 @@
             addToCartButton.alpha = 0.5f;
         }
     }
-    itemNameLabel.text = [wishlistItem objectForKey:@"product_name"];
-    SimiProductModel* productModel = [[SimiProductModel alloc] initWithDictionary:wishlistItem];
+    itemNameLabel.text = wishlistItem.name;
+    SimiProductModel* productModel = [[SimiProductModel alloc] initWithModelData:wishlistItem.modelData];
     [priceView setProductModel:productModel andWidthView:CGRectGetWidth(wishlistItemInfoView.frame)];
     [addToCartButton setFrame:CGRectMake(0, priceView.frame.origin.y + priceView.frame.size.height + paddingTop, CGRectGetWidth(wishlistItemInfoView.frame), 30)];
     

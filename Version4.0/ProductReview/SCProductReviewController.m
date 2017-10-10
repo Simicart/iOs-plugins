@@ -128,7 +128,7 @@ NSString *REVIEW_SHORT_REVIEW_CELL = @"REVIEW_SHORT_REVIEW_CELL";
 }
 
 - (void)didGetReviewCollection:(NSNotification *)noti{
-    SimiResponder *responder = [noti.userInfo valueForKey:@"responder"];
+    SimiResponder *responder = [noti.userInfo valueForKey:responderKey];
     if ([responder.status isEqualToString:@"SUCCESS"]) {
         if ([noti.name isEqualToString:@"DidGetReviewCollection"]) {
             [self setCells:nil];

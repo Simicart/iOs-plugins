@@ -52,7 +52,7 @@
 - (void)didGetCustomerCreditInfo:(NSNotification*)noti{
     [self removeObserverForNotification:noti];
     [self stopLoadingData];
-    SimiResponder *responder = [noti.userInfo valueForKey:@"responder"];
+    SimiResponder *responder = [noti.userInfo valueForKey:responderKey];
     if ([responder.status isEqualToString:@"SUCCESS"]) {
         if ([[giftCardCreditModel valueForKey:@"listcode"] isKindOfClass:[NSArray class]]) {
             giftCodes = [giftCardCreditModel valueForKey:@"listcode"];
@@ -172,7 +172,7 @@
 - (void)didRemoveGiftCode:(NSNotification*)noti{
     [self removeObserverForNotification:noti];
     [self stopLoadingData];
-    SimiResponder *responder = [noti.userInfo valueForKey:@"responder"];
+    SimiResponder *responder = [noti.userInfo valueForKey:responderKey];
     if ([responder.status isEqualToString:@"SUCCESS"]) {
         giftCodes = @[];
         if ([[giftCardCreditModel valueForKey:@"listcode"] isKindOfClass:[NSArray class]]) {

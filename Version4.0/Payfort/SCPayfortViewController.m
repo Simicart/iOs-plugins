@@ -61,7 +61,7 @@
     [self stopLoadingData];
     [self removeObserverForNotification:noti];
     [self dismissViewControllerAnimated:YES completion:nil];
-    SimiResponder *responder = [noti.userInfo objectForKey:@"responder"];
+    SimiResponder *responder = [noti.userInfo objectForKey:responderKey];
     if([responder.status isEqualToString:@"SUCCESS"]) {
         [self.order addData:originalOrder];
         if (PHONEDEVICE) {

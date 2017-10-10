@@ -12,6 +12,7 @@
 #import <SimiCartbundle/SimiGlobalVar.h>
 #import <SimiCartBundle/UILabelDynamicSize.h>
 #import <SimiCartBundle/SimiModel.h>
+#import "SimiStoreLocatorModel.h"
 
 @protocol SCStoreListTableViewCellDelegate
 @optional
@@ -35,7 +36,7 @@
 @property (nonatomic, strong) UIButton* btnCall;
 @property (nonatomic, strong) UIButton* btnMail;
 @property (nonatomic, strong) UIButton* btnMap;
-@property (nonatomic, strong) SimiModel *storeLocatorModel;
+@property (nonatomic, strong) SimiStoreLocatorModel *storeLocatorModel;
 @property (nonatomic, weak) id<SCStoreListTableViewCellDelegate> delegate;
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier andStoreData:(SimiModel*)storeLocatorModel_;

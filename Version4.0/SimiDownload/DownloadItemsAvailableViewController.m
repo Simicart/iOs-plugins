@@ -50,7 +50,7 @@
 
 - (void)didGetDownloadItems:(NSNotification*)noti
 {
-    SimiResponder *responder = [noti.userInfo valueForKey:@"responder"];
+    SimiResponder *responder = [noti.userInfo valueForKey:responderKey];
     if ([[responder.status uppercaseString]isEqualToString:@"SUCCESS"]) {
         if (_downloadModelCollection.count > 0) {
 

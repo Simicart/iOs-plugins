@@ -13,16 +13,16 @@
 
 - (void)getTransactionsWithOffset:(NSInteger)offset limit:(NSInteger)limit
 {
-    currentNotificationName = @"DidGetLoyaltyTransactions";
+    notificationName = @"DidGetLoyaltyTransactions";
     [self preDoRequest];
-    modelActionType = ModelActionTypeInsert;
-    keyResponse = @"simirewardpointstransactions";
+    actionType = CollectionActionTypeInsert;
+    self.parseKey = @"simirewardpointstransactions";
     
     NSMutableDictionary *params = [NSMutableDictionary new];
     [params setValue:[NSNumber numberWithInteger:offset] forKey:@"offset"];
     [params setValue:[NSNumber numberWithInteger:limit] forKey:@"limit"];
     
-    [(LoyaltyAPI *)[self getAPI] loadTransactionWithParams:params target:self selector:@selector(didFinishRequest:responder:)];
+    [[LoyaltyAPI new] loadTransactionWithParams:params target:self selector:@selector(didGetResponseFromNetwork:)];
 }
 
 @end

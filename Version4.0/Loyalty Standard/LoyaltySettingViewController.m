@@ -42,12 +42,8 @@
     
     // Init Settings Data
     _settings = [LoyaltyModel new];
-    if ([_model objectForKey:@"is_notification"]) {
-        [_settings setValue:[_model objectForKey:@"is_notification"] forKey:@"is_notification"];
-    }
-    if ([_model objectForKey:@"expire_notification"]) {
-        [_settings setValue:[_model objectForKey:@"expire_notification"] forKey:@"expire_notification"];
-    }
+    [_settings setObject:_model.isNotification?@"1":@"0" forKey:@"is_notification"];
+    [_settings setValue:_model.expireNotification?@"1":@"0" forKey:@"expire_notification"];
 }
 
 - (void)viewWillAppearBefore:(BOOL)animated
@@ -77,13 +73,13 @@
 {
     [self stopLoadingData];
     [self.navigationItem.rightBarButtonItem setEnabled:YES];
-    SimiResponder *responder = [noti.userInfo valueForKey:@"responder"];
-    if ([responder.status isEqualToString:@"SUCCESS"]) {
+    SimiResponder *responder = [noti.userInfo valueForKey:responderKey];
+    if (responder.status == SUCCESS) {
         LoyaltyViewController *back = [self.navigationController.viewControllers objectAtIndex:self.navigationController.viewControllers.count - 2];
         back.skipReloadData = NO;
         [self.navigationController popViewControllerAnimated:YES];
     } else {
-        [self showAlertWithTitle:responder.status message:responder.responseMessage];
+        [self showAlertWithTitle:@"" message:responder.message];
     }
     [self removeObserverForNotification:noti];
 }
@@ -134,14 +130,14 @@
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         UISwitch *switcher = [UISwitch new];
         switcher.tag = (NSInteger)LOYALTY_EMAIL_NOTI;
-        switcher.on = [[_settings objectForKey:@"is_notification"] boolValue];
+        switcher.on = _settings.isNotification;
         [switcher addTarget:self action:@selector(toggleSwitcher:) forControlEvents:UIControlEventValueChanged];
         cell.accessoryView = switcher;
     } else if ([section.identifier isEqualToString:LOYALTY_EMAIL_EXP]) {
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         UISwitch *switcher = [UISwitch new];
         switcher.tag = (NSInteger)LOYALTY_EMAIL_EXP;
-        switcher.on = [[_settings objectForKey:@"expire_notification"] boolValue];
+        switcher.on = _settings.expireNotification;
         [switcher addTarget:self action:@selector(toggleSwitcher:) forControlEvents:UIControlEventValueChanged];
         cell.accessoryView = switcher;
     }
@@ -159,9 +155,9 @@
 - (void)toggleSwitcher:(UISwitch *)sender
 {
     if (sender.tag == (NSInteger)LOYALTY_EMAIL_NOTI) {
-        [_settings setValue:[NSNumber numberWithBool:sender.on] forKey:@"is_notification"];
+        [_settings setValue:sender.on?@1:@0 forKey:@"is_notification"];
     } else if (sender.tag == (NSInteger)LOYALTY_EMAIL_EXP) {
-        [_settings setValue:[NSNumber numberWithBool:sender.on] forKey:@"expire_notification"];
+        [_settings setValue:sender.on?@1:@0 forKey:@"expire_notification"];
     }
 }
 

@@ -60,7 +60,7 @@
 {
     lblStoreName.text = SCLocalizedString([storeLocatorModel valueForKey:@"name"]);
     
-    lblStoreAddress.text = [NSString stringWithFormat:@"%@, %@, %@",[storeLocatorModel valueForKey:@"address"],[storeLocatorModel valueForKey:@"city"],[storeLocatorModel valueForKey:@"country"]];
+    lblStoreAddress.text = [NSString stringWithFormat:@"%@, %@, %@",storeLocatorModel.address,storeLocatorModel.city,storeLocatorModel.countryName];
     [lblStoreAddress resizLabelToFit];
     
     if (lblStoreAddress.frame.size.height > 40 ) {
@@ -68,8 +68,8 @@
         frame.size.height = 40;
         [lblStoreAddress setFrame:frame];
     }
-    if (![[storeLocatorModel valueForKey:@"image"] isEqualToString:@""]) {
-        [imageStore sd_setImageWithURL:[storeLocatorModel valueForKey:@"image"]];
+    if (![storeLocatorModel.image isEqualToString:@""]) {
+        [imageStore sd_setImageWithURL:[NSURL URLWithString:storeLocatorModel.image]];
         [self addSubview:imageBackGround];
     }else
     {

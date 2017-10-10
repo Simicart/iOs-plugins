@@ -52,10 +52,7 @@
 }
 
 - (void)didTouchShareButton: (id)sender {
-    NSString *tempProductName = [NSString stringWithFormat:@"%@",[product valueForKey:@"name"]];
-    NSString *tempProductId = [NSString stringWithFormat:@"%@",[product valueForKey:@"entity_id"]];
-    NSString *tempProductSku = [NSString stringWithFormat:@"%@",[product valueForKey:@"sku"]];
-    [[NSNotificationCenter defaultCenter]postNotificationName:TRACKINGEVENT object:@"product_action" userInfo:@{@"action":@"clicked_share_button",@"product_name":tempProductName,@"product_id":tempProductId,@"sku":tempProductSku,@"qty":@"1",@"theme":[viewController isKindOfClass:[SCProductSecondDesignViewController class]]?@"cherry":@"default"}];
+    [[NSNotificationCenter defaultCenter]postNotificationName:TRACKINGEVENT object:@"product_action" userInfo:@{@"action":@"clicked_share_button",@"product_name":product.name,@"product_id":product.entityId,@"sku":product.sku,@"qty":@"1",@"theme":[viewController isKindOfClass:[SCProductSecondDesignViewController class]]?@"cherry":@"default"}];
     NSURL *productURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@",kBaseURL, [product valueForKey:@"url_path"]]];
     
     UIActivityViewController *activityViewController =

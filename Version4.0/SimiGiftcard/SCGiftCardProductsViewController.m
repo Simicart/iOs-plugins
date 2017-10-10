@@ -63,7 +63,7 @@
 }
 
 - (void)didGetProducts:(NSNotification *)noti{
-    SimiResponder *responder = [noti.userInfo valueForKey:@"responder"];
+    SimiResponder *responder = [noti.userInfo valueForKey:responderKey];
     [self.productsCollectionView.infiniteScrollingView stopAnimating];
     if ([responder.status isEqualToString:@"SUCCESS"]) {
         [[NSNotificationCenter defaultCenter] postNotificationName:@"AddProductsForSearchableItems" object:self.productModelCollection];

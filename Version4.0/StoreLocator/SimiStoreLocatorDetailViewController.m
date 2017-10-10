@@ -99,8 +99,8 @@
     [lblStoreName setTextColor:[UIColor colorWithRed:243.0/255.0 green:53.0/255.0 blue:53.0/255.0 alpha:1.0]];
     [lblStoreName setFont:[UIFont fontWithName:THEME_FONT_NAME_REGULAR size:THEME_FONT_SIZE + 4]];
     [lblStoreName setLineBreakMode:NSLineBreakByWordWrapping];
-    if ([sLModel valueForKey:@"name"]) {
-        [lblStoreName setText:[sLModel valueForKey:@"name"]];
+    if (sLModel.name) {
+        [lblStoreName setText:sLModel.name];
         [lblStoreName resizLabelToFit];
         [scrView addSubview:lblStoreName];
         heightScrViewContentSize += CGRectGetHeight(lblStoreName.frame) + space;
@@ -110,9 +110,9 @@
 - (void)initGoogleImage
 {
     imgStore = [[UIImageView alloc]initWithFrame:CGRectMake(widthContent - sizeStoreImage - edgeSpace, heightScrViewContentSize, sizeStoreImage, sizeStoreImage)];
-    NSString* stringURL = [NSString stringWithFormat:@"http://maps.googleapis.com/maps/api/staticmap?center=%@,%@&zoom=20&size=400x400",[sLModel valueForKey:@"latitude"],[sLModel valueForKey:@"longtitude"]];
+    NSString* stringURL = [NSString stringWithFormat:@"http://maps.googleapis.com/maps/api/staticmap?center=%@,%@&zoom=20&size=400x400",sLModel.latitude,sLModel.longtitude];
     stringURL  = [NSString stringWithFormat:@"%@%@",stringURL,@"&markers=size:large%7Ccolor:red%7Clabel:S%7C"];
-    stringURL = [NSString stringWithFormat:@"%@%@,%@",stringURL,[sLModel valueForKey:@"latitude"],[sLModel valueForKey:@"longtitude"]];
+    stringURL = [NSString stringWithFormat:@"%@%@,%@",stringURL,sLModel.latitude,sLModel.longtitude];
     [imgStore sd_setImageWithURL:[NSURL URLWithString:stringURL]];
     [scrView addSubview:imgStore];
     
@@ -146,20 +146,20 @@
     [lblStoreAddress setLineBreakMode:NSLineBreakByWordWrapping];
     [lblStoreAddress setFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE]];
     NSString *stringAddress = @"";
-    if ([sLModel valueForKey:@"address"]) {
-        stringAddress = [NSString stringWithFormat:@"%@",[sLModel valueForKey:@"address"]];
+    if (sLModel.address) {
+        stringAddress = [NSString stringWithFormat:@"%@",sLModel.address];
     }
-    if ([sLModel valueForKey:@"city"]) {
-        stringAddress = [NSString stringWithFormat:@"%@, %@",stringAddress, [sLModel valueForKey:@"city"]];
+    if (sLModel.city) {
+        stringAddress = [NSString stringWithFormat:@"%@, %@",stringAddress, sLModel.city];
     }
-    if ([sLModel valueForKey:@"state"]) {
-        stringAddress = [NSString stringWithFormat:@"%@, %@", stringAddress, [sLModel valueForKey:@"state"]];
+    if (sLModel.state) {
+        stringAddress = [NSString stringWithFormat:@"%@, %@", stringAddress, sLModel.state];
     }
-    if ([sLModel valueForKey:@"zipcode"]) {
-        stringAddress = [NSString stringWithFormat:@"%@, %@", stringAddress, [sLModel valueForKey:@"zipcode"]];
+    if (sLModel.zipcode) {
+        stringAddress = [NSString stringWithFormat:@"%@, %@", stringAddress, sLModel.zipcode];
     }
-    if ([sLModel valueForKey:@"country_name"]) {
-        stringAddress = [NSString stringWithFormat:@"%@, %@", stringAddress, [sLModel valueForKey:@"country_name"]];
+    if (sLModel.countryName) {
+        stringAddress = [NSString stringWithFormat:@"%@, %@", stringAddress, sLModel.countryName];
     }
     [lblStoreAddress setText:stringAddress];
     [lblStoreAddress resizLabelToFit];
@@ -168,14 +168,14 @@
 }
 - (void)initStorePhone
 {
-    if (!([[sLModel valueForKey:@"phone"] isEqualToString:@""] || [sLModel valueForKey:@"phone"] == nil || [[sLModel valueForKey:@"phone"] isKindOfClass:[NSNull class]])) {
+    if (sLModel.phone && ![sLModel.phone isEqualToString:@""]) {
         btnStorePhone = [[UIButton alloc]initWithFrame:CGRectMake(edgeSpace, heightScrViewContentSize, widthContent - 2*edgeSpace - sizeStoreImage, heightButton)];
         [btnStorePhone setBackgroundColor:[UIColor clearColor]];
         [btnStorePhone addTarget:self action:@selector(btnStorePhone_Click:) forControlEvents:UIControlEventTouchUpInside];
         [scrView addSubview:btnStorePhone];
         
         lblStorePhone = [[UILabel alloc]initWithFrame:CGRectMake(sizeIcon +10, 5, CGRectGetWidth(btnStorePhone.frame) - sizeIcon - 10, heightLabel)];
-        lblStorePhone.text = [sLModel valueForKey:@"phone"];
+        lblStorePhone.text = sLModel.phone;
         [lblStorePhone setFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE]];
         lblStorePhone.textColor = [[SimiGlobalVar sharedInstance]colorWithHexString:@"#009edb"];
         [btnStorePhone addSubview:lblStorePhone];
@@ -190,14 +190,14 @@
 
 - (void)initStoreEmail
 {
-    if (!([[sLModel valueForKey:@"email"] isEqualToString:@""] || [sLModel valueForKey:@"email"] == nil || [[sLModel valueForKey:@"email"] isKindOfClass:[NSNull class]])) {
+    if (sLModel.email && ![sLModel.email isEqualToString:@""]) {
         _btnStoreEmail = [[UIButton alloc]initWithFrame:CGRectMake(edgeSpace, heightScrViewContentSize, widthContent - 2*edgeSpace - sizeStoreImage, heightButton)];
         [_btnStoreEmail setBackgroundColor:[UIColor clearColor]];
         [_btnStoreEmail addTarget:self action:@selector(btnStoreEmail_Click:) forControlEvents:UIControlEventTouchUpInside];
         [scrView addSubview:_btnStoreEmail];
         
         lblStoreEmail = [[UILabel alloc]initWithFrame:CGRectMake(sizeIcon +10, 5, CGRectGetWidth(_btnStoreEmail.frame) - sizeIcon - 10, heightLabel)];
-        lblStoreEmail.text = [sLModel valueForKey:@"email"];
+        lblStoreEmail.text = sLModel.email;
         [lblStoreEmail setFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE]];
         lblStoreEmail.textColor = [[SimiGlobalVar sharedInstance] colorWithHexString:@"#009edb"];
         [_btnStoreEmail addSubview:lblStoreEmail];
@@ -216,7 +216,7 @@
 
 - (void)initStoreWebsite
 {
-    if (!([[sLModel valueForKey:@"link"] isEqualToString:@""]|| [sLModel valueForKey:@"link"] == nil || [[sLModel valueForKey:@"link"] isKindOfClass:[NSNull class]]))
+    if (sLModel.link && ![sLModel.link isEqualToString:@""])
     {
         _btnStoreWebsite = [[UIButton alloc]initWithFrame:CGRectMake(edgeSpace, heightScrViewContentSize, widthContent - 2*edgeSpace - sizeStoreImage, heightButton)];
         [_btnStoreWebsite setBackgroundColor:[UIColor clearColor]];
@@ -225,7 +225,7 @@
         
         
         lblStoreWebSite = [[UILabel alloc]initWithFrame:CGRectMake(sizeIcon +10, 5, CGRectGetWidth(_btnStoreWebsite.frame) - sizeIcon - 10, heightLabel)];
-        lblStoreWebSite.text = [sLModel valueForKey:@"link"];
+        lblStoreWebSite.text = sLModel.link;
         [lblStoreWebSite setFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE]];
         lblStoreWebSite.textColor = [[SimiGlobalVar sharedInstance] colorWithHexString:@"#009edb"];
         [_btnStoreWebsite addSubview:lblStoreWebSite];
@@ -240,7 +240,7 @@
 
 - (void)initStoreInformation
 {
-    if (!([[sLModel valueForKey:@"description"] isEqualToString:@""]||[sLModel valueForKey:@"description"] == nil || [[sLModel valueForKey:@"description"] isKindOfClass:[NSNull class]])) {
+    if (sLModel.storeDescription && ![sLModel.storeDescription isEqualToString:@""]) {
         viewInfomation = [[UIView alloc]initWithFrame:CGRectMake(edgeSpace, heightScrViewContentSize, widthContent - 2*edgeSpace, heightButton * 2)];
         [viewInfomation setBackgroundColor:[UIColor clearColor]];
         [scrView addSubview:viewInfomation];
@@ -251,7 +251,7 @@
         
         lblInfomationContents = [[UILabel alloc]initWithFrame:CGRectMake(sizeIcon +10, 5, CGRectGetWidth(viewInfomation.frame) - sizeIcon - 10, heightLabel*2)];
         [lblInfomationContents setFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE]];
-        [lblInfomationContents setText:[self flattenHTML:[sLModel valueForKey:@"description"]]];
+        [lblInfomationContents setText:[self flattenHTML:sLModel.storeDescription]];
         [lblInfomationContents setLineBreakMode:NSLineBreakByWordWrapping];
         [viewInfomation addSubview:lblInfomationContents];
         if (lblInfomationContents.labelHeight > (heightLabel*2)) {
@@ -302,13 +302,8 @@
     [viewOpenHours addSubview:lblMonday];
     
     lblMondayContent = [[UILabel alloc]initWithFrame:CGRectMake(labelValueX, heightOpenHourView, widthValue, heightLabel)];
-    if ([[sLModel valueForKey:@"monday_status"] isEqualToString:@"1"]) {
-        if ([[sLModel valueForKey:@"monday_open"] isEqualToString:@""]||[[sLModel valueForKey:@"monday_open"] isEqualToString:@"00:00"]||[[sLModel valueForKey:@"monday_close"] isEqualToString:@""] || [[sLModel valueForKey:@"monday_close"] isEqualToString:@"00:00"]) {
-            lblMondayContent.text = SCLocalizedString(@"Open");
-        }else
-        {
-            lblMondayContent.text = [NSString stringWithFormat:@"%@ - %@",[sLModel valueForKey:@"monday_open"],[sLModel valueForKey:@"monday_close"]];
-        }
+    if ([sLModel.mondayStatus isEqualToString:@"1"]) {
+        lblMondayContent.text = [NSString stringWithFormat:@"%@ - %@",sLModel.mondayOpen,sLModel.mondayClose];
     }else
     {
         lblMondayContent.text = SCLocalizedString(@"Close");
@@ -321,13 +316,8 @@
     [viewOpenHours addSubview:lblTuesday];
     
     lblTuesdayContent = [[UILabel alloc]initWithFrame:CGRectMake(labelValueX, heightOpenHourView, widthValue, heightLabel)];
-    if ([[sLModel valueForKey:@"tuesday_status"] isEqualToString:@"1"]) {
-        if ([[sLModel valueForKey:@"tuesday_open"] isEqualToString:@""]||[[sLModel valueForKey:@"tuesday_open"] isEqualToString:@"00:00"]||[[sLModel valueForKey:@"tuesday_close"] isEqualToString:@""]||[[sLModel valueForKey:@"tuesday_close"] isEqualToString:@"00:00"]) {
-            lblTuesdayContent.text = SCLocalizedString(@"Open");
-        }else
-        {
-            lblTuesdayContent.text = [NSString stringWithFormat:@"%@ - %@",[sLModel valueForKey:@"tuesday_open"],[sLModel valueForKey:@"tuesday_close"]];
-        }
+    if ([sLModel.tuesdayStatus isEqualToString:@"1"]) {
+        lblTuesdayContent.text = [NSString stringWithFormat:@"%@ - %@",sLModel.tuesdayOpen,sLModel.tuesdayClose];
     }else
     {
         lblTuesdayContent.text = SCLocalizedString(@"Close");
@@ -340,14 +330,8 @@
     [viewOpenHours addSubview:lblWednesday];
     
     lblWednesdayContent = [[UILabel alloc]initWithFrame:CGRectMake(labelValueX, heightOpenHourView, widthValue, heightLabel)];
-    if ([[sLModel valueForKey:@"wednesday_status"] isEqualToString:@"1"]) {
-        if ([[sLModel valueForKey:@"wednesday_open"] isEqualToString:@""]||[[sLModel valueForKey:@"wednesday_open"] isEqualToString:@"00:00"]||[[sLModel valueForKey:@"wednesday_close"] isEqualToString:@""]||[[sLModel valueForKey:@"wednesday_close"] isEqualToString:@"00:00"]) {
-            lblWednesdayContent.text = SCLocalizedString(@"Open");
-            
-        }else
-        {
-            lblWednesdayContent.text = [NSString stringWithFormat:@"%@ - %@",[sLModel valueForKey:@"wednesday_open"],[sLModel valueForKey:@"wednesday_close"]];
-        }
+    if ([sLModel.wednesdayStatus isEqualToString:@"1"]) {
+        lblWednesdayContent.text = [NSString stringWithFormat:@"%@ - %@",sLModel.wednesdayOpen,sLModel.wednesdayClose];
     }else
     {
         lblWednesdayContent.text = SCLocalizedString(@"Close");
@@ -360,13 +344,8 @@
     [viewOpenHours addSubview:lblThursday];
     
     lblThursdayContent = [[UILabel alloc]initWithFrame:CGRectMake(labelValueX, heightOpenHourView, widthValue, heightLabel)];
-    if ([[sLModel valueForKey:@"thursday_status"] isEqualToString:@"1"]) {
-        if ([[sLModel valueForKey:@"thursday_open"] isEqualToString:@""]||[[sLModel valueForKey:@"thursday_open"] isEqualToString:@"00:00"]||[[sLModel valueForKey:@"thursday_close"] isEqualToString:@""]||[[sLModel valueForKey:@"thursday_close"] isEqualToString:@"00:00"]) {
-            lblThursdayContent.text = SCLocalizedString(@"Open");
-        }else
-        {
-            lblThursdayContent.text = [NSString stringWithFormat:@"%@ - %@",[sLModel valueForKey:@"thursday_open"],[sLModel valueForKey:@"thursday_close"]];
-        }
+    if ([sLModel.thursdayStatus isEqualToString:@"1"]) {
+        lblThursdayContent.text = [NSString stringWithFormat:@"%@ - %@",sLModel.thursdayOpen,sLModel.thursdayClose];
     }else
     {
         lblThursdayContent.text = SCLocalizedString(@"Close");
@@ -379,13 +358,8 @@
     [viewOpenHours addSubview:lblFriday];
     
     lblFridayContent = [[UILabel alloc]initWithFrame:CGRectMake(labelValueX, heightOpenHourView, widthValue, heightLabel)];
-    if ([[sLModel valueForKey:@"friday_status"] isEqualToString:@"1"]) {
-        if ([[sLModel valueForKey:@"friday_open"] isEqualToString:@""]||[[sLModel valueForKey:@"friday_open"] isEqualToString:@"00:00"]||[[sLModel valueForKey:@"friday_close"] isEqualToString:@""]||[[sLModel valueForKey:@"friday_close"] isEqualToString:@"00:00"]) {
-            lblFridayContent.text = SCLocalizedString(@"Open");
-        }else
-        {
-            lblFridayContent.text = [NSString stringWithFormat:@"%@ - %@",[sLModel valueForKey:@"friday_open"],[sLModel valueForKey:@"friday_close"]];
-        }
+    if ([sLModel.fridayStatus isEqualToString:@"1"]) {
+        lblFridayContent.text = [NSString stringWithFormat:@"%@ - %@",sLModel.fridayOpen,sLModel.fridayClose];
     }else
     {
         lblFridayContent.text = SCLocalizedString(@"Close");
@@ -398,13 +372,8 @@
     [viewOpenHours addSubview:lblSaturday];
     
     lblSaturdayContent = [[UILabel alloc]initWithFrame:CGRectMake(labelValueX, heightOpenHourView, widthValue, heightLabel)];
-    if ([[sLModel valueForKey:@"saturday_status"] isEqualToString:@"1"]) {
-        if ([[sLModel valueForKey:@"saturday_open"] isEqualToString:@""]||[[sLModel valueForKey:@"saturday_open"] isEqualToString:@"00:00"]||[[sLModel valueForKey:@"saturday_close"] isEqualToString:@""]||[[sLModel valueForKey:@"saturday_close"] isEqualToString:@"00:00"]) {
-            lblSaturdayContent.text = SCLocalizedString(@"Open");
-        }else
-        {
-            lblSaturdayContent.text = [NSString stringWithFormat:@"%@ - %@",[sLModel valueForKey:@"saturday_open"],[sLModel valueForKey:@"saturday_close"]];
-        }
+    if ([sLModel.saturdayStatus isEqualToString:@"1"]) {
+        lblSaturdayContent.text = [NSString stringWithFormat:@"%@ - %@",sLModel.saturdayOpen,sLModel.saturdayClose];
     }else
     {
         lblSaturdayContent.text = SCLocalizedString(@"Close");
@@ -417,13 +386,8 @@
     [viewOpenHours addSubview:lblSunday];
     
     lblSundayContent = [[UILabel alloc]initWithFrame:CGRectMake(labelValueX, heightOpenHourView, widthValue, heightLabel)];
-    if ([[sLModel valueForKey:@"sunday_status"] isEqualToString:@"1"]) {
-        if ([[sLModel valueForKey:@"sunday_open"] isEqualToString:@""]||[[sLModel valueForKey:@"sunday_open"] isEqualToString:@"00:00"]||[[sLModel valueForKey:@"sunday_close"] isEqualToString:@""]||[[sLModel valueForKey:@"sunday_close"] isEqualToString:@"00:00"]) {
-            lblSundayContent.text = SCLocalizedString(@"Open");
-        }else
-        {
-            lblSundayContent.text = [NSString stringWithFormat:@"%@ - %@",[sLModel valueForKey:@"sunday_open"],[sLModel valueForKey:@"sunday_close"]];
-        }
+    if ([sLModel.sundayStatus isEqualToString:@"1"]) {
+        lblSundayContent.text = [NSString stringWithFormat:@"%@ - %@",sLModel.sundayOpen,sLModel.sundayClose];
     }else
     {
         lblSundayContent.text = SCLocalizedString(@"Close");
@@ -446,8 +410,7 @@
 
 -(void)initStoreSpecialDays
 {
-    NSMutableArray *arraySpecialDays = (NSMutableArray*)[sLModel valueForKey:@"special_days"];
-    if (arraySpecialDays.count > 0) {
+    if (sLModel.specialDays.count > 0) {
         haveSpecialsDay = YES;
         viewSpecialsDay = [[UIView alloc]initWithFrame:CGRectMake(edgeSpace, heightScrViewContentSize, widthContent - 2*edgeSpace, heightButton)];
         [viewSpecialsDay setBackgroundColor:[UIColor clearColor]];
@@ -464,8 +427,8 @@
         [viewSpecialsDay addSubview:lblSpecialsDay];
         
         NSString *stringSpecialDaysContent = @"";
-        for (int i = 0; i < arraySpecialDays.count; i++) {
-            NSDictionary *dict = (NSDictionary*)[arraySpecialDays objectAtIndex:i];
+        for (int i = 0; i < sLModel.holidayDays.count; i++) {
+            NSDictionary *dict = (NSDictionary*)[sLModel.specialDays objectAtIndex:i];
             stringSpecialDaysContent = [NSString stringWithFormat:@"%@%@, %@ - %@\n",stringSpecialDaysContent,[dict valueForKey:@"date"],[dict valueForKey:@"time_open"],[dict valueForKey:@"time_close"]];
         }
         lblSpecialsDayContent = [[UILabel alloc]initWithFrame:CGRectMake(labelTitleX, heightButton, widthContent - labelTitleX, heightLabel)];
@@ -484,9 +447,8 @@
 
 -(void)initStoreHolidays
 {
-#pragma mark Holidays
-    NSMutableArray *arrayHolidays = [sLModel valueForKeyPath:@"holiday_days"];
-    if (arrayHolidays.count > 0) {
+#pragma mark Holidays;
+    if (sLModel.holidayDays.count > 0) {
         haveHolidays = YES;
         viewHolidays = [[UIView alloc]initWithFrame:CGRectMake(edgeSpace, heightScrViewContentSize, widthContent - 2*edgeSpace, heightButton)];
         [viewHolidays setBackgroundColor:[UIColor clearColor]];
@@ -503,8 +465,8 @@
         [viewHolidays addSubview:lblHolidays];
         
         NSString *stringHolidaysContent = @"";
-        for (int i = 0; i < arrayHolidays.count; i++) {
-            NSDictionary *dict2 = (NSDictionary*)[arrayHolidays objectAtIndex:i];
+        for (int i = 0; i < sLModel.holidayDays.count; i++) {
+            NSDictionary *dict2 = (NSDictionary*)[sLModel.holidayDays objectAtIndex:i];
             stringHolidaysContent = [NSString stringWithFormat:@"%@%@\n",stringHolidaysContent,[dict2 valueForKey:@"date"]];
         }
         lblHolidaysContent = [[UILabel alloc]initWithFrame:CGRectMake(labelTitleX, heightButton, widthContent - labelTitleX, heightLabel)];
@@ -541,11 +503,10 @@
 #pragma mark Button Action
 - (void)btnStorePhone_Click:(id)sender
 {
-    NSString *phNo = [NSString  stringWithFormat:@"telprompt:%@",[sLModel valueForKey:@"phone"]];
-    NSURL *phoneUrl = [[NSURL alloc]initWithString:[phNo stringByReplacingOccurrencesOfString:@" " withString:@""]];
-    [[NSNotificationCenter defaultCenter]postNotificationName:TRACKINGEVENT object:@"store_locator_action" userInfo:@{@"action":@"call_to_store",@"store_name":[sLModel valueForKey:@"name"]}];
-    if ([[UIApplication sharedApplication] canOpenURL:phoneUrl]) {
-        [[UIApplication sharedApplication] openURL:phoneUrl];
+    [[NSNotificationCenter defaultCenter]postNotificationName:TRACKINGEVENT object:@"store_locator_action" userInfo:@{@"action":@"call_to_store",@"store_name":sLModel.name}];
+    NSURL *phoneURL = [NSURL URLWithString:[sLModel.phone stringByReplacingOccurrencesOfString:@" " withString:@""]];
+    if ([[UIApplication sharedApplication] canOpenURL:phoneURL]) {
+        [[UIApplication sharedApplication] openURL:phoneURL];
     } else
     {
         [self showAlertWithTitle:@"Warning" message:@"Call facility is not available"];
@@ -553,10 +514,9 @@
 }
 - (void)btnStoreEmail_Click:(id)sender
 {
-    NSString *email = [sLModel valueForKeyPath:@"email"];
     NSString *emailContent = SCLocalizedString(@"Content");
-    [self sendEmailToStoreWithEmail:email andEmailContent:emailContent];
-    [[NSNotificationCenter defaultCenter]postNotificationName:TRACKINGEVENT object:@"store_locator_action" userInfo:@{@"action":@"email_to_store",@"store_name":[sLModel valueForKey:@"name"]}];
+    [self sendEmailToStoreWithEmail:sLModel.email andEmailContent:emailContent];
+    [[NSNotificationCenter defaultCenter]postNotificationName:TRACKINGEVENT object:@"store_locator_action" userInfo:@{@"action":@"email_to_store",@"store_name":sLModel.name}];
 }
 - (void)btnStoreWebSite_Click:(id)sender
 {
@@ -641,7 +601,7 @@
     [[NSNotificationCenter defaultCenter]postNotificationName:TRACKINGEVENT object:@"store_locator_action" userInfo:@{@"action":@"get_directions_to_store",@"store_name":[sLModel valueForKey:@"name"]}];
     if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"comgooglemaps://"]]) {
         [[UIApplication sharedApplication] openURL:
-         [NSURL URLWithString: [NSString stringWithFormat: @"comgooglemaps://?saddr=%f,%f&daddr=%@,%@&center=%f,%f&zoom=14&views=traffic",currentLatitude , currentLongitude,[sLModel valueForKey:@"latitude"],[sLModel valueForKey:@"longtitude"],currentLatitude, currentLongitude]]];
+         [NSURL URLWithString: [NSString stringWithFormat: @"comgooglemaps://?saddr=%f,%f&daddr=%@,%@&center=%f,%f&zoom=14&views=traffic",currentLatitude , currentLongitude,sLModel.latitude,sLModel.longtitude,currentLatitude, currentLongitude]]];
     } else {
         UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Message" message:@"To find the way to the store, you must install Google Mapp App first.l" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
         [alert show];

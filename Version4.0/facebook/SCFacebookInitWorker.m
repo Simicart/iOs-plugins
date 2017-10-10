@@ -622,7 +622,7 @@
 //login and logout notification
 -(void) didLogin:(NSNotification*) noti{
     [loginViewController stopLoadingData];
-    SimiResponder* responder = [noti.userInfo objectForKey:@"responder"];
+    SimiResponder* responder = [noti.userInfo objectForKey:responderKey];
     if([responder.status isEqualToString:@"SUCCESS"]){
     
     }else{

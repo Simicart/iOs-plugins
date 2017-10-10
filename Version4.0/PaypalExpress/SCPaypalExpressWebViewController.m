@@ -63,7 +63,7 @@
 {
     [self removeObserverForNotification:noti];
 
-    SimiResponder *responder = [noti.userInfo valueForKey:@"responder"];
+    SimiResponder *responder = [noti.userInfo valueForKey:responderKey];
     if ([responder.status isEqualToString:@"SUCCESS"]) {
         self.needReviewAddress = [(NSNumber *)[paypalModel objectForKey:@"review_address"] boolValue];
         NSURL * url = [NSURL URLWithString:(NSString *)[paypalModel objectForKey:@"url"]];

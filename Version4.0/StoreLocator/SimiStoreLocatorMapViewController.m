@@ -37,8 +37,8 @@
     sLModelCollectionUpdate = [[SimiStoreLocatorModelCollection alloc]init];
     
     GMSCameraPosition *camera;
-    float latitude = [[sLModel valueForKey:@"latitude"]floatValue];
-    float longitude = [[sLModel valueForKey:@"longtitude"]floatValue];
+    float latitude = [sLModel.latitude floatValue];
+    float longitude = [sLModel.longtitude floatValue];
     switch (mapViewOption) {
         case MapViewNoneSelectedMarker:
             camera = [GMSCameraPosition cameraWithLatitude:currentLatitube
@@ -86,7 +86,7 @@
 {
     if (marker.storeLocatorModel != nil) {
         storeLocatorPopup.storeLocatorModel = marker.storeLocatorModel;
-        [[NSNotificationCenter defaultCenter]postNotificationName:TRACKINGEVENT object:@"store_locator_action" userInfo:@{@"action":@"clicked_store_maker",@"store_name":[marker.storeLocatorModel valueForKey:@"name"]}];
+        [[NSNotificationCenter defaultCenter]postNotificationName:TRACKINGEVENT object:@"store_locator_action" userInfo:@{@"action":@"clicked_store_maker",@"store_name":marker.storeLocatorModel.name}];
         [storeLocatorPopup setContentForPopup];
         return storeLocatorPopup;
     }else
@@ -129,8 +129,8 @@
 
 - (void)didGetStoreLocatorList:(NSNotification*)noti
 {
-    SimiResponder* responder = [noti.userInfo valueForKey:@"responder"];
-    if ([[responder.status uppercaseString] isEqualToString:@"SUCCESS"]) {
+    SimiResponder* responder = [noti.userInfo valueForKey:responderKey];
+    if (responder.status == SUCCESS) {
         
         NSUInteger sLModelCollectionUpdateCount = [sLModelCollectionUpdate count];
         NSUInteger sLModelCollectionAllCount = sLModelCollectionAll.count;
@@ -138,7 +138,7 @@
         for (int i = 0; i < sLModelCollectionUpdateCount; i++) {
             BOOL isNewStoreLocatorModel = YES;
             for (int j = 0; j < sLModelCollectionAllCount; j++) {
-                if ([[[sLModelCollectionAll objectAtIndex:j] valueForKey:@"simistorelocator_id"]intValue] == [[[sLModelCollectionUpdate objectAtIndex:i] valueForKey:@"simistorelocator_id"]intValue])
+                if ([((SimiStoreLocatorModel *)[sLModelCollectionAll objectAtIndex:j]).simistorelocatorId intValue] == [((SimiStoreLocatorModel *)[sLModelCollectionUpdate objectAtIndex:i]).simistorelocatorId intValue])
                 {
                     isNewStoreLocatorModel = NO;
                     break;
@@ -153,8 +153,8 @@
             for (int i = 0; i < newSLModelCollection.count; i++) {
                 SimiStoreLocatorMaker * storeLocatorMaker_ = [[SimiStoreLocatorMaker alloc]init];
                 storeLocatorMaker_.storeLocatorModel = [newSLModelCollection objectAtIndex:i];
-                float lat = (float)[[NSString stringWithFormat:@"%@",[storeLocatorMaker_.storeLocatorModel valueForKey:@"latitude"]] floatValue];
-                float lng = (float)[[NSString stringWithFormat:@"%@",[storeLocatorMaker_.storeLocatorModel valueForKey:@"longtitude"]] floatValue];
+                float lat = (float)[[NSString stringWithFormat:@"%@",storeLocatorMaker_.storeLocatorModel.latitude] floatValue];
+                float lng = (float)[[NSString stringWithFormat:@"%@",storeLocatorMaker_.storeLocatorModel.longtitude] floatValue];
                 storeLocatorMaker_.position = CLLocationCoordinate2DMake(lat,lng);
                 storeLocatorMaker_.icon = [UIImage imageNamed:@"storelocator_point"];
                 storeLocatorMaker_.map = mapView_;
@@ -185,7 +185,7 @@
             for (int i = 0; i < storeLocatorModelCollectionSyncListCount; i++) {
                 BOOL isNewStoreLocatorModel = YES;
                 for (int j = 0; j < sLModelCollectionAllCount; j++) {
-                    if ([[[sLModelCollectionSyncList objectAtIndex:i] valueForKey:@"simistorelocator_id"] isEqualToString:[[sLModelCollectionAll objectAtIndex:j] valueForKey:@"simistorelocator_id"]]) {
+                    if ([((SimiStoreLocatorModel *)[sLModelCollectionSyncList objectAtIndex:i]).simistorelocatorId isEqualToString:((SimiStoreLocatorModel *)[sLModelCollectionAll objectAtIndex:j]).simistorelocatorId]) {
                         isNewStoreLocatorModel = NO;
                     }
                 }
@@ -207,16 +207,15 @@
     currentLocations.tappable = YES;
     
     for (int i = 0; i < [sLModelCollectionAll count]; i++) {
-        SimiModel *storeLocatorModel_ = [[SimiModel alloc]init];
-        storeLocatorModel_ = [sLModelCollectionAll objectAtIndex:i];
+        SimiStoreLocatorModel *storeLocatorModel_ = [sLModelCollectionAll objectAtIndex:i];
         SimiStoreLocatorMaker * storeLocatorMaker_ = [[SimiStoreLocatorMaker alloc]init];
-        float lat = (float)[[NSString stringWithFormat:@"%@",[storeLocatorModel_ valueForKey:@"latitude"]] floatValue];
-        float lng = (float)[[NSString stringWithFormat:@"%@",[storeLocatorModel_ valueForKey:@"longtitude"]] floatValue];
+        float lat = (float)[[NSString stringWithFormat:@"%@",storeLocatorModel_.latitude] floatValue];
+        float lng = (float)[[NSString stringWithFormat:@"%@",storeLocatorModel_.longtitude] floatValue];
         storeLocatorMaker_.position = CLLocationCoordinate2DMake(lat,lng);
         storeLocatorMaker_.storeLocatorModel = [sLModelCollectionAll objectAtIndex:i];
         
         if (mapViewOption == MapViewSelectedMarker) {
-            if ([[storeLocatorMaker_.storeLocatorModel valueForKey:@"simistorelocator_id"] isEqualToString:[sLModel valueForKey:@"simistorelocator_id"]])
+            if ([storeLocatorMaker_.storeLocatorModel.simistorelocatorId isEqualToString:sLModel.simistorelocatorId])
             {
                 [mapView_ setSelectedMarker:storeLocatorMaker_];
             }
@@ -226,8 +225,8 @@
     }
     
     if (mapViewOption == MapViewSelectedMarker) {
-        float latitude = [[sLModel valueForKey:@"latitude"]floatValue];
-        float longitude = [[sLModel valueForKey:@"longtitude"]floatValue];
+        float latitude = [sLModel.latitude floatValue];
+        float longitude = [sLModel.longtitude floatValue];
         
         GMSCameraPosition *cameraPosition = [GMSCameraPosition cameraWithLatitude:latitude longitude:longitude zoom:15];
         [mapView_ setCamera:cameraPosition];

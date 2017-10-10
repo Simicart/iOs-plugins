@@ -142,7 +142,7 @@
     NSString *tempProductSku = [NSString stringWithFormat:@"%@",[self.productModel valueForKey:@"sku"]];
     [[NSNotificationCenter defaultCenter]postNotificationName:TRACKINGEVENT object:@"product_action" userInfo:@{@"action":@"rated_product",@"product_name":tempProductName,@"product_id":tempProductId,@"sku":tempProductSku,@"qty":@"1"}];
     
-    SimiResponder* responder = [noti.userInfo objectForKey:@"responder"];
+    SimiResponder* responder = [noti.userInfo objectForKey:responderKey];
     [self stopLoadingData];
     [self removeObserverForNotification:noti];
     if([responder.status isEqualToString:@"SUCCESS"]){

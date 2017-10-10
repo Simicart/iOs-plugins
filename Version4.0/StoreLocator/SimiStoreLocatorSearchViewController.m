@@ -75,7 +75,7 @@
     }
     stringTagSearch = @"";
     
-    simiAddressStoreLocatorModelCollection = [SimiGlobalVar sharedInstance].countryColllection;
+    simiAddressStoreLocatorModelCollection = GLOBALVAR.storeView.allowedCountries;
     countryNameArray = [NSMutableArray new];
     [countryNameArray addObject:@"None"];
     for (int i = 0; i < simiAddressStoreLocatorModelCollection.count; i++) {
@@ -87,12 +87,7 @@
 
 - (void)viewWillAppearBefore:(BOOL)animated
 {
-    if (SIMI_SYSTEM_IOS < 7) {
-        self.contentSizeForViewInPopover = CGSizeMake(500, 700);
-    }else
-    {
-        self.preferredContentSize = CGSizeMake(500, 700);
-    }
+    self.preferredContentSize = CGSizeMake(500, 700);
 }
 
 #pragma mark
@@ -328,7 +323,7 @@
     }else
     {
         cell.simiTagModel = [tagModelCollection objectAtIndex:indexPath.row - 1];
-        cell.lblTagName.text = [cell.simiTagModel valueForKey:@"value"];
+        cell.lblTagName.text = cell.simiTagModel.value;
     }
     
     if (tagChoise == nil) {
@@ -501,8 +496,8 @@
 
 - (void)didGetStoreLocator:(NSNotification*)noti
 {
-    SimiResponder* responder = [noti.userInfo valueForKey:@"responder"];
-    if ([[responder.status uppercaseString] isEqualToString:@"SUCCESS"]) {
+    SimiResponder* responder = [noti.userInfo valueForKey:responderKey];
+    if (responder.status == SUCCESS) {
         [self stopLoadingData];
         for (UIView* subView in scrView.subviews) {
             subView.userInteractionEnabled = YES;
@@ -515,9 +510,7 @@
             [self.navigationController popViewControllerAnimated:YES];
         }else
         {
-            UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Result" message:SCLocalizedString(@"No store match with your searching") delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil];
-            [self.view addSubview:alert];
-            [alert show];
+            [self showAlertWithTitle:@"Result" message:@"No store match with your searching"];
         }
     }
 }
@@ -537,8 +530,8 @@
 
 - (void)didGetTagList:(NSNotification*)noti
 {
-    SimiResponder* responder = [noti.userInfo valueForKey:@"responder"];
-    if ([[responder.status uppercaseString] isEqualToString:@"SUCCESS"]) {
+    SimiResponder* responder = [noti.userInfo valueForKey:responderKey];
+    if (responder.status == SUCCESS) {
         if (tagModelCollection.count >  0) {
             [self setInterfaceSearchByTag];
         }

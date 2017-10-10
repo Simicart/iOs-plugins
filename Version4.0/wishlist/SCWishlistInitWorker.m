@@ -28,7 +28,7 @@
 @implementation SCWishlistInitWorker{
     SimiViewController* currentlyViewController;
     UIButton* wishlistButton;
-    NSMutableDictionary* product;
+    SimiProductModel* product;
     SCWishlistModelCollection* wishlistModelCollection;
     SCWishlistModel* wishlistModel;
     SCWishlistViewController* wishlistViewController;
@@ -41,7 +41,6 @@
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initViewMoreAction:) name:@"SCProductViewController_InitViewMoreAction" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(beforeTouchMoreAction:) name:@"SCProductViewController_BeforeTouchMoreAction" object:nil];
-        
         
         //My Account Screen
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializedAccountCellAfter:) name:[NSString stringWithFormat:@"%@%@",SCAccountViewController_RootEventName,SimiTableViewController_SubKey_InitCells_End] object:nil];
@@ -94,7 +93,7 @@
 #pragma mark Update Wishlist Icon
 -(void)updateWishlistIcon
 {
-    if (![product objectForKey:@"wishlist_item_id"] || [[product objectForKey:@"wishlist_item_id"] isEqualToString:PRODUCT_IS_NOT_IN_WISHLIST] )
+    if (![product objectForKey:@"wishlist_item_id"] || [[product objectForKey:@"wishlist_item_id"] isEqualToString:PRODUCT_IS_NOT_IN_WISHLIST])
         [wishlistButton setImage:[UIImage imageNamed:@"wishlist_empty_icon"] forState:UIControlStateNormal];
     else
         [wishlistButton setImage:[UIImage imageNamed:@"wishlist_color_icon"] forState:UIControlStateNormal];
@@ -132,16 +131,15 @@
 {
     [wishlistButton setEnabled:YES];
     [currentlyViewController stopLoadingData];
-    SimiResponder *responder = [noti.userInfo valueForKey:@"responder"];
-    if ([responder.status isEqualToString:@"SUCCESS"]) {
-        NSString* wishlistItemID = [wishlistModel objectForKey:@"wishlist_item_id"];
+    SimiResponder *responder = [noti.userInfo valueForKey:responderKey];
+    if (responder.status == SUCCESS) {
+        NSString* wishlistItemID = wishlistModel.wishlistItemId;
         if(wishlistItemID)
             [product setObject:wishlistItemID forKey:@"wishlist_item_id"];
         [self updateWishlistIcon];
     }
     else {
-        UIAlertView * alert = [[UIAlertView alloc]initWithTitle:@"" message:responder.responseMessage  delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil];
-        [alert show];
+        [currentlyViewController showAlertWithTitle:@"" message:responder.message];
     }
     [self removeObserverForNotification:noti];
 }
@@ -156,14 +154,13 @@
 - (void)didRemoveProductFromWishlist:(NSNotification *)noti
 {
     [wishlistButton setEnabled:YES];
-    SimiResponder *responder = [noti.userInfo valueForKey:@"responder"];
-    if ([responder.status isEqualToString:@"SUCCESS"]) {
+    SimiResponder *responder = [noti.userInfo valueForKey:responderKey];
+    if (responder.status == SUCCESS) {
         [product setObject:PRODUCT_IS_NOT_IN_WISHLIST forKey:@"wishlist_item_id"];
         [self updateWishlistIcon];
     }
     else {
-        UIAlertView * alert = [[UIAlertView alloc]initWithTitle:@"" message:responder.responseMessage  delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil];
-        [alert show];
+        [currentlyViewController showAlertWithTitle:@"" message:responder.message];
     }
     [self removeObserverForNotification:noti];
 }

@@ -24,21 +24,21 @@
     NSString *bnCode;
     SimiViewController *viewController;
     SimiOrderModel *order;
-    SimiCartModel *cart;
+    SimiQuoteItemModel *cart;
 }
 
 - (id)init
 {
     self = [super init];
     if (self) {
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"DidPlaceOrder-Before" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:Simi_DidPlaceOrderBefore object:nil];
     }
     return self;
 }
 
 - (void)didReceiveNotification:(NSNotification *)noti
 {
-    if ([noti.name isEqualToString:@"DidPlaceOrder-Before"]){
+    if ([noti.name isEqualToString:Simi_DidPlaceOrderBefore]){
         payment = [noti.userInfo valueForKey:@"payment"];
         if ([[payment valueForKey:@"payment_method"] isEqualToString:METHOD_2CHECKOUT]) {
             [self didPlaceOrder:noti];
@@ -46,7 +46,7 @@
     }
 }
 
-- (void)didPlaceOrder:(NSNotification *)noti
+- (void)init:(NSNotification *)noti
 {
     UINavigationController *currentVC = [SimiGlobalVar sharedInstance].currentlyNavigationController;
     order = [noti.userInfo valueForKey:@"data"];
@@ -62,7 +62,7 @@
             }
             url = [url stringByAppendingString:params];
             SimiTwoCheckoutWebView *nextController = [[SimiTwoCheckoutWebView alloc] init];
-            nextController.order = [[SimiOrderModel alloc]initWithDictionary:order];
+            nextController.order = [[SimiOrderModel alloc] init:order];
             url = [url stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
             [nextController setUrlPath:url];
             nextController.urlCallBack = [payment valueForKey:@"url_back"];

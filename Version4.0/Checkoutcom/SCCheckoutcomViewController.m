@@ -57,7 +57,7 @@
 -(void) didCompleteOrder:(NSNotification*) noti{
     [self stopLoadingData];
     [self removeObserverForNotification:noti];
-    SimiResponder* responder = [noti.userInfo objectForKey:@"responder"];
+    SimiResponder* responder = [noti.userInfo objectForKey:responderKey];
     [self showAlertWithTitle:@"" message:[NSString stringWithFormat:@"%@!",SCLocalizedString(@"Thank you for your purchase")]];
     if([responder.status isEqualToString:@"SUCCESS"]){
         

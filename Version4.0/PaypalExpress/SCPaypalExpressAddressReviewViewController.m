@@ -183,7 +183,7 @@
 {
     [self stopLoadingData];
     [self removeObserverForNotification:noti];
-    SimiResponder *responder = [noti.userInfo valueForKey:@"responder"];
+    SimiResponder *responder = [noti.userInfo valueForKey:responderKey];
     if ([responder.status isEqualToString:@"SUCCESS"]) {
         billingAddress = [SimiAddressModel new];
         [billingAddress addEntriesFromDictionary:[paypalModel objectForKey:@"billing_address"]];
@@ -214,7 +214,7 @@
 -(void)paypalDidCompleteReviewAddress:(NSNotification *)noti
 {
     
-    SimiResponder *responder = [noti.userInfo valueForKey:@"responder"];
+    SimiResponder *responder = [noti.userInfo valueForKey:responderKey];
     [self removeObserverForNotification:noti];
     [self stopLoadingData];
     if ([responder.status isEqualToString:@"SUCCESS"]) {

@@ -85,8 +85,8 @@
     }
     [_tableView.infiniteScrollingView stopAnimating];
     // Process Reload Data
-    SimiResponder *responder = [noti.userInfo valueForKey:@"responder"];
-    if ([responder.status isEqualToString:@"SUCCESS"]) {
+    SimiResponder *responder = [noti.userInfo valueForKey:responderKey];
+    if (responder.status == SUCCESS) {
         if (transactions.count) {
             [_tableView reloadData];
         } else {
@@ -145,7 +145,7 @@
         [view addSubview:expires];
     }
     SimiModel *transaction = [transactions objectAtIndex:indexPath.row];
-    cell.imageView.image = [UIImage imageNamed:[@"loyalty_" stringByAppendingString:[transaction objectForKey:@"status"]]];
+    cell.imageView.image = [UIImage imageNamed:[@"loyalty_" stringByAppendingString:[transaction.modelData objectForKey:@"status"]]];
     
     UILabel *title  = (UILabel *)[cell viewWithTag:1];
     UIView *view    = [cell viewWithTag:11];
@@ -154,7 +154,7 @@
     UILabel *expires= (UILabel *)[view viewWithTag:4];
     
     CGFloat top = 10, width = title.frame.size.width, height = 44;
-    title.text = [transaction objectForKey:@"title"];
+    title.text = [transaction.modelData objectForKey:@"title"];
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         height = 22;
     } else {
@@ -164,12 +164,12 @@
             height = 22;
         }
     }
-    amount.text = [transaction objectForKey:@"point_label"];
-    created.text = [SimiDateTime formatDateTime:[transaction objectForKey:@"created_time"]];
-    if ([[transaction objectForKey:@"expiration_date"] isEqualToString:@""]) {
+    amount.text = [transaction.modelData objectForKey:@"point_label"];
+    created.text = [SimiDateTime formatDateTime:[transaction.modelData objectForKey:@"created_time"]];
+    if ([[transaction.modelData objectForKey:@"expiration_date"] isEqualToString:@""]) {
         top += 11;
     } else {
-        expires.text = [SCLocalizedString(@"Expire on:") stringByAppendingString:[SimiDateTime formatDate:[transaction objectForKey:@"expiration_date"]]];
+        expires.text = [SCLocalizedString(@"Expire on:") stringByAppendingString:[SimiDateTime formatDate:[transaction.modelData objectForKey:@"expiration_date"]]];
     }
     title.frame = CGRectMake(46, top, width, height);
     view.frame = CGRectMake(46, top + height, width, 66);

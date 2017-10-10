@@ -113,7 +113,7 @@
 }
 
 - (void)didUpdatePayment:(NSNotification *)noti{
-    SimiResponder *responder = [noti.userInfo valueForKey:@"responder"];
+    SimiResponder *responder = [noti.userInfo valueForKey:responderKey];
     [self stopLoadingData];
     if ([responder.status isEqualToString:@"SUCCESS"]) {
         UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:SCLocalizedString(responder.status) message:SCLocalizedString(@"Thank you for your purchase") delegate:nil cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles: nil];

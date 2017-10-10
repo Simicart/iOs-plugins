@@ -16,8 +16,8 @@
 
 - (void)didReceiveNotification:(NSNotification *)noti
 {
-    SimiResponder *responder = [noti.userInfo valueForKey:@"responder"];
-    if ([responder.status isEqualToString:@"SUCCESS"]) {
+    SimiResponder *responder = [noti.userInfo valueForKey:responderKey];
+    if (responder.status == SUCCESS) {
         if ([noti.name isEqualToString:Simi_DidLogin]) {
             NSDictionary *info = [[NSBundle mainBundle] infoDictionary];
             NSString *bundleIdentifier = [NSString stringWithFormat:@"%@", [info objectForKey:@"CFBundleIdentifier"]];
@@ -34,7 +34,7 @@
             }
         }
     } else {
-        [self showAlertWithTitle:SCLocalizedString(responder.status) message:responder.responseMessage];
+        [self showAlertWithTitle:@"" message:responder.message];
         self.textFieldPassword.text = @"";
     }
     [self stopLoadingData];

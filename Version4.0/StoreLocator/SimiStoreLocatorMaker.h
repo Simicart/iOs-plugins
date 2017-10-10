@@ -8,6 +8,7 @@
 
 #import <GoogleMaps/GoogleMaps.h>
 #import <SimiCartBundle/SimiModel.h>
+#import "SimiStoreLocatorModel.h"
 @interface SimiStoreLocatorMaker : GMSMarker
-@property (nonatomic, strong) SimiModel *storeLocatorModel;
+@property (nonatomic, strong) SimiStoreLocatorModel *storeLocatorModel;
 @end

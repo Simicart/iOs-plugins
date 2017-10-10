@@ -52,7 +52,7 @@ static NSString *ACCOUNT_GIFTCARD_ROW = @"ACCOUNT_GIFTCARD_ROW";
 }
 
 - (void)didGetTimeZone:(NSNotification*)noti{
-    SimiResponder *responder = [noti.userInfo valueForKey:@"responder"];
+    SimiResponder *responder = [noti.userInfo valueForKey:responderKey];
     [self removeObserverForNotification:noti];
     if ([responder.status isEqualToString:@"SUCCESS"]) {
         [SCGiftCardGlobalVar sharedInstance].timeZoneModelCollection = timeZoneModelCollection;

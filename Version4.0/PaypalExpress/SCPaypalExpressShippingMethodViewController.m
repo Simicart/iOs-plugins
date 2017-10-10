@@ -57,7 +57,7 @@
 
 - (void)didGetShippingMethods:(NSNotification *)noti
 {
-    SimiResponder *responder = [noti.userInfo valueForKey:@"responder"];
+    SimiResponder *responder = [noti.userInfo valueForKey:responderKey];
     [self removeObserverForNotification:noti];
     [self stopLoadingData];
     if ([responder.status isEqualToString:@"SUCCESS"]) {
@@ -196,7 +196,7 @@
 - (void)didPlaceOrder:(NSNotification *)noti
 {
     [self stopLoadingData];
-    SimiResponder *responder = [noti.userInfo valueForKey:@"responder"];
+    SimiResponder *responder = [noti.userInfo valueForKey:responderKey];
     if (PHONEDEVICE) {
         SCCartViewController * cartVC = [[SCAppController sharedInstance].navigationBarPhone cartViewController];
         [cartVC getCart];

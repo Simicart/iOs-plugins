@@ -12,5 +12,14 @@
 #define BarCodeDidGetProductID @"BarCode-DidGetProductID"
 
 @interface BarCodeModel : SimiModel
+@property (strong, nonatomic) NSString *barcodeId;
+@property (strong, nonatomic) NSString *barcode;
+@property (strong, nonatomic) NSString *qrcode;
+@property (strong, nonatomic) NSString *barcodeStatus;
+@property (strong, nonatomic) NSString *productEntityId;
+@property (strong, nonatomic) NSString *productName;
+@property (strong, nonatomic) NSString *productSku;
+@property (strong, nonatomic) NSString *createdDate;
+
 - (void)getProductIdWithBarCode:(NSString*) barCode type:(NSString*) type;
 @end

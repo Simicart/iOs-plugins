@@ -12,4 +12,17 @@
 
 @interface SCWishlistModel : SimiModel
 -(void) addProductWithParams: (NSDictionary*) params;
+
+@property (strong, nonatomic) NSString *wishlistItemId;
+@property (strong, nonatomic) NSString *wishlistId;
+@property (strong, nonatomic) NSString *productId;
+@property (strong, nonatomic) NSString *name;
+@property (strong, nonatomic) NSString *price;
+@property (strong, nonatomic) NSString *qty;
+@property (strong, nonatomic) NSString *productSKU;
+@property (strong, nonatomic) NSString *productSharingMessage;
+@property (strong, nonatomic) NSString *productSharingUrl;
+@property (strong, nonatomic) NSString *productImage;
+@property (nonatomic) BOOL selectedAllRequiredOptions;
+@property (nonatomic) BOOL stockStatus;
 @end

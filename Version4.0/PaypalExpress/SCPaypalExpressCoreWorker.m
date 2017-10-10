@@ -35,7 +35,7 @@ static NSString *product_paypalcheckout_row = @"product_paypalcheckout_row";
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initProductCellsAfter:) name:@"InitProductCells-After" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializedProductCellAfter:) name:InitializedProductCellAfter object:nil];
         
-        paypalExpressConfig = [[SimiGlobalVar sharedInstance].allConfig valueForKey:@"paypal_express_config"];
+        paypalExpressConfig = [[SimiGlobalVar sharedInstance].storeView.modelData valueForKey:@"paypal_express_config"];
     }
     return self;
 }
@@ -196,8 +196,8 @@ static NSString *product_paypalcheckout_row = @"product_paypalcheckout_row";
 {
     SimiModel *payment = [noti.userInfo valueForKey:@"payment"];
     if ([[payment valueForKey:@"payment_method"] isEqualToString:@"PAYPAL_EXPRESS"]) {
-        SimiResponder *responder = [noti.userInfo valueForKey:@"responder"];
-        if ([responder.status isEqualToString:@"SUCCESS"]) {
+        SimiResponder *responder = [noti.userInfo valueForKey:responderKey];
+        if (responder.status == SUCCESS) {
             [self startPaypalCheckout];
         }
     }
@@ -212,8 +212,8 @@ static NSString *product_paypalcheckout_row = @"product_paypalcheckout_row";
 
 -(void)didAddToCart:(NSNotification *)noti
 {
-    SimiResponder *responder = [noti.userInfo valueForKey:@"responder"];
-    if ([responder.status isEqualToString:@"SUCCESS"]) {
+    SimiResponder *responder = [noti.userInfo valueForKey:responderKey];
+    if (responder.status == SUCCESS) {
         [self startPaypalCheckout];
     }
     [self removeObserverForNotification:noti];

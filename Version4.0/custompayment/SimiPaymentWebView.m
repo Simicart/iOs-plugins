@@ -120,7 +120,7 @@
 -(void) didCancelOrder:(NSNotification *)noti{
     [self removeObserverForNotification:noti];
     [self stopLoadingData];
-    SimiResponder* responder = [noti.userInfo valueForKey:@"responder"];
+    SimiResponder* responder = [noti.userInfo valueForKey:responderKey];
     if([responder.status isEqualToString:@"SUCCESS"]){
         [((SimiViewController *)[SimiGlobalVar sharedInstance].currentViewController) showToastMessage:@"Your order is cancelled"];
         [self.navigationController dismissViewControllerAnimated:YES completion:nil];

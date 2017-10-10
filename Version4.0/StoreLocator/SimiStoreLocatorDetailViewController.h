@@ -10,16 +10,17 @@
 #import <SimiCartBundle/SimiViewController.h>
 #import <SimiCartBundle/SimiModel.h>
 #import <MessageUI/MessageUI.h>
+#import "SimiStoreLocatorModel.h"
 
 @protocol SimiStoreLocatorDetailViewControllerDelegate <NSObject>
 @optional
-- (void)returnMapViewController:(SimiModel*)sLModelParam;
+- (void)returnMapViewController:(SimiStoreLocatorModel *)sLModelParam;
 @end
 
 @interface SimiStoreLocatorDetailViewController : SimiViewController<MFMailComposeViewControllerDelegate>
 
 
-@property (nonatomic, strong) SimiModel *sLModel;
+@property (nonatomic, strong) SimiStoreLocatorModel *sLModel;
 @property (nonatomic) float currentLatitude;
 @property (nonatomic) float currentLongitude;
 

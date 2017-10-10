@@ -114,15 +114,15 @@
 
 - (void)didGetWishlistItems: (NSNotification*) noti{
     [self stopLoadingData];
-    SimiResponder* responder = [noti.userInfo objectForKey:@"responder"];
+    SimiResponder* responder = [noti.userInfo objectForKey:responderKey];
     [wishlistCollectionView.infiniteScrollingView stopAnimating];
-    if([responder.status isEqualToString:@"SUCCESS"]){
+    if(responder.status == SUCCESS){
         [wishlistCollectionView reloadData];
         [self handleWishlistItemsCount];
     }else{
-        UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:SCLocalizedString(@"Sorry") message:responder.responseMessage delegate:nil cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles:nil, nil];
-        [alertView show];
-        [self.navigationController popViewControllerAnimated:YES];
+        [self showAlertWithTitle:@"" message:responder.message completionHandler:^{
+            [self.navigationController popViewControllerAnimated:YES];
+        }];
     }
 }
 
@@ -158,36 +158,34 @@
 }
 
 #pragma mark SCWishlistCollectionViewCellDelegate
-- (void)deleteWishlistItem:(NSDictionary *)wishlistItem{
-    [wishlistModelCollection removeItemWithWishlistItemID:[wishlistItem objectForKey:@"wishlist_item_id"]];
+- (void)deleteWishlistItem:(SCWishlistModel *)wishlistItem{
+    [wishlistModelCollection removeItemWithWishlistItemID:wishlistItem.wishlistItemId];
     [self startLoadingData];
 }
 
-- (void)tapToWishlistItem:(NSDictionary *)wishlistItem{
+- (void)tapToWishlistItem:(SCWishlistModel *)wishlistItem{
     SCProductViewController* productVC;
     if(PHONEDEVICE){
         productVC = [SCProductViewController new];
     }else{
         productVC = [SCProductViewControllerPad new];
     }
-    productVC.productId = [wishlistItem objectForKey:@"product_id"];
-    productVC.arrayProductsID = [NSMutableArray arrayWithArray:@[productVC.productId]];
-    productVC.firstProductID = productVC.productId;
-    [self.navigationController pushViewController:productVC animated:YES];
+    [[SCAppController sharedInstance] openProductWithNavigationController:self.navigationController productId:wishlistItem.productId moreParams:@{}];
+    
 }
 
-- (void)addToCartWithWishlistItem:(NSDictionary *)wishlistItem{
+- (void)addToCartWithWishlistItem:(SCWishlistModel *)wishlistItem{
     
-    if([[wishlistItem objectForKey:@"selected_all_required_options"] boolValue]){
-        [wishlistModelCollection addProductToCartWithWishlistID:[wishlistItem objectForKey:@"wishlist_item_id"]];
+    if(wishlistItem.selectedAllRequiredOptions){
+        [wishlistModelCollection addProductToCartWithWishlistID:wishlistItem.wishlistItemId];
         [self startLoadingData];
     }else{
-        [[SCAppController sharedInstance]openProductWithNavigationController:self.navigationController productId:[wishlistItem objectForKey:@"product_id"] moreParams:nil];
+        [[SCAppController sharedInstance]openProductWithNavigationController:self.navigationController productId:wishlistItem.productId moreParams:nil];
     }
 }
 
-- (void)shareWishlistItem:(NSDictionary *)wishlistItem inView:(UIView *)view{
-    [self shareWishlistWithText:[wishlistItem objectForKey:@"product_sharing_message"] url:[wishlistItem objectForKey:@"product_sharing_url"] inView:view];
+- (void)shareWishlistItem:(SCWishlistModel *)wishlistItem inView:(UIView *)view{
+    [self shareWishlistWithText:wishlistItem.productSharingMessage url:wishlistItem.productSharingUrl  inView:view];
    
 }
 

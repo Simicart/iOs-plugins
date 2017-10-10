@@ -16,6 +16,7 @@
 #import "SimiStoreLocatorDetailViewController.h"
 #import "SimiStoreLocatorSearchViewController.h"
 #import "SimiTagModelCollection.h"
+#import "SimiStoreLocatorModel.h"
 
 @interface SimiStoreLocatorViewController : SimiTabViewController<
                                             CLLocationManagerDelegate,

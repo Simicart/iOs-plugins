@@ -334,7 +334,7 @@
 - (void)didUseGiftCardCredit: (NSNotification *)noti {
     [self removeObserverForNotification:noti];
     [orderVC stopLoadingData];
-    SimiResponder *responder = [noti.userInfo objectForKey:@"responder"];
+    SimiResponder *responder = [noti.userInfo objectForKey:responderKey];
     if([responder.status isEqualToString:@"SUCCESS"]) {
         [self showGiftCardMessageOnOrder];
         NSDictionary *giftCardData = [order objectForKey:@"gift_card"];
@@ -357,7 +357,7 @@
 - (void)didUseGiftCode: (NSNotification *)noti {
     [self removeObserverForNotification:noti];
     [orderVC stopLoadingData];
-    SimiResponder *responder = [noti.userInfo objectForKey:@"responder"];
+    SimiResponder *responder = [noti.userInfo objectForKey:responderKey];
     if([responder.status isEqualToString:@"SUCCESS"]) {
         [self showGiftCardMessageOnOrder];
         NSDictionary *giftCardData = [order objectForKey:@"gift_card"];
@@ -392,7 +392,7 @@
 - (void)didUpdateGiftCode: (NSNotification *)noti {
     [self removeObserverForNotification:noti];
     [orderVC stopLoadingData];
-    SimiResponder *responder = [noti.userInfo objectForKey:@"responder"];
+    SimiResponder *responder = [noti.userInfo objectForKey:responderKey];
     if([responder.status isEqualToString:@"SUCCESS"]) {
         [self showGiftCardMessageOnOrder];
         NSDictionary *giftCardData = [order objectForKey:@"gift_card"];
@@ -415,7 +415,7 @@
 - (void)didChangeUsingGiftCode: (NSNotification *)noti {
     [self removeObserverForNotification:noti];
     [orderVC stopLoadingData];
-    SimiResponder *responder = [noti.userInfo objectForKey:@"responder"];
+    SimiResponder *responder = [noti.userInfo objectForKey:responderKey];
     if([responder.status isEqualToString:@"SUCCESS"]) {
         [orderVC didGetOrderConfig:noti];
         [self showGiftCardMessageOnOrder];
@@ -427,7 +427,7 @@
 - (void)didChangeUsingGiftCardCredit: (NSNotification *)noti {
     [self removeObserverForNotification:noti];
     [orderVC stopLoadingData];
-    SimiResponder *responder = [noti.userInfo objectForKey:@"responder"];
+    SimiResponder *responder = [noti.userInfo objectForKey:responderKey];
     if([responder.status isEqualToString:@"SUCCESS"]) {
         [self showGiftCardMessageOnOrder];
         [orderVC didGetOrderConfig:noti];
@@ -446,7 +446,7 @@
 - (void)didRemoveGiftCode: (NSNotification *)noti {
     [self removeObserverForNotification:noti];
     [orderVC stopLoadingData];
-    SimiResponder *responder = [noti.userInfo objectForKey:@"responder"];
+    SimiResponder *responder = [noti.userInfo objectForKey:responderKey];
     if([responder.status isEqualToString:@"SUCCESS"]) {
         [self showGiftCardMessageOnOrder];
         NSDictionary *giftCardData = [order objectForKey:@"gift_card"];

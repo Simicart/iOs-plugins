@@ -195,7 +195,7 @@
 - (void)didSendEmailToFriend:(NSNotification*)noti{
     [self stopLoadingData];
     [self removeObserverForNotification:noti];
-    SimiResponder *responder = [noti.userInfo valueForKey:@"responder"];
+    SimiResponder *responder = [noti.userInfo valueForKey:responderKey];
     if ([responder.status isEqualToString:@"SUCCESS"]) {
         [self showToastMessage:[giftCardCreditModel valueForKey:@"success"] duration:1.5];
     }else

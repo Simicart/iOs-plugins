@@ -35,7 +35,7 @@
 
 - (void)didGetAddress:(NSNotification*)noti
 {
-    SimiResponder *responder = [noti.userInfo valueForKey:@"responder"];
+    SimiResponder *responder = [noti.userInfo valueForKey:responderKey];
     if ([responder.status isEqualToString:@"SUCCESS"]) {
         if ([addressModel valueForKey:@"country_id"]) {
             [newAddressViewController.country updateFormData:[NSString stringWithFormat:@"%@",[addressModel valueForKey:@"country_id"]]];

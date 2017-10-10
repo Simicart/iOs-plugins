@@ -319,10 +319,10 @@
     if ([noti.name isEqualToString:@"BarCode-DidGetProductID"]) {
         [_activityIndicatorView stopAnimating];
         [_activityIndicatorView removeFromSuperview];
-        SimiResponder *responder = [noti.userInfo valueForKey:@"responder"];
-        if ([[responder.status uppercaseString] isEqualToString:@"SUCCESS"]) {
-            [self trackingWithProperties:@{@"action":@"scanned_product",@"product_id":[_barCodeModel valueForKey:@"product_entity_id"],@"product_name":[_barCodeModel valueForKey:@"product_name"]}];
-            [[SCAppController sharedInstance]openProductWithNavigationController:self.navigationController productId:[_barCodeModel valueForKey:@"product_entity_id"] moreParams:nil];
+        SimiResponder *responder = [noti.userInfo valueForKey:responderKey];
+        if (responder.status == SUCCESS) {
+            [self trackingWithProperties:@{@"action":@"scanned_product",@"product_id":_barCodeModel.productEntityId,@"product_name":_barCodeModel.productName}];
+            [[SCAppController sharedInstance]openProductWithNavigationController:self.navigationController productId:_barCodeModel.productEntityId moreParams:nil];
         }else
         {
             [_previewView setHidden:NO];

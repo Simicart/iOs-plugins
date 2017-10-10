@@ -10,12 +10,12 @@
 
 @interface LoyaltyAPI : SimiAPI
 
-- (void)loadProgramOverviewWithTarget:(id)target selector:(SEL)selector;
+- (void)loadProgramOverviewWithParams:(NSDictionary *)params target:(id)target selector:(SEL)selector;
 
 - (void)loadTransactionWithParams:(NSDictionary *)params target:(id)target selector:(SEL)selector;
 
 - (void)spendPointsWithParams:(NSDictionary *)params target:(id)target selector:(SEL)selector;
 
-- (void)saveSettings:(NSDictionary *)target selector:(SEL)selector;
+- (void)saveSettingsWithParams:(NSDictionary *)params target:(id)target selector:(SEL)selector;
 
 @end

@@ -56,7 +56,7 @@
         [_webView loadRequest:request];
     }else if ([noti.name isEqualToString:@"DidCheckOutKlarna"])
     {
-        SimiResponder *responder = [noti.userInfo valueForKey:@"responder"];
+        SimiResponder *responder = [noti.userInfo valueForKey:responderKey];
         if ([responder.status isEqualToString:@"SUCCESS"]) {
             [self showAlertWithTitle:@"SUCCESS" message:@"Thank your for purchase"];
             [self.navigationController popToRootViewControllerAnimated:YES];

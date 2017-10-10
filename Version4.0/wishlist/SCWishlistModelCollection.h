@@ -20,7 +20,6 @@
 @property (strong, nonatomic) NSString* sharingURL;
 @property (strong, nonatomic) NSString* sharingMessage;
 -(void) getWishlistItemsWithParams:(NSDictionary*) params;
--(void) getProductDetailWithProductID: (NSString*) productID;
 -(void) removeItemWithWishlistItemID: (NSString*) wishlistItemID;
 -(void) addProductToCartWithWishlistID: (NSString*) wishlistItemID;
 @end

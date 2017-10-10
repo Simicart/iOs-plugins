@@ -72,7 +72,7 @@
 }
 
 - (void)didUpdatePayment:(NSNotification *)noti{
-    SimiResponder *responder = [noti.userInfo valueForKey:@"responder"];
+    SimiResponder *responder = [noti.userInfo valueForKey:responderKey];
     [self stopLoadingData];
     [self removeObserverForNotification:noti];
     if ([responder.status isEqualToString:@"SUCCESS"]) {

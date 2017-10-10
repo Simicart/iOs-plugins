@@ -9,21 +9,22 @@
 #import "SimiStoreLocatorModelCollection.h"
 
 @implementation SimiStoreLocatorModelCollection
+
 - (void)getStoreListWithLatitude:(NSString*)lat longitude:(NSString*)lng offset:(NSString*)offset limit:(NSString*)limit
 {
-    currentNotificationName = @"StoreLocator_DidGetStoreList";
-    keyResponse = @"storelocations";
+     notificationName = @"StoreLocator_DidGetStoreList";
+    self.parseKey = @"storelocations";
     [self preDoRequest];
-    modelActionType = ModelActionTypeInsert;
-    [(SimiStoreLocatorAPI *)[self getAPI] getStoreListWithParams:@{@"lat":lat,@"lng":lng,@"offset":offset,@"limit":limit} target:self selector:@selector(didFinishRequest:responder:)];
+    actionType = CollectionActionTypeInsert;
+    [[SimiStoreLocatorAPI new] getStoreListWithParams:@{@"lat":lat,@"lng":lng,@"offset":offset,@"limit":limit} target:self selector:@selector(didGetResponseFromNetwork:)];
 }
 
 - (void)getStoreListWithLatitude:(NSString *)lat longitude:(NSString *)lng offset:(NSString *)offset limit:(NSString *)limit country:(NSString*)country city:(NSString*)city state:(NSString*)state zipcode:(NSString*)zipcode tag:(NSString *)tag
 {
-    currentNotificationName = @"StoreLocator_DidGetStoreList";
-    keyResponse = @"storelocations";
-    modelActionType = ModelActionTypeInsert;
+    notificationName = @"StoreLocator_DidGetStoreList";
+    self.parseKey = @"storelocations";
+    actionType = CollectionActionTypeInsert;
     [self preDoRequest];
-    [(SimiStoreLocatorAPI *)[self getAPI] getStoreListWithParams:@{@"lat":lat,@"lng":lng,@"offset":offset,@"limit":limit,@"country":country,@"city":city,@"state":state,@"zipcode":zipcode,@"tag":tag} target:self selector:@selector(didFinishRequest:responder:)];
+    [[SimiStoreLocatorAPI new] getStoreListWithParams:@{@"lat":lat,@"lng":lng,@"offset":offset,@"limit":limit,@"country":country,@"city":city,@"state":state,@"zipcode":zipcode,@"tag":tag} target:self selector:@selector(didGetResponseFromNetwork:)];
 }
 @end

@@ -288,7 +288,7 @@
 #pragma mark Did Get Email Contact
 - (void)didGetEmailContact:(NSNotification*)noti
 {
-    SimiResponder *responder = [noti.userInfo valueForKey:@"responder"];
+    SimiResponder *responder = [noti.userInfo valueForKey:responderKey];
     if ([[responder.status uppercaseString]isEqualToString:@"SUCCESS"]) {
         
         if ([stringStyle isEqualToString:@"1"]) {

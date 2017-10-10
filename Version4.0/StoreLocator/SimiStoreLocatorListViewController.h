@@ -15,6 +15,7 @@
 #import "SimiCLController.h"
 #import "SimiStoreLocatorModelCollection.h"
 #import "SCStoreListTableViewCell.h"
+#import "SimiStoreLocatorModel.h"
 
 typedef NS_ENUM(NSInteger, ListViewOption){
     ListViewOptionNoneSearch,
@@ -24,7 +25,7 @@ typedef NS_ENUM(NSInteger, ListViewOption){
 @protocol SimiStoreLocatorListViewControllerDelegate<NSObject>
 @optional
 - (void)didChoiseStoreFromListToMap;
-- (void)showViewDetailControllerFromList:(SimiModel*) sLModel_;
+- (void)showViewDetailControllerFromList:(SimiStoreLocatorModel*) sLModel_;
 @end
 
 
@@ -34,7 +35,7 @@ typedef NS_ENUM(NSInteger, ListViewOption){
 }
 @property (nonatomic, weak) id<SimiStoreLocatorListViewControllerDelegate> delegate;
 @property (nonatomic, strong) SimiStoreLocatorModelCollection *sLModelCollection;
-@property (nonatomic, strong) SimiModel *sLModel;
+@property (nonatomic, strong) SimiStoreLocatorModel *sLModel;
 @property (nonatomic) ListViewOption listViewOption;
 @property (nonatomic) float currentLatitube;
 @property (nonatomic) float currentLongitube;

@@ -86,12 +86,12 @@
         if ([[SimiGlobalVar sharedInstance] isLogin]) {
             SimiSection *section = [_cells addSectionWithIdentifier:LOYALTY_BALANCE];
             CGFloat height = 98;
-            if ([_loyaltyPolicy objectForKey:@"invert_point"]) {
+            if (_loyaltyPolicy.invertPoint) {
                 height += 88;
-            } else if ([_loyaltyPolicy objectForKey:@"spending_label"]) {
+            } else if (_loyaltyPolicy.spendingPoint) {
                 height += 22;
             }
-            if ([_loyaltyPolicy objectForKey:@"loyalty_hold"]) {
+            if (_loyaltyPolicy.loyaltyHold) {
                 height += 24;
             }
             SimiRow *row = [section addRowWithIdentifier:LOYALTY_BALANCE height:height sortOrder:0];
@@ -103,17 +103,17 @@
             row.title = SCLocalizedString(@"Settings");
             row.image = [UIImage imageNamed:@"loyalty_setting"];
         }
-        if ([_loyaltyPolicy objectForKey:@"earning_label"]) {
-            SimiSection *section = [_cells addSectionWithIdentifier:LOYALTY_EARN headerTitle:[_loyaltyPolicy objectForKey:@"earning_label"]];
+        if (_loyaltyPolicy.earningLabel) {
+            SimiSection *section = [_cells addSectionWithIdentifier:LOYALTY_EARN headerTitle:_loyaltyPolicy.earningLabel];
             SimiRow *row = [section addRowWithIdentifier:LOYALTY_EARN height:44 sortOrder:0];
-            row.title = [_loyaltyPolicy objectForKey:@"earning_policy"];
+            row.title = _loyaltyPolicy.earningPolicy;
         }
-        if ([_loyaltyPolicy objectForKey:@"spending_label"]) {
-            SimiSection *section = [_cells addSectionWithIdentifier:LOYALTY_SPEND headerTitle:[_loyaltyPolicy objectForKey:@"spending_label"]];
+        if (_loyaltyPolicy.spendingLabel) {
+            SimiSection *section = [_cells addSectionWithIdentifier:LOYALTY_SPEND headerTitle:_loyaltyPolicy.spendingLabel];
             SimiRow *row = [section addRowWithIdentifier:LOYALTY_SPEND height:44 sortOrder:0];
-            row.title = [_loyaltyPolicy objectForKey:@"spending_policy"];
+            row.title = _loyaltyPolicy.spendingPolicy;
         }
-        NSArray *policies = [_loyaltyPolicy objectForKey:@"policies"];
+        NSArray *policies = _loyaltyPolicy.policies;
         if (policies && [policies count]) {
             SimiSection *section = [_cells addSectionWithIdentifier:LOYALTY_POLICY headerTitle:SCLocalizedString(@"Our policies")];
             SimiRow *row = [section addRowWithIdentifier:LOYALTY_POLICY height:(8 + 36 * policies.count + 18 * (policies.count - 1)) sortOrder:0];
@@ -164,7 +164,7 @@
             // Draw Reward Points Information
             CGFloat y = 20;
             CGFloat height;
-            if ([_loyaltyPolicy objectForKey:@"invert_point"] || [_loyaltyPolicy objectForKey:@"spending_label"]) {
+            if (_loyaltyPolicy.invertPoint || _loyaltyPolicy.spendingLabel) {
                 height = 90;
             } else {
                 height = 68;
@@ -181,8 +181,8 @@
             balance.font = [UIFont fontWithName:THEME_FONT_NAME size:40];
             balance.textColor = THEME_PRICE_COLOR;
             balance.textAlignment = NSTextAlignmentCenter;
-            if([_loyaltyPolicy objectForKey:@"loyalty_point"])
-                balance.text = [NSString stringWithFormat:@"%@",[_loyaltyPolicy objectForKey:@"loyalty_point"]];
+            if(_loyaltyPolicy.loyaltyPoint)
+                balance.text = [NSString stringWithFormat:@"%f",_loyaltyPolicy.loyaltyPoint];
             else
                 balance.text = @"0";
             [left addSubview:balance];
@@ -193,21 +193,21 @@
             available.adjustsFontSizeToFitWidth = YES;
             available.minimumScaleFactor = 0.5;
             [left addSubview:available];
-            if ([_loyaltyPolicy objectForKey:@"invert_point"] || [_loyaltyPolicy objectForKey:@"spending_label"]) {
+            if (_loyaltyPolicy.invertPoint || _loyaltyPolicy.spendingLabel) {
                 UILabel *invert = [[UILabel alloc] initWithFrame:CGRectMake(0, 66, left.frame.size.width, 24)];
                 invert.font = [UIFont fontWithName:THEME_FONT_NAME size:14];
                 invert.textAlignment = NSTextAlignmentCenter;
                 invert.adjustsFontSizeToFitWidth = YES;
                 invert.minimumScaleFactor = 0.5;
                 invert.textColor = [UIColor grayColor];
-                if ([_loyaltyPolicy objectForKey:@"invert_point"]) {
-                    if ([_loyaltyPolicy objectForKey:@"start_discount"]) {
-                        invert.text = [NSString stringWithFormat:SCLocalizedString(@"Only %@ until %@"), [_loyaltyPolicy objectForKey:@"invert_point"], [_loyaltyPolicy objectForKey:@"start_discount"]];
+                if (_loyaltyPolicy.invertPoint) {
+                    if (_loyaltyPolicy.startDiscount) {
+                        invert.text = [NSString stringWithFormat:SCLocalizedString(@"Only %@ until %@"), _loyaltyPolicy.invertPoint, _loyaltyPolicy.startDiscount];
                     } else {
-                        invert.text = [NSString stringWithFormat:SCLocalizedString(@"Only %@ until redeemable"), [_loyaltyPolicy objectForKey:@"invert_point"]];
+                        invert.text = [NSString stringWithFormat:SCLocalizedString(@"Only %@ until redeemable"), _loyaltyPolicy.invertPoint];
                     }
                 } else {
-                    invert.text = [NSString stringWithFormat:SCLocalizedString(@"Equal %@ to redeem"), [_loyaltyPolicy objectForKey:@"loyalty_redeem"]];
+                    invert.text = [NSString stringWithFormat:SCLocalizedString(@"Equal %@ to redeem"), _loyaltyPolicy.loyaltyRedeem];
                 }
                 [left addSubview:invert];
             }
@@ -225,9 +225,9 @@
             coin.adjustsFontSizeToFitWidth = YES;
             coin.adjustsLetterSpacingToFitWidth = YES;
             coin.minimumScaleFactor = 0.5;
-            coin.text = [_loyaltyPolicy objectForKey:@"spending_discount"] ? [_loyaltyPolicy objectForKey:@"spending_discount"] : @"1";
+            coin.text = _loyaltyPolicy.spendingDiscount ? _loyaltyPolicy.spendingDiscount : @"1";
             [right addSubview:coin];
-            if ([_loyaltyPolicy objectForKey:@"spending_point"]) {
+            if (_loyaltyPolicy.spendingPoint) {
                 UILabel *rate = [[UILabel alloc] initWithFrame:CGRectMake(0, 66, right.frame.size.width, 24)];
                 rate.font = [UIFont fontWithName:THEME_FONT_NAME size:14];
                 rate.textAlignment = NSTextAlignmentCenter;
@@ -235,24 +235,24 @@
                 rate.minimumScaleFactor = 0.5;
                 rate.textColor = [UIColor grayColor];
                 rate.backgroundColor = [UIColor clearColor];
-                rate.text = [NSString stringWithFormat:@"%@ = %@", [[_loyaltyPolicy objectForKey:@"spending_point"] stringValue], [_loyaltyPolicy objectForKey:@"spending_discount"]];
+                rate.text = [NSString stringWithFormat:@"%@ = %@", _loyaltyPolicy.spendingPoint, _loyaltyPolicy.spendingDiscount];
                 [right addSubview:rate];
             }
             y += height;
             // Draw Holding Balance
-            if ([_loyaltyPolicy objectForKey:@"loyalty_hold"]) {
+            if (_loyaltyPolicy.loyaltyHold) {
                 UILabel *holding = [[UILabel alloc] initWithFrame:CGRectMake(20, y, width - 40, 24)];
                 holding.font = [UIFont fontWithName:THEME_FONT_NAME size:16];
                 holding.textAlignment = NSTextAlignmentCenter;
                 holding.adjustsFontSizeToFitWidth = YES;
                 holding.minimumScaleFactor = 0.5;
                 holding.textColor = [UIColor grayColor];
-                holding.text = [NSString stringWithFormat:SCLocalizedString(@"You have %@ that are pending for approval"), [_loyaltyPolicy objectForKey:@"loyalty_hold"]];
+                holding.text = [NSString stringWithFormat:SCLocalizedString(@"You have %@ that are pending for approval"), _loyaltyPolicy.loyaltyHold];
                 [view addSubview:holding];
                 y += 24;
             }
             // Draw Status Bar
-            if ([_loyaltyPolicy objectForKey:@"invert_point"]) {
+            if (_loyaltyPolicy.invertPoint) {
                 width -= 20;
                 UIView *status = [[UIView alloc] initWithFrame:CGRectMake(10, y, width, 66)];
                 [view addSubview:status];
@@ -270,8 +270,8 @@
                 ruler.backgroundColor = [UIColor colorWithWhite:0.8f alpha:1];
                 [status addSubview:ruler];
                 
-                NSInteger point = [[_loyaltyPolicy objectForKey:@"loyalty_balance"] integerValue];
-                NSInteger max = [[_loyaltyPolicy objectForKey:@"spending_min"] integerValue];
+                NSInteger point = [_loyaltyPolicy.loyaltyBalance integerValue];
+                NSInteger max = _loyaltyPolicy.spendingMin;
                 if (point > 0 && max > 0) {
                     // Draw current balance on ruler
                     CGFloat pointWidth = (width - 22) * point / max;
@@ -288,7 +288,7 @@
                 zeroLabel.minimumScaleFactor = 0.5;
                 [status addSubview:zeroLabel];
                 UILabel *maxLabel = [[UILabel alloc] initWithFrame:CGRectMake(width - 101, 44, 100, 22)];
-                maxLabel.text = [[_loyaltyPolicy objectForKey:@"spending_min"] stringValue];
+                maxLabel.text = [NSString stringWithFormat:@"%d",_loyaltyPolicy.spendingMin];
                 maxLabel.font = [UIFont fontWithName:THEME_FONT_NAME size:14];
                 maxLabel.textAlignment = NSTextAlignmentRight;
                 maxLabel.textColor = [UIColor grayColor];

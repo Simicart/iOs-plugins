@@ -93,8 +93,8 @@
 
 - (SCStoreListTableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    SimiModel *locatorModel = [sLModelCollection objectAtIndex:indexPath.row];
-    NSString *cellIdentifier = [NSString stringWithFormat:@"%@_%@",@"CellIdentifier",[locatorModel valueForKey:@"simistorelocator_id"]];
+    SimiStoreLocatorModel *locatorModel = [sLModelCollection objectAtIndex:indexPath.row];
+    NSString *cellIdentifier = [NSString stringWithFormat:@"%@_%@",@"CellIdentifier",locatorModel.simistorelocatorId];
     SCStoreListTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
     if (cell == nil) {
         cell = [[SCStoreListTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier andStoreData:locatorModel];
@@ -107,22 +107,22 @@
 #pragma mark Table View Delegate
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    SimiModel *storeLocatorModel = [sLModelCollection objectAtIndex:indexPath.row];
+    SimiStoreLocatorModel *storeLocatorModel = [sLModelCollection objectAtIndex:indexPath.row];
     NSString *stringAddress = @"";
-    if ([storeLocatorModel valueForKey:@"address"]) {
-        stringAddress = [NSString stringWithFormat:@"%@",[storeLocatorModel valueForKey:@"address"]];
+    if (![storeLocatorModel.address isEqualToString:@""]) {
+        stringAddress = [NSString stringWithFormat:@"%@",storeLocatorModel.address];
     }
-    if ([storeLocatorModel valueForKey:@"city"]) {
-        stringAddress = [NSString stringWithFormat:@"%@, %@",stringAddress, [storeLocatorModel valueForKey:@"city"]];
+    if (![storeLocatorModel.city isEqualToString:@""]) {
+        stringAddress = [NSString stringWithFormat:@"%@, %@",stringAddress, storeLocatorModel.city];
     }
-    if ([storeLocatorModel valueForKey:@"state"]) {
-        stringAddress = [NSString stringWithFormat:@"%@, %@", stringAddress, [storeLocatorModel valueForKey:@"state"]];
+    if (![storeLocatorModel.state isEqualToString:@""]) {
+        stringAddress = [NSString stringWithFormat:@"%@, %@", stringAddress, storeLocatorModel.state];
     }
-    if ([storeLocatorModel valueForKey:@"zipcode"]) {
-        stringAddress = [NSString stringWithFormat:@"%@, %@", stringAddress, [storeLocatorModel valueForKey:@"zipcode"]];
+    if (![storeLocatorModel.zipcode isEqualToString:@""]) {
+        stringAddress = [NSString stringWithFormat:@"%@, %@", stringAddress, storeLocatorModel.zipcode];
     }
-    if ([storeLocatorModel valueForKey:@"country_name"]) {
-        stringAddress = [NSString stringWithFormat:@"%@, %@", stringAddress, [storeLocatorModel valueForKey:@"country_name"]];
+    if (![storeLocatorModel.countryName isEqualToString:@""]) {
+        stringAddress = [NSString stringWithFormat:@"%@, %@", stringAddress, storeLocatorModel.countryName];
     }
     float cellWidth = SCREEN_WIDTH;
     if (PADDEVICE) {
@@ -143,7 +143,7 @@
     SCStoreListTableViewCell *cell = (SCStoreListTableViewCell*)[tableView cellForRowAtIndexPath:indexPath];
     [self.delegate showViewDetailControllerFromList:cell.storeLocatorModel];
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    [[NSNotificationCenter defaultCenter]postNotificationName:TRACKINGEVENT object:@"store_locator_action" userInfo:@{@"action":@"selected_store",@"store_name":[cell.storeLocatorModel valueForKey:@"name"]}];
+    [[NSNotificationCenter defaultCenter]postNotificationName:TRACKINGEVENT object:@"store_locator_action" userInfo:@{@"action":@"selected_store",@"store_name":cell.storeLocatorModel.name}];
 }
 
 
@@ -266,12 +266,8 @@
 	}
 }
 
-- (void)choiceStoreLocatorWithStoreLocatorModel:(SimiModel *)storeLM
-{
+- (void)choiceStoreLocatorWithStoreLocatorModel:(SimiStoreLocatorModel *)storeLM{
     if (storeLM !=nil) {
-        if (self.sLModel == nil) {
-            self.sLModel = [[SimiModel alloc]init];
-        }
         self.sLModel = storeLM;
     }
     [self.delegate didChoiseStoreFromListToMap];

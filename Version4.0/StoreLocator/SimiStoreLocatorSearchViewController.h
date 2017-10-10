@@ -25,7 +25,7 @@
 
 @interface SimiStoreLocatorSearchViewController : SimiViewController<UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIScrollViewDelegate>
 
-@property (nonatomic, strong) SimiAddressModelCollection *simiAddressStoreLocatorModelCollection;
+@property (nonatomic, strong) NSArray *simiAddressStoreLocatorModelCollection;
 @property (nonatomic, strong) SimiStoreLocatorModelCollection *sLModelCollection;
 @property (nonatomic, strong) SimiTagModelCollection * tagModelCollection;
 @property (nonatomic, strong) NSString *tagChoise;

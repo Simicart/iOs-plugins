@@ -67,9 +67,9 @@
                 [cell addSubview:applyCouponCodeButton];
                 [SimiGlobalVar sortViewForRTL:cell andWidth:CGRectGetWidth(tableView.frame)];
             }
-            if([[SimiGlobalVar sharedInstance].cart.priceData valueForKey:@"coupon_code"])
+            if([[SimiGlobalVar sharedInstance].cart.cartTotal valueForKey:@"coupon_code"])
             {
-                [cartCouponTextField setText:[[SimiGlobalVar sharedInstance].cart.priceData valueForKey:@"coupon_code"]];
+                [cartCouponTextField setText:[[SimiGlobalVar sharedInstance].cart.cartTotal valueForKey:@"coupon_code"]];
             }else
                 [cartCouponTextField setText:@""];
             cartVC.simiObjectIdentifier = cell;
@@ -81,9 +81,9 @@
 - (void)didSetCouponCodeOnCartView:(NSNotification *)noti{
     [[NSNotificationCenter defaultCenter]postNotificationName:TRACKINGEVENT object:@"cart_action" userInfo:@{@"action":@"apply_coupon_code",@"coupon_code":cartCouponTextField.text}];
     
-    SimiResponder *responder = [noti.userInfo valueForKey:@"responder"];
-    [cartVC showToastMessage:responder.responseMessage];
-    if ([responder.status isEqualToString:@"SUCCESS"]) {
+    SimiResponder *responder = [noti.userInfo valueForKey:responderKey];
+    [cartVC showToastMessage:responder.message];
+    if (responder.status == SUCCESS) {
         [cartVC changeCartData:noti];
     }
     [cartVC stopLoadingData];
@@ -94,8 +94,8 @@
 {
     NSString *couponCode = @"";
     couponCode = cartCouponTextField.text;
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didSetCouponCodeOnCartView:) name:DidSetCouponCode object:[SimiGlobalVar sharedInstance].cart];
-    [[SimiGlobalVar sharedInstance].cart setCouponCode:couponCode];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didSetCouponCodeOnCartView:) name:Simi_DidApplyCouponCode object:[SimiGlobalVar sharedInstance].cart];
+    [[SimiGlobalVar sharedInstance].cart applyCouponCodeWithCode:couponCode];
     [cartVC startLoadingData];
 }
 
@@ -141,9 +141,9 @@
             [cell addSubview:applyCouponCodeButton];
             [SimiGlobalVar sortViewForRTL:cell andWidth:CGRectGetWidth(tableView.frame)];
         }
-        if([orderVC.totalData valueForKey:@"coupon_code"])
+        if([orderVC.cart.cartTotal valueForKey:@"coupon_code"])
         {
-            [orderCouponTextField setText:[orderVC.totalData valueForKey:@"coupon_code"]];
+            [orderCouponTextField setText:[orderVC.cart.cartTotal valueForKey:@"coupon_code"]];
         }else
             [orderCouponTextField setText:@""];
         orderVC.simiObjectIdentifier = cell;
@@ -159,8 +159,8 @@
 }
 
 - (void)didSetCouponCodeOnOrderView:(NSNotification *)noti {
-    SimiResponder *responder = [noti.userInfo valueForKey:@"responder"];
-    [orderVC showToastMessage:responder.responseMessage];
+    SimiResponder *responder = [noti.userInfo valueForKey:responderKey];
+    [orderVC showToastMessage:responder.message];
     [orderVC didGetOrderConfig:noti];
 }
 
@@ -168,7 +168,7 @@
     NSString *couponCode = @"";
     couponCode = orderCouponTextField.text;
     [orderVC trackingWithProperties:@{@"action":@"apply_coupon_code",@"coupon_code":couponCode}];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didSetCouponCodeOnOrderView:) name:DidSetCouponCode object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didSetCouponCodeOnOrderView:) name:Simi_DidApplyCouponCode object:nil];
     [orderVC.order setCouponCode:couponCode];
     [orderVC startLoadingData];
 }

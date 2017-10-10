@@ -201,7 +201,7 @@
 - (void)didGetDeeplinkInformation: (NSNotification *)noti {
     [self removeObserverForNotification:noti];
     [((SimiViewController *)([SimiGlobalVar sharedInstance].currentlyNavigationController.viewControllers.lastObject)) stopLoadingData];
-    SimiResponder *responder = [noti.userInfo objectForKey:@"responder"];
+    SimiResponder *responder = [noti.userInfo objectForKey:responderKey];
     if([responder.status isEqualToString:@"SUCCESS"]) {
         SCDeeplinkModel *deeplink = noti.object;
         if([[deeplink objectForKey:@"type"] isEqualToString:@"1"]) {

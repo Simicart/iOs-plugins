@@ -326,7 +326,7 @@
 - (void)didUseGiftCardCredit: (NSNotification *)noti {
     [self removeObserverForNotification:noti];
     [cartViewController stopLoadingData];
-    SimiResponder *responder = [noti.userInfo objectForKey:@"responder"];
+    SimiResponder *responder = [noti.userInfo objectForKey:responderKey];
     NSDictionary *giftCardData = [[SimiGlobalVar sharedInstance].cart.responseObject valueForKey:@"gift_card"];;
     if([responder.status isEqualToString:@"SUCCESS"]) {
         [self showGiftCardMessageOnCart];
@@ -351,7 +351,7 @@
 - (void)didUseGiftCode: (NSNotification *)noti {
     [self removeObserverForNotification:noti];
     [cartViewController stopLoadingData];
-    SimiResponder *responder = [noti.userInfo objectForKey:@"responder"];
+    SimiResponder *responder = [noti.userInfo objectForKey:responderKey];
     if([responder.status isEqualToString:@"SUCCESS"]) {
         [self showGiftCardMessageOnCart];
         NSDictionary *giftCardData = [[SimiGlobalVar sharedInstance].cart.responseObject valueForKey:@"gift_card"];;
@@ -386,7 +386,7 @@
 - (void)didUpdateGiftCode: (NSNotification *)noti {
     [self removeObserverForNotification:noti];
     [cartViewController stopLoadingData];
-    SimiResponder *responder = [noti.userInfo objectForKey:@"responder"];
+    SimiResponder *responder = [noti.userInfo objectForKey:responderKey];
     if([responder.status isEqualToString:@"SUCCESS"]) {
         [self showGiftCardMessageOnCart];
         NSDictionary *giftCardData = [[SimiGlobalVar sharedInstance].cart.responseObject valueForKey:@"gift_card"];;
@@ -409,7 +409,7 @@
 - (void)didChangeUsingGiftCode: (NSNotification *)noti {
     [self removeObserverForNotification:noti];
     [cartViewController stopLoadingData];
-    SimiResponder *responder = [noti.userInfo objectForKey:@"responder"];
+    SimiResponder *responder = [noti.userInfo objectForKey:responderKey];
     if([responder.status isEqualToString:@"SUCCESS"]) {
         [self showGiftCardMessageOnCart];
         [cartViewController changeCartData:noti];
@@ -421,7 +421,7 @@
 - (void)didChangeUsingGiftCardCredit: (NSNotification *)noti {
     [self removeObserverForNotification:noti];
     [cartViewController stopLoadingData];
-    SimiResponder *responder = [noti.userInfo objectForKey:@"responder"];
+    SimiResponder *responder = [noti.userInfo objectForKey:responderKey];
     if([responder.status isEqualToString:@"SUCCESS"]) {
         [self showGiftCardMessageOnCart];
         [cartViewController changeCartData:noti];
@@ -440,7 +440,7 @@
 - (void)didRemoveGiftCode: (NSNotification *)noti {
     [self removeObserverForNotification:noti];
     [cartViewController stopLoadingData];
-    SimiResponder *responder = [noti.userInfo objectForKey:@"responder"];
+    SimiResponder *responder = [noti.userInfo objectForKey:responderKey];
     if([responder.status isEqualToString:@"SUCCESS"]) {
         [self showGiftCardMessageOnCart];
         NSDictionary *giftCardData = [[SimiGlobalVar sharedInstance].cart.responseObject valueForKey:@"gift_card"];;

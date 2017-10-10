@@ -10,6 +10,24 @@
 
 @interface LoyaltyModel : SimiModel
 
+@property (strong, nonatomic) NSString *rewardId;
+@property (nonatomic) float loyaltyPoint;
+@property (nonatomic) float invertPoint;
+@property (strong, nonatomic) NSString *loyaltyBalance;
+@property (strong, nonatomic) NSString *loyaltyRedeem;
+@property (nonatomic) float loyaltyHold;
+@property (strong, nonatomic) NSString *loyaltyImage;
+@property (nonatomic) BOOL isNotification;
+@property (nonatomic) BOOL expireNotification;
+@property (strong, nonatomic) NSString *earningLabel;
+@property (strong, nonatomic) NSString *earningPolicy;
+@property (strong, nonatomic) NSString *spendingLabel;
+@property (strong, nonatomic) NSString *spendingPolicy;
+@property (strong, nonatomic) NSString *spendingPoint;
+@property (strong, nonatomic) NSString *spendingDiscount;
+@property (nonatomic) int startDiscount;
+@property (nonatomic) int spendingMin;
+@property (strong, nonatomic) NSArray *policies;
 - (void)loadProgramOverview;
 
 - (void)saveSettings;

@@ -132,7 +132,7 @@
 }
 
 #pragma mark Simi StoreLocatorMapViewController Delegate
--(void)showViewDetailControllerFromMap:(SimiModel *)sLModel_
+-(void)showViewDetailControllerFromMap:(SimiStoreLocatorModel *)sLModel_
 {
     SimiStoreLocatorDetailViewController *sLDetailViewController = [SimiStoreLocatorDetailViewController new];
     sLDetailViewController.sLModel = sLModel_;
@@ -154,7 +154,7 @@
     [self selectTabAtIndex:1];
 }
 
-- (void)showViewDetailControllerFromList:(SimiModel *)sLModel_
+- (void)showViewDetailControllerFromList:(SimiStoreLocatorModel *)sLModel_
 {
     SimiStoreLocatorDetailViewController *sLDetailViewController = [[SimiStoreLocatorDetailViewController alloc]init];
     sLDetailViewController.sLModel = sLModel_;
@@ -166,7 +166,7 @@
 }
 
 #pragma mark Simi StoreLocatorDetailView Controller Delegate
--(void)returnMapViewController:(SimiModel*) sLModelParam
+-(void)returnMapViewController:(SimiStoreLocatorModel *) sLModelParam
 {
     if (sLMapViewController == nil) {
         sLMapViewController = [[SimiStoreLocatorMapViewController alloc]init];

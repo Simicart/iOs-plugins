@@ -191,7 +191,7 @@ NSInteger const heightButtonSearch = 50;
 }
 
 #pragma mark List View Controller Delegate
-- (void)showViewDetailControllerFromList:(SimiModel *)sLModel_
+- (void)showViewDetailControllerFromList:(SimiStoreLocatorModel *)sLModel_
 {
     isDetailViewController = YES;
     detailViewController = [SimiStoreLocatorDetailViewController new];
@@ -214,7 +214,7 @@ NSInteger const heightButtonSearch = 50;
 }
 
 #pragma mark Map View Controller Delegate
-- (void)showViewDetailControllerFromMap:(SimiModel *)sLModel_
+- (void)showViewDetailControllerFromMap:(SimiStoreLocatorModel *)sLModel_
 {
     isDetailViewController = YES;
     detailViewController = [SimiStoreLocatorDetailViewController new];

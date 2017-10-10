@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <SimiCartBundle/SCPriceView.h>
 #import <SimiCartBundle/UIImageView+WebCache.h>
-
+#import "SCWishlistModel.h"
 
 @protocol SCWishlistCollectionViewCellDelegate <NSObject>
 -(void) deleteWishlistItem: (NSDictionary*) wishlistItem;
@@ -19,6 +19,6 @@
 @end
 
 @interface SCWishlistCollectionViewCell : UICollectionViewCell
-@property (strong, nonatomic) NSDictionary* wishlistItem;
+@property (strong, nonatomic) SCWishlistModel *wishlistItem;
 @property (weak, nonatomic) id<SCWishlistCollectionViewCellDelegate> delegate;
 @end
