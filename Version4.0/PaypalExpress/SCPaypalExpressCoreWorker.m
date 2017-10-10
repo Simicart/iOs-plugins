@@ -30,7 +30,7 @@ static NSString *product_paypalcheckout_row = @"product_paypalcheckout_row";
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didChangeCart:) name:@"SCCartViewControllerViewDidAppear" object:nil];
         
         //open webview after placed Order
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didPlaceOrderBefore:) name:@"DidPlaceOrder-Before" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(placeOrder:) name:PlaceOrder object:nil];
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initProductCellsAfter:) name:@"InitProductCells-After" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializedProductCellAfter:) name:InitializedProductCellAfter object:nil];
@@ -192,7 +192,7 @@ static NSString *product_paypalcheckout_row = @"product_paypalcheckout_row";
 
 #pragma mark Open Webview After placed Order
 //while paypal checkout runs like normall offline payments
-- (void)didPlaceOrderBefore:(NSNotification *)noti
+- (void)placeOrder:(NSNotification *)noti
 {
     SimiModel *payment = [noti.userInfo valueForKey:@"payment"];
     if ([[payment valueForKey:@"payment_method"] isEqualToString:@"PAYPAL_EXPRESS"]) {

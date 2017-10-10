@@ -27,7 +27,7 @@
 - (void)didReceiveNotification:(NSNotification *)noti
 {
     if ([noti.name isEqualToString:DidPlaceOrderBefore]) {
-        orderViewController = noti.object;
+        orderViewController = [noti.userInfo objectForKey:@"controller"];
         order = [noti.userInfo valueForKey:@"order"];
         payment = [noti.userInfo valueForKey:@"payment"];
         if ([[payment valueForKey:@"payment_method"] isEqualToString:@"SIMIKLARNA"]) {
