@@ -335,7 +335,7 @@
     [self removeObserverForNotification:noti];
     [orderVC stopLoadingData];
     SimiResponder *responder = [noti.userInfo objectForKey:responderKey];
-    if([responder.status isEqualToString:@"SUCCESS"]) {
+    if(responder.status == SUCCESS) {
         [self showGiftCardMessageOnOrder];
         NSDictionary *giftCardData = [order objectForKey:@"gift_card"];
         NSDictionary *credit = [giftCardData objectForKey:@"credit"];
@@ -350,7 +350,7 @@
         }
         [orderVC didGetOrderConfig:noti];
     }else {
-       [orderVC showAlertWithTitle:@"" message:responder.responseMessage];
+       [orderVC showAlertWithTitle:@"" message:responder.message];
     }
 }
 
@@ -358,7 +358,7 @@
     [self removeObserverForNotification:noti];
     [orderVC stopLoadingData];
     SimiResponder *responder = [noti.userInfo objectForKey:responderKey];
-    if([responder.status isEqualToString:@"SUCCESS"]) {
+    if(responder.status == SUCCESS) {
         [self showGiftCardMessageOnOrder];
         NSDictionary *giftCardData = [order objectForKey:@"gift_card"];
         NSDictionary *giftCode = [giftCardData objectForKey:@"giftcode"];
@@ -373,7 +373,7 @@
         }
         [orderVC didGetOrderConfig:noti];
     }else {
-       [orderVC showAlertWithTitle:@"" message:responder.responseMessage];
+       [orderVC showAlertWithTitle:@"" message:responder.message];
     }
 }
 
@@ -393,7 +393,7 @@
     [self removeObserverForNotification:noti];
     [orderVC stopLoadingData];
     SimiResponder *responder = [noti.userInfo objectForKey:responderKey];
-    if([responder.status isEqualToString:@"SUCCESS"]) {
+    if(responder.status == SUCCESS) {
         [self showGiftCardMessageOnOrder];
         NSDictionary *giftCardData = [order objectForKey:@"gift_card"];
         NSDictionary *giftCode = [giftCardData objectForKey:@"giftcode"];
@@ -408,7 +408,7 @@
         }
         [orderVC didGetOrderConfig:noti];
     }else {
-        [orderVC showAlertWithTitle:@"" message:responder.responseMessage];
+        [orderVC showAlertWithTitle:@"" message:responder.message];
     }
 }
 
@@ -416,11 +416,11 @@
     [self removeObserverForNotification:noti];
     [orderVC stopLoadingData];
     SimiResponder *responder = [noti.userInfo objectForKey:responderKey];
-    if([responder.status isEqualToString:@"SUCCESS"]) {
+    if(responder.status == SUCCESS) {
         [orderVC didGetOrderConfig:noti];
         [self showGiftCardMessageOnOrder];
     }else {
-        [orderVC showAlertWithTitle:@"" message:responder.responseMessage];
+        [orderVC showAlertWithTitle:@"" message:responder.message];
     }
 }
 
@@ -428,11 +428,11 @@
     [self removeObserverForNotification:noti];
     [orderVC stopLoadingData];
     SimiResponder *responder = [noti.userInfo objectForKey:responderKey];
-    if([responder.status isEqualToString:@"SUCCESS"]) {
+    if(responder.status == SUCCESS) {
         [self showGiftCardMessageOnOrder];
         [orderVC didGetOrderConfig:noti];
     }else {
-        [orderVC showAlertWithTitle:@"" message:responder.responseMessage];
+        [orderVC showAlertWithTitle:@"" message:responder.message];
     }
 }
 
@@ -447,7 +447,7 @@
     [self removeObserverForNotification:noti];
     [orderVC stopLoadingData];
     SimiResponder *responder = [noti.userInfo objectForKey:responderKey];
-    if([responder.status isEqualToString:@"SUCCESS"]) {
+    if(responder.status == SUCCESS) {
         [self showGiftCardMessageOnOrder];
         NSDictionary *giftCardData = [order objectForKey:@"gift_card"];
         NSDictionary *giftCode = [giftCardData objectForKey:@"giftcode"];
@@ -462,7 +462,7 @@
         }
         [orderVC didGetOrderConfig:noti];
     }else {
-        [orderVC showAlertWithTitle:@"" message:responder.responseMessage];
+        [orderVC showAlertWithTitle:@"" message:responder.message];
     }
 }
 

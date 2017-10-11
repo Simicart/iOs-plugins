@@ -31,8 +31,8 @@
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationOpenURL:) name:ApplicationOpenURL object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:SCLoginViewController_InitCellAfter object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:SCLoginViewController_InitCellsAfter object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didLogout:) name:DidLogout object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didLogin:) name:DidLogout object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didLogout:) name:Simi_DidLogout object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didLogin:) name:Simi_DidLogout object:nil];
         [[TwitterKit sharedInstance] startWithConsumerKey:[[[NSBundle mainBundle] infoDictionary] objectForKey:@"TwitterConsumerKey"] consumerSecret:[[[NSBundle mainBundle] infoDictionary] objectForKey:@"TwitterConsumerSecret"]];
         
 //        [Fabric with:@[[Twitter class]]];

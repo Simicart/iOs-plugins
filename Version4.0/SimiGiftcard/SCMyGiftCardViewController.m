@@ -53,13 +53,13 @@
     [self removeObserverForNotification:noti];
     [self stopLoadingData];
     SimiResponder *responder = [noti.userInfo valueForKey:responderKey];
-    if ([responder.status isEqualToString:@"SUCCESS"]) {
+    if (responder.status == SUCCESS) {
         if ([[giftCardCreditModel valueForKey:@"listcode"] isKindOfClass:[NSArray class]]) {
             giftCodes = [giftCardCreditModel valueForKey:@"listcode"];
         }
         [self setCells:nil];
     }else
-        [self showAlertWithTitle:responder.status message:responder.responseMessage];
+        [self showAlertWithTitle:responder.status message:responder.message];
 
 }
 
@@ -173,7 +173,7 @@
     [self removeObserverForNotification:noti];
     [self stopLoadingData];
     SimiResponder *responder = [noti.userInfo valueForKey:responderKey];
-    if ([responder.status isEqualToString:@"SUCCESS"]) {
+    if (responder.status == SUCCESS) {
         giftCodes = @[];
         if ([[giftCardCreditModel valueForKey:@"listcode"] isKindOfClass:[NSArray class]]) {
             giftCodes = [giftCardCreditModel valueForKey:@"listcode"];
@@ -182,7 +182,7 @@
         NSString *message = [giftCardCreditModel valueForKey:@"message"];
         [self showToastMessage:message duration:1.5];
     }else
-        [self showToastMessage:responder.responseMessage duration:1.5];
+        [self showToastMessage:responder.message duration:1.5];
 }
 @end
 

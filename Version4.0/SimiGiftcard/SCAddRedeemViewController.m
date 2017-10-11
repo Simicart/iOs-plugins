@@ -72,10 +72,10 @@
     [self stopLoadingData];
     [self removeObserverForNotification:noti];
     SimiResponder *responder = [noti.userInfo valueForKey:responderKey];
-    if ([responder.status isEqualToString:@"SUCCESS"]) {
+    if (responder.status == SUCCESS) {
         [self showToastMessage:[giftCardCreditModel valueForKey:@"success"] duration:1.5];
     }else
-        [self showToastMessage:responder.responseMessage duration:1.5];
+        [self showToastMessage:responder.message duration:1.5];
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField{

@@ -13,7 +13,7 @@
 - (void)getGiftCardProductCollectionWithParams:(NSDictionary *)params{
     notificationName = DidGetGiftCardProductCollection;
     self.parseKey = @"simigiftcards";
-    modelActionType = ModelActionTypeInsert;
+    actionType = CollectionActionTypeInsert;
     [self preDoRequest];
     [[SimiGiftCardAPI new] getGiftCardProductCollectionWithParams:params target:self selector:@selector(didGetResponseFromNetwork:)];
 }

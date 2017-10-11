@@ -85,7 +85,7 @@
                 [mainSection addRowWithIdentifier:product_techspecs_row height:50];
             }
         }
-        [[NSNotificationCenter defaultCenter] postNotificationName:InitProductCellsAfter object:_cells userInfo:@{@"controller":self,@"product":self.product}];
+        [[NSNotificationCenter defaultCenter] postNotificationName:[NSString stringWithFormat:@"%@%@",SCProductSecondDesignViewController_RootEventName,SimiTableViewController_SubKey_InitCells_End] object:_cells userInfo:@{@"controller":self,@"product":self.product}];
     }
     [self.productTableView reloadData];
 }

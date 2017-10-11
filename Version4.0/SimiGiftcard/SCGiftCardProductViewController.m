@@ -22,7 +22,7 @@
         timeZoneModelCollection = [SCGiftCardGlobalVar sharedInstance].timeZoneModelCollection;
         timeZoneTitles = [NSMutableArray new];
         timeZoneSelectedIndex = 0;
-        for (NSDictionary *timeZoneUnit in timeZoneModelCollection) {
+        for (NSDictionary *timeZoneUnit in timeZoneModelCollection.collectionData) {
             [timeZoneTitles addObject:[timeZoneUnit valueForKey:@"label"]];
         }
     }
@@ -47,7 +47,7 @@
                 [mainSection addRowWithIdentifier:product_techspecs_row height:50];
             }
         }
-        [[NSNotificationCenter defaultCenter] postNotificationName:InitProductCellsAfter object:_cells userInfo:@{@"controller":self,@"product":self.product}];
+        [[NSNotificationCenter defaultCenter] postNotificationName:[NSString stringWithFormat:@"%@%@",self.rootEventName,SimiTableViewController_SubKey_InitCells_End] object:_cells userInfo:@{@"controller":self,@"product":self.product}];
     }
     [self.productTableView reloadData];
 }
@@ -65,7 +65,7 @@
     [self.productTableView setHidden:NO];
     SimiResponder *responder = [noti.userInfo valueForKey:responderKey];
     if ([noti.name isEqualToString:DidGetGiftCardDetail]) {
-        if ([responder.status isEqualToString:@"SUCCESS"]) {
+        if (responder.status == SUCCESS) {
             if ([[self.product valueForKey:@"simigift_template_ids"] isKindOfClass:[NSArray class]]) {
                 NSArray *simiGiftTemplateIds = [self.product valueForKey:@"simigift_template_ids"];
                 if (simiGiftTemplateIds.count > 0) {
@@ -395,7 +395,7 @@
     if (cell == nil) {
         cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:row.identifier];
     }
-    [[NSNotificationCenter defaultCenter] postNotificationName:InitializedProductCellAfter object:self userInfo:@{@"tableView": tableView, @"indexPath": indexPath, @"section": section, @"row": row, @"cell": cell}];
+    [[NSNotificationCenter defaultCenter] postNotificationName:[NSString stringWithFormat:@"%@%@",self.rootEventName,SimiTableViewController_SubKey_InitCells_End] object:self userInfo:@{@"tableView": tableView, @"indexPath": indexPath, @"section": section, @"row": row, @"cell": cell}];
     return cell;
 }
 
@@ -459,7 +459,7 @@
     [self removeObserverForNotification:noti];
     [self stopLoadingData];
     SimiResponder *responder = [noti.userInfo valueForKey:responderKey];
-    if ([responder.status isEqualToString:@"SUCCESS"]) {
+    if (responder.status == SUCCESS) {
         [uploadImageView setHidden:NO];
         self.useUploadImage = YES;
     }else{

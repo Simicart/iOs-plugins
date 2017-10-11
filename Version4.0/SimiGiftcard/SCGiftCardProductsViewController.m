@@ -65,7 +65,7 @@
 - (void)didGetProducts:(NSNotification *)noti{
     SimiResponder *responder = [noti.userInfo valueForKey:responderKey];
     [self.productsCollectionView.infiniteScrollingView stopAnimating];
-    if ([responder.status isEqualToString:@"SUCCESS"]) {
+    if (responder.status == SUCCESS) {
         [[NSNotificationCenter defaultCenter] postNotificationName:@"AddProductsForSearchableItems" object:self.productModelCollection];
         if (self.productModelCollection.total != nil && ![self.productModelCollection.total isEqualToString:@""] && ![self.productModelCollection.total isKindOfClass:[NSNull class]]) {
             totalNumberProduct = [self.productModelCollection.total intValue];

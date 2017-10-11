@@ -9,7 +9,7 @@
 #import "SCGiftCardOnCartWorker.h"
 #import <SimiCartBundle/SCCartViewController.h>
 #import <SimiCartBundle/SimiCheckbox.h>
-#import "SimiCartModelCollection+GiftCard.h"
+#import "SimiQuoteItemModelCollection+GiftCard.h"
 
 #define CART_VIEW_GIFTCART_CREDIT @"CART_VIEW_GIFTCART_CREDIT"
 #define CART_VIEW_GIFTCODE @"CART_VIEW_GIFTCODE"
@@ -36,7 +36,7 @@
 
 //Giftcard on Cart Page
 - (void)cartViewInitCells:(NSNotification *)noti {
-    NSDictionary *giftCardData = [[SimiGlobalVar sharedInstance].cart.responseObject valueForKey:@"gift_card"];
+    NSDictionary *giftCardData = [[SimiGlobalVar sharedInstance].cart.data valueForKey:@"gift_card"];
     if([[giftCardData objectForKey:@"use_giftcard"] boolValue]) {
         cartCells = noti.object;
         SimiSection *totalSection = [cartCells getSectionByIdentifier:CART_TOTALS];
@@ -67,7 +67,7 @@
     SimiSection *section = [cartCells objectAtIndex:indexPath.section];
     SimiRow *row = [section objectAtIndex:indexPath.row];
     cartTableView = cartViewController.tableViewCart;
-    NSDictionary *giftCardData = [[SimiGlobalVar sharedInstance].cart.responseObject valueForKey:@"gift_card"];;
+    NSDictionary *giftCardData = [[SimiGlobalVar sharedInstance].cart.data valueForKey:@"gift_card"];;
     NSDictionary *customerData = [giftCardData objectForKey:@"customer"];
     float padding = 10;
     float viewWidth = cartTableView.frame.size.width - 2* padding;
@@ -328,7 +328,7 @@
     [cartViewController stopLoadingData];
     SimiResponder *responder = [noti.userInfo objectForKey:responderKey];
     NSDictionary *giftCardData = [[SimiGlobalVar sharedInstance].cart.responseObject valueForKey:@"gift_card"];;
-    if([responder.status isEqualToString:@"SUCCESS"]) {
+    if(responder.status == SUCCESS) {
         [self showGiftCardMessageOnCart];
         NSDictionary *credit = [giftCardData objectForKey:@"credit"];
         SimiSection *cartTotalSection = [cartCells getSectionByIdentifier:CART_TOTALS];
@@ -344,7 +344,7 @@
         }
         [cartViewController changeCartData:noti];
     }else {
-        [cartViewController showAlertWithTitle:@"" message:responder.responseMessage];
+        [cartViewController showAlertWithTitle:@"" message:responder.message];
     }
 }
 
@@ -352,7 +352,7 @@
     [self removeObserverForNotification:noti];
     [cartViewController stopLoadingData];
     SimiResponder *responder = [noti.userInfo objectForKey:responderKey];
-    if([responder.status isEqualToString:@"SUCCESS"]) {
+    if(responder.status == SUCCESS) {
         [self showGiftCardMessageOnCart];
         NSDictionary *giftCardData = [[SimiGlobalVar sharedInstance].cart.responseObject valueForKey:@"gift_card"];;
         NSDictionary *giftCode = [giftCardData objectForKey:@"giftcode"];
@@ -367,7 +367,7 @@
         }
         [cartViewController changeCartData:noti];
     }else {
-        [cartViewController showAlertWithTitle:@"" message:responder.responseMessage];
+        [cartViewController showAlertWithTitle:@"" message:responder.message];
     }
 }
 
@@ -387,7 +387,7 @@
     [self removeObserverForNotification:noti];
     [cartViewController stopLoadingData];
     SimiResponder *responder = [noti.userInfo objectForKey:responderKey];
-    if([responder.status isEqualToString:@"SUCCESS"]) {
+    if(responder.status == SUCCESS) {
         [self showGiftCardMessageOnCart];
         NSDictionary *giftCardData = [[SimiGlobalVar sharedInstance].cart.responseObject valueForKey:@"gift_card"];;
         NSDictionary *giftCode = [giftCardData objectForKey:@"giftcode"];
@@ -402,7 +402,7 @@
         }
         [cartViewController changeCartData:noti];
     }else {
-        [cartViewController showAlertWithTitle:@"" message:responder.responseMessage];
+        [cartViewController showAlertWithTitle:@"" message:responder.message];
     }
 }
 
@@ -410,11 +410,11 @@
     [self removeObserverForNotification:noti];
     [cartViewController stopLoadingData];
     SimiResponder *responder = [noti.userInfo objectForKey:responderKey];
-    if([responder.status isEqualToString:@"SUCCESS"]) {
+    if(responder.status == SUCCESS) {
         [self showGiftCardMessageOnCart];
         [cartViewController changeCartData:noti];
     }else {
-        [cartViewController showAlertWithTitle:@"" message:responder.responseMessage];
+        [cartViewController showAlertWithTitle:@"" message:responder.message];
     }
 }
 
@@ -422,11 +422,11 @@
     [self removeObserverForNotification:noti];
     [cartViewController stopLoadingData];
     SimiResponder *responder = [noti.userInfo objectForKey:responderKey];
-    if([responder.status isEqualToString:@"SUCCESS"]) {
+    if(responder.status == SUCCESS) {
         [self showGiftCardMessageOnCart];
         [cartViewController changeCartData:noti];
     }else {
-        [cartViewController showAlertWithTitle:@"" message:responder.responseMessage];
+        [cartViewController showAlertWithTitle:@"" message:responder.message];
     }
 }
 
@@ -441,7 +441,7 @@
     [self removeObserverForNotification:noti];
     [cartViewController stopLoadingData];
     SimiResponder *responder = [noti.userInfo objectForKey:responderKey];
-    if([responder.status isEqualToString:@"SUCCESS"]) {
+    if(responder.status == SUCCESS) {
         [self showGiftCardMessageOnCart];
         NSDictionary *giftCardData = [[SimiGlobalVar sharedInstance].cart.responseObject valueForKey:@"gift_card"];;
         NSDictionary *giftCode = [giftCardData objectForKey:@"giftcode"];
@@ -456,7 +456,7 @@
         }
         [cartViewController changeCartData:noti];
     }else {
-        [cartViewController showAlertWithTitle:@"" message:responder.responseMessage];
+        [cartViewController showAlertWithTitle:@"" message:responder.message];
     }
 }
 
