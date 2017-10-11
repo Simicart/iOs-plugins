@@ -14,19 +14,16 @@
 
 @implementation PayUViewController
 
-- (void)viewDidLoadBefore
-{
+- (void)viewDidLoadBefore{
     [super viewDidLoadBefore];
     self.navigationItem.title = SCLocalizedString(@"PayU");
 }
 
-- (void)viewWillAppearBefore:(BOOL)animated
-{
+- (void)viewWillAppearBefore:(BOOL)animated{
     
 }
 
-- (void)viewDidAppearBefore:(BOOL)animated
-{
+- (void)viewDidAppearBefore:(BOOL)animated{
     if (_webView == nil) {
         _webView = [[UIWebView alloc]initWithFrame:self.view.bounds];
         _webView.delegate = self;

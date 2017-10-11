@@ -8,9 +8,8 @@
 
 #import <SimiCartBundle/SimiOrderModel.h>
 
-#define DidSavePaypalPayment @"DidSavePaypalPayment"
+static NSString *const Simi_DidSavePaypalPayment =  @"Simi_DidSavePaypalPayment";
 
 @interface SimiOrderModel (PayPal)
-
-- (void) savePaymentWithStatus: (NSString*) paymentStatus invoiceNumber: (NSString*) invoiceNumber proof:(NSDictionary*) proof;
+- (void)savePaymentWithStatus:(NSString*) paymentStatus invoiceNumber:(NSString*) invoiceNumber proof:(NSDictionary*) proof;
 @end

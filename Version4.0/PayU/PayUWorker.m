@@ -9,34 +9,29 @@
 #import "PayUWorker.h"
 #import <SimiCartBundle/SCOrderViewController.h>
 #import <SimiCartBundle/SCAppDelegate.h>
-@implementation PayUWorker
-{
+@implementation PayUWorker{
     SimiOrderModel *order;
-    SimiModel *payment;
+    SimiPaymentMethodModel *payment;
 }
 
-- (instancetype)init
-{
+- (instancetype)init{
     self = [super init];
     if (self) {
-        [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(didReceiveNotification:) name:@"DidPlaceOrder-Before" object:nil];
+        [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(didPlaceOrder:) name:SCOrderViewController_DidPlaceOrderSuccess object:nil];
     }
     return self;
 }
 
-- (void)didReceiveNotification:(NSNotification *)noti
-{
-    if ([noti.name isEqualToString:@"DidPlaceOrder-Before"]) {
-        order = noti.object;
-        payment = [noti.userInfo valueForKey:@"payment"];
-        if ([[[payment valueForKey:@"payment_method"] uppercaseString] isEqualToString:@"SIMIPAYU"] &&[order valueForKey:@"invoice_number"]) {
-            PayUViewController *viewController = [[PayUViewController alloc] init];
-            viewController.order = [[SimiOrderModel alloc]initWithDictionary:order];
-            viewController.stringURL = [order valueForKey:@"url_action"];
-            UINavigationController *currentVC = [SimiGlobalVar sharedInstance].currentlyNavigationController;
-            UINavigationController *navi  = [[UINavigationController alloc]initWithRootViewController:viewController];
-            [currentVC presentViewController:navi animated:YES completion:nil];
-        }
+- (void)didPlaceOrder:(NSNotification *)noti{
+    order = noti.object;
+    payment = [noti.userInfo valueForKey:KEYEVENT.ORDERVIEWCONTROLLER.selected_payment];
+    if ([[payment.code uppercaseString] isEqualToString:@"SIMIPAYU"] && order.invoiceNumber) {
+        PayUViewController *viewController = [[PayUViewController alloc] init];
+        viewController.order = order;
+        viewController.stringURL = order.urlAction;
+        UINavigationController *currentVC = [SimiGlobalVar sharedInstance].currentlyNavigationController;
+        UINavigationController *navi  = [[UINavigationController alloc]initWithRootViewController:viewController];
+        [currentVC presentViewController:navi animated:YES completion:nil];
     }
 }
 @end
