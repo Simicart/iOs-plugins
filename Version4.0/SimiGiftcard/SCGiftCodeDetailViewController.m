@@ -56,7 +56,7 @@
     [self stopLoadingData];
     [self removeObserverForNotification:noti];
     SimiResponder *responder = [noti.userInfo valueForKey:responderKey];
-    if ([responder.status isEqualToString:@"SUCCESS"]) {
+    if (responder.status == SUCCESS) {
         if ([[giftCodeModel valueForKey:@"history"] isKindOfClass:[NSArray class]]) {
             giftCodeHistories = [giftCodeModel valueForKey:@"history"];
         }
@@ -79,7 +79,7 @@
         }
         [self setCells:nil];
     }else
-        [self showAlertWithTitle:responder.status message:responder.responseMessage];
+        [self showAlertWithTitle:@"" message:responder.message];
 }
 
 - (void)setCells:(SimiTable *)cells{
@@ -253,7 +253,7 @@
     [self stopLoadingData];
     [self removeObserverForNotification:noti];
     SimiResponder *responder = [noti.userInfo valueForKey:responderKey];
-    if ([responder.status isEqualToString:@"SUCCESS"]) {
+    if (responder.status == SUCCESS) {
         [self showToastMessage:[giftCardCreditModel valueForKey:@"success"] duration:1.5];
         [redeemButton removeFromSuperview];
         [emailToFriendButton removeFromSuperview];
@@ -261,7 +261,7 @@
         emailToFriendButton = nil;
         [self getGiftCodeDetailInfo];
     }else
-        [self showToastMessage:responder.responseMessage duration:1.5];
+        [self showToastMessage:responder.message duration:1.5];
 }
 
 - (void)emailToFriend:(UIButton*)sender{

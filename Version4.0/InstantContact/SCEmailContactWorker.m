@@ -35,8 +35,8 @@
     for (int i = 0; i < cells.count; i++) {
         SimiSection *section = [cells objectAtIndex:i];
         NSDictionary *instantContact = nil;
-        if ([[SimiGlobalVar sharedInstance].allConfig valueForKey:@"instant_contact"]) {
-            instantContact = [[SimiGlobalVar sharedInstance].allConfig valueForKey:@"instant_contact"];
+        if ([GLOBALVAR.storeView valueForKey:@"instant_contact"]) {
+            instantContact = [GLOBALVAR.storeView valueForKey:@"instant_contact"];
         }
         if ([section.identifier isEqualToString:LEFTMENU_SECTION_MORE] && instantContact.count > 0) {
             SimiRow *row = [[SimiRow alloc]initWithIdentifier:LEFTMENU_ROW_CONTACTUS height:50 sortOrder:70];

@@ -33,7 +33,7 @@
 @implementation SCFacebookInitWorker
 {
     SimiViewController* loginViewController, *currentlyViewController;
-    NSDictionary* product;
+    SimiProductModel* product;
     NSArray* cells;
     SimiCustomerModel* customerModel;
     NSString* facebookAppID;
@@ -65,8 +65,8 @@
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didLogout:) name:Simi_DidLogout object:nil];
         
         //App Invite
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didInitLeftMenuRows:) name:Simi_SCLeftMenuViewControler_InitCells_End object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didSelectInviteFriends:) name:Simi_SCLeftMenuViewControler_DidSelectCell object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didInitLeftMenuRows:) name:[NSString stringWithFormat:@"%@%@",SCLeftMenuViewController_RootEventName,SimiTableViewController_SubKey_InitCells_End] object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didSelectInviteFriends:) name:[NSString stringWithFormat:@"%@%@",SCLeftMenuViewController_RootEventName,SimiTableViewController_SubKey_DidSelectCell] object:nil];
         //Catch when done init the app
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didInitApp:) name:@"DidInit" object:nil];
         //ApplicationDidBecomeActive
@@ -151,9 +151,9 @@
 -(void) updateUserProperties{
     if([SimiGlobalVar sharedInstance].isLogin){
         NSMutableDictionary* userProperties = [[NSMutableDictionary alloc] init];
-        [userProperties addEntriesFromDictionary:@{@"$language":[[SimiGlobalVar sharedInstance].baseConfig objectForKey:@"store_name"],@"$country":[[SimiGlobalVar sharedInstance].baseConfig objectForKey:@"country_name"],@"$currency":[SimiGlobalVar sharedInstance].currencyCode}];
-        [FBSDKAppEvents setUserID:[[SimiGlobalVar sharedInstance].customer objectForKey:@"entity_id"]];
-        if([[[SimiGlobalVar sharedInstance].customer objectForKey:@"gender"] boolValue]){
+        [userProperties addEntriesFromDictionary:@{@"$language":[GLOBALVAR.storeView.base objectForKey:@"store_name"],@"$country":[GLOBALVAR.storeView.base objectForKey:@"country_name"],@"$currency":[SimiGlobalVar sharedInstance].currencyCode}];
+        [FBSDKAppEvents setUserID:[SimiGlobalVar sharedInstance].customer.entityId];
+        if([SimiGlobalVar sharedInstance].customer.gender){
             [userProperties setObject:@"m" forKey:@"$gender"];
         }else{
             [userProperties setObject:@"f" forKey:@"$gender"];
@@ -178,12 +178,12 @@
        
         NSMutableDictionary *trackingProperties = [[NSMutableDictionary alloc]initWithDictionary:params];
         if ([SimiGlobalVar sharedInstance].isLogin) {
-            [trackingProperties setValue:[[SimiGlobalVar sharedInstance].customer valueForKey:@"email"]  forKey:@"customer_identity"];
+            [trackingProperties setValue:[SimiGlobalVar sharedInstance].customer.email forKey:@"customer_identity"];
         }else
         {
-            if ([[SimiGlobalVar sharedInstance].baseConfig valueForKey:@"customer_identity"]) {
-                NSString *customerIdentity = [NSString stringWithFormat:@"%@",[[SimiGlobalVar sharedInstance].baseConfig valueForKey:@"customer_identity"]];
-                if (![customerIdentity isEqualToString:@""] && ![[[SimiGlobalVar sharedInstance].baseConfig valueForKey:@"customer_identity"] isKindOfClass:[NSNull class]]) {
+            if ([GLOBALVAR.storeView.base valueForKey:@"customer_identity"]) {
+                NSString *customerIdentity = [NSString stringWithFormat:@"%@",[GLOBALVAR.storeView.base valueForKey:@"customer_identity"]];
+                if (![customerIdentity isEqualToString:@""] && ![[GLOBALVAR.storeView.base valueForKey:@"customer_identity"] isKindOfClass:[NSNull class]]) {
                     [trackingProperties setValue:customerIdentity  forKey:@"customer_identity"];
                 }
             }
@@ -209,12 +209,12 @@
         NSString *actionValue = [NSString stringWithFormat:@"viewed_%@_screen",viewController.screenTrackingName];
         NSMutableDictionary *trackingProperties = [[NSMutableDictionary alloc]initWithDictionary:@{@"action":actionValue}];
         if ([SimiGlobalVar sharedInstance].isLogin) {
-            [trackingProperties setValue:[[SimiGlobalVar sharedInstance].customer valueForKey:@"email"]  forKey:@"customer_identity"];
+            [trackingProperties setValue:[SimiGlobalVar sharedInstance].customer.email  forKey:@"customer_identity"];
         }else
         {
-            if ([[SimiGlobalVar sharedInstance].baseConfig valueForKey:@"customer_identity"]) {
-                NSString *customerIdentity = [NSString stringWithFormat:@"%@",[[SimiGlobalVar sharedInstance].baseConfig valueForKey:@"customer_identity"]];
-                if (![customerIdentity isEqualToString:@""] && ![[[SimiGlobalVar sharedInstance].baseConfig valueForKey:@"customer_identity"] isKindOfClass:[NSNull class]]) {
+            if ([GLOBALVAR.storeView.base valueForKey:@"customer_identity"]) {
+                NSString *customerIdentity = [NSString stringWithFormat:@"%@",[GLOBALVAR.storeView.base valueForKey:@"customer_identity"]];
+                if (![customerIdentity isEqualToString:@""] && ![[GLOBALVAR.storeView.base valueForKey:@"customer_identity"] isKindOfClass:[NSNull class]]) {
                     [trackingProperties setValue:customerIdentity  forKey:@"customer_identity"];
                 }
             }
@@ -385,8 +385,8 @@
 }
 
 -(void) didInitLeftMenuRows:(NSNotification*) noti{
-    if([[SimiGlobalVar sharedInstance].allConfig objectForKey:@"facebook_connect"]){
-        NSDictionary* fbConnect = [[SimiGlobalVar sharedInstance].allConfig objectForKey:@"facebook_connect"];
+    if([GLOBALVAR.storeView objectForKey:@"facebook_connect"]){
+        NSDictionary* fbConnect = [GLOBALVAR.storeView objectForKey:@"facebook_connect"];
         if(![[fbConnect objectForKey:@"invite_link"] isEqual:[NSNull null]]) {
             NSString *inviteLink = [NSString stringWithFormat:@"%@",[fbConnect objectForKey:@"invite_link"]];
             if(![inviteLink isEqualToString:@""]){
@@ -407,8 +407,8 @@
     SimiSection *section = [cells objectAtIndex:indexPath.section];
     SimiRow* inviteRow = [section objectAtIndex:indexPath.row];
     if([inviteRow.identifier isEqualToString:LEFTMENU_ROW_FACEBOOK_INVITE]){
-        if([[SimiGlobalVar sharedInstance].allConfig objectForKey:@"facebook_connect"]){
-            NSDictionary* fbConnect = [[SimiGlobalVar sharedInstance].allConfig objectForKey:@"facebook_connect"];
+        if([GLOBALVAR.storeView objectForKey:@"facebook_connect"]){
+            NSDictionary* fbConnect = [GLOBALVAR.storeView objectForKey:@"facebook_connect"];
             FBSDKAppInviteContent *content =[[FBSDKAppInviteContent alloc] init];
             NSString* inviteLink = [NSString stringWithFormat:@"%@",[fbConnect objectForKey:@"invite_link"]];
             NSString* inviteImageURL = [NSString stringWithFormat:@"%@",[fbConnect objectForKey:@"image_description_link"]];
@@ -444,7 +444,7 @@
 
 //Handling button clicking
 -(void) fbButtonClicked: (id) sender{
-    [[NSNotificationCenter defaultCenter]postNotificationName:TRACKINGEVENT object:@"facebook_connect_action" userInfo:@{@"action":@"clicked_facebook_connect_button",@"product_name":[product valueForKey:@"name"],@"product_id":[product valueForKey:@"entity_id"],@"sku":[product valueForKey:@"sku"]}];
+    [[NSNotificationCenter defaultCenter]postNotificationName:TRACKINGEVENT object:@"facebook_connect_action" userInfo:@{@"action":@"clicked_facebook_connect_button",@"product_name":product.name,@"product_id":product.entityId,@"sku":product.sku}];
     if (!isShowFacebookView) {
         CGRect frame = fbView.frame;
         frame.origin.x -= widthFacebookView;
@@ -530,15 +530,15 @@
     if(productURL){
         FBSDKShareLinkContent *content = [[FBSDKShareLinkContent alloc] init];
         content.contentURL = [NSURL URLWithString:productURL];
-        if ([product objectForKey:@"name"]) {
-            content.contentTitle = [NSString stringWithFormat:@"%@",[product objectForKey:@"name"]];
+        if (product.name) {
+            content.contentTitle = product.name;
         }
-        NSMutableArray *arrayImage = (NSMutableArray *)[product objectForKey:@"images"];
+        NSArray *arrayImage = product.images;
         if (arrayImage.count > 0) {
             content.imageURL = [NSURL URLWithString:[[arrayImage objectAtIndex:0] objectForKey:@"url"]];
         }
-        if ([product objectForKey:@"short_description"] && ![[product objectForKey:@"short_description"] isEqualToString:@""]) {
-            content.contentDescription = [NSString stringWithFormat:@"%@",[product objectForKey:@"short_description"]];
+        if (product.shortDescription && ![product.shortDescription isEqualToString:@""]) {
+            content.contentDescription = product.shortDescription;
         }
         
         [FBSDKShareDialog showFromViewController:currentlyViewController
@@ -623,7 +623,7 @@
 -(void) didLogin:(NSNotification*) noti{
     [loginViewController stopLoadingData];
     SimiResponder* responder = [noti.userInfo objectForKey:responderKey];
-    if([responder.status isEqualToString:@"SUCCESS"]){
+    if(responder.status == SUCCESS){
     
     }else{
         if([FBSDKAccessToken currentAccessToken]){

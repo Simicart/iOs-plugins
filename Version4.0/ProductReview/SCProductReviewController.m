@@ -34,8 +34,8 @@ NSString *REVIEW_SHORT_REVIEW_CELL = @"REVIEW_SHORT_REVIEW_CELL";
     self.navigationItem.title = SCLocalizedString(@"Review");
     
     BOOL reviewAllowGuest = NO;
-    if ([[[SimiGlobalVar sharedInstance].catalogConfig valueForKey:@"review"] isKindOfClass:[NSDictionary class]]) {
-        reviewAllowGuest = [[[[SimiGlobalVar sharedInstance].catalogConfig valueForKey:@"review"] valueForKey:@"catalog_review_allow_guest"]boolValue];
+    if ([[GLOBALVAR.storeView.catalog valueForKey:@"review"] isKindOfClass:[NSDictionary class]]) {
+        reviewAllowGuest = [[[GLOBALVAR.storeView.catalog valueForKey:@"review"] valueForKey:@"catalog_review_allow_guest"]boolValue];
     }
     if ([SimiGlobalVar sharedInstance].isLogin || reviewAllowGuest) {
         UIBarButtonItem *addNewReviewItem = [[UIBarButtonItem alloc]initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addNewReview)];
@@ -124,12 +124,12 @@ NSString *REVIEW_SHORT_REVIEW_CELL = @"REVIEW_SHORT_REVIEW_CELL";
     }
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didGetReviewCollection:) name:@"DidGetReviewCollection" object:self.reviewCollection];
-    [self.reviewCollection getReviewCollectionWithProductId:[self.product valueForKey:@"entity_id"] offset:self.reviewCollection.count limit:6];
+    [self.reviewCollection getReviewCollectionWithProductId:self.product.entityId offset:self.reviewCollection.count limit:6];
 }
 
 - (void)didGetReviewCollection:(NSNotification *)noti{
     SimiResponder *responder = [noti.userInfo valueForKey:responderKey];
-    if ([responder.status isEqualToString:@"SUCCESS"]) {
+    if (responder.status == SUCCESS) {
         if ([noti.name isEqualToString:@"DidGetReviewCollection"]) {
             [self setCells:nil];
         }
@@ -166,7 +166,7 @@ NSString *REVIEW_SHORT_REVIEW_CELL = @"REVIEW_SHORT_REVIEW_CELL";
         if (cell == nil) {
             cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:simiRow.identifier];
             SimiLabel *nameProduct = [[SimiLabel alloc]initWithFrame:[SimiGlobalVar scaleFrame:CGRectMake(15, 0, 250, 40)] andFontName:THEME_FONT_NAME_REGULAR andFontSize:[SimiGlobalVar scaleValue:18] andTextColor:THEME_CONTENT_COLOR];
-            nameProduct.text = [self.product valueForKey:@"name"];
+            nameProduct.text = self.product.name;
             if([[SimiGlobalVar sharedInstance] isReverseLanguage]){
                 [nameProduct setFrame:[SimiGlobalVar scaleFrame:CGRectMake(55, 0, 250, 40)]];
                 if (PADDEVICE) {

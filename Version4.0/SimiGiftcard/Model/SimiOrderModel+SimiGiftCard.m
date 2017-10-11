@@ -10,28 +10,28 @@
 
 @implementation SimiOrderModel (SimiGiftCard)
 - (void)useGiftCardCreditWithParams:(NSDictionary *)params {
-    keyResponse = @"order";
+    self.parseKey = @"order";
     [self preDoRequest];
-    currentNotificationName = DidUseGiftCardCreditOnOrder;
-    [[self getAPI] requestWithMethod:PUT URL:[NSString stringWithFormat:@"%@%@giftvouchercheckouts/usecreditcheckout", kBaseURL, kSimiConnectorURL] params:params target:self selector:@selector(didFinishRequest:responder:) header:nil];
+    notificationName = DidUseGiftCardCreditOnOrder;
+    [[SimiAPI new] requestWithMethod:PUT URL:[NSString stringWithFormat:@"%@%@giftvouchercheckouts/usecreditcheckout", kBaseURL, kSimiConnectorURL] params:params target:self selector:@selector(didGetResponseFromNetwork:) header:nil];
 }
 - (void)useGiftCodeWithParams:(NSDictionary *)params {
-    keyResponse = @"order";
+    self.parseKey = @"order";
     [self preDoRequest];
-    currentNotificationName = DidUseGiftCodeOnOrder;
-    [[self getAPI] requestWithMethod:PUT URL:[NSString stringWithFormat:@"%@%@giftvouchercheckouts/addcodecheckout", kBaseURL, kSimiConnectorURL] params:params target:self selector:@selector(didFinishRequest:responder:) header:nil];
+    notificationName = DidUseGiftCodeOnOrder;
+    [[SimiAPI new] requestWithMethod:PUT URL:[NSString stringWithFormat:@"%@%@giftvouchercheckouts/addcodecheckout", kBaseURL, kSimiConnectorURL] params:params target:self selector:@selector(didGetResponseFromNetwork:) header:nil];
 }
 
 - (void)updateGiftCodeWithParams: (NSDictionary *)params {
-    keyResponse = @"order";
+    self.parseKey = @"order";
     [self preDoRequest];
-    currentNotificationName = DidUpdateGiftCodeOnOrder;
-    [[self getAPI] requestWithMethod:PUT URL:[NSString stringWithFormat:@"%@%@giftvouchercheckouts/updategiftcode", kBaseURL, kSimiConnectorURL] params:params target:self selector:@selector(didFinishRequest:responder:) header:nil];
+    notificationName = DidUpdateGiftCodeOnOrder;
+    [[SimiAPI new] requestWithMethod:PUT URL:[NSString stringWithFormat:@"%@%@giftvouchercheckouts/updategiftcode", kBaseURL, kSimiConnectorURL] params:params target:self selector:@selector(didGetResponseFromNetwork:) header:nil];
 }
 - (void)removeGiftCodeWithParams:(NSDictionary *)params {
-    keyResponse = @"order";
+    self.parseKey = @"order";
     [self preDoRequest];
-    currentNotificationName = DidRemoveGiftCodeOnOrder;
-    [[self getAPI] requestWithMethod:PUT URL:[NSString stringWithFormat:@"%@%@giftvouchercheckouts/removegiftcode", kBaseURL, kSimiConnectorURL] params:params target:self selector:@selector(didFinishRequest:responder:) header:nil];
+    notificationName = DidRemoveGiftCodeOnOrder;
+    [[SimiAPI new] requestWithMethod:PUT URL:[NSString stringWithFormat:@"%@%@giftvouchercheckouts/removegiftcode", kBaseURL, kSimiConnectorURL] params:params target:self selector:@selector(didGetResponseFromNetwork:) header:nil];
 }
 @end

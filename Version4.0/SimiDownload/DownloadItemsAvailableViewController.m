@@ -51,7 +51,7 @@
 - (void)didGetDownloadItems:(NSNotification*)noti
 {
     SimiResponder *responder = [noti.userInfo valueForKey:responderKey];
-    if ([[responder.status uppercaseString]isEqualToString:@"SUCCESS"]) {
+    if (responder.status == SUCCESS) {
         if (_downloadModelCollection.count > 0) {
 
             _countSuccess = 0;
@@ -84,7 +84,7 @@
     }else
         dispatch_async(dispatch_get_main_queue(), ^{
             [self stopLoadingData];
-            [self showToastMessage:responder.responseMessage];
+            [self showToastMessage:responder.message];
         });
 }
 

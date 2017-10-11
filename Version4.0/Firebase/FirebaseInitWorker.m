@@ -26,9 +26,9 @@
         NSString *appIdentidier = [info objectForKey:@"CFBundleIdentifier"];
         [FIRAnalytics setUserPropertyString:version forName:@"app_version"];
         [FIRAnalytics setUserPropertyString:appIdentidier forName:@"app_id"];
-        if ([[SimiGlobalVar sharedInstance].baseConfig valueForKey:@"customer_ip"]) {
-            NSString *customerIp = [NSString stringWithFormat:@"%@",[[SimiGlobalVar sharedInstance].baseConfig valueForKey:@"customer_ip"]];
-            if (![customerIp isEqualToString:@""] && ![[[SimiGlobalVar sharedInstance].baseConfig valueForKey:@"customer_ip"] isKindOfClass:[NSNull class]]) {
+        if ([GLOBALVAR.storeView.base valueForKey:@"customer_ip"]) {
+            NSString *customerIp = [NSString stringWithFormat:@"%@",[GLOBALVAR.storeView.base valueForKey:@"customer_ip"]];
+            if (![customerIp isEqualToString:@""] && ![[GLOBALVAR.storeView.base valueForKey:@"customer_ip"] isKindOfClass:[NSNull class]]) {
                 [FIRAnalytics setUserPropertyString:customerIp forName:@"customer_ip"];
             }
         }
@@ -50,9 +50,9 @@
             [trackingProperties setValue:[[SimiGlobalVar sharedInstance].customer valueForKey:@"email"]  forKey:@"customer_identity"];
         }else
         {
-            if ([[SimiGlobalVar sharedInstance].baseConfig valueForKey:@"customer_identity"]) {
-                NSString *customerIdentity = [NSString stringWithFormat:@"%@",[[SimiGlobalVar sharedInstance].baseConfig valueForKey:@"customer_identity"]];
-                if (![customerIdentity isEqualToString:@""] && ![[[SimiGlobalVar sharedInstance].baseConfig valueForKey:@"customer_identity"] isKindOfClass:[NSNull class]]) {
+            if ([GLOBALVAR.storeView.base valueForKey:@"customer_identity"]) {
+                NSString *customerIdentity = [NSString stringWithFormat:@"%@",[GLOBALVAR.storeView.base valueForKey:@"customer_identity"]];
+                if (![customerIdentity isEqualToString:@""] && ![[GLOBALVAR.storeView.base valueForKey:@"customer_identity"] isKindOfClass:[NSNull class]]) {
                     [trackingProperties setValue:customerIdentity  forKey:@"customer_identity"];
                 }
             }
@@ -72,9 +72,9 @@
             [trackingProperties setValue:[[SimiGlobalVar sharedInstance].customer valueForKey:@"email"]  forKey:@"customer_identity"];
         }else
         {
-            if ([[SimiGlobalVar sharedInstance].baseConfig valueForKey:@"customer_identity"]) {
-                NSString *customerIdentity = [NSString stringWithFormat:@"%@",[[SimiGlobalVar sharedInstance].baseConfig valueForKey:@"customer_identity"]];
-                if (![customerIdentity isEqualToString:@""] && ![[[SimiGlobalVar sharedInstance].baseConfig valueForKey:@"customer_identity"] isKindOfClass:[NSNull class]]) {
+            if ([GLOBALVAR.storeView.base valueForKey:@"customer_identity"]) {
+                NSString *customerIdentity = [NSString stringWithFormat:@"%@",[GLOBALVAR.storeView.base valueForKey:@"customer_identity"]];
+                if (![customerIdentity isEqualToString:@""] && ![[GLOBALVAR.storeView.base valueForKey:@"customer_identity"] isKindOfClass:[NSNull class]]) {
                     [trackingProperties setValue:customerIdentity  forKey:@"customer_identity"];
                 }
             }

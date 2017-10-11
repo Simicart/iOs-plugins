@@ -12,12 +12,12 @@
 #import <FirebaseDynamicLinks/FirebaseDynamicLinks.h>
 #import <SimiCartBundle/SCProductListViewController.h>
 #import <SimiCartBundle/SCCategoryViewController.h>
-#import <SimiCartBundle/SimiCMSModel.h>
+#import <SimiCartBundle/SimiCMSPageModel.h>
 #import <SimiCartBundle/SCWebViewController.h>
 #import "SCDeeplinkModel.h"
 
 @implementation SCAppEngageInitworker {
-    NSArray *productList;
+    SimiProductModelCollection *productList;
 }
 - (id)init{
     if(self == [super init]){
@@ -44,18 +44,18 @@
 - (void)indexSearchableItems{
     if(productList && productList.count > 0){
         NSMutableArray* searchableItems = [[NSMutableArray alloc] initWithCapacity:0];
-        for(NSDictionary* product in productList){
-            NSUserActivity* userActivity = [[NSUserActivity alloc] initWithActivityType:[NSString stringWithFormat:@"%@.%@",[[NSBundle mainBundle] bundleIdentifier],[product objectForKey:@"entity_id"]]];
-            userActivity.title = [product objectForKey:@"name"];
-            userActivity.userInfo = @{@"id":[product objectForKey:@"entity_id"]};
+        for(SimiProductModel* product in productList.collectionData){
+            NSUserActivity* userActivity = [[NSUserActivity alloc] initWithActivityType:[NSString stringWithFormat:@"%@.%@",[[NSBundle mainBundle] bundleIdentifier],product.entityId]];
+            userActivity.title = product.name;
+            userActivity.userInfo = @{@"id":product.entityId};
             userActivity.eligibleForSearch = YES;
             CSSearchableItemAttributeSet* searchableItemAttributeSet = [[CSSearchableItemAttributeSet alloc] initWithItemContentType:@"product"];
-            NSArray* images = [product objectForKey:@"images"];
+            NSArray* images = product.images;
             if(images.count > 0)
                 searchableItemAttributeSet.thumbnailData = [NSData dataWithContentsOfURL:[NSURL URLWithString:[[images objectAtIndex:0] objectForKey:@"url"]]];
-            searchableItemAttributeSet.title = [product objectForKey:@"name"];
-            searchableItemAttributeSet.contentDescription = [product objectForKey:@"short_description"];
-            id item = [[CSSearchableItem alloc]initWithUniqueIdentifier:[product objectForKey:@"entity_id"] domainIdentifier:[NSString stringWithFormat:@"%@.searchAPIs.product",[[NSBundle mainBundle] bundleIdentifier]] attributeSet:searchableItemAttributeSet];
+            searchableItemAttributeSet.title = product.name;
+            searchableItemAttributeSet.contentDescription = product.shortDescription;
+            id item = [[CSSearchableItem alloc]initWithUniqueIdentifier:product.entityId domainIdentifier:[NSString stringWithFormat:@"%@.searchAPIs.product",[[NSBundle mainBundle] bundleIdentifier]] attributeSet:searchableItemAttributeSet];
             [searchableItems addObject:item];
             userActivity.contentAttributeSet = searchableItemAttributeSet;
             [[CSSearchableIndex defaultSearchableIndex] indexSearchableItems:[NSArray arrayWithArray:searchableItems] completionHandler:^(NSError * _Nullable error) {
@@ -68,10 +68,8 @@
 }
 
 - (void)didGetProducts: (NSNotification*) noti{
-    if([noti.object isKindOfClass:[NSArray class]]){
-        productList = noti.object;
-        [NSThread detachNewThreadSelector: @selector(indexSearchableItems) toTarget:self withObject:NULL];
-    }
+    productList = noti.object;
+    [NSThread detachNewThreadSelector: @selector(indexSearchableItems) toTarget:self withObject:NULL];
 }
 
 - (void)didInit: (NSNotification *)noti {
@@ -180,7 +178,7 @@
                 NSString *cmsID = [deepLinkValues objectForKey:@"simi_cms_id"];
                 [[[SimiGlobalVar sharedInstance] currentlyNavigationController] popToRootViewControllerAnimated:NO];
                 [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didGetCMSPage:) name:Simi_DidGetCMSPages object:nil];
-                [[SimiCMSModel new] getCMSPageWithID:cmsID];
+                [[SimiCMSPageModel new] getCMSPageWithID:cmsID];
                 [((SimiViewController *)[[SimiGlobalVar sharedInstance] currentlyNavigationController].viewControllers.lastObject) startLoadingData];
             }else {
                 [self getDeeplinkInformationWithURL:deeplinkURL];
@@ -202,7 +200,7 @@
     [self removeObserverForNotification:noti];
     [((SimiViewController *)([SimiGlobalVar sharedInstance].currentlyNavigationController.viewControllers.lastObject)) stopLoadingData];
     SimiResponder *responder = [noti.userInfo objectForKey:responderKey];
-    if([responder.status isEqualToString:@"SUCCESS"]) {
+    if(responder.status == SUCCESS) {
         SCDeeplinkModel *deeplink = noti.object;
         if([[deeplink objectForKey:@"type"] isEqualToString:@"1"]) {
             NSString *categoryName = [deeplink objectForKey:@"name"];
@@ -234,7 +232,7 @@
             NSString *cmsID = [deeplink objectForKey:@"id"];
             [[[SimiGlobalVar sharedInstance] currentlyNavigationController] popToRootViewControllerAnimated:NO];
             [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didGetCMSPage:) name:Simi_DidGetCMSPages object:nil];
-            [[SimiCMSModel new] getCMSPageWithID:cmsID];
+            [[SimiCMSPageModel new] getCMSPageWithID:cmsID];
             [((SimiViewController *)[[SimiGlobalVar sharedInstance] currentlyNavigationController].viewControllers.lastObject) startLoadingData];
         }else if([[deeplink objectForKey:@"type"] isEqualToString:@"4"]) {
             [[[SimiGlobalVar sharedInstance] currentlyNavigationController] popToRootViewControllerAnimated:NO];
@@ -245,7 +243,7 @@
 }
 
 - (void)didGetCMSPage: (NSNotification *)noti {
-    SimiCMSModel *cmsModel = noti.object;
+    SimiCMSPageModel *cmsModel = noti.object;
     [((SimiViewController *)[[SimiGlobalVar sharedInstance] currentlyNavigationController].viewControllers.lastObject) stopLoadingData];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:Simi_DidGetCMSPages object:nil];
     SCWebViewController *webViewController = [[SCWebViewController alloc] init];

@@ -39,8 +39,8 @@
 {
     if ([noti.name isEqualToString:@"SCNewAddressViewControllerViewDidLoad"]) {
         newAddressController = noti.object;
-        if ([[SimiGlobalVar sharedInstance].customerConfig valueForKey:@"address_fields_config"]) {
-            hiddenAddressModel = [[SimiModel alloc]initWithDictionary:[[SimiGlobalVar sharedInstance].customerConfig valueForKey:@"address_fields_config"]];
+        if ([GLOBALVAR.storeView.customer valueForKey:@"address_fields_config"]) {
+            hiddenAddressModel = [[SimiModel alloc]initWithModelData:[GLOBALVAR.storeView.customer valueForKey:@"address_fields_config"]];
             if (hiddenAddressModel.count > 0) {
                 self.available = YES;
             }
@@ -204,7 +204,7 @@
                                      }];
                 }
                 
-                NSMutableArray *genderValues = [[NSMutableArray alloc]initWithArray:[[[[SimiGlobalVar sharedInstance]customerConfig]valueForKey:@"address_option"]valueForKey:@"gender_value"]];
+                NSMutableArray *genderValues = [[NSMutableArray alloc]initWithArray:[[GLOBALVAR.storeView.customer valueForKey:@"address_option"]valueForKey:@"gender_value"]];
                 
                 if (genderValues.count == 2) {
                     NSDictionary *dict01 = [[NSDictionary alloc]initWithDictionary:[genderValues objectAtIndex:0]];

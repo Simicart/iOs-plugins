@@ -10,7 +10,7 @@
 
 @implementation SimiReviewAPI
 - (void)getReviewCollectionWithParams:(NSDictionary *)params target:(id)target selector:(SEL)selector{
-    NSString *url = [NSString stringWithFormat:@"%@%@%@", kBaseURL, kSimiConnectorURL, kSimiReview];
+    url = [NSString stringWithFormat:@"%@%@%@", kBaseURL, kSimiConnectorURL, kSimiReview];
     [self requestWithMethod:GET URL:url params:params target:target selector:selector header:nil];
 }
 

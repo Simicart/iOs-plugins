@@ -36,7 +36,7 @@
     self.navigationItem.title = SCLocalizedString(@"Contact Us");
     self.screenTrackingName = @"contact_us";
     self.eventTrackingName = @"contact_us_action";
-    _contactModel = [[SimiModel alloc]initWithDictionary:[[SimiGlobalVar sharedInstance].allConfig valueForKey:@"instant_contact"]];
+    _contactModel = [[SimiModel alloc] initWithModelData:[GLOBALVAR.storeView valueForKey:@"instant_contact"]];
     if ([[_contactModel valueForKey:@"phone"] isKindOfClass:[NSArray class]]) {
         arrayPhoneNumber = [[NSMutableArray alloc]initWithArray:[_contactModel valueForKey:@"phone"]];
         arrayPhoneNumberAfterCheck = [[NSMutableArray alloc]init];
@@ -289,7 +289,7 @@
 - (void)didGetEmailContact:(NSNotification*)noti
 {
     SimiResponder *responder = [noti.userInfo valueForKey:responderKey];
-    if ([[responder.status uppercaseString]isEqualToString:@"SUCCESS"]) {
+    if (responder.status == SUCCESS) {
         
         if ([stringStyle isEqualToString:@"1"]) {
             _tblViewContent = [[UITableView alloc]initWithFrame:self.view.bounds];

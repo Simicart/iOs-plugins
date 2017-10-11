@@ -13,9 +13,9 @@
 @implementation SimiReviewModel
 
 - (void)submitReviewForProductWithParams:(NSDictionary *) params{
-    currentNotificationName = DidSubmitProductReview;
-    modelActionType = ModelActionTypeGet;
+    notificationName = DidSubmitProductReview;
+    actionType = ModelActionTypeGet;
     [self preDoRequest];
-    [[self getAPI] requestWithMethod:POST URL:[NSString stringWithFormat:@"%@%@",kBaseURL,kSubmitReviewURL] params:params target:self selector:@selector(didFinishRequest:responder:) header:nil];
+    [[SimiAPI new] requestWithMethod:POST URL:[NSString stringWithFormat:@"%@%@",kBaseURL,kSubmitReviewURL] params:params target:self selector:@selector(didGetResponseFromNetwork:) header:nil];
 }
 @end

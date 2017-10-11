@@ -8,6 +8,7 @@
 
 #import <SimiCartBundle/SimiCartBundle.h>
 
-@interface SimiAddressAutofillModel : SimiModel
+@interface SimiAddressAutofillModel : SimiAddressModel
+
 - (void)getAddressWithParams:(NSDictionary*)params;
 @end

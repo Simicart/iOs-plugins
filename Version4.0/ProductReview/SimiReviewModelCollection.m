@@ -12,11 +12,11 @@
 @implementation SimiReviewModelCollection
 
 - (void)getReviewCollectionWithProductId:(NSString *)productId offset:(NSInteger)offset limit:(NSInteger)limit{
-    currentNotificationName = @"DidGetReviewCollection";
-    keyResponse = @"reviews";
-    modelActionType = ModelActionTypeInsert;
+    notificationName = @"DidGetReviewCollection";
+    self.parseKey = @"reviews";
+    actionType = CollectionActionTypeInsert;
     [self preDoRequest];
-    [(SimiReviewAPI *)[self getAPI] getReviewCollectionWithParams:@{@"filter[product_id]": productId, @"offset": [NSString stringWithFormat:@"%ld", (long)offset], @"limit": [NSString stringWithFormat:@"%ld",(long)limit],@"fields":@"review_id,created_at,title,detail,nickname,rate_points",@"order":@"entity_id",@"dir":@"desc"} target:self selector:@selector(didFinishRequest:responder:)];
+    [[SimiReviewAPI new] getReviewCollectionWithParams:@{@"filter[product_id]": productId, @"offset": [NSString stringWithFormat:@"%ld", (long)offset], @"limit": [NSString stringWithFormat:@"%ld",(long)limit]} target:self selector:@selector(didGetResponseFromNetwork:)];
 }
 
 @end
