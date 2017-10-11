@@ -11,5 +11,5 @@
 #import "SimiPaymentWebView.h"
 
 @interface SimiPaymentWorker : SimiViewController<UIWebViewDelegate,UIAlertViewDelegate>
-@property (strong, nonatomic) CustomPaymentModelCollection* customPayment;
+@property (strong, nonatomic) CustomPaymentModelCollection *customPayment;
 @end

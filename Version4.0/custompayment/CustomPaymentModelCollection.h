@@ -7,8 +7,8 @@
 //
 #import "CustomPaymentAPI.h"
 
-#define DidGetCustomPayments @"DidGetCustomPayments"
+static NSString *const Custompayment_DidGetCustomPayments = @"Custompayment_DidGetCustomPayments";
 
 @interface CustomPaymentModelCollection : SimiModelCollection
--(void) getCustomPaymentsWithParams:(NSDictionary*) params;
+- (void)getCustomPaymentsWithParams:(NSDictionary*)params;
 @end
