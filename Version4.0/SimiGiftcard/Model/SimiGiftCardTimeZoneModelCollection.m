@@ -11,9 +11,9 @@
 
 @implementation SimiGiftCardTimeZoneModelCollection
 - (void)getGiftCardTimeZoneWithParams:(NSDictionary *)params{
-    currentNotificationName = DidGetSimiTimeZone;
-    keyResponse = @"timezones";
+    notificationName = DidGetSimiTimeZone;
+    self.parseKey = @"timezones";
     [self preDoRequest];
-    [[SimiGiftCardTimeZoneAPI new] getGiftCardTimeZoneWithParams:params target:self selector:@selector(didFinishRequest:responder:)];
+    [[SimiGiftCardTimeZoneAPI new] getGiftCardTimeZoneWithParams:params target:self selector:@selector(didGetResponseFromNetwork:)];
 }
 @end

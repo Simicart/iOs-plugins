@@ -10,10 +10,10 @@
 
 @implementation SimiAddressAutofillModel
 - (void)getAddressWithParams:(NSDictionary*)params{
-    currentNotificationName = @"DidGetAddress";
-    keyResponse = @"address";
+    notificationName = @"DidGetAddress";
+    self.parseKey = @"address";
     [self preDoRequest];
     NSString *url = [NSString stringWithFormat:@"%@%@%@",kBaseURL, kSimiConnectorURL, @"addresses/geocoding"];
-    [[self getAPI] requestWithMethod:GET URL:url params:params target:self selector:@selector(didFinishRequest:responder:) header:nil];
+    [[SimiAPI new] requestWithMethod:GET URL:url params:params target:self selector:@selector(didGetResponseFromNetwork:) header:nil];
 }
 @end

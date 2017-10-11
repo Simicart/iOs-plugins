@@ -12,7 +12,7 @@
 
 - (void)getCustomPaymentsWithParams:(NSDictionary *)params target:(id)target selector:(SEL)selector
 {
-    NSString *url = [NSString stringWithFormat:@"%@%@customizepayments", kBaseURL, kSimiConnectorURL];
+    url = [NSString stringWithFormat:@"%@%@customizepayments", kBaseURL, kSimiConnectorURL];
     [self requestWithMethod:GET URL:url params:params target:target selector:selector header:nil];
 }
 

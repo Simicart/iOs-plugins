@@ -122,7 +122,7 @@
 
 - (void)didGetReviewCollection:(NSNotification *)noti{
     SimiResponder *responder = [noti.userInfo valueForKey:responderKey];
-    if ([responder.status isEqualToString:@"SUCCESS"]) {
+    if (responder.status == SUCCESS) {
         NSInteger mainSectionIndex = [cells getSectionIndexByIdentifier:product_main_section];
         SimiSection *reviewSection = [cells addSectionWithIdentifier:product_reviews_section atIndex:mainSectionIndex+1];
         reviewSection.headerTitle = SCLocalizedString(@"Review");

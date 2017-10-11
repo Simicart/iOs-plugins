@@ -11,9 +11,9 @@
 
 @implementation SimiGiftCodeModel
 - (void)getGiftCodeDetailWithParams:(NSDictionary *)params{
-    currentNotificationName = DidGetGiftCodeDetail;
-    keyResponse = @"simigiftcode";
+    notificationName = DidGetGiftCodeDetail;
+    self.parseKey = @"simigiftcode";
     [self preDoRequest];
-    [[SimiGiftCodeAPI new]getGiftCodeDetailWithParams:params target:self selector:@selector(didFinishRequest:responder:)];
+    [[SimiGiftCodeAPI new]getGiftCodeDetailWithParams:params target:self selector:@selector(didGetResponseFromNetwork:)];
 }
 @end

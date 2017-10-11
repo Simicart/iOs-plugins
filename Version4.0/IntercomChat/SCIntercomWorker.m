@@ -17,11 +17,11 @@
         NSString *intercomAppID = @"";
         NSString *intercomiOsKey = @"";
         
-        if ([[[SimiGlobalVar sharedInstance].allConfig valueForKey:@"intercom_chat"] valueForKey:@"intercom_app_id"]){
-            intercomAppID = [NSString stringWithFormat:@"%@",[[[SimiGlobalVar sharedInstance].allConfig valueForKey:@"intercom_chat"] valueForKey:@"intercom_app_id"]];
+        if ([[GLOBALVAR.storeView valueForKey:@"intercom_chat"] valueForKey:@"intercom_app_id"]){
+            intercomAppID = [NSString stringWithFormat:@"%@",[[GLOBALVAR.storeView valueForKey:@"intercom_chat"] valueForKey:@"intercom_app_id"]];
         }
-        if ([[[SimiGlobalVar sharedInstance].allConfig valueForKey:@"intercom_chat"] valueForKey:@"intercom_ios_app_key"]) {
-            intercomiOsKey = [NSString stringWithFormat:@"%@",[[[SimiGlobalVar sharedInstance].allConfig valueForKey:@"intercom_chat"] valueForKey:@"intercom_ios_app_key"]];
+        if ([[GLOBALVAR.storeView valueForKey:@"intercom_chat"] valueForKey:@"intercom_ios_app_key"]) {
+            intercomiOsKey = [NSString stringWithFormat:@"%@",[[GLOBALVAR.storeView valueForKey:@"intercom_chat"] valueForKey:@"intercom_ios_app_key"]];
         }
         if (![intercomiOsKey isEqualToString:@""] && ![intercomAppID isEqualToString:@""]) {
             [Intercom setApiKey:intercomiOsKey forAppId:intercomAppID];

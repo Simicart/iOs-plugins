@@ -47,7 +47,7 @@
     [self.productTableView setHidden:NO];
     SimiResponder *responder = [noti.userInfo valueForKey:responderKey];
     if ([noti.name isEqualToString:DidGetGiftCardDetail]) {
-        if ([responder.status isEqualToString:@"SUCCESS"]) {
+        if (responder.status == SUCCESS) {
             if ([[self.product valueForKey:@"simigift_template_ids"] isKindOfClass:[NSArray class]]) {
                 NSArray *simiGiftTemplateIds = [self.product valueForKey:@"simigift_template_ids"];
                 if (simiGiftTemplateIds.count > 0) {

@@ -75,10 +75,10 @@
     SimiResponder *responder = [noti.userInfo valueForKey:responderKey];
     [self stopLoadingData];
     [self removeObserverForNotification:noti];
-    if ([responder.status isEqualToString:@"SUCCESS"]) {
-        [self showAlertWithTitle:responder.status message:@"Thank you for your purchase"];
+    if (responder.status == SUCCESS) {
+        [self showAlertWithTitle:@"" message:@"Thank you for your purchase"];
     }else{
-        [self showAlertWithTitle:responder.status message:responder.responseMessage];
+        [self showAlertWithTitle:@"" message:responder.message];
     }
     [self.navigationController dismissViewControllerAnimated:YES completion:nil];
 }

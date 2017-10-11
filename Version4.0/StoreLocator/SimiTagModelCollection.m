@@ -12,10 +12,10 @@
 @implementation SimiTagModelCollection
 - (void)getTagWithOffset:(NSString*)offset limit:(NSString*)limit
 {
-    currentNotificationName = @"DidFinishGetTagList";
-    modelActionType = ModelActionTypeInsert;
-    keyResponse = @"storelocatortags";
+    notificationName = @"DidFinishGetTagList";
+    actionType = CollectionActionTypeInsert;
+    self.parseKey = @"storelocatortags";
     [self preDoRequest];
-    [(SimiTagAPI *)[self getAPI] getTagListWithParams:@{@"offset":offset,@"limit":limit} target:self selector:@selector(didFinishRequest:responder:)];
+    [[SimiTagAPI new] getTagListWithParams:@{@"offset":offset,@"limit":limit} target:self selector:@selector(didGetResponseFromNetwork:)];
 }
 @end

@@ -13,7 +13,7 @@
 #define DidUpdateGiftCodeOnCart @"DidUpdateGiftCodeOnCart"
 #define DidRemoveGiftCodeOnCart @"DidRemoveGiftCodeOnCart"
 
-@interface SimiCartModelCollection (GiftCard)
+@interface SimiQuoteItemModelCollection (GiftCard)
 - (void)useGiftCardCreditWithParams: (NSDictionary *)params;
 - (void)useGiftCodeWithParams: (NSDictionary *)params;
 - (void)updateGiftCodeWithParams: (NSDictionary *)params;

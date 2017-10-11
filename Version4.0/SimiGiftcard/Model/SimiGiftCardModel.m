@@ -11,52 +11,45 @@
 
 @implementation SimiGiftCardModel
 - (void)getGiftCardWithID:(NSString*)giftcardID params:(NSDictionary*)params{
-    currentNotificationName = DidGetGiftCardDetail;
-    keyResponse = @"simigiftcard";
+    notificationName = DidGetGiftCardDetail;
+    self.parseKey = @"simigiftcard";
     [self preDoRequest];
     NSMutableDictionary *currentParams = [NSMutableDictionary dictionaryWithDictionary:params];
     NSArray *fields = @[@"entity_id",@"type_id",@"sku",@"has_options",@"required_options",@"status",@"name",@"url_path",@"description",@"short_description",@"is_salable",@"additional",@"images",@"app_prices",@"app_tier_prices",@"app_reviews",@"app_options",@"wishlist_item_id",@"product_label",@"simigift_template_ids",@"giftcard_prices"];
     [currentParams setObject:[fields componentsJoinedByString:@","] forKey:@"fields"];
     [currentParams setValue:giftcardID forKey:@"entity_id"];
-    [[SimiGiftCardAPI new] getGiftCardProductWithParams:currentParams target:self selector:@selector(didFinishRequest:responder:)];
+    [[SimiGiftCardAPI new] getGiftCardProductWithParams:currentParams target:self selector:@selector(didGetResponseFromNetwork:)];
 }
 
 - (void)uploadImageWithParams:(NSDictionary *)params{
-    currentNotificationName = DidUploadImage;
-    keyResponse = @"images";
+    notificationName = DidUploadImage;
+    self.parseKey = @"images";
     [self preDoRequest];
-    [[SimiGiftCardAPI new] uploadImageWithParams:params target:self selector:@selector(didFinishRequest:responder:)];
+    [[SimiGiftCardAPI new] uploadImageWithParams:params target:self selector:@selector(didGetResponseFromNetwork:)];
 }
 
 - (float)heightPriceOnGrid{
     float heightContent = 0;
     float heightLabel = 20;
 #pragma mark Bundle
-    if ([[self valueForKey:@"app_prices"] isKindOfClass:[NSDictionary class]]) {
-        self.appPrice = [self valueForKey:@"app_prices"];
-    }else
-        self.appPrice  = [NSDictionary new];
-    /**
-     Have Minimal Price
-     */
-    if([[self.appPrice valueForKey:@"minimal_price"]intValue] == 1) {
+    if([[self.appPrices valueForKey:@"minimal_price"]intValue] == 1) {
         /**
          Show exclude tax Price
          */
-        if([[self.appPrice valueForKey:@"show_ex_in_price"]intValue] == 1) {
-            if ([self.appPrice valueForKey:@"price_label"]) {
+        if([[self.appPrices valueForKey:@"show_ex_in_price"]intValue] == 1) {
+            if ([self.appPrices valueForKey:@"price_label"]) {
                 heightContent += heightLabel;
             }
             
-            if ([self.appPrice valueForKey:@"price_excluding_tax"]) {
+            if ([self.appPrices valueForKey:@"price_excluding_tax"]) {
                 heightContent += heightLabel;
             }
             
-            if ([[self.appPrice valueForKey:@"show_weee_price"]intValue] == 1 && [self.appPrice valueForKey:@"weee"]) {
+            if ([[self.appPrices valueForKey:@"show_weee_price"]intValue] == 1 && [self.appPrices valueForKey:@"weee"]) {
                 heightContent += heightLabel;
             }
             
-            if ([self.appPrice valueForKey:@"price_including_tax"]) {
+            if ([self.appPrices valueForKey:@"price_including_tax"]) {
                 heightContent += heightLabel;
             }
         }else
@@ -64,15 +57,15 @@
          Don't show exclude Price
          */
         {
-            if ([self.appPrice valueForKey:@"price_label"] && [self.appPrice valueForKey:@"price"]) {
+            if ([self.appPrices valueForKey:@"price_label"] && [self.appPrices valueForKey:@"price"]) {
                 heightContent += heightLabel;
             }
             
-            if ([[self.appPrice valueForKey:@"show_weee_price"]intValue] == 1 && [self.appPrice valueForKey:@"weee"]) {
+            if ([[self.appPrices valueForKey:@"show_weee_price"]intValue] == 1 && [self.appPrices valueForKey:@"weee"]) {
                 heightContent += heightLabel;
             }
             
-            if ([self.appPrice valueForKey:@"price_in"] && ![[self.appPrice valueForKey:@"price_in"] isEqualToString:@""]) {
+            if ([self.appPrices valueForKey:@"price_in"] && ![[self.appPrices valueForKey:@"price_in"] isEqualToString:@""]) {
                 heightContent += heightLabel;
             }
         }
@@ -84,34 +77,34 @@
         /**
          Show From To Tax Price
          */
-        if ([[self.appPrice valueForKey:@"show_from_to_tax_price"]intValue] == 1) {
+        if ([[self.appPrices valueForKey:@"show_from_to_tax_price"]intValue] == 1) {
             /**
              Show Exclude in Price
              */
-            if ([[self.appPrice valueForKey:@"show_ex_in_price"]intValue] == 1) {
-                if ([self.appPrice valueForKey:@"product_from_label"]) {
+            if ([[self.appPrices valueForKey:@"show_ex_in_price"]intValue] == 1) {
+                if ([self.appPrices valueForKey:@"product_from_label"]) {
                     heightContent += heightLabel;
                 }
                 
-                if ([self.appPrice valueForKey:@"from_price_excluding_tax"]) {
+                if ([self.appPrices valueForKey:@"from_price_excluding_tax"]) {
                     heightContent += heightLabel;
                 }
                 
-                if ([self.appPrice valueForKey:@"from_price_including_tax"]) {
+                if ([self.appPrices valueForKey:@"from_price_including_tax"]) {
                     heightContent += heightLabel;
                 }
                 
-                if ([[self.appPrice valueForKey:@"show_weee_price"]intValue] == 1 && [self.appPrice valueForKey:@"weee"]) {
+                if ([[self.appPrices valueForKey:@"show_weee_price"]intValue] == 1 && [self.appPrices valueForKey:@"weee"]) {
                     heightContent += heightLabel;
                 }
                 
-                if ([self.appPrice valueForKey:@"product_to_label"]) {
+                if ([self.appPrices valueForKey:@"product_to_label"]) {
                     heightContent += heightLabel;
                 }
-                if ([self.appPrice valueForKey:@"to_price_excluding_tax"]) {
+                if ([self.appPrices valueForKey:@"to_price_excluding_tax"]) {
                     heightContent += heightLabel;
                 }
-                if ([self.appPrice valueForKey:@"to_price_including_tax"]) {
+                if ([self.appPrices valueForKey:@"to_price_including_tax"]) {
                     heightContent += heightLabel;
                 }
             }
@@ -120,15 +113,15 @@
              Don't Show Exclude in Price
              */
             {
-                if ([self.appPrice valueForKey:@"product_from_label"] && [self.appPrice valueForKey:@"from_price"]) {
+                if ([self.appPrices valueForKey:@"product_from_label"] && [self.appPrices valueForKey:@"from_price"]) {
                     heightContent += heightLabel;
                 }
                 
-                if ([self.appPrice valueForKey:@"product_to_label"] && [self.appPrice valueForKey:@"to_price"]) {
+                if ([self.appPrices valueForKey:@"product_to_label"] && [self.appPrices valueForKey:@"to_price"]) {
                     heightContent += heightLabel;
                 }
                 
-                if ([[self.appPrice valueForKey:@"show_weee_price"]intValue] == 1 && [self.appPrice valueForKey:@"weee"]) {
+                if ([[self.appPrices valueForKey:@"show_weee_price"]intValue] == 1 && [self.appPrices valueForKey:@"weee"]) {
                     heightContent += heightLabel;
                 }
             }
@@ -140,16 +133,16 @@
             /**
              Show Exclud In Price
              */
-            if ([[self.appPrice valueForKey:@"show_ex_in_price"]intValue] == 1) {
-                if ([self.appPrice valueForKey:@"product_from_label"] && [self.appPrice valueForKey:@"from_price"]) {
+            if ([[self.appPrices valueForKey:@"show_ex_in_price"]intValue] == 1) {
+                if ([self.appPrices valueForKey:@"product_from_label"] && [self.appPrices valueForKey:@"from_price"]) {
                     heightContent += heightLabel;
                 }
                 
-                if ([[self.appPrice valueForKey:@"show_weee_price"]intValue] == 1 && [self.appPrice valueForKey:@"weee"]) {
+                if ([[self.appPrices valueForKey:@"show_weee_price"]intValue] == 1 && [self.appPrices valueForKey:@"weee"]) {
                     heightContent += heightLabel;
                 }
                 
-                if ([self.appPrice valueForKey:@"product_to_label"] && [self.appPrice valueForKey:@"to_price"]) {
+                if ([self.appPrices valueForKey:@"product_to_label"] && [self.appPrices valueForKey:@"to_price"]) {
                     heightContent += heightLabel;
                 }
             }else
@@ -157,11 +150,11 @@
              Don't Show Exclude In Price
              */
             {
-                if ([self.appPrice valueForKey:@"price"]) {
+                if ([self.appPrices valueForKey:@"price"]) {
                     heightContent += heightLabel;
                 }
                 
-                if ([[self.appPrice valueForKey:@"show_weee_price"]intValue] == 1 && [self.appPrice valueForKey:@"weee"]) {
+                if ([[self.appPrices valueForKey:@"show_weee_price"]intValue] == 1 && [self.appPrices valueForKey:@"weee"]) {
                     heightContent += heightLabel;
                 }
             }
@@ -170,8 +163,8 @@
     /**
      Configure Price
      */
-    if ([[self.appPrice valueForKey:@"configure"] isKindOfClass:[NSDictionary class]]) {
-        NSDictionary *configureDict = [self.appPrice valueForKey:@"configure"];
+    if ([[self.appPrices valueForKey:@"configure"] isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *configureDict = [self.appPrices valueForKey:@"configure"];
         if ([configureDict valueForKey:@"price_label"]) {
             heightContent += heightLabel;
         }
@@ -189,11 +182,11 @@
             }
         }else
         {
-            if ([self.appPrice valueForKey:@"price"]) {
+            if ([self.appPrices valueForKey:@"price"]) {
                 heightContent += heightLabel;
             }
             
-            if ([[self.appPrice valueForKey:@"show_weee_price"]intValue] == 1 && [self.appPrice valueForKey:@"weee"]) {
+            if ([[self.appPrices valueForKey:@"show_weee_price"]intValue] == 1 && [self.appPrices valueForKey:@"weee"]) {
                 heightContent += heightLabel;
             }
         }

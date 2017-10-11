@@ -13,11 +13,11 @@
 
 - (void)spendPoints:(NSInteger)points ruleId:(id)ruleId
 {
-    modelActionType = ModelActionTypeGet;
-    currentNotificationName = @"DidSpendPointsOrder";
-    keyResponse = @"order";
+    actionType = ModelActionTypeGet;
+    notificationName = @"DidSpendPointsOrder";
+    self.parseKey = @"order";
     [self preDoRequest];
-    [[LoyaltyAPI new] spendPointsWithParams:@{@"ruleid":ruleId, @"usepoint": [NSNumber numberWithInteger:points]} target:self selector:@selector(didFinishRequest:responder:)];
+    [[LoyaltyAPI new] spendPointsWithParams:@{@"ruleid":ruleId, @"usepoint": [NSNumber numberWithInteger:points]} target:self selector:@selector(didGetResponseFromNetwork:)];
 }
 
 @end

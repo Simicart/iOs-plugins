@@ -24,15 +24,14 @@
     self = [super init];
     if (self) {
         NSString *token = @"";
-        globalVar = [SimiGlobalVar sharedInstance];
-        if ([[globalVar.allConfig valueForKey:@"mixpanel_config"]isKindOfClass:[NSDictionary class]]){
-            NSDictionary *mixPanelConfig = [globalVar.allConfig valueForKey:@"mixpanel_config"];
+        if ([[GLOBALVAR.storeView valueForKey:@"mixpanel_config"]isKindOfClass:[NSDictionary class]]){
+            NSDictionary *mixPanelConfig = [GLOBALVAR.storeView valueForKey:@"mixpanel_config"];
             if ([mixPanelConfig valueForKey:@"token"] && ![[mixPanelConfig valueForKey:@"token"] isKindOfClass:[NSNull class]]) {
                 token = [NSString stringWithFormat:@"%@",[mixPanelConfig valueForKey:@"token"]];
             }
         }
         BOOL useTrialMixpanelToken = NO;
-        NSString *customerStatus = [NSString stringWithFormat:@"%@",[globalVar.appConfigure valueForKey:@"status"]];
+        NSString *customerStatus = [NSString stringWithFormat:@"%@",GLOBALVAR.appConfigModel.status];
         if ([customerStatus isEqualToString:@"0"] || [customerStatus isEqualToString:@"2"]) {
             if (DEMO_MODE) {
                 useTrialMixpanelToken = YES;
@@ -51,16 +50,16 @@
         NSString *version = [info objectForKey:@"CFBundleShortVersionString"];
         NSString *appIdentidier = [info objectForKey:@"CFBundleIdentifier"];
         [mixpanel registerSuperProperties:@{@"app_version":version, @"app_id":appIdentidier}];
-        if ([globalVar.baseConfig valueForKey:@"customer_ip"]) {
-            NSString *customerIp = [NSString stringWithFormat:@"%@",[globalVar.baseConfig valueForKey:@"customer_ip"]];
-            if (![customerIp isEqualToString:@""] && ![[globalVar.baseConfig valueForKey:@"customer_ip"] isKindOfClass:[NSNull class]]) {
+        if ([GLOBALVAR.storeView.base valueForKey:@"customer_ip"]) {
+            NSString *customerIp = [NSString stringWithFormat:@"%@",[GLOBALVAR.storeView.base valueForKey:@"customer_ip"]];
+            if (![customerIp isEqualToString:@""] && ![[GLOBALVAR.storeView.base valueForKey:@"customer_ip"] isKindOfClass:[NSNull class]]) {
                 [mixpanel registerSuperProperties:@{@"customer_ip":customerIp}];
             }
         }
         
         if(DEMO_MODE && [token isEqualToString:SIMI_MIXPANEL_TOKEN]) {
-            if([globalVar.appConfigure objectForKey:@"email"]) {
-                ownerEmail = [NSString stringWithFormat:@"%@", [globalVar.appConfigure objectForKey:@"email"]];
+            if([GLOBALVAR.appConfigModel objectForKey:@"email"]) {
+                ownerEmail = [NSString stringWithFormat:@"%@", [GLOBALVAR.appConfigModel objectForKey:@"email"]];
             }else {
                 ownerEmail = kCloudSimiKey;
             }
@@ -88,9 +87,9 @@
             [trackingProperties setValue:[globalVar.customer valueForKey:@"email"]  forKey:@"customer_identity"];
         }else
         {
-            if ([globalVar.baseConfig valueForKey:@"customer_identity"]) {
-                NSString *customerIdentity = [NSString stringWithFormat:@"%@",[globalVar.baseConfig valueForKey:@"customer_identity"]];
-                if (![customerIdentity isEqualToString:@""] && ![[globalVar.baseConfig valueForKey:@"customer_identity"] isKindOfClass:[NSNull class]]) {
+            if ([GLOBALVAR.storeView.base valueForKey:@"customer_identity"]) {
+                NSString *customerIdentity = [NSString stringWithFormat:@"%@",[GLOBALVAR.storeView.base valueForKey:@"customer_identity"]];
+                if (![customerIdentity isEqualToString:@""] && ![[GLOBALVAR.storeView.base valueForKey:@"customer_identity"] isKindOfClass:[NSNull class]]) {
                     [trackingProperties setValue:customerIdentity  forKey:@"customer_identity"];
                 }
             }
@@ -109,9 +108,9 @@
             [trackingProperties setValue:[globalVar.customer valueForKey:@"email"]  forKey:@"customer_identity"];
         }else
         {
-            if ([globalVar.baseConfig valueForKey:@"customer_identity"]) {
-                NSString *customerIdentity = [NSString stringWithFormat:@"%@",[globalVar.baseConfig valueForKey:@"customer_identity"]];
-                if (![customerIdentity isEqualToString:@""] && ![[globalVar.baseConfig valueForKey:@"customer_identity"] isKindOfClass:[NSNull class]]) {
+            if ([GLOBALVAR.storeView.base valueForKey:@"customer_identity"]) {
+                NSString *customerIdentity = [NSString stringWithFormat:@"%@",[GLOBALVAR.storeView.base valueForKey:@"customer_identity"]];
+                if (![customerIdentity isEqualToString:@""] && ![[GLOBALVAR.storeView.base valueForKey:@"customer_identity"] isKindOfClass:[NSNull class]]) {
                     [trackingProperties setValue:customerIdentity  forKey:@"customer_identity"];
                 }
             }

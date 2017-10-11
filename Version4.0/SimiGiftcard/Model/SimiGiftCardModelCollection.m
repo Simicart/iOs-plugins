@@ -11,10 +11,10 @@
 
 @implementation SimiGiftCardModelCollection
 - (void)getGiftCardProductCollectionWithParams:(NSDictionary *)params{
-    currentNotificationName = DidGetGiftCardProductCollection;
-    keyResponse = @"simigiftcards";
+    notificationName = DidGetGiftCardProductCollection;
+    self.parseKey = @"simigiftcards";
     modelActionType = ModelActionTypeInsert;
     [self preDoRequest];
-    [[SimiGiftCardAPI new] getGiftCardProductCollectionWithParams:params target:self selector:@selector(didFinishRequest:responder:)];
+    [[SimiGiftCardAPI new] getGiftCardProductCollectionWithParams:params target:self selector:@selector(didGetResponseFromNetwork:)];
 }
 @end

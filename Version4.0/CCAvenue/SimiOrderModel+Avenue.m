@@ -12,11 +12,11 @@
 @implementation SimiOrderModel (Avenue)
 
 - (void)updateAvenueOrderWithParams:(NSDictionary *)params{
-    modelActionType = ModelActionTypeGet;
-    keyResponse = @"twoutapi";
-    currentNotificationName = @"DidUpdateAvenuePayment";
+    actionType = ModelActionTypeGet;
+    self.parseKey = @"twoutapi";
+    notificationName = @"DidUpdateAvenuePayment";
     [self preDoRequest];
-    [(SimiOrderAPI *)[self getAPI] updateAvenueOrderWithParams:params target:self selector:@selector(didFinishRequest:responder:)];
+    [[SimiOrderAPI new] updateAvenueOrderWithParams:params target:self selector:@selector(didGetResponseFromNetwork:)];
 }
 
 @end

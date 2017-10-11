@@ -36,18 +36,18 @@
 - (void)didGetAddress:(NSNotification*)noti
 {
     SimiResponder *responder = [noti.userInfo valueForKey:responderKey];
-    if ([responder.status isEqualToString:@"SUCCESS"]) {
-        if ([addressModel valueForKey:@"country_id"]) {
-            [newAddressViewController.country updateFormData:[NSString stringWithFormat:@"%@",[addressModel valueForKey:@"country_id"]]];
+    if (responder.status == SUCCESS) {
+        if (addressModel.countryId) {
+            [newAddressViewController.country updateFormData:addressModel.countryId];
         }
-        if ([addressModel valueForKey:@"country_name"]) {
-            [newAddressViewController.form setValue:[addressModel valueForKey:@"country_name"] forKey:@"country_name"];
+        if (addressModel.countryName) {
+            [newAddressViewController.form setValue:addressModel.countryName forKey:@"country_name"];
         }
-        if ([addressModel valueForKey:@"region"]) {
-            [newAddressViewController.form setValue:[addressModel valueForKey:@"region"] forKey:@"region"];
+        if (addressModel.region) {
+            [newAddressViewController.form setValue:addressModel.region forKey:@"region"];
         }
-        if ([addressModel valueForKey:@"region_id"]) {
-            NSString *regionID = [addressModel valueForKey:@"region_id"];
+        if (addressModel.regionId) {
+            NSString *regionID = addressModel.regionId;
             [newAddressViewController.form setValue:regionID forKey:@"region_id"];
             if (newAddressViewController.stateId.dataSource.count > 0 && [newAddressViewController.form.fields containsObject:newAddressViewController.stateId]) {
                 for (NSDictionary *state in newAddressViewController.stateId.dataSource) {
@@ -58,14 +58,14 @@
                 }
             }
         }
-        if ([addressModel valueForKey:@"city"]) {
-            [newAddressViewController.form setValue:[addressModel valueForKey:@"city"] forKey:@"city"];
+        if (addressModel.city) {
+            [newAddressViewController.form setValue:addressModel.city forKey:@"city"];
         }
-        if ([addressModel valueForKey:@"street"]) {
-            [newAddressViewController.form setValue:[addressModel valueForKey:@"street"] forKey:@"street"];
+        if (addressModel.street) {
+            [newAddressViewController.form setValue:addressModel.street forKey:@"street"];
         }
-        if ([addressModel valueForKey:@"postcode"]) {
-            [newAddressViewController.form setValue:[addressModel valueForKey:@"postcode"] forKey:@"postcode"];
+        if (addressModel.postcode) {
+            [newAddressViewController.form setValue:addressModel.postcode forKey:@"postcode"];
         }
         [newAddressViewController.form sortFormFields];
         [newAddressViewController.tableViewAddress reloadData];

@@ -115,7 +115,7 @@
     if(!reviewModel)
         reviewModel = [SimiReviewModel new];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didSubmitReview:) name:DidSubmitProductReview object:nil];
-    NSMutableDictionary* params = [[NSMutableDictionary alloc] initWithDictionary:@{@"product_id":[_productModel objectForKey:@"entity_id"]}];
+    NSMutableDictionary* params = [[NSMutableDictionary alloc] initWithDictionary:@{@"product_id":_productModel.entityId}];
     NSMutableDictionary* ratingParams = [[NSMutableDictionary alloc] initWithCapacity:0];
     for(ASStarRatingView* ratingView in ratingViews){
         NSArray* rateOptions = ratingView.simiRateData;
@@ -137,19 +137,19 @@
 }
 
 - (void)didSubmitReview: (NSNotification*) noti{
-    NSString *tempProductName = [NSString stringWithFormat:@"%@",[self.productModel valueForKey:@"name"]];
-    NSString *tempProductId = [NSString stringWithFormat:@"%@",[self.productModel valueForKey:@"entity_id"]];
-    NSString *tempProductSku = [NSString stringWithFormat:@"%@",[self.productModel valueForKey:@"sku"]];
+    NSString *tempProductName = [NSString stringWithFormat:@"%@",self.productModel.name];
+    NSString *tempProductId = [NSString stringWithFormat:@"%@",self.productModel.entityId];
+    NSString *tempProductSku = [NSString stringWithFormat:@"%@",self.productModel.sku];
     [[NSNotificationCenter defaultCenter]postNotificationName:TRACKINGEVENT object:@"product_action" userInfo:@{@"action":@"rated_product",@"product_name":tempProductName,@"product_id":tempProductId,@"sku":tempProductSku,@"qty":@"1"}];
     
     SimiResponder* responder = [noti.userInfo objectForKey:responderKey];
     [self stopLoadingData];
     [self removeObserverForNotification:noti];
-    if([responder.status isEqualToString:@"SUCCESS"]){
-        [self showAlertWithTitle:@"" message:[reviewModel.responseObject valueForKey:@"message"]];
+    if(responder.status == SUCCESS){
+        [self showAlertWithTitle:@"" message:[reviewModel.data valueForKey:@"message"]];
         [self.navigationController popViewControllerAnimated:YES];
     }else{
-        [self showAlertWithTitle:@"" message:responder.responseMessage];
+        [self showAlertWithTitle:@"" message:responder.message];
     }
 }
 
