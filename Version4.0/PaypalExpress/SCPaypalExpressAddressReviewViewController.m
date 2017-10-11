@@ -8,8 +8,7 @@
 
 #import "SCPaypalExpressAddressReviewViewController.h"
 
-@interface SCPaypalExpressAddressReviewViewController ()
-{
+@interface SCPaypalExpressAddressReviewViewController (){
     BOOL isBillingAddress;
 }
 @end
@@ -21,18 +20,15 @@
 
 #pragma mark TableView Datasource
 
-- (void)viewDidLoadBefore
-{
+- (void)viewDidLoadBefore{
     self.navigationItem.title = SCLocalizedString(@"Address Confirmation");
 }
 
-- (void)viewWillAppearBefore:(BOOL)animated
-{
+- (void)viewWillAppearBefore:(BOOL)animated{
     
 }
 
-- (void)viewDidAppearBefore:(BOOL)animated
-{
+- (void)viewDidAppearBefore:(BOOL)animated{
     if (addressTableView == nil) {
         addressTableView = [[SimiTableView alloc] initWithFrame:self.view.bounds style:UITableViewStyleGrouped];
         addressTableView.dataSource = self;
@@ -44,26 +40,22 @@
     }
 }
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
-{
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
     if (billingAddress == nil) {
         return 0;
     }
     return 3;
 }
 
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
     return 120;
 }
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
-{
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
     return 1;
 }
 
-- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
-{
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
     if (section < 2) {
         UIView * headerView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, 25)];
         NSString * title = @"";
@@ -88,8 +80,7 @@
 }
 
 
-- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
-{
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
     if (section < 2) {
         return 40;
     }
@@ -97,8 +88,7 @@
 }
 
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-{
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     UITableViewCell *cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"AddressCell"];
     
     if (indexPath.section < 2) {
@@ -116,8 +106,7 @@
         [cell addSubview:addressLabel];
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
-    }
-    else if (indexPath.section == 2) {
+    }else if (indexPath.section == 2) {
         if (updateAddressView == nil) {
             updateAddressView = [[UIView alloc]init];
             float cellWidth = SCREEN_WIDTH;
@@ -147,23 +136,18 @@
 }
 
 #pragma mark Table View Delegate
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     if (indexPath.section < 2) {
         SCPaypalExpressAddressEditViewController *nextController = [[SCPaypalExpressAddressEditViewController alloc]init];
         nextController.delegate = self;
         SimiAddressModel *address;
-        if (indexPath.section == 0)
-        {
+        if (indexPath.section == 0){
             address = billingAddress;
             isBillingAddress = YES;
-        }
-        else
-        {
+        }else{
             address = shippingAddress;
             isBillingAddress = NO;
         }
-        
         nextController.address = address;
         nextController.isEditing = YES;
         [self.navigationController pushViewController:nextController animated:YES];
@@ -171,64 +155,56 @@
 }
 
 #pragma mark Get Address
--(void)getAddresses
-{
+- (void)getAddresses{
     [self startLoadingData];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didGetPaypalAdressInformation:) name:@"DidGetPaypalAdressInformation" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didGetPaypalAdressInformation:) name: SCPaypalExpress_DidGetPaypalAddressInformation object:nil];
     paypalModel = [SCPaypalExpressModel new];
     [paypalModel reviewAddress];
 }
 
-- (void)didGetPaypalAdressInformation: (NSNotification *)noti
-{
+- (void)didGetPaypalAdressInformation: (NSNotification *)noti{
     [self stopLoadingData];
     [self removeObserverForNotification:noti];
     SimiResponder *responder = [noti.userInfo valueForKey:responderKey];
-    if ([responder.status isEqualToString:@"SUCCESS"]) {
-        billingAddress = [SimiAddressModel new];
-        [billingAddress addEntriesFromDictionary:[paypalModel objectForKey:@"billing_address"]];
-        shippingAddress = [SimiAddressModel new];
-        [shippingAddress addEntriesFromDictionary:[paypalModel objectForKey:@"shipping_address"]];
+    if (responder.status == SUCCESS) {
+        billingAddress = [[SimiAddressModel alloc]initWithModelData:[paypalModel objectForKey:@"billing_address"]];
+        shippingAddress = [[SimiAddressModel alloc]initWithModelData:[paypalModel objectForKey:@"shipping_address"]];
         [addressTableView reloadData];
     }
     else {
-        UIAlertView * a = [[UIAlertView alloc]initWithTitle:@"" message:responder.responseMessage delegate:self cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles: nil];
+        UIAlertView * a = [[UIAlertView alloc]initWithTitle:@"" message:responder.message delegate:self cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles: nil];
         [a show];
     }
 }
 
 #pragma mark Update Address Information
 
-- (void)updateAddressInformation :(id)sender
-{
+- (void)updateAddressInformation:(id)sender{
     [self startLoadingData];
     NSMutableDictionary *params = [[NSMutableDictionary alloc] init];
-    [params setValue:shippingAddress forKey:@"s_address"];
-    [params setValue:billingAddress forKey:@"b_address"];
+    [params setValue:shippingAddress.modelData forKey:@"s_address"];
+    [params setValue:billingAddress.modelData forKey:@"b_address"];
     [params setValue:[billingAddress valueForKey:@"customer_password"] forKey:@"customer_password"];
     [params setValue:[billingAddress valueForKey:@"confirm_password"] forKey:@"confirm_password"];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(paypalDidCompleteReviewAddress:) name:@"DidUpdatePaypalCheckoutAddress" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(paypalDidCompleteReviewAddress:) name:SCPaypalExpress_DidUpdatePaypalCheckoutAddress object:nil];
     [paypalModel updateAddressWithParam:params];
 }
 
--(void)paypalDidCompleteReviewAddress:(NSNotification *)noti
-{
-    
+- (void)paypalDidCompleteReviewAddress:(NSNotification *)noti{
     SimiResponder *responder = [noti.userInfo valueForKey:responderKey];
     [self removeObserverForNotification:noti];
     [self stopLoadingData];
-    if ([responder.status isEqualToString:@"SUCCESS"]) {
+    if (responder.status == SUCCESS) {
         SCPaypalExpressShippingMethodViewController *shippingMethodViewController = [[SCPaypalExpressShippingMethodViewController alloc]init];
         [self.navigationController pushViewController:shippingMethodViewController animated:NO];
     }
     else {
-        UIAlertView * alert = [[UIAlertView alloc]initWithTitle:@"" message:responder.responseMessage delegate:self cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles: nil];
+        UIAlertView * alert = [[UIAlertView alloc]initWithTitle:@"" message:responder.message delegate:self cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles: nil];
         [alert show];
     }
 }
 #pragma  mark Edit Adress
-- (void)didSaveAddress:(SimiAddressModel *)address
-{
+- (void)didSaveAddress:(SimiAddressModel *)address{
     if (isBillingAddress) {
         billingAddress = address;
     }else

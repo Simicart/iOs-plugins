@@ -21,14 +21,7 @@
 }
 
 @synthesize paypalExpCheckOutWebView;
-
-- (void)viewWillAppearBefore:(BOOL)animated
-{
-    
-}
-
-- (void)viewDidLoadBefore
-{
+- (void)viewDidLoadBefore{
     [self paypalStart];
     self.needReviewAddress = YES;
     
@@ -41,46 +34,42 @@
     paypalExpCheckOutWebView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin ;
     [self.view addSubview:paypalExpCheckOutWebView];
     [self startLoadingData];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(completeCheckOut:) name:@"DidCompleteCheckOutWithPaypalExpress" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(completeCheckOut:) name:SCPaypalExpress_DidCompleteCheckOutWithPaypalExpress object:nil];
 }
 
-- (void)completeCheckOut:(NSNotification*)noti
-{
-    [self.navigationController popToRootViewControllerAnimated:YES];
-}
-
-- (void)paypalStart
-{
-    if (paypalModel == nil) {
-        paypalModel = [[SCPaypalExpressModel alloc] init];
-    }
-    [paypalModel startPaypalExpress];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didStartPaypalExpress:) name:@"DidStartPaypalExpress" object:nil];
+- (void)viewWillAppearBefore:(BOOL)animated{
     
 }
 
-- (void)didStartPaypalExpress: (NSNotification *)noti
-{
-    [self removeObserverForNotification:noti];
+- (void)completeCheckOut:(NSNotification*)noti{
+    [self.navigationController popToRootViewControllerAnimated:YES];
+}
 
+- (void)paypalStart{
+    if (paypalModel == nil) {
+        paypalModel = [[SCPaypalExpressModel alloc] init];
+    }
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didStartPaypalExpress:) name:SCPaypalExpress_DidStartPaypalExpress object:paypalModel];
+    [paypalModel startPaypalExpress];
+}
+
+- (void)didStartPaypalExpress: (NSNotification *)noti{
+    [self removeObserverForNotification:noti];
     SimiResponder *responder = [noti.userInfo valueForKey:responderKey];
-    if ([responder.status isEqualToString:@"SUCCESS"]) {
+    if (responder.status == SUCCESS) {
         self.needReviewAddress = [(NSNumber *)[paypalModel objectForKey:@"review_address"] boolValue];
         NSURL * url = [NSURL URLWithString:(NSString *)[paypalModel objectForKey:@"url"]];
         NSURLRequest * requestObj = [NSURLRequest requestWithURL:url];
         [paypalExpCheckOutWebView loadRequest:requestObj];
-    }
-    else
-    {
+    }else{
         [self.navigationController popViewControllerAnimated:YES];
-        UIAlertView * warning = [[UIAlertView alloc]initWithTitle:@"" message:[responder responseMessage] delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil];
+        UIAlertView * warning = [[UIAlertView alloc]initWithTitle:@"" message:responder.message delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil];
         [warning show];
     }
 }
 
 
-- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
-{
+- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType{
     NSString *urlRequest = request.URL.absoluteString;
     if ((!([urlRequest rangeOfString:@"simiconnector/rest/v2/ppexpressapis/return"].location == NSNotFound))){
         if (self.needReviewAddress) {
@@ -113,12 +102,11 @@
     return YES;
 }
 
-- (void)webViewDidStartLoad:(UIWebView *)webView {
+- (void)webViewDidStartLoad:(UIWebView *)webView{
     [self startLoadingData];
 }
 
-- (void)webViewDidFinishLoad:(UIWebView *)webView
-{
+- (void)webViewDidFinishLoad:(UIWebView *)webView{
     [self stopLoadingData];
 }
 @end

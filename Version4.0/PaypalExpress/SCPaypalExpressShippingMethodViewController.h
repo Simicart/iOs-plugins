@@ -13,9 +13,9 @@
 @interface SCPaypalExpressShippingMethodViewController : SimiViewController <UITableViewDataSource, UITableViewDelegate>
 
 @property (strong, nonatomic) UITableView * shippingMethodTableView;
-@property (strong, nonatomic) SCPaypalExpressModel * paypalModel;
-@property (strong, nonatomic) SCPaypalExpressModel * paypalShippingModel;
+@property (strong, nonatomic) SCPaypalExpressModel *paypalModel;
+@property (strong, nonatomic) SCPaypalExpressModel *paypalShippingModel;
 
--(void)getShippingMethod;
+- (void)getShippingMethod;
 
 @end
