@@ -7,20 +7,18 @@
 //
 
 #import "KlarnaModel.h"
+#import "KlarnaAPI.h"
 
 @implementation KlarnaModel
-- (void)checkoutKlarnaWithParams:(NSDictionary *)params
-{
-    keyResponse = @"simiklarnaapi";
-    currentNotificationName = @"DidCheckoutWithKlarna";
-    [(KlarnaAPI *)[self getAPI] checkoutKlarnaWithParams:params target:self selector:@selector(didFinishRequest:responder:)];
+- (void)checkoutKlarnaWithParams:(NSDictionary *)params{
+    self.parseKey = @"simiklarnaapi";
+    notificationName = Klarna_DidCheckoutWithKlarna;
+    [[KlarnaAPI new] checkoutKlarnaWithParams:params target:self selector:@selector(didGetResponseFromNetwork:)];
 }
 
-- (void)getParamsKlarnaWithParams:(NSDictionary *)params
-{
-    currentNotificationName = @"DidGetKlarnaParam";
-    keyResponse = @"simiklarnaapi";
-    modelActionType = ModelActionTypeGet;
-    [(KlarnaAPI *)[self getAPI] getParamsKlarnaWithParams:params target:self selector:@selector(didFinishRequest:responder:)];
+- (void)getParamsKlarnaWithParams:(NSDictionary *)params{
+    notificationName = Klarna_DidGetKlarnaParam;
+    self.parseKey = @"simiklarnaapi";
+    [[KlarnaAPI new] getParamsKlarnaWithParams:params target:self selector:@selector(didGetResponseFromNetwork:)];
 }
 @end
