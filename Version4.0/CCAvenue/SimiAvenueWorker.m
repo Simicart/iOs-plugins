@@ -9,7 +9,6 @@
 #import <SimiCartBundle/SCAppDelegate.h>
 #import "SimiAvenueWorker.h"
 #import "SimiOrderModel+Avenue.h"
-#import "SCOrderViewController.h"
 
 #define METHOD_AVENUE @"SIMIAVENUE"
 #define ALERT_VIEW_ERROR 0
@@ -28,14 +27,14 @@
 {
     self = [super init];
     if (self) {
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didPlaceOrderBefore:) name:DidPlaceOrderBefore object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didPlaceOrderBefore:) name:@"DidPlaceOrder-Before" object:nil];
     }
     return self;
 }
 
 - (void)didPlaceOrderBefore:(NSNotification *)noti
 {
-    if ([noti.name isEqualToString:DidPlaceOrderBefore]){
+    if ([noti.name isEqualToString:@"DidPlaceOrder-Before"]){
         payment = [noti.userInfo valueForKey:@"payment"];
         if ([[payment valueForKey:@"payment_method"] isEqualToString:METHOD_AVENUE]) {
             [self didPlaceOrder:noti];
