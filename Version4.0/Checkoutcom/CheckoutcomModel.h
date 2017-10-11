@@ -8,10 +8,8 @@
 
 #import <SimiCartBundle/SimiCartBundle.h>
 
-#define DidUpdateCheckoutComPayment @"DidUpdateCheckoutComPayment"
+static NSString *const CheckoutCom_DidUpdateCheckoutComPayment = @"CheckoutCom_DidUpdateCheckoutComPayment";
 
 @interface CheckoutcomModel : SimiModel
-
--(void) completeOrderWithParams:(NSDictionary*) params;
-
+- (void)completeOrderWithParams:(NSDictionary*)params;
 @end

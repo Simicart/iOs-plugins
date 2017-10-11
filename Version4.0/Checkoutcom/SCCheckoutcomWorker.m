@@ -14,30 +14,26 @@
 @implementation SCCheckoutcomWorker
 {
     SimiOrderModel *order;
-    SimiModel *payment;
+    SimiPaymentMethodModel *payment;
 }
 
-- (instancetype)init
-{
+- (instancetype)init{
     self = [super init];
     if (self) {
-        [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(didReceiveNotification:) name:@"DidPlaceOrder-Before" object:nil];
+        [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(didPlaceOrder:) name:SCOrderViewController_DidPlaceOrderSuccess object:nil];
     }
     return self;
 }
 
-- (void)didReceiveNotification:(NSNotification *)noti
-{
-    if ([noti.name isEqualToString:@"DidPlaceOrder-Before"]) {
-        order = noti.object;
-        payment = [noti.userInfo valueForKey:@"payment"];
-        if ([[[payment valueForKey:@"payment_method"] lowercaseString] isEqualToString:@"simicheckoutcom"] &&[order valueForKey:@"invoice_number"]) {
-            SCCheckoutcomViewController *checkoutVC = [[SCCheckoutcomViewController alloc] init];
-            checkoutVC.order = [[SimiOrderModel alloc]initWithDictionary:order];
-            UINavigationController *currentVC = [SimiGlobalVar sharedInstance].currentlyNavigationController;
-            UINavigationController *navi  = [[UINavigationController alloc]initWithRootViewController:checkoutVC];
-            [currentVC presentViewController:navi animated:YES completion:nil];
-        }
+- (void)didPlaceOrder:(NSNotification *)noti{
+    order = noti.object;
+    payment = [noti.userInfo valueForKey:KEYEVENT.ORDERVIEWCONTROLLER.selected_payment];
+    if ([[payment.code lowercaseString] isEqualToString:@"simicheckoutcom"] && order.invoiceNumber) {
+        SCCheckoutcomViewController *checkoutVC = [[SCCheckoutcomViewController alloc] init];
+        checkoutVC.order = order;
+        UINavigationController *currentVC = [SimiGlobalVar sharedInstance].currentlyNavigationController;
+        UINavigationController *navi  = [[UINavigationController alloc]initWithRootViewController:checkoutVC];
+        [currentVC presentViewController:navi animated:YES completion:nil];
     }
 }
 @end
