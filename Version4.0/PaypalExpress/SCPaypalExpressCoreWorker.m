@@ -30,10 +30,10 @@ static NSString *product_paypalcheckout_row = @"product_paypalcheckout_row";
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didChangeCart:) name:@"SCCartViewControllerViewDidAppear" object:nil];
         
         //open webview after placed Order
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didPlaceOrderBefore:) name:@"DidPlaceOrder-Before" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didPlaceOrder:) name:SCOrderViewController_DidPlaceOrderSuccess object:nil];
         
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initProductCellsAfter:) name:@"InitProductCells-After" object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializedProductCellAfter:) name:InitializedProductCellAfter object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initProductCellsAfter:) name:[NSString stringWithFormat:@"%@%@",SCProductSecondDesignViewController_RootEventName,SimiTableViewController_SubKey_InitCells_End] object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializedProductCellAfter:) name:[NSString stringWithFormat:@"%@%@",SCProductSecondDesignViewController_RootEventName,SimiTableViewController_SubKey_InitializedCell_End] object:nil];
         
         paypalExpressConfig = [[SimiGlobalVar sharedInstance].storeView.modelData valueForKey:@"paypal_express_config"];
     }
@@ -41,8 +41,7 @@ static NSString *product_paypalcheckout_row = @"product_paypalcheckout_row";
 }
 #pragma mark -
 #pragma mark Add Button to Product View Controller
--(void)sCProductViewControllerViewWillAppear: (NSNotification *)noti
-{
+- (void)sCProductViewControllerViewWillAppear:(NSNotification *)noti{
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didGetProductWithProductId:) name:Simi_DidGetProductModel object:nil];
     productViewController = (SCProductViewController *)noti.object;
     productActionView = productViewController.viewAction;
@@ -51,8 +50,7 @@ static NSString *product_paypalcheckout_row = @"product_paypalcheckout_row";
     }
 }
 
--(void)didGetProductWithProductId: (NSNotification *)noti
-{
+- (void)didGetProductWithProductId:(NSNotification *)noti{
     [self removeObserverForNotification:noti];
     if ([[paypalExpressConfig valueForKey:@"show_on_product_detail"]boolValue]) {
         if (btnPaypalProduct == nil) {
@@ -88,8 +86,7 @@ static NSString *product_paypalcheckout_row = @"product_paypalcheckout_row";
 }
 
 #pragma mark Product Second Design
-- (void)initProductCellsAfter:(NSNotification*)noti
-{
+- (void)initProductCellsAfter:(NSNotification*)noti{
     if ([[paypalExpressConfig valueForKey:@"show_on_product_detail"]boolValue]) {
         SimiTable *cells = noti.object;
         SimiSection *mainSection = [cells getSectionByIdentifier:product_main_section];
@@ -102,11 +99,13 @@ static NSString *product_paypalcheckout_row = @"product_paypalcheckout_row";
     }
 }
 
-- (void)initializedProductCellAfter:(NSNotification*)noti
-{
-    SimiRow *row = [noti.userInfo valueForKey:@"row"];
+- (void)initializedProductCellAfter:(NSNotification*)noti{
+    SimiTable *cells = noti.object;
+    NSIndexPath *indexPath = [noti.userInfo valueForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.indexpath];
+    SimiSection *section = [cells objectAtIndex:indexPath.section];
+    SimiRow *row = [section objectAtIndex:indexPath.row];
     if ([row.identifier isEqualToString:product_paypalcheckout_row]) {
-        UITableViewCell *cell = [noti.userInfo valueForKey:@"cell"];
+        UITableViewCell *cell = [noti.userInfo valueForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.cell];
         if ([[paypalExpressConfig valueForKey:@"show_on_product_detail"]boolValue]) {
             if (btnPaypalProductNew == nil) {
                 CGFloat buttonWidth = [SimiGlobalVar scaleValue:290];
@@ -131,8 +130,7 @@ static NSString *product_paypalcheckout_row = @"product_paypalcheckout_row";
 }
 
 #pragma mark Add Button to Cart View Controller
--(void)didChangeCart: (NSNotification *)noti
-{
+- (void)didChangeCart:(NSNotification *)noti{
     if (PHONEDEVICE) {
         SCCartViewController * cartVC = [[SCAppController sharedInstance].navigationBarPhone cartViewController];
         if ((cartVC.cart == nil) || (cartVC.cart.count == 0)|| ![[paypalExpressConfig valueForKey:@"show_on_cart"]boolValue]) {
@@ -155,8 +153,7 @@ static NSString *product_paypalcheckout_row = @"product_paypalcheckout_row";
             [cartVC.btnCheckout setFrame:CGRectMake(padding + buttonWidth +buttonDistance, buttonY, buttonWidth, buttonHeight)];
             [cartVC.view addSubview:btnPaypalCart];
         }
-    }
-    else {
+    }else {
         SCCartViewController * cartVC = [[SCAppController sharedInstance].navigationBarPad cartViewControllerPad];
         if ((cartVC.cart == nil) || (cartVC.cart.count == 0) || ![[paypalExpressConfig valueForKey:@"show_on_cart"]boolValue]){
             btnPaypalCart.hidden = YES;
@@ -172,15 +169,17 @@ static NSString *product_paypalcheckout_row = @"product_paypalcheckout_row";
             btnPaypalCart.layer.shadowOffset = CGSizeMake(-0, 5);
             
             [btnPaypalCart addTarget:self action:@selector(startPaypalCheckout) forControlEvents:UIControlEventTouchUpInside];
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializedCartCellAfter:) name:@"InitializedCartCell-After" object:nil];
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializedCartCellAfter:) name:[NSString stringWithFormat:@"%@%@",SCCartViewController_RootEventName,SimiTableViewController_SubKey_InitializedCell_End] object:nil];
         }
     }
     btnPaypalCart.hidden = NO;
 }
 
--(void)initializedCartCellAfter:(NSNotification *)noti
-{
-    SimiRow *row = [noti.userInfo objectForKey:@"row"];
+- (void)initializedCartCellAfter:(NSNotification *)noti{
+    SimiTable *cells = noti.object;
+    NSIndexPath *indexPath = [noti.userInfo valueForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.indexpath];
+    SimiSection *section = [cells objectAtIndex:indexPath.section];
+    SimiRow *row = [section objectAtIndex:indexPath.row];
     if (row.identifier == CART_CHECKOUT_ROW) {
         UITableViewCell *cell = [noti.userInfo objectForKey:@"cell"];
         [cell addSubview:btnPaypalCart];
@@ -192,10 +191,9 @@ static NSString *product_paypalcheckout_row = @"product_paypalcheckout_row";
 
 #pragma mark Open Webview After placed Order
 //while paypal checkout runs like normall offline payments
-- (void)didPlaceOrderBefore:(NSNotification *)noti
-{
-    SimiModel *payment = [noti.userInfo valueForKey:@"payment"];
-    if ([[payment valueForKey:@"payment_method"] isEqualToString:@"PAYPAL_EXPRESS"]) {
+- (void)didPlaceOrder:(NSNotification *)noti{
+    SimiPaymentMethodModel *payment = [noti.userInfo valueForKey:KEYEVENT.ORDERVIEWCONTROLLER.selected_payment];
+    if ([payment.code isEqualToString:@"PAYPAL_EXPRESS"]) {
         SimiResponder *responder = [noti.userInfo valueForKey:responderKey];
         if (responder.status == SUCCESS) {
             [self startPaypalCheckout];
@@ -204,14 +202,12 @@ static NSString *product_paypalcheckout_row = @"product_paypalcheckout_row";
 }
 
 #pragma mark Paypal Checkout Actions
--(void)didClickProductPaypalButton:(id)sender
-{
+- (void)didClickProductPaypalButton:(id)sender{
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didAddToCart:) name:Simi_DidAddToCart object:nil];
     [productViewController addToCart];
 }
 
--(void)didAddToCart:(NSNotification *)noti
-{
+- (void)didAddToCart:(NSNotification *)noti{
     SimiResponder *responder = [noti.userInfo valueForKey:responderKey];
     if (responder.status == SUCCESS) {
         [self startPaypalCheckout];
@@ -220,7 +216,7 @@ static NSString *product_paypalcheckout_row = @"product_paypalcheckout_row";
 }
 
 
--(void)startPaypalCheckout{
+- (void)startPaypalCheckout{
     UINavigationController *currentVC = kNavigationController;
     webViewController = [SCPaypalExpressWebViewController new];
     [currentVC pushViewController:webViewController animated:YES];
@@ -230,8 +226,7 @@ static NSString *product_paypalcheckout_row = @"product_paypalcheckout_row";
 #pragma mark -
 #pragma mark dealloc
 
-- (void)dealloc
-{
+- (void)dealloc{
     [[NSNotificationCenter defaultCenter]removeObserver:self];
 }
 

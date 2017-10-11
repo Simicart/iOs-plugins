@@ -22,17 +22,16 @@
 
 @interface SCPaypalExpressAddressReviewViewController : SimiViewController <UITableViewDataSource, UITableViewDelegate, SCNewAddressDelegate>
 
-@property (strong, nonatomic) SCPaypalExpressModel * paypalModel;
+@property (strong, nonatomic) SCPaypalExpressModel *paypalModel;
+@property (strong, nonatomic) SimiTableView *addressTableView;
+@property (strong, nonatomic) SimiAddressModel *shippingAddress;
+@property (strong, nonatomic) SimiAddressModel *billingAddress;
 
-@property (strong, nonatomic) SimiTableView * addressTableView;
-@property (strong, nonatomic) SimiAddressModel * shippingAddress;
-@property (strong, nonatomic) SimiAddressModel * billingAddress;
-
-@property (strong, nonatomic) UIButton * updateButton;
-@property (strong, nonatomic) UIView * updateAddressView;
+@property (strong, nonatomic) UIButton *updateButton;
+@property (strong, nonatomic) UIView *updateAddressView;
 
 @property (strong, nonatomic) id<SCPaypalExpressAddressReviewViewController_Delegate> delegate;
 
--(void)getAddresses;
+- (void)getAddresses;
 
 @end

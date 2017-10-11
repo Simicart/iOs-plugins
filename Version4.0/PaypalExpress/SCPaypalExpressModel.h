@@ -8,6 +8,12 @@
 
 #import <SimiCartBundle/SimiCartBundle.h>
 #import "SCPaypalExpressAPI.h"
+static NSString *const SCPaypalExpress_DidStartPaypalExpress = @"SCPaypalExpress_DidStartPaypalExpress";
+static NSString *const SCPaypalExpress_DidGetPaypalAddressInformation = @"SCPaypalExpress_DidGetPaypalAddressInformation";
+static NSString *const SCPaypalExpress_PaypalExpressDidPlaceOrder = @"SCPaypalExpress_PaypalExpressDidPlaceOrder";
+static NSString *const SCPaypalExpress_DidUpdatePaypalCheckoutAddress = @"SCPaypalExpress_DidUpdatePaypalCheckoutAddress";
+static NSString *const SCPaypalExpress_DidGetPaypalCheckoutShippingMethods = @"SCPaypalExpress_DidGetPaypalCheckoutShippingMethods";
+static NSString *const SCPaypalExpress_DidCompleteCheckOutWithPaypalExpress = @"SCPaypalExpress_DidCompleteCheckOutWithPaypalExpress";
 
 @interface SCPaypalExpressModel: SimiModel
 

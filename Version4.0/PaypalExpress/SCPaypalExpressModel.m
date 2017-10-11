@@ -10,46 +10,33 @@
 
 @implementation SCPaypalExpressModel
 
-- (void)startPaypalExpress
-{
-    currentNotificationName = @"DidStartPaypalExpress";
-    keyResponse = @"ppexpressapi";
-    [self preDoRequest];
-    modelActionType = ModelActionTypeGet;
-    [(SCPaypalExpressAPI *)[self getAPI] startPaypalExpress:self selector:@selector(didFinishRequest:responder:)];
+- (void)startPaypalExpress{
+    notificationName = SCPaypalExpress_DidStartPaypalExpress;
+    self.parseKey = @"ppexpressapi";
+    [[SCPaypalExpressAPI new] startPaypalExpress:self selector:@selector(didGetResponseFromNetwork:)];
 }
 
-- (void)reviewAddress
-{
-    currentNotificationName = @"DidGetPaypalAdressInformation";
-    keyResponse = @"ppexpressapi";
-    [self preDoRequest];
-    modelActionType = ModelActionTypeGet;
-    [(SCPaypalExpressAPI *)[self getAPI] reviewAddress:self selector:@selector(didFinishRequest:responder:)];
+- (void)reviewAddress{
+    notificationName = SCPaypalExpress_DidGetPaypalAddressInformation;
+    self.parseKey = @"ppexpressapi";
+    [[SCPaypalExpressAPI new] reviewAddress:self selector:@selector(didGetResponseFromNetwork:)];
 }
 
 - (void)placeOrderWithParam:(NSDictionary *)params{
-    modelActionType = ModelActionTypeGet;
-    currentNotificationName = @"PaypalExpressDidPlaceOrder";
-    keyResponse = @"order";
-    [self preDoRequest];
-    [(SCPaypalExpressAPI *)[self getAPI] placeOrderWithParam:params target:self selector:@selector(didFinishRequest:responder:)];
+    notificationName = SCPaypalExpress_PaypalExpressDidPlaceOrder;
+    self.parseKey = @"order";
+    [[SCPaypalExpressAPI new] placeOrderWithParam:params target:self selector:@selector(didGetResponseFromNetwork:)];
 }
 
 - (void)updateAddressWithParam:(NSDictionary *)params{
-    modelActionType = ModelActionTypeGet;
-    currentNotificationName = @"DidUpdatePaypalCheckoutAddress";
-    keyResponse = @"ppexpressapi";
-    [self preDoRequest];
-    [(SCPaypalExpressAPI *)[self getAPI] updateAddressWithParam:params target:self selector:@selector(didFinishRequest:responder:)];
+    notificationName = SCPaypalExpress_DidUpdatePaypalCheckoutAddress;
+    self.parseKey = @"ppexpressapi";
+    [[SCPaypalExpressAPI new] updateAddressWithParam:params target:self selector:@selector(didGetResponseFromNetwork:)];
 }
 
-- (void)getShippingMethods
-{
-    currentNotificationName = @"DidGetPaypalCheckoutShippingMethods";
-    keyResponse = @"ppexpressapi";
-    [self preDoRequest];
-    modelActionType = ModelActionTypeGet;
-    [(SCPaypalExpressAPI *)[self getAPI] getShippingMethod:self selector:@selector(didFinishRequest:responder:)];
+- (void)getShippingMethods{
+    notificationName = SCPaypalExpress_DidGetPaypalCheckoutShippingMethods;
+    self.parseKey = @"ppexpressapi";
+    [[SCPaypalExpressAPI new] getShippingMethod:self selector:@selector(didGetResponseFromNetwork:)];
 }
 @end

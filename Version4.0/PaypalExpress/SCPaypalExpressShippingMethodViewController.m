@@ -10,32 +10,27 @@
 #import <SimiCartBundle/SimiFormatter.h>
 #import <SimiCartBundle/SCCartViewControllerPad.h>
 
-@interface SCPaypalExpressShippingMethodViewController ()
-{
+@interface SCPaypalExpressShippingMethodViewController (){
     NSMutableArray *listShippingMethods;
 }
 @end
 
-@implementation SCPaypalExpressShippingMethodViewController
-{
+@implementation SCPaypalExpressShippingMethodViewController{
     UIButton * placeOrderButton;
     NSIndexPath * checkedData;
 }
 @synthesize paypalModel,paypalShippingModel,shippingMethodTableView;
 
 
-- (void)viewDidLoadBefore
-{
+- (void)viewDidLoadBefore{
     self.navigationItem.title = SCLocalizedString(@"Shipping Method");
 }
 
-- (void)viewWillAppearBefore:(BOOL)animated
-{
+- (void)viewWillAppearBefore:(BOOL)animated{
     
 }
 
-- (void)viewDidAppearBefore:(BOOL)animated
-{
+- (void)viewDidAppearBefore:(BOOL)animated{
     if (shippingMethodTableView == nil) {
         shippingMethodTableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStyleGrouped];
         shippingMethodTableView.dataSource = self;
@@ -47,20 +42,18 @@
 }
 
 #pragma mark Get Shipping Methods
-- (void)getShippingMethod
-{
+- (void)getShippingMethod{
     [self startLoadingData];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didGetShippingMethods:) name:@"DidGetPaypalCheckoutShippingMethods" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didGetShippingMethods:) name:SCPaypalExpress_DidGetPaypalCheckoutShippingMethods object:nil];
     paypalShippingModel = [SCPaypalExpressModel new];
     [paypalShippingModel getShippingMethods];
 }
 
-- (void)didGetShippingMethods:(NSNotification *)noti
-{
+- (void)didGetShippingMethods:(NSNotification *)noti{
     SimiResponder *responder = [noti.userInfo valueForKey:responderKey];
     [self removeObserverForNotification:noti];
     [self stopLoadingData];
-    if ([responder.status isEqualToString:@"SUCCESS"]) {
+    if (responder.status == SUCCESS) {
         listShippingMethods = [[NSMutableArray alloc]initWithArray:[paypalShippingModel valueForKey:@"methods"]];
         for(int i = 0; i < listShippingMethods.count; i++) {
             SimiModel *shippingMethod = [listShippingMethods objectAtIndex:i];
@@ -71,21 +64,19 @@
         [shippingMethodTableView reloadData];
     }
     else {
-        UIAlertView * alert = [[UIAlertView alloc]initWithTitle:SCLocalizedString(@"Error") message:responder.responseMessage delegate:self cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles: nil];
+        UIAlertView * alert = [[UIAlertView alloc]initWithTitle:SCLocalizedString(@"Error") message:responder.message delegate:self cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles: nil];
         [alert show];
     }
 }
 
 #pragma mark TableView Datasource
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
-{
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
     if(listShippingMethods == nil)
         return 0;
     return 2;
 }
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
-{
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
     if (section == 0) {
         return [listShippingMethods count];
     }
@@ -93,8 +84,7 @@
 }
 
 
-- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
-{
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section{
     NSString * title = @"";
     switch (section) {
         case 0:
@@ -107,13 +97,11 @@
 }
 
 
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
     return 50;
 }
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-{
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     UITableViewCell *cell = [[UITableViewCell alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 40)];
     if ((checkedData.row != indexPath.row)||(checkedData.section != indexPath.section))
         cell.accessoryType = UITableViewCellAccessoryNone;
@@ -163,8 +151,7 @@
 
 
 #pragma mark Table View Delegate
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     if (indexPath.section == 0) {
         checkedData = indexPath;
         [tableView reloadData];
@@ -172,29 +159,24 @@
 }
 
 #pragma mark Place Order
-- (void)placeOrder :(id)sender
-{
+- (void)placeOrder :(id)sender{
     [self startLoadingData];
-    
     if (paypalModel == nil) {
         paypalModel = [[SCPaypalExpressModel alloc]init];
     }
-    
     SCPaypalExpressModel *selected;
     if (checkedData == nil) {
         selected = [listShippingMethods objectAtIndex:0];
-    }
-    else {
+    }else{
         selected = [listShippingMethods objectAtIndex:checkedData.row];
     }
-    SimiModel *method = [SimiModel new];
+    NSMutableDictionary *method = [NSMutableDictionary new];
     [method setValue:@{@"method":[NSString stringWithFormat:@"%@",[selected objectForKey:@"s_method_code"]]}forKey:@"s_method"];
     [paypalModel placeOrderWithParam:method];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didPlaceOrder:) name:@"PaypalExpressDidPlaceOrder" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didPlaceOrder:) name:SCPaypalExpress_PaypalExpressDidPlaceOrder object:nil];
 }
 
-- (void)didPlaceOrder:(NSNotification *)noti
-{
+- (void)didPlaceOrder:(NSNotification *)noti{
     [self stopLoadingData];
     SimiResponder *responder = [noti.userInfo valueForKey:responderKey];
     if (PHONEDEVICE) {
@@ -205,15 +187,15 @@
         SCCartViewControllerPad * cartVC = [[SCAppController sharedInstance].navigationBarPad cartViewControllerPad];
         [cartVC getCart];
     }
-    if ([responder.status isEqualToString:@"SUCCESS"]) {
-        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:SCLocalizedString(responder.status) message:SCLocalizedString(@"Thank you for your purchase") delegate:nil cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles: nil];
+    if (responder.status == SUCCESS) {
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:SCLocalizedString(@"SUCCESS") message:SCLocalizedString(@"Thank you for your purchase") delegate:nil cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles: nil];
         [alertView show];
     }
     else {
-        UIAlertView * alert = [[UIAlertView alloc]initWithTitle:@"" message:responder.responseMessage delegate:self cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles: nil];
+        UIAlertView * alert = [[UIAlertView alloc]initWithTitle:@"" message:responder.message delegate:self cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles: nil];
         [alert show];
     }
     [self.navigationController dismissViewControllerAnimated:YES completion:nil];
-    [[NSNotificationCenter defaultCenter]postNotificationName:@"DidCompleteCheckOutWithPaypalExpress" object:nil];
+    [[NSNotificationCenter defaultCenter]postNotificationName:SCPaypalExpress_DidCompleteCheckOutWithPaypalExpress object:nil];
 }
 @end
