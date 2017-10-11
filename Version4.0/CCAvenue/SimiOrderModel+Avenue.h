@@ -8,9 +8,8 @@
 
 #import <Foundation/Foundation.h>
 #import <SimiCartBundle/SimiOrderModel.h>
+static NSString *const CCAvenue_DidUpdateAvenuePayment = @"CCAvenue_DidUpdateAvenuePayment";
 
 @interface SimiOrderModel (Avenue)
-
 - (void)updateAvenueOrderWithParams:(NSDictionary *)params;
-
 @end

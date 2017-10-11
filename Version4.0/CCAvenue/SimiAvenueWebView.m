@@ -21,24 +21,20 @@
 
 @synthesize webTitle, urlPath, content;
 
-- (void)viewDidLoadBefore
-{
+- (void)viewDidLoadBefore{
     [super viewDidLoadBefore];
 }
 
-- (void)viewDidLoadAfter
-{
+- (void)viewDidLoadAfter{
     [self setToSimiView];
     self.navigationItem.title = SCLocalizedString(@"CCAvenue");
 }
 
-- (void)viewWillAppearBefore:(BOOL)animated
-{
+- (void)viewWillAppearBefore:(BOOL)animated{
     
 }
 
-- (void)viewDidAppearBefore:(BOOL)animated
-{
+- (void)viewDidAppearBefore:(BOOL)animated{
     if (_webView == nil) {
         _webView = [[UIWebView alloc] initWithFrame:self.view.bounds];
         _webView.scalesPageToFit = YES;
@@ -88,10 +84,8 @@
     }
 }
 
-- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
-{
+- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType{
     NSString *requestURL = [NSString stringWithFormat:@"%@",request];
-    NSLog(@"%@", requestURL);
     if([requestURL rangeOfString:@"success"].location != NSNotFound || ([requestURL rangeOfString:@"TransactionNo"].location != NSNotFound && [requestURL rangeOfString:@"AuthorizeId"].location != NSNotFound)){
         [self showAlertWithTitle:@"SUCCESS" message:@"Thank your for purchase"];
         [self.navigationController dismissViewControllerAnimated:YES completion:nil];
