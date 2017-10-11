@@ -12,7 +12,6 @@
 @interface SimiTwoCheckoutWebView : SCRedirectPaymentViewController<UIWebViewDelegate>{
     NSURL *url;
 }
-
 @property (strong, nonatomic) NSString *urlPath;
 @property (strong, nonatomic) NSString *webTitle;
 @property (strong, nonatomic) UIWebView *webView;

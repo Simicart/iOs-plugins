@@ -17,29 +17,17 @@
 
 @synthesize webTitle, urlPath, content, urlCallBack, invoiceNumber;
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
-{
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (self) {
-        // Custom initialization
-    }
-    return self;
-}
-
-- (void)viewDidLoadBefore
-{
+- (void)viewDidLoadBefore{
     [super viewDidLoadBefore];
     [self setToSimiView];
     self.navigationItem.title = SCLocalizedString(@"2Checkout");
 }
 
-- (void)viewWillAppearBefore:(BOOL)animated
-{
+- (void)viewWillAppearBefore:(BOOL)animated{
     
 }
 
-- (void)viewDidAppearBefore:(BOOL)animated
-{
+- (void)viewDidAppearBefore:(BOOL)animated{
     if (_webView == nil) {
         _webView = [[UIWebView alloc] initWithFrame:self.view.bounds];
         _webView.scalesPageToFit = NO;
@@ -108,20 +96,19 @@
     [params setValue:invoiceNumber forKey:@"invoice_number"];
     [params setValue:@"1" forKey:@"payment_status"];
     [twoCheckoutModel updateTwoutOrderWithParams:params];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdatePayment:) name:@"DidUpdate2CheckoutPayment" object:twoCheckoutModel];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdatePayment:) name:TwoutCheckOut_DidUpdate2CheckoutPayment object:twoCheckoutModel];
     [self startLoadingData];
 }
 
 - (void)didUpdatePayment:(NSNotification *)noti{
     SimiResponder *responder = [noti.userInfo valueForKey:responderKey];
     [self stopLoadingData];
-    if ([responder.status isEqualToString:@"SUCCESS"]) {
-        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:SCLocalizedString(responder.status) message:SCLocalizedString(@"Thank you for your purchase") delegate:nil cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles: nil];
+    if (responder.status == SUCCESS) {
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:SCLocalizedString(@"SUCCESS") message:SCLocalizedString(@"Thank you for your purchase") delegate:nil cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles: nil];
         [alertView show];
-
         [self.navigationController dismissViewControllerAnimated:YES completion:nil];
     }else{
-        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:SCLocalizedString(responder.status) message:responder.responseMessage delegate:nil cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles: nil];
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:SCLocalizedString(@"FAIL") message:responder.message delegate:nil cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles: nil];
         [alertView show];
     }
     [self removeObserverForNotification:noti];
