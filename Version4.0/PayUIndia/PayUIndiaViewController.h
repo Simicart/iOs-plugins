@@ -7,7 +7,6 @@
 //
 
 #import <SimiCartBundle/SimiCartBundle.h>
-
 #import <SimiCartBundle/SCRedirectPaymentViewController.h>
 
 @interface PayUIndiaViewController : SCRedirectPaymentViewController<UIWebViewDelegate>

@@ -16,24 +16,21 @@
     UIWebView* payUIndianWebView;
 }
 
-- (void)viewDidLoadBefore
-{
+- (void)viewDidLoadBefore{
     [super viewDidLoadBefore];
     self.navigationItem.title = SCLocalizedString(@"PayU Indian");
 }
 
-- (void)viewWillAppearBefore:(BOOL)animated
-{
+- (void)viewWillAppearBefore:(BOOL)animated{
     
 }
 
-- (void)viewDidAppearBefore:(BOOL)animated
-{
+- (void)viewDidAppearBefore:(BOOL)animated{
     [super viewDidAppearBefore:animated];
     if (payUIndianWebView == nil) {
         payUIndianWebView = [[UIWebView alloc]initWithFrame:self.view.bounds];
         payUIndianWebView.delegate = self;
-        NSURL *url = [[NSURL alloc]initWithString:[[self.order valueForKey:@"url_action"] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+        NSURL *url = [[NSURL alloc]initWithString:[self.order.urlAction stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
         NSURLRequest *request = [[NSURLRequest alloc]initWithURL:url];
         [payUIndianWebView loadRequest:request];
         [self.view addSubview:payUIndianWebView];
@@ -45,7 +42,6 @@
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
 {
     NSString *stringRequest = [NSString stringWithFormat:@"%@",request];
-    NSLog(@"%@",stringRequest);
     if ([stringRequest containsString:@"_payment_options"]) {
         [self stopLoadingData];
     }

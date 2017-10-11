@@ -16,7 +16,7 @@
 #define PAYPAL_MOBILE @"PAYPAL_MOBILE"
 
 @implementation SCPaypalMobileInitWorker{
-    SimiModel *payment;
+    SimiPaymentMethodModel *payment;
     NSString *payPalAppKey;
     NSString *payPalReceiverEmail;
     NSString *bnCode;
@@ -25,66 +25,36 @@
     SimiOrderModel *paypalOrder;
 }
 
-- (id)init
-{
+- (id)init{
     self = [super init];
     if (self) {
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:DidPlaceOrderAfter object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"DidSelectPaymentMethod" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didPlaceOrder:) name:SCOrderViewController_DidPlaceOrderSuccess object:nil];
     }
     return self;
 }
 
-- (void)didReceiveNotification:(NSNotification *)noti{
-    payment = [noti.userInfo valueForKey:@"payment"];
-    if ([[payment valueForKey:@"payment_method"] isEqualToString:PAYPAL_MOBILE]) {
-        if ([noti.name isEqualToString:@"DidSelectPaymentMethod"]) {
-            payPalAppKey = [payment valueForKey:@"client_id"];
-            payPalReceiverEmail = [payment valueForKey:@"email"];
-            BOOL isSandbox = [[payment valueForKey:@"is_sandbox"] boolValue];
-            @try {
-                if (isSandbox) {
-                    [PayPalMobile initializeWithClientIdsForEnvironments:@{PayPalEnvironmentSandbox : payPalAppKey}];
-                    [PayPalMobile preconnectWithEnvironment:PayPalEnvironmentSandbox];
-                }else{
-                    [PayPalMobile initializeWithClientIdsForEnvironments:@{PayPalEnvironmentProduction : payPalAppKey}];
-                    [PayPalMobile preconnectWithEnvironment:PayPalEnvironmentProduction];
-                }
-            }
-            @catch (NSException *exception) {
-                UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:SCLocalizedString(@"Error") message:SCLocalizedString(@"Sorry, PayPal is not now available. Please try again later") delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil];
-                alertView.tag = ALERT_VIEW_ERROR;
-                [alertView show];
-                [viewController stopLoadingData];
-            }
-            @finally {
-                
-            }
-        }else if ([noti.name isEqualToString:DidPlaceOrderAfter]){
-            [self didPlaceOrder:noti];
-        }
-    }
-}
-
 - (void)didPlaceOrder:(NSNotification *)noti{
-    viewController = [noti.userInfo valueForKey:@"controller"];
+    order = noti.object;
+    payment = [noti.userInfo valueForKey:KEYEVENT.ORDERVIEWCONTROLLER.selected_payment];
+    viewController = [noti.userInfo valueForKey:KEYEVENT.ORDERVIEWCONTROLLER.viewcontroller];
+    if (![payment.code isEqualToString:@"PAYPAL_MOBILE"]) {
+        return;
+    }
     if (!viewController) {
         UINavigationController *navi = [SimiGlobalVar sharedInstance].currentlyNavigationController;
         viewController = [navi.viewControllers lastObject];
         
     }
-    order = [noti.userInfo valueForKey:@"data"];
-    SimiModel *fee = [order valueForKey:@"total"];
-    
     payPalAppKey = [payment valueForKey:@"client_id"];
     payPalReceiverEmail = [payment valueForKey:@"email"];
     bnCode = [payment valueForKey:@"bncode"];
-    
     BOOL isSandbox = [[payment valueForKey:@"is_sandbox"] boolValue];
     @try {
         if (isSandbox) {
+            [PayPalMobile initializeWithClientIdsForEnvironments:@{PayPalEnvironmentSandbox : payPalAppKey}];
             [PayPalMobile preconnectWithEnvironment:PayPalEnvironmentSandbox];
         }else{
+            [PayPalMobile initializeWithClientIdsForEnvironments:@{PayPalEnvironmentProduction : payPalAppKey}];
             [PayPalMobile preconnectWithEnvironment:PayPalEnvironmentProduction];
         }
         
@@ -94,19 +64,19 @@
         _payPalConfig.payPalShippingAddressOption = PayPalShippingAddressOptionBoth;
         
         PayPalPayment *pay = [[PayPalPayment alloc] init];
-        pay.amount = [[NSDecimalNumber alloc] initWithString:[NSString stringWithFormat:@"%@",[fee valueForKey:@"grand_total_incl_tax"]]];
+        pay.amount = [[NSDecimalNumber alloc] initWithString:[NSString stringWithFormat:@"%@",[order.total valueForKey:@"grand_total_incl_tax"]]];
         pay.currencyCode = [[SimiGlobalVar sharedInstance] currencyCode];
         pay.bnCode = bnCode;
         pay.shortDescription = [NSString stringWithFormat:@"%@ #: %@", SCLocalizedString(@"Invoice"), [order valueForKey:@"invoice_number"]];
         
-        NSDictionary *shippingAddress = [order objectForKey:@"shipping_address"];
+        SimiAddressModel *shippingAddress = order.shippingAddress;
         PayPalShippingAddress *paypalShippingAddress = [[PayPalShippingAddress alloc] init];
-        paypalShippingAddress.city = [shippingAddress objectForKey:@"city"];
-        paypalShippingAddress.countryCode = [shippingAddress objectForKey:@"country_id"];
-        paypalShippingAddress.recipientName = [NSString stringWithFormat:@"%@ %@",[shippingAddress objectForKey:@"firstname"],[shippingAddress objectForKey:@"lastname"]];
-        paypalShippingAddress.postalCode = [shippingAddress objectForKey:@"postcode"];
-        paypalShippingAddress.state = [shippingAddress objectForKey:@"region"];
-        paypalShippingAddress.line1 = [shippingAddress objectForKey:@"street"];
+        paypalShippingAddress.city = shippingAddress.city;
+        paypalShippingAddress.countryCode = shippingAddress.countryId;
+        paypalShippingAddress.recipientName = [NSString stringWithFormat:@"%@ %@",shippingAddress.firstName,shippingAddress.lastName];
+        paypalShippingAddress.postalCode = shippingAddress.postcode;
+        paypalShippingAddress.state = shippingAddress.region;
+        paypalShippingAddress.line1 = shippingAddress.street;
         pay.shippingAddress = paypalShippingAddress;
         
         
@@ -142,7 +112,7 @@
 
 - (void)didUpdatePaymentStatus:(NSNotification *)noti{
     SimiResponder *responder = [noti.userInfo valueForKey:responderKey];
-    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:SCLocalizedString(responder.status) message:SCLocalizedString([paypalOrder valueForKey:@"message"]) delegate:nil cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles: nil];
+    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"" message:SCLocalizedString([paypalOrder valueForKey:@"message"]) delegate:nil cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles: nil];
     [alertView show];
     [self removeObserverForNotification:noti];
     [viewController stopLoadingData];
@@ -167,7 +137,7 @@
     if (paypalOrder == nil) {
         paypalOrder = [SimiOrderModel new];
     }
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdatePaymentStatus:) name:DidSavePaypalPayment object:paypalOrder];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdatePaymentStatus:) name:Simi_DidSavePaypalPayment object:paypalOrder];
     [paypalOrder savePaymentWithStatus:[NSString stringWithFormat:@"%ld",(long)paymentStatus] invoiceNumber:[NSString stringWithFormat:@"%@",[order valueForKey:@"invoice_number"]] proof:proof];
     [viewController dismissViewControllerAnimated:YES completion:^{
         [[UINavigationBar appearance] setTintColor:[UIColor whiteColor]];
