@@ -56,8 +56,7 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"ApplicationDidBecomeActive" object:nil];
 }
 
-- (void)viewDidAppear:(BOOL)animated
-{
+- (void)viewDidAppear:(BOOL)animated{
     if (isFistLoad) {
         isFistLoad = NO;
         CGRect frame = self.view.bounds;

@@ -9,7 +9,7 @@
 #import <SimiCartBundle/SimiCartBundle.h>
 #import <SimiCartBundle/SimiModel.h>
 
-#define BarCodeDidGetProductID @"BarCode-DidGetProductID"
+static NSString *const BarCodeDidGetProductID =  @"BarCode-DidGetProductID";
 
 @interface BarCodeModel : SimiModel
 @property (strong, nonatomic) NSString *barcodeId;
@@ -21,5 +21,5 @@
 @property (strong, nonatomic) NSString *productSku;
 @property (strong, nonatomic) NSString *createdDate;
 
-- (void)getProductIdWithBarCode:(NSString*) barCode type:(NSString*) type;
+- (void)getProductIdWithBarCode:(NSString*)barCode type:(NSString*)type;
 @end

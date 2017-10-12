@@ -12,5 +12,5 @@
 extern NSString *const kBarCodeGetProductID;
 
 @interface BarCodeAPI : SimiAPI
-- (void)getProductIdWithBarCode:(NSString*) barCode type:(NSString*) type target:(id)target selector:(SEL)selector;
+- (void)getProductIdWithBarCode:(NSString*)barCode type:(NSString*)type target:(id)target selector:(SEL)selector;
 @end
