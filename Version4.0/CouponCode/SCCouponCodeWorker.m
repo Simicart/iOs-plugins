@@ -22,11 +22,11 @@
 }
 - (id)init {
     if(self == [super init]) {
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initCartCellAfter:) name:InitCartCellAfter object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializedCartCellBefore:) name:InitializedCartCellBefore object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orderViewControllerInitTableAfter:) name:SCOrderViewControllerInitTableAfter object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orderViewControllerInitRightTableAfter:) name:SCOrderViewControllerInitRightTableAfter object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializedOrderCellBefore:) name:InitializedOrderCellBefore object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initCartCellAfter:) name:[NSString stringWithFormat:@"%@%@",SCCartViewController_RootEventName,SimiTableViewController_SubKey_InitCells_End] object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializedCartCellBefore:) name:[NSString stringWithFormat:@"%@%@",SCCartViewController_RootEventName,SimiTableViewController_SubKey_InitializedCell_End] object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orderViewControllerInitTableAfter:) name:[NSString stringWithFormat:@"%@%@",SCOrderViewController_RootEventName,SimiTableViewController_SubKey_InitCells_End] object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orderViewControllerInitRightTableAfter:) name:[NSString stringWithFormat:@"%@%@",SCOrderViewController_RootEventName,SimiTableViewController_SubKey_InitMoreCells_End] object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializedOrderCellBefore:) name:[NSString stringWithFormat:@"%@%@",SCOrderViewController_RootEventName,SimiTableViewController_SubKey_InitializedCell_End] object:nil];
     }
     return self;
 }
@@ -38,14 +38,16 @@
 }
 
 - (void)initializedCartCellBefore: (NSNotification *)noti {
-    UITableView *tableView = [noti.userInfo objectForKey:@"tableView"];
-    SimiRow *row = [noti.userInfo objectForKey:@"row"];
-    SimiSection *section = [noti.userInfo objectForKey:@"section"];
-    cartVC = noti.object;
+    NSIndexPath *indexPath = [noti.userInfo objectForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.indexpath];
+    SimiTable *cells = noti.object;
+    SimiRow *row = [[cells objectAtIndex:indexPath.section] objectAtIndex:indexPath.row];
+    SimiSection *section = [cells objectAtIndex:indexPath.section];
+    cartVC = [noti.userInfo objectForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.viewcontroller];
+    UITableView *tableView = cartVC.contentTableView;
     if([section.identifier isEqualToString:CART_TOTALS]) {
         if([row.identifier isEqualToString:CART_COUPONCODE_ROW]) {
             UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:row.identifier];
-            if(!cell) {
+            if(!cell){
                 cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:row.identifier];
                 cell.selectionStyle = UITableViewCellSelectionStyleNone;
                 CGRect frame = CGRectMake(15, 10, CGRectGetWidth(tableView.frame) - 30 - 130, 44);
@@ -66,14 +68,14 @@
                 [cell addSubview:cartCouponTextField];
                 [cell addSubview:applyCouponCodeButton];
                 [SimiGlobalVar sortViewForRTL:cell andWidth:CGRectGetWidth(tableView.frame)];
+                if([[SimiGlobalVar sharedInstance].cart.cartTotal valueForKey:@"coupon_code"])
+                {
+                    [cartCouponTextField setText:[[SimiGlobalVar sharedInstance].cart.cartTotal valueForKey:@"coupon_code"]];
+                }else
+                    [cartCouponTextField setText:@""];
+                row.tableCell = cell;
+                cartVC.isDiscontinue = YES;
             }
-            if([[SimiGlobalVar sharedInstance].cart.cartTotal valueForKey:@"coupon_code"])
-            {
-                [cartCouponTextField setText:[[SimiGlobalVar sharedInstance].cart.cartTotal valueForKey:@"coupon_code"]];
-            }else
-                [cartCouponTextField setText:@""];
-            cartVC.simiObjectIdentifier = cell;
-            cartVC.isDiscontinue = YES;
         }
     }
 }
@@ -114,9 +116,11 @@
 }
 
 - (void)initializedOrderCellBefore: (NSNotification *)noti {
-    UITableView *tableView = [noti.userInfo objectForKey:@"tableView"];
-    SimiRow *row = [noti.userInfo objectForKey:@"row"];
-    orderVC = noti.object;
+    SimiTable *cells = noti.object;
+    NSIndexPath *indexPath = [noti.userInfo objectForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.indexpath];
+    SimiRow *row = [[cells objectAtIndex:indexPath.section] objectAtIndex:indexPath.row];
+    orderVC = [noti.userInfo objectForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.viewcontroller];
+    UITableView *tableView = orderVC.contentTableView;
     if([row.identifier isEqualToString:ORDER_VIEW_COUPONCODE]){
         UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:row.identifier];
         if(!cell) {
@@ -146,7 +150,7 @@
             [orderCouponTextField setText:[orderVC.cart.cartTotal valueForKey:@"coupon_code"]];
         }else
             [orderCouponTextField setText:@""];
-        orderVC.simiObjectIdentifier = cell;
+        row.tableCell = cell;
         orderVC.isDiscontinue = YES;
     }
 }

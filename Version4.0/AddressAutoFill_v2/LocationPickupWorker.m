@@ -18,7 +18,8 @@
 {
     self = [super init];
     if (self) {
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"DidCreateAddressAutofill" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:SCRegisterViewController_DidInitForm object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:SCNewAddressViewController_DidInitForm object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"SimiFormMapAPI_DidGetAddress" object:nil];
     }
     return self;
@@ -75,7 +76,7 @@
 
 - (void)didReceiveNotification:(NSNotification *)noti
 {
-    if ([noti.name isEqualToString:@"DidCreateAddressAutofill"]) {
+    if ([noti.name isEqualToString:SCRegisterViewController_DidInitForm] || [noti.name isEqualToString:SCNewAddressViewController_DidInitForm]) {
         newAddressViewController = [noti.userInfo valueForKey:@"newAddressView"];
         [newAddressViewController.form addField:@"MapAPI" config:@{@"name": @"latlng",
                                                                   @"title": SCLocalizedString(@"Country"),

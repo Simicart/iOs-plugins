@@ -18,10 +18,8 @@
 #define SCProductMoreViewController_InitViewMoreAction @"SCProductMoreViewController_InitViewMoreAction"
 #define SCProductMoreViewController_BeforeTouchMoreAction @"SCProductMoreViewController-BeforeTouchMoreAction"
 //Login view controller notifications
-#define SCLoginViewController_InitCellsAfter @"SCLoginViewController_InitCellsAfter"
 #define ApplicationOpenURL @"ApplicationOpenURL"
 #define ApplicationDidBecomeActive @"ApplicationDidBecomeActive"
-#define SCLoginViewController_InitCellAfter @"SCLoginViewController_InitCellAfter"
 #define FacebookLoginCell @"FacebookLoginCell"
 #define SimiFaceBookWorker_StartLoginWithFaceBook @"SimiFaceBookWorker_StartLoginWithFaceBook"
 
@@ -34,7 +32,7 @@
 {
     SimiViewController* loginViewController, *currentlyViewController;
     SimiProductModel* product;
-    NSArray* cells;
+    SimiTable* cells;
     SimiCustomerModel* customerModel;
     NSString* facebookAppID;
     MoreActionView* moreActionView;
@@ -58,15 +56,15 @@
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(resetFacebookViewPosition:) name:@"SCProductMoreViewControllerViewDidAppear" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(resetFacebookViewPosition:) name:@"SCProductSecondDesignViewControllerPadViewDidAppear" object:nil];
         
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:SCLoginViewController_InitCellsAfter object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:[NSString stringWithFormat:@"%@%@",SCLoginViewController_RootEventName,SimiTableViewController_SubKey_InitCells_End] object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:ApplicationOpenURL object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:SCLoginViewController_InitCellAfter object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:[NSString stringWithFormat:@"%@%@",SCLoginViewController_RootEventName,SimiTableViewController_SubKey_InitializedCell_End] object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didLogin:) name:Simi_DidLogin object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didLogout:) name:Simi_DidLogout object:nil];
         
         //App Invite
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didInitLeftMenuRows:) name:[NSString stringWithFormat:@"%@%@",SCLeftMenuViewController_RootEventName,SimiTableViewController_SubKey_InitCells_End] object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didSelectInviteFriends:) name:[NSString stringWithFormat:@"%@%@",SCLeftMenuViewController_RootEventName,SimiTableViewController_SubKey_DidSelectCell] object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didSelectInviteFriends:) name:[NSString stringWithFormat:@"%@%@",SCLeftMenuViewController_RootEventName,SimiTableViewController_SubKey_InitializedCell_End] object:nil];
         //Catch when done init the app
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didInitApp:) name:@"DidInit" object:nil];
         //ApplicationDidBecomeActive
@@ -82,10 +80,10 @@
 }
 
 -(void) didReceiveNotification:(NSNotification *)noti{
-    if([noti.name isEqualToString:SCLoginViewController_InitCellsAfter]){
-        cells = noti.object;
-        loginViewController = (SimiViewController*)[noti.userInfo valueForKey:@"controller"];
-        SimiSection *section = [cells objectAtIndex:0];
+    if([noti.name isEqualToString:[NSString stringWithFormat:@"%@%@",SCLoginViewController_RootEventName,SimiTableViewController_SubKey_InitCells_End]]){
+        cells = [noti.userInfo objectForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.cells];
+        loginViewController = [noti.userInfo objectForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.viewcontroller];
+        SimiSection *section = [cells getSectionByIdentifier:LOGIN_SECTION];
         SimiRow *row = [[SimiRow alloc] initWithIdentifier:FacebookLoginCell height:[SimiGlobalVar scaleValue:50]];
         [section addRow:row];
     }else if([noti.name isEqualToString:ApplicationOpenURL]){
@@ -99,13 +97,13 @@
         //Active Facebook App
         [FBSDKAppEvents activateApp];
     }
-    else if([noti.name isEqualToString:SCLoginViewController_InitCellAfter]){
-        NSIndexPath *indexPath = [noti.userInfo valueForKey:@"indexPath"];
+    else if([noti.name isEqualToString:[NSString stringWithFormat:@"%@%@",SCLoginViewController_RootEventName, SimiTableViewController_SubKey_InitializedCell_End]]){
+        NSIndexPath *indexPath = [noti.userInfo valueForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.indexpath];
         SimiSection *section = [cells objectAtIndex:indexPath.section];
         SimiRow *row = [section objectAtIndex:indexPath.row];
         
         if ([row.identifier isEqualToString:FacebookLoginCell]) {
-            UITableViewCell *cell = noti.object;
+            UITableViewCell *cell = [noti.userInfo objectForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.cell];
             float loginViewWidth = CGRectGetWidth(loginViewController.view.frame);
             float heightCell = [SimiGlobalVar scaleValue:35];
             float paddingY = [SimiGlobalVar scaleValue:7.5];
