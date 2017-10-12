@@ -54,7 +54,7 @@
         [_tableView addInfiniteScrollingWithActionHandler:^{
             [weakSelf loadTransactions];
         }];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didLoadTransactions:) name:@"DidGetLoyaltyTransactions" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didLoadTransactions:) name:Loyalty_DidGetLoyaltyTransactions object:nil];
         
         [self startLoadingData];
         [self loadTransactions];

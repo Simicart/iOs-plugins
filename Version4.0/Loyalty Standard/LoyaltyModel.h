@@ -7,6 +7,8 @@
 //
 
 #import <SimiCartBundle/SimiCartBundle.h>
+static NSString *const Loyalty_LoadedProgramOverview = @"LoadedProgramOverview";
+static NSString *const Loyalty_SavedLoyaltySettings = @"SavedLoyaltySettings";
 
 @interface LoyaltyModel : SimiModel
 
