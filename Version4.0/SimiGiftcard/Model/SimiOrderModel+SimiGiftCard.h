@@ -9,10 +9,10 @@
 #import <SimiCartBundle/SimiCartBundle.h>
 #import <SimiCartBundle/SimiOrderModel.h>
 
-#define DidUseGiftCardCreditOnOrder @"DidUseGiftCardCreditOnOrder"
-#define DidUseGiftCodeOnOrder @"DidUseGiftCodeOnOrder"
-#define DidUpdateGiftCodeOnOrder @"DidUpdateGiftCodeOnOrder"
-#define DidRemoveGiftCodeOnOrder @"DidRemoveGiftCodeOnOrder"
+static NSString *const DidUseGiftCardCreditOnOrder = @"DidUseGiftCardCreditOnOrder";
+static NSString *const DidUseGiftCodeOnOrder = @"DidUseGiftCodeOnOrder";
+static NSString *const DidUpdateGiftCodeOnOrder = @"DidUpdateGiftCodeOnOrder";
+static NSString *const DidRemoveGiftCodeOnOrder = @"DidRemoveGiftCodeOnOrder";
 
 @interface SimiOrderModel (SimiGiftCard)
 - (void)useGiftCardCreditWithParams: (NSDictionary *)params;

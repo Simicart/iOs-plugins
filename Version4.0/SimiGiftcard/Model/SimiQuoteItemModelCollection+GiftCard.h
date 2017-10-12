@@ -8,14 +8,14 @@
 
 #import <SimiCartBundle/SimiCartBundle.h>
 
-#define DidUseGiftCardCreditOnCart @"DidUseGiftCardCreditOnCart"
-#define DidUseGiftCodeOnCart @"DidUseGiftCodeOnCart"
-#define DidUpdateGiftCodeOnCart @"DidUpdateGiftCodeOnCart"
-#define DidRemoveGiftCodeOnCart @"DidRemoveGiftCodeOnCart"
+static NSString *const DidUseGiftCardCreditOnCart = @"DidUseGiftCardCreditOnCart";
+static NSString *const DidUseGiftCodeOnCart = @"DidUseGiftCodeOnCart";
+static NSString *const DidUpdateGiftCodeOnCart = @"DidUpdateGiftCodeOnCart";
+static NSString *const DidRemoveGiftCodeOnCart = @"DidRemoveGiftCodeOnCart";
 
 @interface SimiQuoteItemModelCollection (GiftCard)
-- (void)useGiftCardCreditWithParams: (NSDictionary *)params;
-- (void)useGiftCodeWithParams: (NSDictionary *)params;
-- (void)updateGiftCodeWithParams: (NSDictionary *)params;
-- (void)removeGiftCodeWithParams: (NSDictionary *)params;
+- (void)useGiftCardCreditWithParams:(NSDictionary*)params;
+- (void)useGiftCodeWithParams:(NSDictionary*)params;
+- (void)updateGiftCodeWithParams:(NSDictionary*)params;
+- (void)removeGiftCodeWithParams:(NSDictionary*)params;
 @end

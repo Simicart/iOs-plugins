@@ -49,7 +49,7 @@
         }
         [[NSNotificationCenter defaultCenter] postNotificationName:[NSString stringWithFormat:@"%@%@",self.rootEventName,SimiTableViewController_SubKey_InitCells_End] object:_cells userInfo:@{@"controller":self,@"product":self.product}];
     }
-    [self.productTableView reloadData];
+    [self.contentTableView reloadData];
 }
 
 - (void)getProductDetail{
@@ -62,7 +62,7 @@
 
 - (void)didGetProduct:(NSNotification *)noti{
     [self stopLoadingData];
-    [self.productTableView setHidden:NO];
+    [self.contentTableView setHidden:NO];
     SimiResponder *responder = [noti.userInfo valueForKey:responderKey];
     if ([noti.name isEqualToString:DidGetGiftCardDetail]) {
         if (responder.status == SUCCESS) {
@@ -507,15 +507,15 @@
         SimiRow *sendPostOfficeRow = [mainSection getRowByIdentifier:giftcard_sendpostoffice_checkbox_row];
         [mainSection addRowWithIdentifier:giftcard_recommendinfo_row height:60 sortOrder:sendPostOfficeRow.sortOrder + 1];
         [mainSection sortItems];
-        [self.productTableView beginUpdates];
-        [self.productTableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:rowIndex+1 inSection:sectionIndex]] withRowAnimation:UITableViewRowAnimationFade];
-        [self.productTableView endUpdates];
+        [self.contentTableView beginUpdates];
+        [self.contentTableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:rowIndex+1 inSection:sectionIndex]] withRowAnimation:UITableViewRowAnimationFade];
+        [self.contentTableView endUpdates];
     }else{
         float rowIndex = [mainSection getRowIndexByIdentifier:giftcard_recommendinfo_row];
         [mainSection removeRowAtIndex:rowIndex];
-        [self.productTableView beginUpdates];
-        [self.productTableView deleteRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:rowIndex inSection:sectionIndex]] withRowAnimation:UITableViewRowAnimationFade];
-        [self.productTableView endUpdates];
+        [self.contentTableView beginUpdates];
+        [self.contentTableView deleteRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:rowIndex inSection:sectionIndex]] withRowAnimation:UITableViewRowAnimationFade];
+        [self.contentTableView endUpdates];
     }
 }
 
@@ -532,26 +532,26 @@
         SimiRow *sendFriendRow = [mainSection getRowByIdentifier:giftcard_sendfriend_checkbox_row];
         [mainSection addRowWithIdentifier:giftcard_insertinfo_row height:400 sortOrder:sendFriendRow.sortOrder+1];
         [mainSection sortItems];
-        [self.productTableView beginUpdates];
-        [self.productTableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:rowIndex+1 inSection:sectionIndex]] withRowAnimation:UITableViewRowAnimationFade];
-        [self.productTableView endUpdates];
+        [self.contentTableView beginUpdates];
+        [self.contentTableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:rowIndex+1 inSection:sectionIndex]] withRowAnimation:UITableViewRowAnimationFade];
+        [self.contentTableView endUpdates];
     }else{
         float rowIndex = [mainSection getRowIndexByIdentifier:giftcard_insertinfo_row];
         [mainSection removeRowAtIndex:rowIndex];
-        [self.productTableView beginUpdates];
-        [self.productTableView deleteRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:rowIndex inSection:sectionIndex]] withRowAnimation:UITableViewRowAnimationFade];
-        [self.productTableView endUpdates];
+        [self.contentTableView beginUpdates];
+        [self.contentTableView deleteRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:rowIndex inSection:sectionIndex]] withRowAnimation:UITableViewRowAnimationFade];
+        [self.contentTableView endUpdates];
     }
 }
 
 #pragma mark Keyboard State
 - (void)keyboardWillShow:(NSNotification *)noti{
     float keyboardHeight = [[[noti userInfo] objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue].size.height;
-    self.productTableView.contentInset = UIEdgeInsetsMake(0, 0, keyboardHeight, 0);
+    self.contentTableView.contentInset = UIEdgeInsetsMake(0, 0, keyboardHeight, 0);
 }
 
 - (void)keyboardWillHide:(NSNotification *)noti{
-    self.productTableView.contentInset = UIEdgeInsetsMake(0, 0, heightViewAction, 0);
+    self.contentTableView.contentInset = UIEdgeInsetsMake(0, 0, heightViewAction, 0);
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView{

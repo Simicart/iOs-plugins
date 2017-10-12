@@ -7,11 +7,11 @@
 //
 
 #import <SimiCartBundle/SimiCartBundle.h>
-static NSString *DidGetCustomerCredit = @"DidGetCustomerCredit";
-static NSString *DidRemoveGiftCode = @"DidRemoveGiftCode";
-static NSString *DidRedeemGiftCode = @"DidRedeemGiftCode";
-static NSString *DidAddGiftCodeToList = @"DidAddGiftCodeToList";
-static NSString *DidSendGiftCodeToFriend = @"DidSendGiftCodeToFriend";
+static NSString *const DidGetCustomerCredit = @"DidGetCustomerCredit";
+static NSString *const DidRemoveGiftCode = @"DidRemoveGiftCode";
+static NSString *const DidRedeemGiftCode = @"DidRedeemGiftCode";
+static NSString *const DidAddGiftCodeToList = @"DidAddGiftCodeToList";
+static NSString *const DidSendGiftCodeToFriend = @"DidSendGiftCodeToFriend";
 
 @interface SimiGiftCardCreditModel : SimiModel
 - (void)getCustomerCreditWithParams:(NSDictionary *)params;

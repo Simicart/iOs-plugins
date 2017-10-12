@@ -7,8 +7,8 @@
 //
 
 #import "SimiProductModel.h"
-static NSString *DidGetGiftCardDetail = @"DidGetGiftCardDetail";
-static NSString *DidUploadImage = @"DidUploadImage";
+static NSString *const DidGetGiftCardDetail = @"DidGetGiftCardDetail";
+static NSString *const DidUploadImage = @"DidUploadImage";
 
 @interface SimiGiftCardModel : SimiProductModel
 - (void)getGiftCardWithID:(NSString*)giftcardID params:(NSDictionary*)params;

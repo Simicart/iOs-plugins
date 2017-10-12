@@ -71,10 +71,7 @@
     SimiRow *row = [section objectAtIndex:indexPath.row];
     if([row.identifier isEqualToString:ORDER_VIEW_GIFTCODE] || [row.identifier isEqualToString:ORDER_VIEW_GIFTCARD_CREDIT] || [row.identifier isEqualToString:ORDER_VIEW_GIFTCARD_NONUSE]) {
         orderVC = [noti.userInfo objectForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.viewcontroller];
-        orderTableView = orderVC.tableViewOrder;
-        if (PADDEVICE) {
-            orderTableView = [((SCOrderViewControllerPad*)orderVC) tableRight];
-        }
+        orderTableView = orderVC.contentTableView;
         NSDictionary *giftCardData = [order objectForKey:@"gift_card"];
         NSDictionary *customerData = [giftCardData objectForKey:@"customer"];
         float padding = 10;
