@@ -17,7 +17,7 @@
 @protocol SCStoreListTableViewCellDelegate
 @optional
 - (void)sendEmailToStoreWithEmail:(NSString *)email andEmailContent:(NSString*)emailContent;
-- (void)choiceStoreLocatorWithStoreLocatorModel:(SimiModel*)storeLM;
+- (void)choiceStoreLocatorWithStoreLocatorModel:(SimiStoreLocatorModel*)storeLM;
 
 @end
 
@@ -39,7 +39,7 @@
 @property (nonatomic, strong) SimiStoreLocatorModel *storeLocatorModel;
 @property (nonatomic, weak) id<SCStoreListTableViewCellDelegate> delegate;
 
-- (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier andStoreData:(SimiModel*)storeLocatorModel_;
+- (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier andStoreData:(SimiStoreLocatorModel*)storeLocatorModel_;
 - (void)btnCall_Click:(id)sender;
 - (void)btnMail_Click:(id)sender;
 - (void)btnMap_Click:(id)sender;

@@ -177,7 +177,7 @@
             if (sLModelCollection == nil) {
                 sLModelCollection = [[SimiStoreLocatorModelCollection alloc]init];
             }
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didGetStoreLocatorList) name:@"StoreLocator_DidGetStoreList" object:sLModelCollection];
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didGetStoreLocatorList) name:StoreLocator_DidGetStoreList object:sLModelCollection];
             if (isFirstRun || offset != [sLModelCollection count]) {
                 isFirstRun = NO;
                 offset = [sLModelCollection count];
@@ -192,7 +192,7 @@
             if (sLModelCollection == nil) {
                 sLModelCollection = [[SimiStoreLocatorModelCollection alloc]init];
             }
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didGetStoreLocatorList) name:@"StoreLocator_DidGetStoreList" object:sLModelCollection];
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didGetStoreLocatorList) name:StoreLocator_DidGetStoreList object:sLModelCollection];
             if (isFirstRun ||offset != [sLModelCollection count]) {
                 isFirstRun = NO;
                 offset = [sLModelCollection count];

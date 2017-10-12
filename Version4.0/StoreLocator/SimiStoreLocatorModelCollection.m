@@ -12,7 +12,7 @@
 
 - (void)getStoreListWithLatitude:(NSString*)lat longitude:(NSString*)lng offset:(NSString*)offset limit:(NSString*)limit
 {
-     notificationName = @"StoreLocator_DidGetStoreList";
+     notificationName = StoreLocator_DidGetStoreList;
     self.parseKey = @"storelocations";
     [self preDoRequest];
     actionType = CollectionActionTypeInsert;
@@ -21,7 +21,7 @@
 
 - (void)getStoreListWithLatitude:(NSString *)lat longitude:(NSString *)lng offset:(NSString *)offset limit:(NSString *)limit country:(NSString*)country city:(NSString*)city state:(NSString*)state zipcode:(NSString*)zipcode tag:(NSString *)tag
 {
-    notificationName = @"StoreLocator_DidGetStoreList";
+    notificationName = StoreLocator_DidGetStoreList;
     self.parseKey = @"storelocations";
     actionType = CollectionActionTypeInsert;
     [self preDoRequest];
