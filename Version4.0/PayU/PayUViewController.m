@@ -57,4 +57,13 @@
     }
     return  YES;
 }
+
+- (void)webViewDidStartLoad:(UIWebView *)webView{
+    [self startLoadingData];
+}
+
+- (void)webViewDidFinishLoad:(UIWebView *)webView{
+    [self stopLoadingData];
+}
+
 @end
