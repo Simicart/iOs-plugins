@@ -26,7 +26,7 @@ static NSString *product_paypalcheckout_row = @"product_paypalcheckout_row";
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(sCProductViewControllerViewWillAppear:) name:@"SCProductViewControllerViewWillAppear" object:nil];
         
         //add button to cart
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didChangeCart:) name:@"DidChangeCart" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didChangeCart:) name:SCCartController_DidChangeCart object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didChangeCart:) name:@"SCCartViewControllerViewDidAppear" object:nil];
         
         //open webview after placed Order
@@ -181,9 +181,9 @@ static NSString *product_paypalcheckout_row = @"product_paypalcheckout_row";
     SimiSection *section = [cells objectAtIndex:indexPath.section];
     SimiRow *row = [section objectAtIndex:indexPath.row];
     if (row.identifier == CART_CHECKOUT_ROW) {
-        UITableViewCell *cell = [noti.userInfo objectForKey:@"cell"];
+        UITableViewCell *cell = [noti.userInfo objectForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.cell];
         [cell addSubview:btnPaypalCart];
-        SCCartViewController * cartVC = [[SCAppController sharedInstance].navigationBarPad cartViewControllerPad];
+        SCCartViewController * cartVC = [noti.userInfo valueForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.viewcontroller];
         [cartVC.btnCheckout setFrame:CGRectMake(220, 30, 180, 50)];
         [self removeObserverForNotification:noti];
     }
