@@ -167,7 +167,7 @@
 
 #pragma mark Add to My Account Screen
 -(void)initializedAccountCellAfter:(NSNotification *)noti{
-    SimiTable* cells = [[SimiTable alloc] initWithArray:noti.object];
+    SimiTable* cells = noti.object;
     SimiSection* section = [cells getSectionByIdentifier:ACCOUNT_MAIN_SECTION];
     SimiRow *wishlistRow = [[SimiRow alloc]initWithIdentifier:ACCOUNT_WISHLIST_ROW height:45 sortOrder:310];
     wishlistRow.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
@@ -182,7 +182,7 @@
     SimiSection *section = [cells objectAtIndex:indexPath.section];
     SimiRow *row = [section objectAtIndex:indexPath.row];
     if ([row.identifier isEqualToString:ACCOUNT_WISHLIST_ROW]) {
-        SCAccountViewController *accountVC = [noti.userInfo objectForKey:@"self"];
+        SCAccountViewController *accountVC = [noti.userInfo objectForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.viewcontroller];
         if (PADDEVICE) {
             [accountVC dismissViewControllerAnimated:YES completion:nil];
         }

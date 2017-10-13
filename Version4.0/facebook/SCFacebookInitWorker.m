@@ -81,10 +81,10 @@
 
 -(void) didReceiveNotification:(NSNotification *)noti{
     if([noti.name isEqualToString:[NSString stringWithFormat:@"%@%@",SCLoginViewController_RootEventName,SimiTableViewController_SubKey_InitCells_End]]){
-        cells = [noti.userInfo objectForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.cells];
+        cells = noti.object;
         loginViewController = [noti.userInfo objectForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.viewcontroller];
         SimiSection *section = [cells getSectionByIdentifier:LOGIN_SECTION];
-        SimiRow *row = [[SimiRow alloc] initWithIdentifier:FacebookLoginCell height:[SimiGlobalVar scaleValue:50]];
+        SimiRow *row = [[SimiRow alloc] initWithIdentifier:FacebookLoginCell height:[SimiGlobalVar scaleValue:50] sortOrder:SIGNIN_SORT_ORDER + 1];
         [section addRow:row];
     }else if([noti.name isEqualToString:ApplicationOpenURL]){
         BOOL numberBool = [[noti object] boolValue];

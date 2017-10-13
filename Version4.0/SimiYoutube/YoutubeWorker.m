@@ -44,7 +44,8 @@ static NSString *PRODUCT_ROW_YOUTUBE = @"PRODUCT_ROW_YOUTUBE";
 
 - (void)initProductCellsAfter:(NSNotification*)noti
 {
-    SCProductSecondDesignViewController *productViewController = (SCProductSecondDesignViewController *)[noti.userInfo valueForKey:@"controller"];
+    SCProductSecondDesignViewController *productViewController = [noti.userInfo objectForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.viewcontroller];
+    NSLog(@"PRODUCT :%@",productViewController.product);
     if ([productViewController.product valueForKey:@"product_video"]) {
         product = productViewController.product;
         youtubeArray = (NSMutableArray*)[product valueForKey:@"product_video"];
@@ -61,11 +62,14 @@ static NSString *PRODUCT_ROW_YOUTUBE = @"PRODUCT_ROW_YOUTUBE";
 
 - (void)initializedProductCellAfter:(NSNotification*)noti
 {
-    SimiRow *row = (SimiRow*)[noti.userInfo valueForKey:@"row"];
+    NSIndexPath *indexPath = [noti.userInfo objectForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.indexpath];
+    SimiTable *cells = noti.object;
+    SimiRow *row = [[cells objectAtIndex:indexPath.section] objectAtIndex:indexPath.row];
     itemWidth = 220;
     itemHeight = row.height - 10;
+    SCProductSecondDesignViewController *productVC = [noti.userInfo objectForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.viewcontroller];
     if ([row.identifier isEqualToString:product_video_row]) {
-        UITableViewCell *cell = (UITableViewCell*)[noti.userInfo valueForKey:@"cell"];
+        UITableViewCell *cell = [noti.userInfo objectForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.cell];
         NSInteger videoTag = 9999;
         if (![cell viewWithTag:videoTag]) {
             UICollectionViewFlowLayout *flowLayout=[[UICollectionViewFlowLayout alloc] init];
@@ -86,6 +90,8 @@ static NSString *PRODUCT_ROW_YOUTUBE = @"PRODUCT_ROW_YOUTUBE";
             [cell addSubview: videoCollectionView];
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
         }
+        productVC.isDiscontinue = YES;
+        row.tableCell = cell;
     }
 }
 

@@ -32,8 +32,8 @@
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(beforeTouchMoreAction:) name:SCProductViewControllerBeforeTouchMoreAction object:nil];
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initProductCellsAfter:) name:[NSString stringWithFormat:@"%@%@",SCProductSecondDesignViewController_RootEventName,SimiTableViewController_SubKey_InitCells_End] object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializedProductCellBefore:) name:[NSString stringWithFormat:@"%@%@",SCProductSecondDesignViewController_RootEventName,SimiTableViewController_SubKey_InitializedCell_End] object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(productSecondDesignViewControllerViewForHeader:) name:SCProductSecondDesignViewControllerViewForHeader object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializedProductCellEnd:) name:[NSString stringWithFormat:@"%@%@",SCProductSecondDesignViewController_RootEventName,SimiTableViewController_SubKey_InitializedCell_End] object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(productSecondDesignViewControllerViewForHeader:) name:[NSString stringWithFormat:@"%@%@",SCProductSecondDesignViewController_RootEventName,SimiTableViewController_SubKey_InitializedHeader_End] object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(productSecondDesignViewControllerDidSelectRow:) name:[NSString stringWithFormat:@"%@%@",SCProductSecondDesignViewController_RootEventName,SimiTableViewController_SubKey_DidSelectCell] object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(productMoreViewControllerInitTab:) name:SCProductMoreViewControllerInitTab object:nil];
     }
@@ -147,7 +147,8 @@
 
 - (void)initProductCellsAfter: (NSNotification *)noti {
     cells = noti.object;
-    product = [noti.userInfo objectForKey:@"product"];
+    SCProductSecondDesignViewController *productVC = [noti.userInfo objectForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.viewcontroller];
+    product = productVC.product;
     appReviews = [product valueForKey:@"app_reviews"];
     hadReviews = NO;
     if ([[appReviews valueForKey:@"number"] floatValue]) {
@@ -164,12 +165,13 @@
     }
 }
 
-- (void)initializedProductCellBefore: (NSNotification *)noti {
-    SimiSection *section = [noti.userInfo objectForKey:@"section"];
-    SimiRow *row = [noti.userInfo objectForKey:@"row"];
-    productTableView = [noti.userInfo objectForKey:@"tableView"];
-    NSIndexPath *indexPath = [noti.userInfo objectForKey:@"indexPath"];
-    productVC = noti.object;
+- (void)initializedProductCellEnd: (NSNotification *)noti {
+    SimiTable *cells = noti.object;
+    NSIndexPath *indexPath = [noti.userInfo objectForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.indexpath];
+    SimiSection *section = [cells objectAtIndex:indexPath.section];
+    SimiRow *row = [section objectAtIndex:indexPath.row];
+    productVC = [noti.userInfo objectForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.viewcontroller];
+    productTableView = productVC.contentTableView;
     float paddingEdge = 15;
     float tableWidth = productTableView.frame.size.width;
     if ([section.identifier isEqualToString:product_reviews_section]) {
@@ -183,7 +185,7 @@
                 row.height = cell.cellHeight;
                 cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
             }
-            productVC.simiObjectIdentifier = cell;
+            row.tableCell = cell;
         }else if([row.identifier isEqualToString:product_reviews_add_row]){
             UITableViewCell *cell = [productTableView dequeueReusableCellWithIdentifier:row.identifier];
             if(!cell) {
@@ -194,7 +196,7 @@
                 [cell.contentView addSubview:titleLabel];
                 [SimiGlobalVar sortViewForRTL:cell.contentView andWidth:tableWidth - paddingEdge];
             }
-            productVC.simiObjectIdentifier = cell;
+            row.tableCell = cell;
         }
         else if ([row.identifier isEqualToString:product_reviews_firstpeople_row])
         {
@@ -207,7 +209,7 @@
                 [cell.contentView addSubview:titleLabel];
                 [SimiGlobalVar sortViewForRTL:cell.contentView andWidth:tableWidth - paddingEdge];
             }
-            productVC.simiObjectIdentifier = cell;
+            row.tableCell = cell;
         }else if ([row.identifier isEqualToString:product_reviews_viewall_row]) {
             UITableViewCell *cell = [productTableView dequeueReusableCellWithIdentifier:row.identifier];
             if(!cell) {
@@ -219,16 +221,16 @@
                 [cell.contentView addSubview:titleLabel];
                 [SimiGlobalVar sortViewForRTL:cell.contentView andWidth:tableWidth-paddingEdge];
             }
-            productVC.simiObjectIdentifier = cell;
+            row.tableCell = cell;
         }
     }
 }
 
 - (void)productSecondDesignViewControllerViewForHeader: (NSNotification *)noti {
-    productVC = noti.object;
-    SimiSection *section = [noti.userInfo objectForKey:@"section"];
-    UITableViewHeaderFooterView *headerView = [noti.userInfo objectForKey:@"headerView"];
-    UITableView *tableView = [noti.userInfo objectForKey:@"tableView"];
+    productVC = [noti.userInfo objectForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.viewcontroller];
+    SimiSection *section = [noti.userInfo objectForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.section];
+    UITableViewHeaderFooterView *headerView = [noti.userInfo objectForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.footer];
+    UITableView *tableView = productVC.contentTableView;
     float paddingEdge = 15;
     float heightHeader = 44;
     float tableWidth = tableView.frame.size.width;
@@ -291,11 +293,13 @@
 }
 
 - (void)productSecondDesignViewControllerDidSelectRow: (NSNotification *)noti {
-    SimiSection *section = [noti.userInfo objectForKey:@"section"];
-    SimiRow *row = [noti.userInfo objectForKey:@"row"];
-    UITableView *tableView = [noti.userInfo objectForKey:@"tableView"];
-    NSIndexPath *indexPath = [noti.userInfo objectForKey:@"indexPath"];
-    productVC = noti.object;
+    NSIndexPath *indexPath = [noti.userInfo objectForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.indexpath];
+    SimiTable *cells = noti.object;
+    SimiSection *section = [cells objectAtIndex:indexPath.section];
+    SimiRow *row = [section objectAtIndex:indexPath.row];
+    productVC = [noti.userInfo objectForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.viewcontroller];
+    UITableView *tableView = productVC.contentTableView;
+    
     if([section.identifier isEqualToString:product_reviews_section]) {
         if([row.identifier isEqualToString:product_reviews_normal_row]) {
             UIViewController *nextController = [[UIViewController alloc]init];
@@ -331,7 +335,6 @@
                 [productVC presentWithRootViewController:reviewDetailController];
         }
         [tableView deselectRowAtIndexPath:indexPath animated:YES];
-        productVC.isDiscontinue = YES;
     }
 }
 
