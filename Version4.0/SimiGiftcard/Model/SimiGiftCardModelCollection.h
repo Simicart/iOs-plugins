@@ -7,7 +7,7 @@
 //
 
 #import "SimiProductModelCollection.h"
-static NSString *DidGetGiftCardProductCollection = @"DidGetGiftCardProductCollection";
+static NSString *const DidGetGiftCardProductCollection = @"DidGetGiftCardProductCollection";
 @interface SimiGiftCardModelCollection : SimiProductModelCollection
 - (void)getGiftCardProductCollectionWithParams:(NSDictionary *)params;
 @end

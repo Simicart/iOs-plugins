@@ -66,7 +66,7 @@
     cartCells = noti.object;
     SimiSection *section = [cartCells objectAtIndex:indexPath.section];
     SimiRow *row = [section objectAtIndex:indexPath.row];
-    cartTableView = cartViewController.tableViewCart;
+    cartTableView = cartViewController.contentTableView;
     NSDictionary *giftCardData = [[SimiGlobalVar sharedInstance].cart.data valueForKey:@"gift_card"];;
     NSDictionary *customerData = [giftCardData objectForKey:@"customer"];
     float padding = 10;
@@ -267,7 +267,7 @@
     SimiSection *cartTotalSection = [cartCells getSectionByIdentifier:CART_TOTALS];
     SimiRow *giftCardRow = [cartTotalSection getRowByIdentifier:CART_VIEW_GIFTCODE];
     if(checkbox.checkState == M13CheckboxStateChecked) {
-        NSDictionary *giftCardData = [[SimiGlobalVar sharedInstance].cart.responseObject valueForKey:@"gift_card"];
+        NSDictionary *giftCardData = [[SimiGlobalVar sharedInstance].cart.data valueForKey:@"gift_card"];
         NSDictionary *giftCode = [giftCardData objectForKey:@"giftcode"];
         giftCardRow.height = 220 + 30*(giftCode.allValues.count - 1);
         useGiftCode = YES;
@@ -327,7 +327,7 @@
     [self removeObserverForNotification:noti];
     [cartViewController stopLoadingData];
     SimiResponder *responder = [noti.userInfo objectForKey:responderKey];
-    NSDictionary *giftCardData = [[SimiGlobalVar sharedInstance].cart.responseObject valueForKey:@"gift_card"];;
+    NSDictionary *giftCardData = [[SimiGlobalVar sharedInstance].cart.data valueForKey:@"gift_card"];;
     if(responder.status == SUCCESS) {
         [self showGiftCardMessageOnCart];
         NSDictionary *credit = [giftCardData objectForKey:@"credit"];
@@ -354,7 +354,7 @@
     SimiResponder *responder = [noti.userInfo objectForKey:responderKey];
     if(responder.status == SUCCESS) {
         [self showGiftCardMessageOnCart];
-        NSDictionary *giftCardData = [[SimiGlobalVar sharedInstance].cart.responseObject valueForKey:@"gift_card"];;
+        NSDictionary *giftCardData = [[SimiGlobalVar sharedInstance].cart.data valueForKey:@"gift_card"];;
         NSDictionary *giftCode = [giftCardData objectForKey:@"giftcode"];
         SimiSection *cartTotalSection = [cartCells getSectionByIdentifier:CART_TOTALS];
         SimiRow *giftCardRow = [cartTotalSection getRowByIdentifier:CART_VIEW_GIFTCODE];
@@ -389,7 +389,7 @@
     SimiResponder *responder = [noti.userInfo objectForKey:responderKey];
     if(responder.status == SUCCESS) {
         [self showGiftCardMessageOnCart];
-        NSDictionary *giftCardData = [[SimiGlobalVar sharedInstance].cart.responseObject valueForKey:@"gift_card"];;
+        NSDictionary *giftCardData = [[SimiGlobalVar sharedInstance].cart.data valueForKey:@"gift_card"];;
         NSDictionary *giftCode = [giftCardData objectForKey:@"giftcode"];
         SimiSection *cartTotalSection = [cartCells getSectionByIdentifier:CART_TOTALS];
         SimiRow *giftCardRow = [cartTotalSection getRowByIdentifier:CART_VIEW_GIFTCODE];
@@ -443,7 +443,7 @@
     SimiResponder *responder = [noti.userInfo objectForKey:responderKey];
     if(responder.status == SUCCESS) {
         [self showGiftCardMessageOnCart];
-        NSDictionary *giftCardData = [[SimiGlobalVar sharedInstance].cart.responseObject valueForKey:@"gift_card"];;
+        NSDictionary *giftCardData = [[SimiGlobalVar sharedInstance].cart.data valueForKey:@"gift_card"];;
         NSDictionary *giftCode = [giftCardData objectForKey:@"giftcode"];
         SimiSection *cartTotalSection = [cartCells getSectionByIdentifier:CART_TOTALS];
         SimiRow *giftCardRow = [cartTotalSection getRowByIdentifier:CART_VIEW_GIFTCODE];
@@ -489,7 +489,7 @@
 
 #pragma mark UIPickerViewDelegate && UIPickerViewDataSource
 - (void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component {
-    NSArray* listCode = [[[[SimiGlobalVar sharedInstance].cart.responseObject valueForKey:@"gift_card"] objectForKey:@"customer"] objectForKey:@"list_code"];
+    NSArray* listCode = [[[[SimiGlobalVar sharedInstance].cart.data valueForKey:@"gift_card"] objectForKey:@"customer"] objectForKey:@"list_code"];
     if(row == 0) {
         existingCodeTextField.text = @"";
         giftCodeSelected = @"";
@@ -503,7 +503,7 @@
 }
 
 - (NSInteger)pickerView:(UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component {
-    NSArray* listCode = [[[[SimiGlobalVar sharedInstance].cart.responseObject valueForKey:@"gift_card"] objectForKey:@"customer"] objectForKey:@"list_code"];
+    NSArray* listCode = [[[[SimiGlobalVar sharedInstance].cart.data valueForKey:@"gift_card"] objectForKey:@"customer"] objectForKey:@"list_code"];
     if(listCode.count > 0) {
         return listCode.count + 1;
     }else {
@@ -518,13 +518,13 @@
 - (NSString *)pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component {
     if(row == 0)
         return SCLocalizedString(@"Please select");
-    NSArray* listCode = [[[[SimiGlobalVar sharedInstance].cart.responseObject valueForKey:@"gift_card"] objectForKey:@"customer"] objectForKey:@"list_code"];
+    NSArray* listCode = [[[[SimiGlobalVar sharedInstance].cart.data valueForKey:@"gift_card"] objectForKey:@"customer"] objectForKey:@"list_code"];
     NSDictionary *code = [listCode objectAtIndex:row - 1];
     return [NSString stringWithFormat:@"%@(%@)",[code objectForKey:@"hidden_code"], [code objectForKey:@"balance"]];
 }
 
 - (void)showGiftCardMessageOnCart {
-    NSDictionary *creditCardData = [[SimiGlobalVar sharedInstance].cart.responseObject valueForKey:@"gift_card"];
+    NSDictionary *creditCardData = [[SimiGlobalVar sharedInstance].cart.data valueForKey:@"gift_card"];
     NSDictionary *message = [creditCardData objectForKey:@"message"];
     if([message isKindOfClass:[NSDictionary class]]) {
         NSString *success = [message objectForKey:@"success"];

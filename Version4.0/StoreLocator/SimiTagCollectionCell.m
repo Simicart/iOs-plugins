@@ -18,8 +18,7 @@
     return self;
 }
 
-- (void)setData
-{
+- (void)setData{
     if (!self.hasData) {
         self.hasData = YES;
         imgTag = [[UIImageView alloc]initWithFrame:self.bounds];

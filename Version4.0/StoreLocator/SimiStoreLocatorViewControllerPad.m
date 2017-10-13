@@ -52,7 +52,7 @@ NSInteger const heightButtonSearch = 50;
     [cLController.locationManager startUpdatingLocation];
 
     [self addChildViewController:sLListViewControllerLandscape];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didGetStoreLocatorList:) name:@"StoreLocator_DidGetStoreList" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didGetStoreLocatorList:) name:StoreLocator_DidGetStoreList object:nil];
     // Do any additional setup after loading the view.
 }
 

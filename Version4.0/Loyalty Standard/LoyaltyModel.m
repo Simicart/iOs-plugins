@@ -10,7 +10,6 @@
 #import "LoyaltyAPI.h"
 
 @implementation LoyaltyModel
-//reward_id,loyalty_point,loyalty_balance,loyalty_redeem,loyalty_hold,loyalty_image,is_notification,expire_notification,earning_label,earning_policy,spending_label,spending_policy,spending_point,spending_discount,start_discount,spending_min,policies
 - (void)parseData {
     [super parseData];
     if([self.modelData objectForKey:@"reward_id"])
@@ -54,7 +53,7 @@
 
 - (void)loadProgramOverview
 {
-    notificationName = @"LoadedProgramOverview";
+    notificationName = Loyalty_LoadedProgramOverview;
     self.parseKey = @"simirewardpoint";
     actionType = ModelActionTypeGet;
     [self preDoRequest];
@@ -63,7 +62,7 @@
 
 - (void)saveSettings
 {
-    notificationName = @"SavedLoyaltySettings";
+    notificationName = Loyalty_SavedLoyaltySettings;
     self.parseKey = @"simirewardpoint";
     actionType = ModelActionTypeEdit;
     [self preDoRequest];

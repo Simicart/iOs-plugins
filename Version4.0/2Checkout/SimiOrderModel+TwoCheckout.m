@@ -12,11 +12,9 @@
 @implementation SimiOrderModel (TwoCheckout)
 
 - (void)updateTwoutOrderWithParams:(NSDictionary *)params{
-    modelActionType = ModelActionTypeGet;
-    keyResponse = @"twoutapi";
-    currentNotificationName = @"DidUpdate2CheckoutPayment";
-    [self preDoRequest];
-    [(SimiOrderAPI *)[self getAPI] updateTwoutOrderWithParams:params target:self selector:@selector(didFinishRequest:responder:)];
+    self.parseKey = @"twoutapi";
+    notificationName = TwoutCheckOut_DidUpdate2CheckoutPayment;
+    [[SimiOrderAPI new] updateTwoutOrderWithParams:params target:self selector:@selector(didGetResponseFromNetwork:)];
 }
 
 @end

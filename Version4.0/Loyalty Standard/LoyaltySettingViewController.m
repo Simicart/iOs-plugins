@@ -65,7 +65,7 @@
 {
     [self startLoadingData];
     [self.navigationItem.rightBarButtonItem setEnabled:NO];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didSaveSettings:) name:@"SavedLoyaltySettings" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didSaveSettings:) name:Loyalty_SavedLoyaltySettings object:nil];
     [_settings saveSettings];
 }
 

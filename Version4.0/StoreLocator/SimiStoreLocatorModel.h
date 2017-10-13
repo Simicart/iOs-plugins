@@ -30,7 +30,7 @@
 @property (strong, nonatomic) NSString *mondayStatus;
 @property (strong, nonatomic) NSString *mondayOpen;
 @property (strong, nonatomic) NSString *mondayClose;
-@property (strong, nonatomic) NSString *distance;
+@property (nonatomic) float distance;
 @property (strong, nonatomic) NSString *tuesdayStatus;
 @property (strong, nonatomic) NSString *tuesdayOpen;
 @property (strong, nonatomic) NSString *tuesdayClose;

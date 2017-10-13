@@ -9,8 +9,8 @@
 #import "CheckoutcomModel.h"
 
 @implementation CheckoutcomModel
--(void) completeOrderWithParams:(NSDictionary *)params{
-    notificationName = DidUpdateCheckoutComPayment;
+- (void)completeOrderWithParams:(NSDictionary *)params{
+    notificationName = CheckoutCom_DidUpdateCheckoutComPayment;
     self.parseKey = @"checkoutcomapi";
     [self preDoRequest];
     [[SimiAPI new] requestWithMethod:GET URL:[NSString stringWithFormat:@"%@simiconnector/rest/v2/checkoutcomapis/update_payment",kBaseURL] params:params target:self selector:@selector(didGetResponseFromNetwork:) header:nil];

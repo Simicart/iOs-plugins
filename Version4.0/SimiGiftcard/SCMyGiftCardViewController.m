@@ -59,7 +59,7 @@
         }
         [self setCells:nil];
     }else
-        [self showAlertWithTitle:responder.status message:responder.message];
+        [self showAlertWithTitle:@"FAIL" message:responder.message];
 
 }
 

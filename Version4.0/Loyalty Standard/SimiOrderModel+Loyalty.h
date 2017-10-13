@@ -8,8 +8,8 @@
 
 #import <SimiCartBundle/SimiOrderModel.h>
 
+static NSString *const Loyalty_DidSpendPointsOrder = @"DidSpendPointsOrder";
+
 @interface SimiOrderModel (Loyalty)
-
 - (void)spendPoints:(NSInteger)points ruleId:(id)ruleId;
-
 @end

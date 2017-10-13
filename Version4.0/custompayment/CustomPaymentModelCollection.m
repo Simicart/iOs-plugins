@@ -11,7 +11,7 @@
 @implementation CustomPaymentModelCollection
 
 - (void)getCustomPaymentsWithParams: (NSDictionary*) params{
-    notificationName = DidGetCustomPayments;
+    notificationName = Custompayment_DidGetCustomPayments;
     self.parseKey = @"customizepayments";
     [[CustomPaymentAPI new] getCustomPaymentsWithParams:params target:self selector:@selector(didGetResponseFromNetwork:)];
 }

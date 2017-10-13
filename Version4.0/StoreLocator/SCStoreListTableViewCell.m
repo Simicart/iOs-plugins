@@ -24,20 +24,7 @@
 }
 @synthesize lblStoreAddress, lblStoreDistance, lblStoreName, lblCall, lblMail, lblMap, btnMap;
 @synthesize imgStoreImage, btnCall, btnMail, delegate, storeLocatorModel, imgBackground;
-
-- (void)awakeFromNib
-{
-    // Initialization code
-}
-
-- (void)setSelected:(BOOL)selected animated:(BOOL)animated
-{
-    [super setSelected:selected animated:animated];
-
-    // Configure the view for the selected state
-}
-
-- (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier andStoreData:(SimiModel*)storeLocatorModel_;
+- (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier andStoreData:(SimiStoreLocatorModel*)storeLocatorModel_;
 {
     cellWidth = SCREEN_WIDTH;
     if (PADDEVICE) {
@@ -66,20 +53,20 @@
         [lblStoreAddress setFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE - 3]];
         [lblStoreAddress setTextColor:[[SimiGlobalVar sharedInstance]colorWithHexString:@"#393939"]];
         NSString *stringAddress = @"";
-        if ([storeLocatorModel valueForKey:@"address"]) {
-            stringAddress = [NSString stringWithFormat:@"%@",[storeLocatorModel valueForKey:@"address"]];
+        if (storeLocatorModel.address) {
+            stringAddress = [NSString stringWithFormat:@"%@",storeLocatorModel.address];
         }
-        if ([storeLocatorModel valueForKey:@"city"]) {
-            stringAddress = [NSString stringWithFormat:@"%@, %@",stringAddress, [storeLocatorModel valueForKey:@"city"]];
+        if (storeLocatorModel.city) {
+            stringAddress = [NSString stringWithFormat:@"%@, %@",stringAddress, storeLocatorModel.city];
         }
-        if ([storeLocatorModel valueForKey:@"state"]) {
-            stringAddress = [NSString stringWithFormat:@"%@, %@", stringAddress, [storeLocatorModel valueForKey:@"state"]];
+        if (storeLocatorModel.state) {
+            stringAddress = [NSString stringWithFormat:@"%@, %@", stringAddress, storeLocatorModel.state];
         }
-        if ([storeLocatorModel valueForKey:@"zipcode"]) {
-            stringAddress = [NSString stringWithFormat:@"%@, %@", stringAddress, [storeLocatorModel valueForKey:@"zipcode"]];
+        if (storeLocatorModel.zipcode) {
+            stringAddress = [NSString stringWithFormat:@"%@, %@", stringAddress, storeLocatorModel.zipcode];
         }
-        if ([storeLocatorModel valueForKey:@"country_name"]) {
-            stringAddress = [NSString stringWithFormat:@"%@, %@", stringAddress, [storeLocatorModel valueForKey:@"country_name"]];
+        if (storeLocatorModel.countryName) {
+            stringAddress = [NSString stringWithFormat:@"%@, %@", stringAddress, storeLocatorModel.countryName];
         }
         [lblStoreAddress setText:stringAddress];
         float heightContent = [lblStoreAddress resizLabelToFit];
@@ -88,7 +75,7 @@
         lblStoreDistance = [[UILabel alloc]initWithFrame:CGRectMake(cellWidth - labelDistanceWidth, 5, labelDistanceWidth, labelHeight)];
         [lblStoreDistance setTextColor:[[SimiGlobalVar sharedInstance]colorWithHexString:@"#393939"]];
         [lblStoreDistance setFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE - 3]];
-        float distance = [[NSString stringWithFormat:@"%@",[storeLocatorModel valueForKey:@"distance"]]floatValue]/1000;
+        float distance = storeLocatorModel.distance/1000;
         NSString *stringlblStoreDistance = [NSString stringWithFormat:@"%0.2f %@",distance, SCLocalizedString(@"km")];
         [lblStoreDistance setText:stringlblStoreDistance];
         [self addSubview:lblStoreDistance];
@@ -98,8 +85,8 @@
         
         imgStoreImage = [[UIImageView alloc]initWithFrame:imgBackground.frame];
         [imgStoreImage setContentMode:UIViewContentModeScaleAspectFit];
-        if (![[storeLocatorModel valueForKey:@"image"] isEqualToString:@""]) {
-            [imgStoreImage sd_setImageWithURL:[storeLocatorModel valueForKey:@"image"] placeholderImage:[UIImage imageNamed:@"storelocator_icon_store"]];
+        if (![storeLocatorModel.image isEqualToString:@""]) {
+            [imgStoreImage sd_setImageWithURL:[NSURL URLWithString:storeLocatorModel.image] placeholderImage:[UIImage imageNamed:@"storelocator_icon_store"]];
             [self addSubview:imgStoreImage];
             [self addSubview:imgBackground];
         }else
@@ -143,7 +130,7 @@
             [lblMail setFrame:CGRectMake(35, 13, 35, 21)];
             [btnMail addSubview:lblMail];
             [_viewButton addSubview:btnMail];
-            if (![storeLocatorModel valueForKey:@"email"]) {
+            if (storeLocatorModel.email == nil) {
                 [btnMail setEnabled:NO];
             }
         }else
@@ -152,7 +139,7 @@
             [lblMail setFrame:CGRectMake(35, 13, 35, 21)];
             [btnMail addSubview:lblMail];
             [_viewButton addSubview:btnMail];
-            if (![storeLocatorModel valueForKey:@"email"]) {
+            if (storeLocatorModel.email == nil) {
                 [btnMail setEnabled:NO];
             }
         }
@@ -187,9 +174,9 @@
 
 - (void)btnCall_Click:(id)sender
 {
-    NSString *phNo = [NSString  stringWithFormat:@"telprompt:%@",[storeLocatorModel valueForKey:@"phone"]];
+    NSString *phNo = [NSString  stringWithFormat:@"telprompt:%@",storeLocatorModel.phone];
     NSURL *phoneUrl = [[NSURL alloc]initWithString:[phNo stringByReplacingOccurrencesOfString:@" " withString:@""]];
-    [[NSNotificationCenter defaultCenter]postNotificationName:TRACKINGEVENT object:@"store_locator_action" userInfo:@{@"action":@"call_to_store",@"store_name":[self.storeLocatorModel valueForKey:@"name"]}];
+    [[NSNotificationCenter defaultCenter]postNotificationName:TRACKINGEVENT object:@"store_locator_action" userInfo:@{@"action":@"call_to_store",@"store_name":self.storeLocatorModel.name}];
     if ([[UIApplication sharedApplication] canOpenURL:phoneUrl]) {
         [[UIApplication sharedApplication] openURL:phoneUrl];
     } else
@@ -200,25 +187,14 @@
 }
 - (void)btnMail_Click:(id)sender
 {
-    [[NSNotificationCenter defaultCenter]postNotificationName:TRACKINGEVENT object:@"store_locator_action" userInfo:@{@"action":@"email_to_store",@"store_name":[self.storeLocatorModel valueForKey:@"name"]}];
-    NSString *email = [storeLocatorModel valueForKeyPath:@"email"];
+    [[NSNotificationCenter defaultCenter]postNotificationName:TRACKINGEVENT object:@"store_locator_action" userInfo:@{@"action":@"email_to_store",@"store_name":self.storeLocatorModel.name}];
+    NSString *email = storeLocatorModel.email;
     NSString *emailContent = @"Content";
     [self.delegate sendEmailToStoreWithEmail:email andEmailContent:emailContent];
 }
 - (void)btnMap_Click:(id)sender
 {
     [self.delegate choiceStoreLocatorWithStoreLocatorModel:self.storeLocatorModel];
-    [[NSNotificationCenter defaultCenter]postNotificationName:TRACKINGEVENT object:@"store_locator_action" userInfo:@{@"action":@"view_store_map",@"store_name":[self.storeLocatorModel valueForKey:@"name"]}];
-}
-
-#pragma mark Modify UIColor
-
-- (UIColor*) colorWithStringHex:(NSString*)stringHex
-{
-    unsigned rgbValue = 0;
-    NSScanner *scanner = [NSScanner scannerWithString:stringHex];
-    [scanner setScanLocation:1]; // bypass '#' character
-    [scanner scanHexInt:&rgbValue];
-    return [UIColor colorWithRed:((rgbValue & 0xFF0000) >> 16)/255.0 green:((rgbValue & 0xFF00) >> 8)/255.0 blue:(rgbValue & 0xFF)/255.0 alpha:1.0];
+    [[NSNotificationCenter defaultCenter]postNotificationName:TRACKINGEVENT object:@"store_locator_action" userInfo:@{@"action":@"view_store_map",@"store_name":self.storeLocatorModel.name}];
 }
 @end

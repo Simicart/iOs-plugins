@@ -12,13 +12,12 @@
 
 @end
 
-@implementation SCCheckoutcomViewController
-{
+@implementation SCCheckoutcomViewController{
     UIWebView* checkoutWebView;
     CheckoutcomModel* checkoutcomModel;
 }
-- (void)viewDidLoad {
-    [super viewDidLoad];
+- (void)viewDidLoadBefore {
+    [super viewDidLoadBefore];
     checkoutWebView = [[UIWebView alloc] initWithFrame:self.view.bounds];
     [self.view addSubview:checkoutWebView];
     checkoutWebView.delegate = self;
@@ -27,12 +26,8 @@
     self.navigationItem.title = SCLocalizedString(@"Checkout.com");
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-}
-
 #pragma mark UIWebViewDelegate
--(BOOL) webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType{
+- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType{
     NSString* url = [request.URL absoluteString];
     if([url containsString:[self.order objectForKey:@"success_url"]]){
         if(!checkoutcomModel){
@@ -40,29 +35,26 @@
         }
         [checkoutcomModel completeOrderWithParams:@{@"invoice_number":[self.order objectForKey:@"invoice_number"]}];
         [self startLoadingData];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didCompleteOrder:) name:DidUpdateCheckoutComPayment object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didCompleteOrder:) name:CheckoutCom_DidUpdateCheckoutComPayment object:nil];
         return NO;
     }
     return YES;
 }
 
--(void) webViewDidStartLoad:(UIWebView *)webView{
+- (void)webViewDidStartLoad:(UIWebView *)webView{
     [self startLoadingData];
 }
 
--(void) webViewDidFinishLoad:(UIWebView *)webView{
+- (void)webViewDidFinishLoad:(UIWebView *)webView{
     [self stopLoadingData];
 }
 
--(void) didCompleteOrder:(NSNotification*) noti{
+- (void)didCompleteOrder:(NSNotification*) noti{
     [self stopLoadingData];
     [self removeObserverForNotification:noti];
     SimiResponder* responder = [noti.userInfo objectForKey:responderKey];
-    [self showAlertWithTitle:@"" message:[NSString stringWithFormat:@"%@!",SCLocalizedString(@"Thank you for your purchase")]];
-    if([responder.status isEqualToString:@"SUCCESS"]){
-        
-    }else{
-        
+    if (responder.status == SUCCESS) {
+        [self showAlertWithTitle:@"" message:[NSString stringWithFormat:@"%@!",SCLocalizedString(@"Thank you for your purchase")]];
     }
     [self dismissViewControllerAnimated:YES completion:nil];
 }

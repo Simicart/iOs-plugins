@@ -13,18 +13,15 @@
 
 @implementation KlarnaViewController
 
--(void)viewDidLoadBefore
-{
+- (void)viewDidLoadBefore{
     self.edgesForExtendedLayout = UIRectEdgeBottom;
     [super viewDidLoadBefore];
     self.navigationItem.title = SCLocalizedString(@"Klarna");
 }
 
-- (void)viewDidAppearBefore:(BOOL)animated
-{
+- (void)viewDidAppearBefore:(BOOL)animated{
     _klarnaModel = [KlarnaModel new];
-    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(didReceiveNotification:) name:@"DidGetKlarnaParam" object:_klarnaModel];
-    
+    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(didReceiveNotification:) name:Klarna_DidGetKlarnaParam object:_klarnaModel];
     _webView = [[UIWebView alloc]initWithFrame:self.view.bounds];
     _webView.delegate = self;
     [self.view addSubview:_webView];
@@ -32,14 +29,12 @@
     [_klarnaModel getParamsKlarnaWithParams:@{}];
 }
 
-- (void)viewWillAppearBefore:(BOOL)animated
-{
+- (void)viewWillAppearBefore:(BOOL)animated{
     
 }
 
-- (void)didReceiveNotification:(NSNotification *)noti
-{
-    if ([noti.name isEqualToString:@"DidGetKlarnaParam"]) {
+- (void)didReceiveNotification:(NSNotification *)noti{
+    if ([noti.name isEqualToString:Klarna_DidGetKlarnaParam]) {
         NSString *stringParams = @"{%22simiklarnaapi%22:[";
         NSArray *dataParams = [_klarnaModel valueForKey:@"params"];
         for (int i = 0; i < dataParams.count; i++) {
@@ -54,10 +49,9 @@
         NSString *stringURL = [NSString stringWithFormat:@"%@simiklarna/api/checkout/data/%@",kBaseURL,[stringParams stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
         NSURLRequest *request = [[NSURLRequest alloc]initWithURL:[[NSURL alloc]initWithString:stringURL]];
         [_webView loadRequest:request];
-    }else if ([noti.name isEqualToString:@"DidCheckOutKlarna"])
-    {
+    }else if ([noti.name isEqualToString:Klarna_DidCheckoutWithKlarna]){
         SimiResponder *responder = [noti.userInfo valueForKey:responderKey];
-        if ([responder.status isEqualToString:@"SUCCESS"]) {
+        if (responder.status == SUCCESS) {
             [self showAlertWithTitle:@"SUCCESS" message:@"Thank your for purchase"];
             [self.navigationController popToRootViewControllerAnimated:YES];
         }else
@@ -69,10 +63,8 @@
 }
 
 #pragma Webview Delegate
-- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
-{
+- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType{
     NSString *stringRequest = [NSString stringWithFormat:@"%@",request];
-    NSLog(@"%@",stringRequest);
     if ([stringRequest containsString:@"checkout/cart"]) {
         [self showAlertWithTitle:@"FAIL" message:@"Your order has been canceled"];
         [self.navigationController dismissViewControllerAnimated:YES completion:nil];
@@ -108,7 +100,7 @@
     
 }
 
--(void)webViewDidFinishLoad:(UIWebView *)webView
+- (void)webViewDidFinishLoad:(UIWebView *)webView
 {
     
 }

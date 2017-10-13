@@ -12,9 +12,8 @@
 @implementation SimiOrderModel (Avenue)
 
 - (void)updateAvenueOrderWithParams:(NSDictionary *)params{
-    actionType = ModelActionTypeGet;
     self.parseKey = @"twoutapi";
-    notificationName = @"DidUpdateAvenuePayment";
+    notificationName = CCAvenue_DidUpdateAvenuePayment;
     [self preDoRequest];
     [[SimiOrderAPI new] updateAvenueOrderWithParams:params target:self selector:@selector(didGetResponseFromNetwork:)];
 }

@@ -10,8 +10,7 @@
 #import "SimiTagAPI.h"
 
 @implementation SimiTagModelCollection
-- (void)getTagWithOffset:(NSString*)offset limit:(NSString*)limit
-{
+- (void)getTagWithOffset:(NSString*)offset limit:(NSString*)limit{
     notificationName = @"DidFinishGetTagList";
     actionType = CollectionActionTypeInsert;
     self.parseKey = @"storelocatortags";

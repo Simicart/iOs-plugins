@@ -11,13 +11,12 @@
 NSString* const kBraintreeUpdatePayment = @"simiconnector/rest/v2/braintreeapis";
 
 @implementation SimiBraintreeModel
--(void) sendNonceToServer:(NSString* )nonce andOrder:(SimiOrderModel *)order_{
-    currentNotificationName = BRAINTREE_SENDNONCETOSERVER;
-    SimiAPI *braintreeAPI = [[SimiAPI alloc] init];
+- (void)sendNonceToServer:(NSString* )nonce andOrder:(SimiOrderModel *)order{
+    notificationName = BRAINTREE_SENDNONCETOSERVER;
     NSString* url = [NSString stringWithFormat:@"%@%@", kBaseURL, kBraintreeUpdatePayment];
-    SimiOrderModel* order = [order_ copy];
-    NSDecimalNumber* amount = [NSDecimalNumber decimalNumberWithString:[NSString stringWithFormat:@"%.02f",[[[order objectForKey:@"total"] valueForKey:@"grand_total_incl_tax"] floatValue]]];
-    NSMutableDictionary* params = [[NSMutableDictionary alloc] initWithDictionary:@{@"nonce":nonce,@"order_id":[order valueForKey:@"invoice_number"],@"amount":amount}];
-    [braintreeAPI requestWithMethod:POST URL:url params:params target:self selector:@selector(didFinishRequest:responder:) header:nil];
+    NSDecimalNumber* amount = [NSDecimalNumber decimalNumberWithString:[NSString stringWithFormat:@"%.02f",[[order.total valueForKey:@"grand_total_incl_tax"] floatValue]]];
+    NSMutableDictionary* params = [[NSMutableDictionary alloc] initWithDictionary:@{@"nonce":nonce,@"order_id":order.invoiceNumber,@"amount":amount}];
+    SimiAPI *braintreeAPI = [[SimiAPI alloc] init];
+    [braintreeAPI requestWithMethod:POST URL:url params:params target:self selector:@selector(didGetResponseFromNetwork:) header:nil];
 }
 @end

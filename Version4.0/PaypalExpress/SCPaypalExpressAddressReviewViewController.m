@@ -172,8 +172,8 @@
         [addressTableView reloadData];
     }
     else {
-        UIAlertView * a = [[UIAlertView alloc]initWithTitle:@"" message:responder.message delegate:self cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles: nil];
-        [a show];
+        UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"" message:responder.message delegate:self cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles: nil];
+        [alert show];
     }
 }
 

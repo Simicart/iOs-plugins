@@ -67,10 +67,7 @@
     [self.productsCollectionView.infiniteScrollingView stopAnimating];
     if (responder.status == SUCCESS) {
         [[NSNotificationCenter defaultCenter] postNotificationName:@"AddProductsForSearchableItems" object:self.productModelCollection];
-        if (self.productModelCollection.total != nil && ![self.productModelCollection.total isEqualToString:@""] && ![self.productModelCollection.total isKindOfClass:[NSNull class]]) {
-            totalNumberProduct = [self.productModelCollection.total intValue];
-        }else
-            totalNumberProduct = 0;
+        totalNumberProduct = self.productModelCollection.total;
         
         if (totalNumberProduct == 0) {
             [noProductsLabel setHidden:NO];
@@ -78,7 +75,7 @@
             [noProductsLabel setHidden:YES];
         }
         [self.productsCollectionView reloadData];
-        [self showToastMessage:[NSString stringWithFormat:@"%@ %@(s)",self.productModelCollection.total, SCLocalizedString(@"Product")] duration:0.5];
+        [self showToastMessage:[NSString stringWithFormat:@"%ld %@(s)",self.productModelCollection.total, SCLocalizedString(@"Product")] duration:0.5];
     }
     [self removeObserverForNotification:noti];
 }

@@ -489,7 +489,7 @@
 - (void)getStoreLocator
 {
     sLModelCollection = [[SimiStoreLocatorModelCollection alloc]init];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didGetStoreLocator:) name:@"StoreLocator_DidGetStoreList" object:sLModelCollection];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didGetStoreLocator:) name:StoreLocator_DidGetStoreList object:sLModelCollection];
     
      [sLModelCollection getStoreListWithLatitude:[NSString stringWithFormat:@"%f",currentLatitube] longitude:[NSString stringWithFormat:@"%f",currentLongitube] offset:@"0" limit:@"20" country:stringCountrySearchCode city:stringCitySearch state:stringStateSearch zipcode:stringZipCodeSearch tag:stringTagSearch];
 }

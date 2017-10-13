@@ -58,7 +58,7 @@ static NSString *LEFTMENU_REWARDS_ROW     = @"leftmenu_rewards";
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orderViewControllerViewDidLoad:) name:@"SCOrderViewControllerViewDidLoad" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initLoyaltyCell:) name:[NSString stringWithFormat:@"%@%@",SCOrderViewController_RootEventName,SimiTableViewController_SubKey_InitCells_End] object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializeOrderCellAfter:) name:[NSString stringWithFormat:@"%@%@",SCOrderViewController_RootEventName,SimiTableViewController_SubKey_InitializedCell_End] object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didSpendPointsOrder:) name:@"DidSpendPointsOrder" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didSpendPointsOrder:) name:Loyalty_DidSpendPointsOrder object:nil];
     }
     return self;
 }
@@ -82,7 +82,7 @@ static NSString *LEFTMENU_REWARDS_ROW     = @"leftmenu_rewards";
     SimiRow *row = [section objectAtIndex:indexPath.row];
     if ([row.identifier isEqualToString:LOYALTY_CART]) {
         SCCartViewController *cartViewController = [noti.userInfo valueForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.viewcontroller];
-        UITableView *tableView = cartViewController.tableViewCart;
+        UITableView *tableView = cartViewController.contentTableView;
         UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:LOYALTY_CART];
         if (cell == nil) {
             cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:LOYALTY_CART];
@@ -130,7 +130,7 @@ static NSString *LEFTMENU_REWARDS_ROW     = @"leftmenu_rewards";
 }
 
 #pragma mark Loyalty on Order
--(void)orderViewControllerViewDidLoad:(NSNotification *)noti{
+- (void)orderViewControllerViewDidLoad:(NSNotification *)noti{
     self.orderViewController = noti.object;
 }
 
@@ -167,7 +167,7 @@ static NSString *LEFTMENU_REWARDS_ROW     = @"leftmenu_rewards";
             }
         }
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-            [[(SCOrderViewControllerPad *)self.orderViewController tableRight] reloadData];
+            [self.orderViewController.contentTableView reloadData];
         }
     }
 }
@@ -194,10 +194,7 @@ static NSString *LEFTMENU_REWARDS_ROW     = @"leftmenu_rewards";
             NSDictionary *rule = [rules objectAtIndex:0];
             if ([[rule objectForKey:@"optionType"] isEqualToString:@"slider"]) {
                 // Slider
-                UITableView *tableView = orderViewController.tableViewOrder;
-                if (PADDEVICE) {
-                    tableView = [((SCOrderViewControllerPad*)orderViewController)tableRight];
-                }
+                UITableView *tableView = orderViewController.contentTableView;
                 CGFloat width = tableView.frame.size.width - 30;
                 UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(15, 11, width, 22)];
                 label.font = [UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE];
@@ -275,7 +272,7 @@ static NSString *LEFTMENU_REWARDS_ROW     = @"leftmenu_rewards";
     }
     NSDictionary *rule = [[[order.modelData valueForKey:@"loyalty"] objectForKey:@"loyalty_rules"] objectAtIndex:0];
     
-    [[NSNotificationCenter defaultCenter] addObserver:self.orderViewController selector:@selector(didReceiveNotification:) name:@"DidSpendPointsOrder" object:order];
+    [[NSNotificationCenter defaultCenter] addObserver:self.orderViewController selector:@selector(didReceiveNotification:) name:Loyalty_DidSpendPointsOrder object:order];
     [order spendPoints:pointValue ruleId:[rule objectForKey:@"id"]];
     [self.orderViewController startLoadingData];
 }
@@ -290,7 +287,7 @@ static NSString *LEFTMENU_REWARDS_ROW     = @"leftmenu_rewards";
 }
 
 #pragma mark Add to My Account Screen
--(void)initializedAccountCellAfter:(NSNotification *)noti{
+- (void)initializedAccountCellAfter:(NSNotification *)noti{
     SimiTable *cells = noti.object;
     for (SimiSection *section in cells) {
         if (section.identifier != ACCOUNT_MAIN_SECTION)
@@ -312,7 +309,7 @@ static NSString *LEFTMENU_REWARDS_ROW     = @"leftmenu_rewards";
     }
 }
 
--(void)didSelectAccountCellAtIndexPath:(NSNotification *)noti{
+- (void)didSelectAccountCellAtIndexPath:(NSNotification *)noti{
     NSIndexPath *indexPath = [noti.userInfo valueForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.indexpath];
     SimiTable *cells = noti.object;
     SimiSection *section = [cells objectAtIndex:indexPath.section];
@@ -326,7 +323,7 @@ static NSString *LEFTMENU_REWARDS_ROW     = @"leftmenu_rewards";
 }
 
 #pragma mark Add to Left Menu
--(void)listMenuInitCellsAfter:(NSNotification *)noti
+- (void)listMenuInitCellsAfter:(NSNotification *)noti
 {
     SimiTable *cells = noti.object;
     if ([globalVar isLogin]) {
@@ -352,7 +349,7 @@ static NSString *LEFTMENU_REWARDS_ROW     = @"leftmenu_rewards";
     }
 }
 
--(void)listMenuDidSelectRow:(NSNotification *)noti{
+- (void)listMenuDidSelectRow:(NSNotification *)noti{
     SimiTable *cells = noti.object;
     NSIndexPath *indexPath = [noti.userInfo valueForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.indexpath];
     SimiSection *section = [cells objectAtIndex:indexPath.section];
@@ -375,7 +372,7 @@ static NSString *LEFTMENU_REWARDS_ROW     = @"leftmenu_rewards";
 }
 
 #pragma mark Loytalty on Product
--(void)productInforViewSetInterfacecellAfter:(NSNotification *)noti
+- (void)productInforViewSetInterfacecellAfter:(NSNotification *)noti
 {
     SCProductInfoView *productInfoView = noti.object;
     UIView *loyalty = [productInfoView viewWithTag:LOYALTY_TAG];

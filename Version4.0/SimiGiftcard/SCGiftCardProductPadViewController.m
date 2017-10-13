@@ -26,16 +26,16 @@
 
 - (void)viewDidAppearBefore:(BOOL)animated
 {
-    if (self.productTableView == nil) {
+    if (self.contentTableView == nil) {
         CGRect frame = self.view.bounds;
         frame.size.width = SCREEN_WIDTH/2;
         frame.origin.x = SCREEN_WIDTH/2;
-        self.productTableView = [[UITableView alloc]initWithFrame:frame style:UITableViewStyleGrouped];
-        self.productTableView.delegate = self;
-        self.productTableView.dataSource = self;
-        [self.view addSubview:self.productTableView];
-        [self.productTableView setContentInset:UIEdgeInsetsMake(0, 0, 100, 0)];
-        [self.productTableView setHidden:YES];
+        self.contentTableView = [[UITableView alloc]initWithFrame:frame style:UITableViewStyleGrouped];
+        self.contentTableView.delegate = self;
+        self.contentTableView.dataSource = self;
+        [self.view addSubview:self.contentTableView];
+        [self.contentTableView setContentInset:UIEdgeInsetsMake(0, 0, 100, 0)];
+        [self.contentTableView setHidden:YES];
         
         [self getProductDetail];
         [self startLoadingData];
@@ -44,7 +44,7 @@
 
 - (void)didGetProduct:(NSNotification *)noti{
     [self stopLoadingData];
-    [self.productTableView setHidden:NO];
+    [self.contentTableView setHidden:NO];
     SimiResponder *responder = [noti.userInfo valueForKey:responderKey];
     if ([noti.name isEqualToString:DidGetGiftCardDetail]) {
         if (responder.status == SUCCESS) {
@@ -87,7 +87,7 @@
         }
         [[NSNotificationCenter defaultCenter] postNotificationName:[NSString stringWithFormat:@"%@%@",SCProductSecondDesignViewController_RootEventName,SimiTableViewController_SubKey_InitCells_End] object:_cells userInfo:@{@"controller":self,@"product":self.product}];
     }
-    [self.productTableView reloadData];
+    [self.contentTableView reloadData];
 }
 
 - (void)initGiftCardImageView{

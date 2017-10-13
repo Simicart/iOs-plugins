@@ -10,8 +10,7 @@
 
 @implementation CustomPaymentAPI
 
-- (void)getCustomPaymentsWithParams:(NSDictionary *)params target:(id)target selector:(SEL)selector
-{
+- (void)getCustomPaymentsWithParams:(NSDictionary *)params target:(id)target selector:(SEL)selector{
     url = [NSString stringWithFormat:@"%@%@customizepayments", kBaseURL, kSimiConnectorURL];
     [self requestWithMethod:GET URL:url params:params target:target selector:selector header:nil];
 }

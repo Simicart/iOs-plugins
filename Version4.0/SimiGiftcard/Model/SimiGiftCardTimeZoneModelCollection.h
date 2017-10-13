@@ -7,7 +7,7 @@
 //
 
 #import <SimiCartBundle/SimiCartBundle.h>
-static NSString *DidGetSimiTimeZone = @"DidGetSimiTimeZone";
+static NSString *const DidGetSimiTimeZone = @"DidGetSimiTimeZone";
 @interface SimiGiftCardTimeZoneModelCollection : SimiModelCollection
 - (void)getGiftCardTimeZoneWithParams:(NSDictionary *)params;
 @end

@@ -13,7 +13,7 @@
 
 - (void)getTransactionsWithOffset:(NSInteger)offset limit:(NSInteger)limit
 {
-    notificationName = @"DidGetLoyaltyTransactions";
+    notificationName = Loyalty_DidGetLoyaltyTransactions;
     [self preDoRequest];
     actionType = CollectionActionTypeInsert;
     self.parseKey = @"simirewardpointstransactions";

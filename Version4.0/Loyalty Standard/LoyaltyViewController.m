@@ -12,13 +12,12 @@
 #import "LoyaltySettingViewController.h"
 
 @interface LoyaltyViewController () {
-    UITableView *_tableView;
     BOOL _reloadDataFlag;
 }
 @end
 
 @implementation LoyaltyViewController
-@synthesize loyaltyPolicy = _loyaltyPolicy, cells = _cells;
+@synthesize loyaltyPolicy = _loyaltyPolicy;
 @synthesize skipReloadData = _skipReloadData;
 
 - (void)viewDidLoadBefore {
@@ -33,12 +32,12 @@
     self.screenTrackingName = @"my_reward";
     self.navigationItem.title = SCLocalizedString(@"My Rewards");
     // Table View
-    _tableView = [[UITableView alloc] initWithFrame:self.view.frame style:UITableViewStyleGrouped];
-    _tableView.delegate = self;
-    _tableView.dataSource = self;
-    _tableView.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
-    _cells = [SimiTable new];
-    [self.view addSubview:_tableView];
+    self.contentTableView = [[UITableView alloc] initWithFrame:self.view.frame style:UITableViewStyleGrouped];
+    self.contentTableView.delegate = self;
+    self.contentTableView.dataSource = self;
+    self.contentTableView.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+    self.cells = [SimiTable new];
+    [self.view addSubview:self.contentTableView];
 }
 
 - (void)viewWillAppearBefore:(BOOL)animated
@@ -61,7 +60,7 @@
     }
     _reloadDataFlag = YES;
     [self startLoadingData];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"LoadedProgramOverview" object:_loyaltyPolicy];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:Loyalty_LoadedProgramOverview object:_loyaltyPolicy];
     [_loyaltyPolicy loadProgramOverview];
 }
 
@@ -70,64 +69,59 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (void)didReceiveNotification:(NSNotification *)noti
-{
+- (void)didReceiveNotification:(NSNotification *)noti{
     [self stopLoadingData];
-    _cells = nil;
-    [_tableView reloadData];
+    [self initCells];
+    [self.contentTableView reloadData];
     
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (SimiTable *)cells
-{
-    if (_cells == nil) {
-        _cells = [SimiTable new];
-        if ([[SimiGlobalVar sharedInstance] isLogin]) {
-            SimiSection *section = [_cells addSectionWithIdentifier:LOYALTY_BALANCE];
-            CGFloat height = 98;
-            if (_loyaltyPolicy.invertPoint) {
-                height += 88;
-            } else if (_loyaltyPolicy.spendingPoint) {
-                height += 22;
-            }
-            if (_loyaltyPolicy.loyaltyHold) {
-                height += 24;
-            }
-            SimiRow *row = [section addRowWithIdentifier:LOYALTY_BALANCE height:height sortOrder:0];
-            // More Menu Information
-            row = [section addRowWithIdentifier:LOYALTY_HISTORY height:44 sortOrder:0];
-            row.title = SCLocalizedString(@"Rewards History");
-            row.image = [UIImage imageNamed:@"loyalty_history"];
-            row = [section addRowWithIdentifier:LOYALTY_SETTING height:44 sortOrder:0];
-            row.title = SCLocalizedString(@"Settings");
-            row.image = [UIImage imageNamed:@"loyalty_setting"];
+- (void)initCells{
+    self.cells = [SimiTable new];
+    if ([[SimiGlobalVar sharedInstance] isLogin]) {
+        SimiSection *section = [self.cells addSectionWithIdentifier:LOYALTY_BALANCE];
+        CGFloat height = 98;
+        if (_loyaltyPolicy.invertPoint) {
+            height += 88;
+        } else if (_loyaltyPolicy.spendingPoint) {
+            height += 22;
         }
-        if (_loyaltyPolicy.earningLabel) {
-            SimiSection *section = [_cells addSectionWithIdentifier:LOYALTY_EARN headerTitle:_loyaltyPolicy.earningLabel];
-            SimiRow *row = [section addRowWithIdentifier:LOYALTY_EARN height:44 sortOrder:0];
-            row.title = _loyaltyPolicy.earningPolicy;
+        if (_loyaltyPolicy.loyaltyHold) {
+            height += 24;
         }
-        if (_loyaltyPolicy.spendingLabel) {
-            SimiSection *section = [_cells addSectionWithIdentifier:LOYALTY_SPEND headerTitle:_loyaltyPolicy.spendingLabel];
-            SimiRow *row = [section addRowWithIdentifier:LOYALTY_SPEND height:44 sortOrder:0];
-            row.title = _loyaltyPolicy.spendingPolicy;
-        }
-        NSArray *policies = _loyaltyPolicy.policies;
-        if (policies && [policies count]) {
-            SimiSection *section = [_cells addSectionWithIdentifier:LOYALTY_POLICY headerTitle:SCLocalizedString(@"Our policies")];
-            SimiRow *row = [section addRowWithIdentifier:LOYALTY_POLICY height:(8 + 36 * policies.count + 18 * (policies.count - 1)) sortOrder:0];
-            row.title = [policies componentsJoinedByString:@"\n\n"];
-            if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-                row.height = 22 + 22 * policies.count + 18 * (policies.count - 1);
-            }
-        }
-        if (![[SimiGlobalVar sharedInstance] isLogin]) {
-            SimiSection *section = [_cells addSectionWithIdentifier:LOYALTY_LOGIN headerTitle:nil];
-            [section addRowWithIdentifier:LOYALTY_LOGIN height:44];
+        SimiRow *row = [section addRowWithIdentifier:LOYALTY_BALANCE height:height sortOrder:0];
+        // More Menu Information
+        row = [section addRowWithIdentifier:LOYALTY_HISTORY height:44 sortOrder:0];
+        row.title = SCLocalizedString(@"Rewards History");
+        row.image = [UIImage imageNamed:@"loyalty_history"];
+        row = [section addRowWithIdentifier:LOYALTY_SETTING height:44 sortOrder:0];
+        row.title = SCLocalizedString(@"Settings");
+        row.image = [UIImage imageNamed:@"loyalty_setting"];
+    }
+    if (_loyaltyPolicy.earningLabel) {
+        SimiSection *section = [self.cells addSectionWithIdentifier:LOYALTY_EARN headerTitle:_loyaltyPolicy.earningLabel];
+        SimiRow *row = [section addRowWithIdentifier:LOYALTY_EARN height:44 sortOrder:0];
+        row.title = _loyaltyPolicy.earningPolicy;
+    }
+    if (_loyaltyPolicy.spendingLabel) {
+        SimiSection *section = [self.cells addSectionWithIdentifier:LOYALTY_SPEND headerTitle:_loyaltyPolicy.spendingLabel];
+        SimiRow *row = [section addRowWithIdentifier:LOYALTY_SPEND height:44 sortOrder:0];
+        row.title = _loyaltyPolicy.spendingPolicy;
+    }
+    NSArray *policies = _loyaltyPolicy.policies;
+    if (policies && [policies count]) {
+        SimiSection *section = [self.cells addSectionWithIdentifier:LOYALTY_POLICY headerTitle:SCLocalizedString(@"Our policies")];
+        SimiRow *row = [section addRowWithIdentifier:LOYALTY_POLICY height:(8 + 36 * policies.count + 18 * (policies.count - 1)) sortOrder:0];
+        row.title = [policies componentsJoinedByString:@"\n\n"];
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            row.height = 22 + 22 * policies.count + 18 * (policies.count - 1);
         }
     }
-    return _cells;
+    if (![[SimiGlobalVar sharedInstance] isLogin]) {
+        SimiSection *section = [self.cells addSectionWithIdentifier:LOYALTY_LOGIN headerTitle:nil];
+        [section addRowWithIdentifier:LOYALTY_LOGIN height:44];
+    }
 }
 
 #pragma mark - table view datasource
@@ -182,7 +176,7 @@
             balance.textColor = THEME_PRICE_COLOR;
             balance.textAlignment = NSTextAlignmentCenter;
             if(_loyaltyPolicy.loyaltyPoint)
-                balance.text = [NSString stringWithFormat:@"%f",_loyaltyPolicy.loyaltyPoint];
+                balance.text = [NSString stringWithFormat:@"%.f",_loyaltyPolicy.loyaltyPoint];
             else
                 balance.text = @"0";
             [left addSubview:balance];

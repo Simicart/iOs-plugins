@@ -114,7 +114,7 @@
         sLModelCollectionUpdate = [[SimiStoreLocatorModelCollection alloc]init];
     }
     [sLModelCollectionUpdate removeAllObjects];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didGetStoreLocatorList:) name:@"StoreLocator_DidGetStoreList" object:sLModelCollectionUpdate];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didGetStoreLocatorList:) name:StoreLocator_DidGetStoreList object:sLModelCollectionUpdate];
     switch (searchOption) {
         case SearchOptionNoneSearch:
             [sLModelCollectionUpdate getStoreListWithLatitude:[NSString stringWithFormat:@"%f",position.target.latitude] longitude:[NSString stringWithFormat:@"%f",position.target.longitude] offset:@"0" limit:@"20"];

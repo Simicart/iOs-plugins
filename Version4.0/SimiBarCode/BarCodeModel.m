@@ -10,7 +10,6 @@
 #import "BarCodeAPI.h"
 
 @implementation BarCodeModel
-//barcode_id, barcode,qrcode,barcode_status,product_entity_id,product_name,product_sku,created_date
 - (void)parseData {
     [super parseData];
     self.barcodeId = [NSString stringWithFormat:@"%@",[self.modelData objectForKey:@"barcode_id"]];
@@ -23,8 +22,7 @@
     self.createdDate = [NSString stringWithFormat:@"%@",[self.modelData objectForKey:@"created_date"]];
 }
 
-- (void)getProductIdWithBarCode:(NSString *)barCode type:(NSString *)type
-{
+- (void)getProductIdWithBarCode:(NSString *)barCode type:(NSString *)type{
     notificationName = BarCodeDidGetProductID;
     self.parseKey = @"simibarcode";
     actionType = ModelActionTypeGet;

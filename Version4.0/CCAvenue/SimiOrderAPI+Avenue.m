@@ -10,11 +10,8 @@
 
 @implementation SimiOrderAPI (Avenue)
 
-- (void)updateAvenueOrderWithParams:(NSDictionary *)params target:(id)target selector:(SEL)selector
-{
+- (void)updateAvenueOrderWithParams:(NSDictionary *)params target:(id)target selector:(SEL)selector{
     url = [NSString stringWithFormat:@"%@%@%@", kBaseURL,kSimiConnectorURL, @"twoutapis/update_order"];
     [self requestWithMethod:PUT URL:url params:params target:target selector:selector header:nil];
 }
-
-
 @end

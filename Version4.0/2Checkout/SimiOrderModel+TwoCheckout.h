@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import <SimiCartBundle/SimiOrderModel.h>
-
+static NSString *const TwoutCheckOut_DidUpdate2CheckoutPayment = @"DidUpdate2CheckoutPayment";
 @interface SimiOrderModel (TwoCheckout)
 
 - (void)updateTwoutOrderWithParams:(NSDictionary *)params;
