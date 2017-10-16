@@ -46,12 +46,12 @@
         lblStoreName = [[UILabel alloc]initWithFrame:CGRectMake(labelPaddingLeft , 5, labelWidth - labelDistanceWidth, labelHeight)];
         [lblStoreName setFont:[UIFont fontWithName:THEME_FONT_NAME_REGULAR size:THEME_FONT_SIZE - 2]];
         [lblStoreName setText:[storeLocatorModel valueForKey:@"name"]];
-        [lblStoreName setTextColor:[[SimiGlobalVar sharedInstance]colorWithHexString:@"#393939"]];
+        [lblStoreName setTextColor:COLOR_WITH_HEX(@"#393939")];
         [self addSubview:lblStoreName];
         
         lblStoreAddress = [[UILabel alloc]initWithFrame:CGRectMake(labelPaddingLeft, 25, labelWidth, 35)];
         [lblStoreAddress setFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE - 3]];
-        [lblStoreAddress setTextColor:[[SimiGlobalVar sharedInstance]colorWithHexString:@"#393939"]];
+        [lblStoreAddress setTextColor:COLOR_WITH_HEX(@"#393939")];
         NSString *stringAddress = @"";
         if (storeLocatorModel.address) {
             stringAddress = [NSString stringWithFormat:@"%@",storeLocatorModel.address];
@@ -73,7 +73,7 @@
         [self addSubview:lblStoreAddress];
         
         lblStoreDistance = [[UILabel alloc]initWithFrame:CGRectMake(cellWidth - labelDistanceWidth, 5, labelDistanceWidth, labelHeight)];
-        [lblStoreDistance setTextColor:[[SimiGlobalVar sharedInstance]colorWithHexString:@"#393939"]];
+        [lblStoreDistance setTextColor:COLOR_WITH_HEX(@"#393939")];
         [lblStoreDistance setFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE - 3]];
         float distance = storeLocatorModel.distance/1000;
         NSString *stringlblStoreDistance = [NSString stringWithFormat:@"%0.2f %@",distance, SCLocalizedString(@"km")];
@@ -167,8 +167,8 @@
             [_viewButton addSubview:btnMap];
         }
     }
-    [SimiGlobalVar sortViewForRTL:_viewButton andWidth:cellWidth - labelDistanceWidth];
-    [SimiGlobalVar sortViewForRTL:self andWidth:cellWidth];
+    [SimiGlobalFunction sortViewForRTL:_viewButton andWidth:cellWidth - labelDistanceWidth];
+    [SimiGlobalFunction sortViewForRTL:self andWidth:cellWidth];
     return self;
 }
 

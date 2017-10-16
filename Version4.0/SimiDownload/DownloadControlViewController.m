@@ -48,9 +48,9 @@
         [_pageScrollView setFrame:CGRectMake(0, 0, SCREEN_WIDTH *2/3, SCREEN_HEIGHT *2/3)];
     }
     [_pageScrollView setDelegate:self];
-    [_pageScrollView initTab:YES Gap:50 TabHeight:40 VerticalDistance:5 BkColor:[[SimiGlobalVar sharedInstance] colorWithHexString:@"#eeeeee"]];
-    [_pageScrollView enableTabBottomLine:YES LineHeight:3 LineColor:[[SimiGlobalVar sharedInstance]colorWithHexString:@"#c3c3c3"] LineBottomGap:0 ExtraWidth:10];
-    [_pageScrollView setTitleStyle:[UIFont fontWithName:THEME_FONT_NAME size:12] Color:[[SimiGlobalVar sharedInstance ] colorWithHexString:@"141414"] SelColor:THEME_COLOR];
+    [_pageScrollView initTab:YES Gap:50 TabHeight:40 VerticalDistance:5 BkColor:COLOR_WITH_HEX(@"#eeeeee")];
+    [_pageScrollView enableTabBottomLine:YES LineHeight:3 LineColor:COLOR_WITH_HEX(@"#c3c3c3") LineBottomGap:0 ExtraWidth:10];
+    [_pageScrollView setTitleStyle:[UIFont fontWithName:THEME_FONT_NAME size:12] Color:COLOR_WITH_HEX(@"141414") SelColor:THEME_COLOR];
     [_pageScrollView enableBreakLine:NO Width:1 TopMargin:0 BottomMargin:0 Color:[UIColor blackColor]];
     _pageScrollView.leftTopView = [[UIView alloc]initWithFrame:CGRectZero];
     _pageScrollView.rightTopView = [[UIView alloc]initWithFrame:CGRectZero];

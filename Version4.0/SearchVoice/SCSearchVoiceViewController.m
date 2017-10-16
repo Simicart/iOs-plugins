@@ -71,7 +71,7 @@
 - (void)setUpSearchVoiceView {
     // recording view
     // add backgroundView
-    UIView *backGroundView = [[UIView alloc] initWithFrame:[SimiGlobalVar scaleFrame:CGRectMake(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)]];
+    UIView *backGroundView = [[UIView alloc] initWithFrame:SCALEFRAME(CGRectMake(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT))];
     backGroundView.backgroundColor = [UIColor blackColor];
     backGroundView.alpha = 0.9;
     [self.view addSubview:backGroundView];

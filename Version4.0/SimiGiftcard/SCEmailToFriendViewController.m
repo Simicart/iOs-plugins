@@ -179,7 +179,7 @@
         [self showToastMessage:@"Please enter all required fields" duration:1.5];
         return;
     }
-    if (![SimiGlobalVar validateEmail:recipientEmailTextField.text]) {
+    if (![SimiGlobalFunction validateEmail:recipientEmailTextField.text]) {
         [self showToastMessage:@"Email is not valid" duration:1.5];
         return;
     }

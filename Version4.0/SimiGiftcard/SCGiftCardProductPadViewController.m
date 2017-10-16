@@ -20,7 +20,7 @@
     [self configureNavigationBarOnViewDidLoad];
     
     tableWidth = SCREEN_WIDTH/2;
-    paddingEdge = [SimiGlobalVar scaleValue:15];
+    paddingEdge = SCALEVALUE(15);
     heightHeader = 44;
 }
 

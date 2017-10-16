@@ -28,7 +28,7 @@
     float wishlistCellHeight =CGRectGetHeight(self.frame);
     if(!wishlistImageView){
         wishlistImageView = [[UIImageView alloc] initWithFrame:CGRectMake(paddingLeft, paddingTop, wishlistCellWidth/3 - paddingLeft, wishlistCellHeight - paddingTop)];
-        wishlistImageView.layer.borderColor = [[SimiGlobalVar sharedInstance]colorWithHexString:@"#e8e8e8"].CGColor;
+        wishlistImageView.layer.borderColor = COLOR_WITH_HEX(@"#e8e8e8").CGColor;
         wishlistImageView.layer.borderWidth = 1;
         wishlistImageView.contentMode = UIViewContentModeScaleAspectFit;
         [wishlistImageView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(wishlistImageViewTapped:)]];
@@ -84,7 +84,7 @@
         [shareButton addTarget:self action:@selector(shareButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
         [self addSubview:shareButton];
     }
-    [SimiGlobalVar sortViewForRTL:self andWidth:CGRectGetWidth(self.frame)];
+    [SimiGlobalFunction sortViewForRTL:self andWidth:CGRectGetWidth(self.frame)];
 }
 
 

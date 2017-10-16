@@ -20,15 +20,15 @@
     [super viewDidLoadBefore];
     totalNumberProduct = 1000;
     UICollectionViewFlowLayout* flowLayout = [UICollectionViewFlowLayout new];
-    flowLayout.minimumLineSpacing = [SimiGlobalVar scaleValue:20];
-    flowLayout.minimumInteritemSpacing = [SimiGlobalVar scaleValue:5];
+    flowLayout.minimumLineSpacing = SCALEVALUE(20);
+    flowLayout.minimumInteritemSpacing = SCALEVALUE(5);
     self.productsCollectionView = [[UICollectionView alloc]initWithFrame:self.view.bounds collectionViewLayout:flowLayout];
     [self.productsCollectionView setBackgroundColor:[UIColor whiteColor]];
     self.productsCollectionView.delegate = self;
     self.productsCollectionView.dataSource = self;
-    [self.productsCollectionView setContentInset:UIEdgeInsetsMake([SimiGlobalVar scaleValue:20], [SimiGlobalVar scaleValue:5], [SimiGlobalVar scaleValue:20], [SimiGlobalVar scaleValue:5])];
+    [self.productsCollectionView setContentInset:UIEdgeInsetsMake(SCALEVALUE(20), SCALEVALUE(5), SCALEVALUE(20), SCALEVALUE(5))];
     if (PADDEVICE) {
-        [self.productsCollectionView setContentInset:UIEdgeInsetsMake([SimiGlobalVar scaleValue:20], [SimiGlobalVar scaleValue:20], [SimiGlobalVar scaleValue:20], [SimiGlobalVar scaleValue:20])];
+        [self.productsCollectionView setContentInset:UIEdgeInsetsMake(SCALEVALUE(20), SCALEVALUE(20), SCALEVALUE(20), SCALEVALUE(20))];
     }
      __weak SCGiftCardProductsViewController *tempSelf = self;
     [self.productsCollectionView addInfiniteScrollingWithActionHandler:^{
@@ -103,9 +103,9 @@
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath{
     float height = 0;
-    float itemWidth = [SimiGlobalVar scaleValue:152.5];
+    float itemWidth = SCALEVALUE(152.5);
     if (PADDEVICE) {
-        itemWidth = [SimiGlobalVar scaleValue:220];
+        itemWidth = SCALEVALUE(220);
     }
     if (PHONEDEVICE) {
         int numberCollectionRow = (int)indexPath.row/2;

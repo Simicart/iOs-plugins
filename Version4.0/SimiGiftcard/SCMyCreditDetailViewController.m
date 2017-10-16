@@ -189,7 +189,7 @@
         [self.contentView addSubview:changedTimeValueLabel];
         height += labelHeight;
         
-        [SimiGlobalVar sortViewForRTL:self.contentView andWidth:cellWidth];
+        [SimiGlobalFunction sortViewForRTL:self.contentView andWidth:cellWidth];
     }
     return self;
 }

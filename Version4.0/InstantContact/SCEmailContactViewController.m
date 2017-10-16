@@ -103,8 +103,8 @@
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         [super viewWillAppearBefore:YES];
     }
-    itemWidth = [SimiGlobalVar scaleValue:120];
-    itemHeight = [SimiGlobalVar scaleValue:100];
+    itemWidth = SCALEVALUE(120);
+    itemHeight = SCALEVALUE(100);
 }
 
 - (void)viewDidAppearBefore:(BOOL)animated
@@ -121,11 +121,11 @@
         {
             UICollectionViewFlowLayout *flowLayout = [UICollectionViewFlowLayout new];
             flowLayout.itemSize = CGSizeMake(itemWidth, itemHeight);
-            flowLayout.minimumLineSpacing =  [SimiGlobalVar scaleValue:20];
-            flowLayout.minimumInteritemSpacing = [SimiGlobalVar scaleValue:20];
+            flowLayout.minimumLineSpacing =  SCALEVALUE(20);
+            flowLayout.minimumInteritemSpacing = SCALEVALUE(20);
             _contactCollectionView = [[UICollectionView alloc]initWithFrame:self.view.bounds collectionViewLayout:flowLayout];
             [_contactCollectionView setBackgroundColor:[UIColor whiteColor]];
-            _contactCollectionView.contentInset = UIEdgeInsetsMake([SimiGlobalVar scaleValue:40], [SimiGlobalVar scaleValue:20], 0, [SimiGlobalVar scaleValue:20]);
+            _contactCollectionView.contentInset = UIEdgeInsetsMake(SCALEVALUE(40), SCALEVALUE(20), 0, SCALEVALUE(20));
             _contactCollectionView.delegate = self;
             _contactCollectionView.dataSource = self;
             [self.view addSubview:_contactCollectionView];
@@ -302,11 +302,11 @@
         {
             UICollectionViewFlowLayout *flowLayout = [UICollectionViewFlowLayout new];
             flowLayout.itemSize = CGSizeMake(itemWidth, itemHeight);
-            flowLayout.minimumLineSpacing =  [SimiGlobalVar scaleValue:20];
-            flowLayout.minimumInteritemSpacing = [SimiGlobalVar scaleValue:20];
+            flowLayout.minimumLineSpacing =  SCALEVALUE(20);
+            flowLayout.minimumInteritemSpacing = SCALEVALUE(20);
             _contactCollectionView = [[UICollectionView alloc]initWithFrame:self.view.bounds collectionViewLayout:flowLayout];
             [_contactCollectionView setBackgroundColor:[UIColor whiteColor]];
-            _contactCollectionView.contentInset = UIEdgeInsetsMake([SimiGlobalVar scaleValue:40], [SimiGlobalVar scaleValue:20], 0, [SimiGlobalVar scaleValue:20]);
+            _contactCollectionView.contentInset = UIEdgeInsetsMake(SCALEVALUE(40), SCALEVALUE(20), 0, SCALEVALUE(20));
             _contactCollectionView.delegate = self;
             _contactCollectionView.dataSource = self;
             [self.view addSubview:_contactCollectionView];
@@ -325,7 +325,7 @@
             cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:[NSString stringWithFormat:@"TableViewContact_%ld",indexPath.row]];
             SimiRow *row = [simiSection objectAtIndex:indexPath.row];
             UIImageView *imageIcon = [[UIImageView alloc]initWithFrame:CGRectMake(15, 15, 33, 20)];
-            [imageIcon setImage:[[UIImage imageNamed:[row.data valueForKey:@"image_tbl"]]imageWithColor:[[SimiGlobalVar sharedInstance]colorWithHexString:stringColor]]];
+            [imageIcon setImage:[[UIImage imageNamed:[row.data valueForKey:@"image_tbl"]]imageWithColor:COLOR_WITH_HEX(stringColor)]];
             [imageIcon setContentMode:UIViewContentModeScaleAspectFit];
             [cell.contentView addSubview:imageIcon];
             
@@ -333,7 +333,7 @@
             [lblName setFont:[UIFont fontWithName:THEME_FONT_NAME size:18]];
             [lblName setText:SCLocalizedString([row.data valueForKey:@"title"])];
             [cell.contentView addSubview:lblName];
-            [SimiGlobalVar sortViewForRTL:cell.contentView andWidth:CGRectGetWidth(tableView.frame)];
+            [SimiGlobalFunction sortViewForRTL:cell.contentView andWidth:CGRectGetWidth(tableView.frame)];
         }
     }
     return cell;
@@ -382,7 +382,7 @@
     
     float imageSize = 70;
     cell.imageView = [[UIImageView alloc]initWithFrame:CGRectMake((itemWidth - imageSize)/2, 0, imageSize, imageSize)];
-    [cell.imageView setImage:[[UIImage imageNamed:[row.data valueForKey:@"image_collectionview"]]imageWithColor:[[SimiGlobalVar sharedInstance]colorWithHexString:stringColor]]];
+    [cell.imageView setImage:[[UIImage imageNamed:[row.data valueForKey:@"image_collectionview"]]imageWithColor:COLOR_WITH_HEX(stringColor)]];
     [cell addSubview:cell.imageView];
     
     cell.titleLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, imageSize, itemWidth, itemHeight - imageSize)];

@@ -121,7 +121,7 @@
     }
     
     lblSearchByArea = [[UILabel alloc]initWithFrame:CGRectMake(labelMainTitleX, heightContent, widthContent - 100, heightLabel)];
-    [lblSearchByArea setTextColor:[[SimiGlobalVar sharedInstance] colorWithHexString:@"#393939"]];
+    [lblSearchByArea setTextColor:COLOR_WITH_HEX(@"#393939")];
     [lblSearchByArea setFont:[UIFont fontWithName:[NSString stringWithFormat:@"%@-%@",THEME_FONT_NAME,@"Bold"] size:THEME_FONT_SIZE + 3]];
     [lblSearchByArea setText: SCLocalizedString(@"Search By Area")];
     [scrView addSubview:lblSearchByArea];
@@ -129,7 +129,7 @@
     btnClearAll = [[UIButton alloc]initWithFrame:CGRectMake(widthContent - 100, heightContent, 80, heightLabel)];
     [btnClearAll addTarget:self action:@selector(btnClear:) forControlEvents:UIControlEventTouchUpInside];
     [btnClearAll setTitle:SCLocalizedString(@"Clear") forState:UIControlStateNormal];
-    [btnClearAll setTitleColor:[[SimiGlobalVar sharedInstance] colorWithHexString:@"#ff9900"] forState:UIControlStateNormal];
+    [btnClearAll setTitleColor:COLOR_WITH_HEX(@"#ff9900") forState:UIControlStateNormal];
     [btnClearAll.titleLabel setFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE - 2]];
     
     [btnClearAll setImage:[UIImage imageNamed:@"storelocator__search_iphone"] forState:UIControlStateNormal];
@@ -143,7 +143,7 @@
     [scrView addSubview:viewSearchByCountry];
     
     lblCountry = [[UILabel  alloc]initWithFrame:CGRectMake(labelTitleX, topDistance, widthTitle, heightLabel)];
-    [lblCountry setTextColor:[[SimiGlobalVar sharedInstance] colorWithHexString:@"#393939"]];
+    [lblCountry setTextColor:COLOR_WITH_HEX(@"#393939")];
     [lblCountry setFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE - 2]];
     [lblCountry setText:[NSString stringWithFormat:@"%@:", SCLocalizedString(@"Country")]];
     [viewSearchByCountry addSubview:lblCountry];
@@ -153,7 +153,7 @@
     [viewSearchByCountry addSubview:_imgCountry];
     
     lblContentCountry = [[UILabel alloc]initWithFrame:CGRectMake(textFieldX + leftDistance, 8.5, widthTextField - leftDistance, heightLabel)];
-    [lblContentCountry setTextColor:[[SimiGlobalVar sharedInstance] colorWithHexString:@"#393939"]];
+    [lblContentCountry setTextColor:COLOR_WITH_HEX(@"#393939")];
     [lblContentCountry setFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE - 2]];
     if (stringCountrySearchName == nil|| [stringCountrySearchName isEqualToString:@""]) {
         stringCountrySearchName = @"None";
@@ -173,7 +173,7 @@
     [scrView addSubview:viewSearchByCity];
     
     lblCity = [[UILabel alloc]initWithFrame:CGRectMake(labelTitleX, topDistance, widthTitle, heightLabel)];
-    [lblCity setTextColor:[[SimiGlobalVar sharedInstance] colorWithHexString:@"#393939"]];
+    [lblCity setTextColor:COLOR_WITH_HEX(@"#393939")];
     [lblCity setFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE - 2]];
     [lblCity setText:[NSString stringWithFormat:@"%@:", SCLocalizedString(@"City")]];
     [viewSearchByCity addSubview:lblCity];
@@ -183,7 +183,7 @@
     [viewSearchByCity addSubview:_imgCity];
     
     txtCitySearch = [[UITextField alloc]initWithFrame:CGRectMake(textFieldX + leftDistance, topDistance, widthTextField - leftDistance, heightLabel)];
-    txtCitySearch.textColor = [[SimiGlobalVar sharedInstance] colorWithHexString:@"#393939"];
+    txtCitySearch.textColor = COLOR_WITH_HEX(@"#393939");
     [txtCitySearch setFont: [UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE]];
     txtCitySearch.text = stringCitySearch;
     [viewSearchByCity addSubview:txtCitySearch];
@@ -196,7 +196,7 @@
     [scrView addSubview:viewSearchByState];
     
     lblState = [[UILabel alloc]initWithFrame:CGRectMake(labelTitleX, topDistance, widthTitle, heightLabel)];
-    [lblState setTextColor:[[SimiGlobalVar sharedInstance] colorWithHexString:@"#393939"]];
+    [lblState setTextColor:COLOR_WITH_HEX(@"#393939")];
     [lblState setFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE - 2]];
     [lblState setText:[NSString stringWithFormat:@"%@:", SCLocalizedString(@"State")]];
     [viewSearchByState addSubview:lblState];
@@ -206,7 +206,7 @@
     [viewSearchByState addSubview:_imgState];
     
     txtStateSearch = [[UITextField alloc]initWithFrame:CGRectMake(textFieldX + leftDistance, topDistance, widthTextField - leftDistance, heightLabel)];
-    txtStateSearch.textColor = [[SimiGlobalVar sharedInstance] colorWithHexString:@"#393939"];
+    txtStateSearch.textColor = COLOR_WITH_HEX(@"#393939");
     [txtStateSearch setFont: [UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE]];
     txtStateSearch.text = stringStateSearch;
     [viewSearchByState addSubview:txtStateSearch];
@@ -219,7 +219,7 @@
     [scrView addSubview:viewSearchByZipcode];
     
     lblZipcode = [[UILabel alloc]initWithFrame:CGRectMake(labelTitleX, topDistance, widthTitle, heightLabel)];
-    [lblZipcode setTextColor:[[SimiGlobalVar sharedInstance] colorWithHexString:@"#393939"]];
+    [lblZipcode setTextColor:COLOR_WITH_HEX(@"#393939")];
     [lblZipcode setFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE - 2]];
     [lblZipcode setText:[NSString stringWithFormat:@"%@:", SCLocalizedString(@"Zip Code")]];
     [viewSearchByZipcode addSubview:lblZipcode];
@@ -229,7 +229,7 @@
     [viewSearchByZipcode addSubview:_imgZipCode];
     
     txtZipCode = [[UITextField alloc]initWithFrame:CGRectMake(textFieldX + leftDistance, topDistance, widthTextField - leftDistance, heightLabel)];
-    txtZipCode.textColor = [[SimiGlobalVar sharedInstance] colorWithHexString:@"#393939"];
+    txtZipCode.textColor = COLOR_WITH_HEX(@"#393939");
     [txtZipCode setFont: [UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE]];
     txtZipCode.text = stringZipCodeSearch;
     [viewSearchByZipcode addSubview:txtZipCode];
@@ -248,11 +248,11 @@
     [viewSearch addSubview:btnSearch];
     heightContent += heightViewControl;
     
-    [SimiGlobalVar sortViewForRTL:scrView andWidth:CGRectGetWidth(scrView.frame)];
-    [SimiGlobalVar sortViewForRTL:viewSearchByCountry andWidth:widthContent];
-    [SimiGlobalVar sortViewForRTL:viewSearchByState andWidth:widthContent];
-    [SimiGlobalVar sortViewForRTL:viewSearchByCity andWidth:widthContent];
-    [SimiGlobalVar sortViewForRTL:viewSearchByZipcode andWidth:widthContent];
+    [SimiGlobalFunction sortViewForRTL:scrView andWidth:CGRectGetWidth(scrView.frame)];
+    [SimiGlobalFunction sortViewForRTL:viewSearchByCountry andWidth:widthContent];
+    [SimiGlobalFunction sortViewForRTL:viewSearchByState andWidth:widthContent];
+    [SimiGlobalFunction sortViewForRTL:viewSearchByCity andWidth:widthContent];
+    [SimiGlobalFunction sortViewForRTL:viewSearchByZipcode andWidth:widthContent];
 }
 
 - (void)setInterfaceSearchByTag
@@ -262,7 +262,7 @@
         isFirtsGetTagList =  NO;
         lblSearchByTag = [[UILabel alloc]initWithFrame:CGRectMake(labelMainTitleX, heightContent, widthContent - labelMainTitleX *2, heightLabel)];
         [lblSearchByTag setText:SCLocalizedString(@"Search By Tag")];
-        [lblSearchByTag setTextColor:[[SimiGlobalVar sharedInstance] colorWithHexString:@"#393939"]];
+        [lblSearchByTag setTextColor:COLOR_WITH_HEX(@"#393939")];
         [lblSearchByTag setFont:[UIFont fontWithName:[NSString stringWithFormat:@"%@-%@",THEME_FONT_NAME,@"Bold"] size:THEME_FONT_SIZE + 3]];
         if ([SimiGlobalVar sharedInstance].isReverseLanguage) {
             [lblSearchByTag setTextAlignment:NSTextAlignmentRight];

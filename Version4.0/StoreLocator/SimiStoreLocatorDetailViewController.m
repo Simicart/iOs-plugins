@@ -85,7 +85,7 @@
     [self initStoreHolidays];
     
     [scrView setContentSize:CGSizeMake(widthContent, heightScrViewContentSize)];
-    [SimiGlobalVar sortViewForRTL:scrView andWidth:widthContent];
+    [SimiGlobalFunction sortViewForRTL:scrView andWidth:widthContent];
     [super viewDidLoadBefore];
 }
 
@@ -177,13 +177,13 @@
         lblStorePhone = [[UILabel alloc]initWithFrame:CGRectMake(sizeIcon +10, 5, CGRectGetWidth(btnStorePhone.frame) - sizeIcon - 10, heightLabel)];
         lblStorePhone.text = sLModel.phone;
         [lblStorePhone setFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE]];
-        lblStorePhone.textColor = [[SimiGlobalVar sharedInstance]colorWithHexString:@"#009edb"];
+        lblStorePhone.textColor = COLOR_WITH_HEX(@"#009edb");
         [btnStorePhone addSubview:lblStorePhone];
         
         imgIconPhone = [[UIImageView alloc]initWithFrame:CGRectMake(0, 5, sizeIcon, sizeIcon)];
         [imgIconPhone setImage:[UIImage imageNamed:@"storelocator_7"]];
         [btnStorePhone addSubview:imgIconPhone];
-        [SimiGlobalVar sortViewForRTL:btnStorePhone andWidth:CGRectGetWidth(btnStorePhone.frame)];
+        [SimiGlobalFunction sortViewForRTL:btnStorePhone andWidth:CGRectGetWidth(btnStorePhone.frame)];
         heightScrViewContentSize += heightButton + space;
     }
 }
@@ -199,7 +199,7 @@
         lblStoreEmail = [[UILabel alloc]initWithFrame:CGRectMake(sizeIcon +10, 5, CGRectGetWidth(_btnStoreEmail.frame) - sizeIcon - 10, heightLabel)];
         lblStoreEmail.text = sLModel.email;
         [lblStoreEmail setFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE]];
-        lblStoreEmail.textColor = [[SimiGlobalVar sharedInstance] colorWithHexString:@"#009edb"];
+        lblStoreEmail.textColor = COLOR_WITH_HEX(@"#009edb");
         [_btnStoreEmail addSubview:lblStoreEmail];
         
         _imgIconEmail = [[UIImageView alloc]initWithFrame:CGRectMake(0, 5, sizeIcon, sizeIcon)];
@@ -207,7 +207,7 @@
         [_btnStoreEmail addSubview:_imgIconEmail];
         
         heightScrViewContentSize += heightButton + space;
-        [SimiGlobalVar sortViewForRTL:_btnStoreEmail andWidth:CGRectGetWidth(_btnStoreEmail.frame)];
+        [SimiGlobalFunction sortViewForRTL:_btnStoreEmail andWidth:CGRectGetWidth(_btnStoreEmail.frame)];
     }
     if (heightScrViewContentSize < (CGRectGetHeight(btnDirection.frame) + btnDirection.frame.origin.y)) {
         heightScrViewContentSize = CGRectGetHeight(btnDirection.frame) + btnDirection.frame.origin.y + space;
@@ -227,13 +227,13 @@
         lblStoreWebSite = [[UILabel alloc]initWithFrame:CGRectMake(sizeIcon +10, 5, CGRectGetWidth(_btnStoreWebsite.frame) - sizeIcon - 10, heightLabel)];
         lblStoreWebSite.text = sLModel.link;
         [lblStoreWebSite setFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE]];
-        lblStoreWebSite.textColor = [[SimiGlobalVar sharedInstance] colorWithHexString:@"#009edb"];
+        lblStoreWebSite.textColor = COLOR_WITH_HEX(@"#009edb");
         [_btnStoreWebsite addSubview:lblStoreWebSite];
         
         _imgIconWebsite = [[UIImageView alloc]initWithFrame:CGRectMake(0, 5, sizeIcon, sizeIcon)];
         [_imgIconWebsite setImage:[UIImage imageNamed:@"storelocator_5"]];
         [_btnStoreWebsite addSubview:_imgIconWebsite];
-        [SimiGlobalVar sortViewForRTL:_btnStoreWebsite andWidth:CGRectGetWidth(_btnStoreWebsite.frame)];
+        [SimiGlobalFunction sortViewForRTL:_btnStoreWebsite andWidth:CGRectGetWidth(_btnStoreWebsite.frame)];
         heightScrViewContentSize += heightButton + space;
     }
 }
@@ -268,7 +268,7 @@
             [lblInfomationContents resizLabelToFit];
         }
         heightScrViewContentSize += heightButton * 2  + space;
-        [SimiGlobalVar sortViewForRTL:viewInfomation andWidth:CGRectGetWidth(viewInfomation.frame)];
+        [SimiGlobalFunction sortViewForRTL:viewInfomation andWidth:CGRectGetWidth(viewInfomation.frame)];
     }
 }
 
@@ -290,7 +290,7 @@
     NSString *openHours = @"Open Hours";
     lblOpenHours = [[UILabel alloc]initWithFrame:CGRectMake(labelTitleX, 0, CGRectGetWidth(viewOpenHours.frame) - sizeIcon - 10, heightButton)];
     [lblOpenHours setFont:[UIFont fontWithName:THEME_FONT_NAME_REGULAR size:THEME_FONT_SIZE + 3]];
-    [lblOpenHours setTextColor:[[SimiGlobalVar sharedInstance]colorWithHexString:@"#4d535e"]];
+    [lblOpenHours setTextColor:COLOR_WITH_HEX(@"#4d535e")];
     [lblOpenHours setText:SCLocalizedString(@"Opening Hours")];
     [viewOpenHours addSubview:lblOpenHours];
     lblOpenHours.simiObjectIdentifier = openHours;
@@ -400,11 +400,11 @@
             UILabel *label = (UILabel*)view;
             if (![(NSString*)label.simiObjectIdentifier isEqualToString:openHours] ) {
                 [label setFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE]];
-                [label setTextColor: [[SimiGlobalVar sharedInstance] colorWithHexString:@"#4d535e"]];
+                [label setTextColor: COLOR_WITH_HEX(@"#4d535e")];
             }
         }
     }
-    [SimiGlobalVar sortViewForRTL:viewOpenHours andWidth:CGRectGetWidth(viewOpenHours.frame)];
+    [SimiGlobalFunction sortViewForRTL:viewOpenHours andWidth:CGRectGetWidth(viewOpenHours.frame)];
     heightScrViewContentSize += CGRectGetHeight(viewOpenHours.frame) + space;
 }
 
@@ -423,7 +423,7 @@
         lblSpecialsDay = [[UILabel alloc]initWithFrame:CGRectMake(labelTitleX, 0, CGRectGetWidth(viewSpecialsDay.frame) - labelTitleX, heightButton)];
         lblSpecialsDay.text = SCLocalizedString(@"Specials Day");
         [lblSpecialsDay setFont:[UIFont fontWithName:THEME_FONT_NAME_REGULAR size:THEME_FONT_SIZE + 3]];
-        [lblSpecialsDay setTextColor:[[SimiGlobalVar sharedInstance] colorWithHexString:@"#4d535e"]];
+        [lblSpecialsDay setTextColor:COLOR_WITH_HEX(@"#4d535e")];
         [viewSpecialsDay addSubview:lblSpecialsDay];
         
         NSString *stringSpecialDaysContent = @"";
@@ -434,14 +434,14 @@
         lblSpecialsDayContent = [[UILabel alloc]initWithFrame:CGRectMake(labelTitleX, heightButton, widthContent - labelTitleX, heightLabel)];
         lblSpecialsDayContent.text = stringSpecialDaysContent;
         [lblSpecialsDayContent setFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE - 3]];
-        lblSpecialsDayContent.textColor = [[SimiGlobalVar sharedInstance] colorWithHexString:@"#4d535e"];
+        lblSpecialsDayContent.textColor = COLOR_WITH_HEX(@"#4d535e");
         [viewSpecialsDay addSubview:lblSpecialsDayContent];
         
         float heightViewSpecialDays = [lblSpecialsDayContent resizLabelToFit];
         [viewSpecialsDay setFrame:CGRectMake(edgeSpace, heightScrViewContentSize, CGRectGetWidth(viewSpecialsDay.frame), heightViewSpecialDays)];
         
         heightScrViewContentSize += heightViewSpecialDays;
-        [SimiGlobalVar sortViewForRTL:viewSpecialsDay andWidth:CGRectGetWidth(viewSpecialsDay.frame)];
+        [SimiGlobalFunction sortViewForRTL:viewSpecialsDay andWidth:CGRectGetWidth(viewSpecialsDay.frame)];
     }
 }
 
@@ -461,7 +461,7 @@
         lblHolidays = [[UILabel alloc]initWithFrame:CGRectMake(labelTitleX, 0, CGRectGetWidth(viewHolidays.frame) - labelTitleX, heightButton)];
         lblHolidays.text = SCLocalizedString(@"Holidays");
         [lblHolidays setFont:[UIFont fontWithName:THEME_FONT_NAME_REGULAR size:THEME_FONT_SIZE + 3]];
-        [lblHolidays setTextColor:[[SimiGlobalVar sharedInstance] colorWithHexString:@"#4d535e"]];
+        [lblHolidays setTextColor:COLOR_WITH_HEX(@"#4d535e")];
         [viewHolidays addSubview:lblHolidays];
         
         NSString *stringHolidaysContent = @"";
@@ -472,14 +472,14 @@
         lblHolidaysContent = [[UILabel alloc]initWithFrame:CGRectMake(labelTitleX, heightButton, widthContent - labelTitleX, heightLabel)];
         lblHolidaysContent.text = stringHolidaysContent;
         [lblHolidaysContent setFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE - 3]];
-        [lblHolidaysContent setTextColor:[[SimiGlobalVar sharedInstance] colorWithHexString:@"#4d535e"]];
+        [lblHolidaysContent setTextColor:COLOR_WITH_HEX(@"#4d535e")];
         [viewHolidays addSubview:lblHolidaysContent];
         
         float heightViewHolidays = [lblHolidaysContent resizLabelToFit];
         [viewHolidays setFrame:CGRectMake(edgeSpace, heightScrViewContentSize, CGRectGetWidth(viewHolidays.frame), heightViewHolidays)];
         
         heightScrViewContentSize += heightViewHolidays;
-        [SimiGlobalVar sortViewForRTL:viewHolidays andWidth:CGRectGetWidth(viewHolidays.frame)];
+        [SimiGlobalFunction sortViewForRTL:viewHolidays andWidth:CGRectGetWidth(viewHolidays.frame)];
     }
 }
 

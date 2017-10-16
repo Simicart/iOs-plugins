@@ -106,7 +106,7 @@
             
             reviewContentView.frame = CGRectMake(0, 0, viewWidth, viewY + 10);
             reviewScrollView.contentSize = CGSizeMake(viewWidth, viewY + 10);
-            [SimiGlobalVar sortViewForRTL:reviewScrollView andWidth:viewWidth];
+            [SimiGlobalFunction sortViewForRTL:reviewScrollView andWidth:viewWidth];
         }
     }
 }

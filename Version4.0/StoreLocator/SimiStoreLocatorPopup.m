@@ -39,7 +39,7 @@
         [lblStoreName setFont:[UIFont fontWithName:[NSString stringWithFormat:@"%@-%@",THEME_FONT_NAME,@"Bold"] size:THEME_FONT_SIZE]];
         
         lblStoreAddress = [UILabel new];
-        lblStoreAddress.textColor = [[SimiGlobalVar sharedInstance]colorWithHexString:@"#393939"];
+        lblStoreAddress.textColor = COLOR_WITH_HEX(@"#393939");
         [lblStoreAddress setFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE - 2]];
         if (PHONEDEVICE) {
             [lblStoreName setFrame:CGRectMake(80, 5, 175, 20)];
@@ -51,7 +51,7 @@
         }
         [self addSubview:lblStoreName];
         [self addSubview:lblStoreAddress];
-        [SimiGlobalVar sortViewForRTL:self andWidth:width];
+        [SimiGlobalFunction sortViewForRTL:self andWidth:width];
     }
     return self;
 }

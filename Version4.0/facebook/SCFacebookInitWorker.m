@@ -84,7 +84,7 @@
         cells = noti.object;
         loginViewController = [noti.userInfo objectForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.viewcontroller];
         SimiSection *section = [cells getSectionByIdentifier:LOGIN_SECTION];
-        SimiRow *row = [[SimiRow alloc] initWithIdentifier:FacebookLoginCell height:[SimiGlobalVar scaleValue:50] sortOrder:SIGNIN_SORT_ORDER + 1];
+        SimiRow *row = [[SimiRow alloc] initWithIdentifier:FacebookLoginCell height:SCALEVALUE(50) sortOrder:SIGNIN_SORT_ORDER + 1];
         [section addRow:row];
     }else if([noti.name isEqualToString:ApplicationOpenURL]){
         BOOL numberBool = [[noti object] boolValue];
@@ -105,9 +105,9 @@
         if ([row.identifier isEqualToString:FacebookLoginCell]) {
             UITableViewCell *cell = [noti.userInfo objectForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.cell];
             float loginViewWidth = CGRectGetWidth(loginViewController.view.frame);
-            float heightCell = [SimiGlobalVar scaleValue:35];
-            float paddingY = [SimiGlobalVar scaleValue:7.5];
-            float paddingX = [SimiGlobalVar scaleValue:20];
+            float heightCell = SCALEVALUE(35);
+            float paddingY = SCALEVALUE(7.5);
+            float paddingX = SCALEVALUE(20);
             
             float widthCell = loginViewWidth - 2* paddingX;
             
@@ -307,7 +307,7 @@
     currentlyViewController = [noti.userInfo valueForKey:@"controller"];
     
     float likeViewSize = 68;
-    UIView *facebookLikeView = [[UIView alloc] initWithFrame:CGRectMake([SimiGlobalVar scaleValue:5], -5, likeViewSize, likeViewSize)];
+    UIView *facebookLikeView = [[UIView alloc] initWithFrame:CGRectMake(SCALEVALUE(5), 5, likeViewSize, likeViewSize)];
     
     UIImageView* fbLikeBackgroundImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"ic_bg_more"]];
     fbLikeBackgroundImageView.frame = CGRectMake(0, 0, likeViewSize, likeViewSize);
@@ -325,7 +325,7 @@
     [facebookLikeView setBackgroundColor:[UIColor clearColor]];
     
     //fbComment button
-    UIButton* fbCommentButton = [[UIButton alloc]initWithFrame:CGRectMake([SimiGlobalVar scaleValue:92], 5, FB_BUTTON_SIZE, FB_BUTTON_SIZE)];
+    UIButton* fbCommentButton = [[UIButton alloc]initWithFrame:CGRectMake(SCALEVALUE(92), 5, FB_BUTTON_SIZE, FB_BUTTON_SIZE)];
     [fbCommentButton setImage:[UIImage imageNamed:@"facebookconnect_comment"] forState:UIControlStateNormal];
     [fbCommentButton setImageEdgeInsets:UIEdgeInsetsMake(9, 9, 9, 9)];
     [fbCommentButton.layer setCornerRadius:FB_BUTTON_SIZE/2.0f];
@@ -335,7 +335,7 @@
     [fbCommentButton setBackgroundColor:[UIColor whiteColor]];
     [fbCommentButton addTarget:self action:@selector(fbCommentButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
     
-    UIButton* fbShareButton = [[UIButton alloc]initWithFrame:CGRectMake([SimiGlobalVar scaleValue:170], 5, FB_BUTTON_SIZE, FB_BUTTON_SIZE)];
+    UIButton* fbShareButton = [[UIButton alloc]initWithFrame:CGRectMake(SCALEVALUE(170), 5, FB_BUTTON_SIZE, FB_BUTTON_SIZE)];
     [fbShareButton setImage:[UIImage imageNamed:@"facebookconnect_share"] forState:UIControlStateNormal];
     [fbShareButton setImageEdgeInsets:UIEdgeInsetsMake(9, 9, 9, 9)];
     [fbShareButton.layer setCornerRadius:FB_BUTTON_SIZE/2.0f];
@@ -346,7 +346,7 @@
     [fbShareButton addTarget:self action:@selector(fbShareButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
     
     float shareViewSize = 68;
-    UIView *facebookShareView = [[UIView alloc] initWithFrame:CGRectMake([SimiGlobalVar scaleValue:170], -5, shareViewSize, shareViewSize)];
+    UIView *facebookShareView = [[UIView alloc] initWithFrame:CGRectMake(SCALEVALUE(170), -5, shareViewSize, shareViewSize)];
     
     UIImageView* fbShareBackgroundImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"ic_bg_more"]];
     fbShareBackgroundImageView.frame = CGRectMake(0, 0, shareViewSize, shareViewSize);
@@ -601,7 +601,7 @@
                  if(customerModel == nil)
                      customerModel = [[SimiCustomerModel alloc] init];
                  if(email && firstName && lastName){
-                     NSString* password = [[SimiGlobalVar sharedInstance] md5PassWordWithEmail:email];
+                     NSString* password = [SimiGlobalFunction md5PassWordWithEmail:email];
                      [customerModel loginWithSocialEmail:email password:password firstName:firstName lastName:lastName];
                      NSDictionary *info = [[NSBundle mainBundle] infoDictionary];
                      NSString *bundleIdentifier = [NSString stringWithFormat:@"%@", [info objectForKey:@"CFBundleIdentifier"]];
