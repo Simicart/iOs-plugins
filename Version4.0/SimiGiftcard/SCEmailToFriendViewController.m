@@ -26,8 +26,6 @@
 
 - (void)viewDidLoadBefore{
     self.navigationItem.title = SCLocalizedString(@"EMAIL GIFT CARD TO FRIEND");
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
 }
 
 - (void)viewWillAppearBefore:(BOOL)animated{

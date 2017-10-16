@@ -16,8 +16,6 @@
 @synthesize cells = _cells;
 
 - (void)viewDidLoadAfter{
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
     if ([SCGiftCardGlobalVar sharedInstance].timeZoneModelCollection.count > 0) {
         timeZoneModelCollection = [SCGiftCardGlobalVar sharedInstance].timeZoneModelCollection;
         timeZoneTitles = [NSMutableArray new];
@@ -544,20 +542,9 @@
     }
 }
 
-#pragma mark Keyboard State
-- (void)keyboardWillShow:(NSNotification *)noti{
-    float keyboardHeight = [[[noti userInfo] objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue].size.height;
-    self.contentTableView.contentInset = UIEdgeInsetsMake(0, 0, keyboardHeight, 0);
-}
-
-- (void)keyboardWillHide:(NSNotification *)noti{
-    self.contentTableView.contentInset = UIEdgeInsetsMake(0, 0, heightViewAction, 0);
-}
-
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView{
     if (customMessageTextView.isFirstResponder) {
         [customMessageTextView resignFirstResponder];
-        
     }
 }
 
@@ -642,7 +629,7 @@
         canAddToCart = YES;
     if (canAddToCart) {
         [self startLoadingData];
-        NSMutableDictionary* cartItem = [[NSMutableDictionary alloc]initWithDictionary:@{@"product":[self.product valueForKey:@"entity_id"],@"giftcard_template_id":giftCardTemplateID, @"qty":[NSString stringWithFormat:@"%d",self.qty]}];
+        NSMutableDictionary* cartItem = [[NSMutableDictionary alloc]initWithDictionary:@{@"product":[self.product valueForKey:@"entity_id"],@"giftcard_template_id":giftCardTemplateID, @"qty":[NSString stringWithFormat:@"%d",qty]}];
         if (self.useUploadImage) {
             [cartItem setValue:@"1" forKey:@"giftcard_use_custom_image"];
             [cartItem setValue:[uploadImageModel valueForKey:@"file"] forKey:@"giftcard_template_image"];
@@ -686,7 +673,7 @@
             [cartItem setValue:price forKey:@"price_amount"];
             [cartItem setValue:currentGiftValue forKey:@"amount"];
         }
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"AddToCart" object:nil userInfo:@{@"data":cartItem}];
+        [[NSNotificationCenter defaultCenter] postNotificationName:Simi_AddToCart object:nil userInfo:@{@"data":cartItem}];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didAddToCart:) name:Simi_DidAddToCart object:nil];
     }
 }
