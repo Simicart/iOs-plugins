@@ -34,7 +34,8 @@
 - (void)initCartCellAfter: (NSNotification *)noti {
     SimiTable *cartCells = noti.object;
     SimiSection *priceSection = [cartCells getSectionByIdentifier:CART_TOTALS];
-    [priceSection addRowWithIdentifier:CART_COUPONCODE_ROW height:64 sortOrder:1000];
+    SimiRow *totalRow = [priceSection getRowByIdentifier:CART_TOTALS_ROW];
+    [priceSection addRowWithIdentifier:CART_COUPONCODE_ROW height:64 sortOrder:totalRow.sortOrder + 1];
 }
 
 - (void)initializedCartCellBefore: (NSNotification *)noti {
@@ -104,13 +105,14 @@
 - (void)orderViewControllerInitTableAfter:(NSNotification *)noti {
     SimiTable *orderCells = noti.object;
     SimiSection *totalSection = [orderCells getSectionByIdentifier:ORDER_TOTALS_SECTION];
-    SimiRow *couponRow = [[SimiRow alloc] initWithIdentifier:ORDER_VIEW_COUPONCODE height:64 sortOrder:1000];
+    SimiRow *totalRow = [totalSection getRowByIdentifier:ORDER_VIEW_CART];
+    SimiRow *couponRow = [[SimiRow alloc] initWithIdentifier:ORDER_VIEW_COUPONCODE height:64 sortOrder:totalRow.sortOrder + 1];
     [totalSection addRow:couponRow];
 }
 
 - (void)orderViewControllerInitRightTableAfter:(NSNotification *)noti {
     SimiTable *orderCells = noti.object;
-    SimiSection *totalSection = [orderCells getSectionByIdentifier:ORDER_TOTALS_SECTION];
+    SimiSection *totalSection = [orderCells getSectionByIdentifier:ORDER_VIEW_TOTAL];
     SimiRow *couponRow = [[SimiRow alloc] initWithIdentifier:ORDER_VIEW_COUPONCODE height:64 sortOrder:1000];
     [totalSection addRow:couponRow];
 }
