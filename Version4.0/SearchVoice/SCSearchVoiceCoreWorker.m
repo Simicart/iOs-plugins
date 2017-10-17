@@ -48,13 +48,13 @@
 
 - (void)showSearchVoiceBtn:(NSNotification *)noti{
     viewController = noti.object;
-    float insetPadding = [SimiGlobalVar scaleValue:5];
+    float insetPadding = [SimiGlobalFunction scaleValue:5];
     if (PHONEDEVICE) {
         if ([noti.object isKindOfClass:[SCHomeViewController class]]) {
             SCHomeViewController *homeViewController = noti.object;
-            [homeViewController.searchBarHome setFrame:[SimiGlobalVar scaleFrame:CGRectMake(5, 5, 310 - 28 - 5, 28)]];
+            [homeViewController.searchBarHome setFrame:[SimiGlobalFunction scaleFrame:CGRectMake(5, 5, 310 - 28 - 5, 28)]];
             [homeViewController.searchBarBackground setFrame:homeViewController.searchBarHome.frame];
-            self.searchVoiceBtn = [[UIButton alloc] initWithFrame:[SimiGlobalVar scaleFrame:CGRectMake(282, 0, 38, 38)]];
+            self.searchVoiceBtn = [[UIButton alloc] initWithFrame:[SimiGlobalFunction scaleFrame:CGRectMake(282, 0, 38, 38)]];
             self.searchVoiceBtn.backgroundColor = [UIColor clearColor];
             self.searchVoiceBtn.imageView.backgroundColor = THEME_SEARCH_BOX_BACKGROUND_COLOR;
             [self.searchVoiceBtn setAlpha:0.9f];
@@ -66,9 +66,9 @@
             [homeViewController.view addSubview:self.searchVoiceBtn];
         } else if ([noti.object isKindOfClass:[SCProductListViewController class]]) {
             SCProductListViewController *productListViewController = noti.object;
-            [productListViewController.productSearchBar setFrame:[SimiGlobalVar scaleFrame:CGRectMake(5, 5, 310 - 28 - 5, 28)]];
+            [productListViewController.productSearchBar setFrame:[SimiGlobalFunction scaleFrame:CGRectMake(5, 5, 310 - 28 - 5, 28)]];
             [productListViewController.searchBarBackground setFrame:productListViewController.productSearchBar.frame];
-            self.searchVoiceBtn = [[UIButton alloc] initWithFrame:[SimiGlobalVar scaleFrame:CGRectMake(282, 0, 44, 44)]];
+            self.searchVoiceBtn = [[UIButton alloc] initWithFrame:[SimiGlobalFunction scaleFrame:CGRectMake(282, 0, 44, 44)]];
             self.searchVoiceBtn.backgroundColor = [UIColor clearColor];
             self.searchVoiceBtn.imageView.backgroundColor = THEME_SEARCH_BOX_BACKGROUND_COLOR;
             [self.searchVoiceBtn setAlpha:0.9f];
