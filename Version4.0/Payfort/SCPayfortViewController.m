@@ -17,7 +17,6 @@
 
 @implementation SCPayfortViewController {
     UIWebView *payfortWebView;
-    SimiModel *originalOrder;
 }
 
 - (void)viewDidLoad {
@@ -25,7 +24,6 @@
     payfortWebView = [[UIWebView alloc] init];
     payfortWebView.delegate = self;
     [self.view addSubview:payfortWebView];
-    originalOrder = [self.order copy];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -62,16 +60,15 @@
     [self removeObserverForNotification:noti];
     [self dismissViewControllerAnimated:YES completion:nil];
     SimiResponder *responder = [noti.userInfo objectForKey:responderKey];
-    if([responder.status isEqualToString:@"SUCCESS"]) {
-        [self.order addData:originalOrder];
+    if(responder.status == SUCCESS) {
         if (PHONEDEVICE) {
             SCThankYouPageViewController *thankVC = [[SCThankYouPageViewController alloc] init];
-            thankVC.order = [[SimiOrderModel alloc] initWithDictionary:originalOrder];
+            thankVC.order = [[SimiOrderModel alloc] initWithModelData:self.order.modelData];
             [[SimiGlobalVar sharedInstance].currentlyNavigationController pushViewController:thankVC animated:YES];
         }else {
             UINavigationController *currentlyNavigationController = [SimiGlobalVar sharedInstance].currentlyNavigationController;
             SCThankYouPageViewController *thankVC = [[SCThankYouPageViewController alloc] init];
-            thankVC.order = [[SimiOrderModel alloc] initWithDictionary:originalOrder];
+            thankVC.order = [[SimiOrderModel alloc] initWithModelData:self.order.modelData];
             UINavigationController *navi = [[UINavigationController alloc]initWithRootViewController:thankVC];
             navi.modalPresentationStyle = UIModalPresentationPopover;
             UIPopoverPresentationController *popover = navi.popoverPresentationController;
@@ -81,7 +78,7 @@
             [currentlyNavigationController presentViewController:navi animated:YES completion:nil];
         }
     }else {
-        [self showAlertWithTitle:@"" message:responder.responseMessage];
+        [self showAlertWithTitle:@"" message:responder.message];
     }
 }
 

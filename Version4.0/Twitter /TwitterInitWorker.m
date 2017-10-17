@@ -53,7 +53,7 @@
         cells = noti.object;
         loginViewController = (SimiViewController*)[noti.userInfo valueForKey:@"controller"];
         SimiSection *section = [cells objectAtIndex:0];
-        SimiRow *row = [[SimiRow alloc] initWithIdentifier:TwitterLoginCell height:[SimiGlobalVar scaleValue:50]];
+        SimiRow *row = [[SimiRow alloc] initWithIdentifier:TwitterLoginCell height:[SimiGlobalFunction scaleValue:50]];
         [section addRow:row];
     }else if([noti.name isEqualToString:SCLoginViewController_InitCellAfter]){
         NSIndexPath *indexPath = [noti.userInfo valueForKey:@"indexPath"];
@@ -64,9 +64,9 @@
             
             UITableViewCell *cell = noti.object;
             float loginViewWidth = CGRectGetWidth(loginViewController.view.frame);
-            float heightCell = [SimiGlobalVar scaleValue:35];
-            float paddingY = [SimiGlobalVar scaleValue:7.5];
-            float paddingX = [SimiGlobalVar scaleValue:20];
+            float heightCell = [SimiGlobalFunction scaleValue:35];
+            float paddingY = [SimiGlobalFunction scaleValue:7.5];
+            float paddingX = [SimiGlobalFunction scaleValue:20];
             float widthCell = loginViewWidth - 2* paddingX;
             TWTRLogInButton *logInButton = [TWTRLogInButton buttonWithLogInCompletion:^(TWTRSession *session, NSError *error) {
                 if (session) {
@@ -90,7 +90,7 @@
                             NSString* email = [responseData objectForKey:@"id"];
                             NSString* firstName = [responseData objectForKey:@"name"];
                             NSString* lastName = [responseData objectForKey:@"screen_name"];
-                            [customerModel loginWithSocialEmail:email password:[[SimiGlobalVar sharedInstance] md5PassWordWithEmail:email] firstName:firstName lastName:lastName];
+                            [customerModel loginWithSocialEmail:email password:[SimiGlobalFunction md5PassWordWithEmail:email] firstName:firstName lastName:lastName];
                             [loginViewController startLoadingData];
                         }else{
                             

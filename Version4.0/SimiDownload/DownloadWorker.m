@@ -60,7 +60,7 @@
 
 - (void)didSelectRow:(NSNotification*)noti
 {
-    UIViewController *currentVC = [(UITabBarController *)[[(SCAppDelegate *)[[UIApplication sharedApplication] delegate] window] rootViewController] selectedViewController];
+    UIViewController *currentVC = [noti.userInfo objectForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.viewcontroller];
     SimiRow *row = [noti.userInfo valueForKey:@"simirow"];
     if ([row.identifier isEqualToString:LEFTMENU_ROW_DOWNLOAD]) {
         if (PHONEDEVICE) {
