@@ -146,7 +146,7 @@
     [alertView show];
     [self removeObserverForNotification:noti];
     [viewController stopLoadingData];
-    [viewController.navigationController popViewControllerAnimated:YES];
+    [viewController.navigationController popToRootViewControllerAnimated:YES];
 }
 
 #pragma mark PayPalPaymentDelegate methods
