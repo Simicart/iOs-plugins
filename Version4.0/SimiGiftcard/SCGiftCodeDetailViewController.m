@@ -206,7 +206,7 @@
             SimiLabel *historyLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(padding, height, cellWidth - padding*2, labelHeight) andFontName:THEME_FONT_NAME_REGULAR andFontSize:20 andTextColor:THEME_CONTENT_COLOR text:@"History"];
             [cell.contentView addSubview:historyLabel];
             height += 30;
-            [SimiGlobalVar sortViewForRTL:cell.contentView andWidth:cellWidth];
+            [SimiGlobalFunction sortViewForRTL:cell.contentView andWidth:cellWidth];
             row.height = height;
         }
     }else if ([row.identifier isEqualToString:giftcode_history_row]){
@@ -365,7 +365,7 @@
             height += labelHeight;
         }
         
-        [SimiGlobalVar sortViewForRTL:self.contentView andWidth:cellWidth];
+        [SimiGlobalFunction sortViewForRTL:self.contentView andWidth:cellWidth];
     }
     return self;
 }

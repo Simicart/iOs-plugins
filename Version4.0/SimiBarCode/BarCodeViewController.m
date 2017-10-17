@@ -62,11 +62,11 @@
         CGRect frame = self.view.bounds;
         [_activityIndicatorView setFrame:frame];
         [_previewView setFrame:frame];
-        [_imgCanvas setFrame:[SimiGlobalVar scaleFrame:ImageCanvasFrame]];
-        [_imgBackgroundHeader setFrame:[SimiGlobalVar scaleFrame:ImageBackgroundHeader]];
-        [_imgBackgroundFooter setFrame:[SimiGlobalVar scaleFrame:ImageBackgroundFooter]];
-        [_btnFlash setFrame:[SimiGlobalVar scaleFrame:ButtonFlashFrame]];
-        [_btnPhoto setFrame:[SimiGlobalVar scaleFrame:ButtonPhotoFrame]];
+        [_imgCanvas setFrame:SCALEFRAME(ImageCanvasFrame)];
+        [_imgBackgroundHeader setFrame:SCALEFRAME(ImageBackgroundHeader)];
+        [_imgBackgroundFooter setFrame:SCALEFRAME(ImageBackgroundFooter)];
+        [_btnFlash setFrame:SCALEFRAME(ButtonFlashFrame)];
+        [_btnPhoto setFrame:SCALEFRAME(ButtonPhotoFrame)];
         
         
         [self.view addSubview:_previewView];

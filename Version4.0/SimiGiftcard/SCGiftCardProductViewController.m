@@ -347,7 +347,7 @@
                 }
                 
                 row.height = heightCell;
-                [SimiGlobalVar sortViewForRTL:cell.contentView andWidth:tableWidth];
+                [SimiGlobalFunction sortViewForRTL:cell.contentView andWidth:tableWidth];
             }
 #pragma mark Description
         }else if([row.identifier isEqualToString:product_description_row])
@@ -373,7 +373,7 @@
                     }
                 }
                 row.height = heightCell;
-                [SimiGlobalVar sortViewForRTL:cell.contentView andWidth:tableWidth - paddingEdge];
+                [SimiGlobalFunction sortViewForRTL:cell.contentView andWidth:tableWidth - paddingEdge];
             }
         }
 #pragma mark Tech specs
@@ -385,7 +385,7 @@
                 SimiLabel *titleLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(paddingEdge, 10, tableWidth - paddingEdge*3, 30) andFontName:THEME_FONT_NAME_REGULAR andFontSize:THEME_FONT_SIZE + 2];
                 [titleLabel setText:SCLocalizedString(@"Tech Specs")];
                 [cell.contentView addSubview:titleLabel];
-                [SimiGlobalVar sortViewForRTL:cell.contentView andWidth:tableWidth - paddingEdge];
+                [SimiGlobalFunction sortViewForRTL:cell.contentView andWidth:tableWidth - paddingEdge];
             }
         }
 #pragma mark Reviews
@@ -683,7 +683,7 @@
         [self showToastMessage:@"Please enter all required fields" duration:1.5];
         return NO;
     }
-    if (![SimiGlobalVar validateEmail:recipientEmailTextField.text]) {
+    if (![SimiGlobalFunction validateEmail:recipientEmailTextField.text]) {
         [self showToastMessage:@"Email is not valid" duration:1.5];
         return NO;
     }

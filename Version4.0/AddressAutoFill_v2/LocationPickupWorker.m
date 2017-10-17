@@ -69,7 +69,7 @@
             [newAddressViewController.form setValue:addressModel.postcode forKey:@"postcode"];
         }
         [newAddressViewController.form sortFormFields];
-        [newAddressViewController.tableViewAddress reloadData];
+        [newAddressViewController.contentTableView reloadData];
     }
     [self removeObserverForNotification:noti];
 }
@@ -81,7 +81,7 @@
         [newAddressViewController.form addField:@"MapAPI" config:@{@"name": @"latlng",
                                                                   @"title": SCLocalizedString(@"Country"),
                                                                    @"sort_order":@10000,
-                                                                   @"height":[NSNumber numberWithFloat:[SimiGlobalVar scaleValue:250]]}];
+                                                                   @"height":[NSNumber numberWithFloat:SCALEVALUE(250)]}];
     }else if([noti.name isEqualToString:@"SimiFormMapAPI_DidGetAddress"])
     {
         NSDictionary *params = noti.object;

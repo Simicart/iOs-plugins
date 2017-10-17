@@ -54,10 +54,10 @@ static NSString *product_paypalcheckout_row = @"product_paypalcheckout_row";
     [self removeObserverForNotification:noti];
     if ([[paypalExpressConfig valueForKey:@"show_on_product_detail"]boolValue]) {
         if (btnPaypalProduct == nil) {
-            CGFloat buttonWidth = [SimiGlobalVar scaleValue:310];
+            CGFloat buttonWidth = SCALEVALUE(310);
             CGFloat buttonHeight = 40;
-            CGFloat leftPadding = [SimiGlobalVar scaleValue:5];
-            CGFloat topPadding = [SimiGlobalVar scaleValue:10];
+            CGFloat leftPadding = SCALEVALUE(5);
+            CGFloat topPadding = SCALEVALUE(10);
             CGFloat cornerRadius = 4.0f;
             
             if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
@@ -68,7 +68,7 @@ static NSString *product_paypalcheckout_row = @"product_paypalcheckout_row";
             
             btnPaypalProduct = [[UIButton alloc]initWithFrame:CGRectMake(leftPadding,buttonHeight + topPadding,buttonWidth,buttonHeight)];
             [btnPaypalProduct.layer setCornerRadius:cornerRadius];
-            [btnPaypalProduct setBackgroundColor:[[SimiGlobalVar sharedInstance] colorWithHexString:@"#ffc439"]];
+            [btnPaypalProduct setBackgroundColor:COLOR_WITH_HEX(@"#ffc439")];
             [btnPaypalProduct setContentEdgeInsets:UIEdgeInsetsMake(0, buttonWidth/2 -75, 0, buttonWidth/2 -75)];
             [btnPaypalProduct addTarget:self action:@selector(didClickProductPaypalButton:) forControlEvents:UIControlEventTouchUpInside];
             [btnPaypalProduct setImage:[UIImage imageNamed:@"en_paypal_express_product_btn"] forState:UIControlStateNormal];
@@ -108,17 +108,17 @@ static NSString *product_paypalcheckout_row = @"product_paypalcheckout_row";
         UITableViewCell *cell = [noti.userInfo valueForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.cell];
         if ([[paypalExpressConfig valueForKey:@"show_on_product_detail"]boolValue]) {
             if (btnPaypalProductNew == nil) {
-                CGFloat buttonWidth = [SimiGlobalVar scaleValue:290];
+                CGFloat buttonWidth = SCALEVALUE(290);
                 if (PADDEVICE)
-                    buttonWidth = [SimiGlobalVar scaleValue:480];
+                    buttonWidth = SCALEVALUE(480);
                 CGFloat buttonHeight = 40;
-                CGFloat leftPadding = [SimiGlobalVar scaleValue:15];
+                CGFloat leftPadding = SCALEVALUE(15);
                 CGFloat topPadding = 5;
                 CGFloat cornerRadius = 4.0f;
                 
                 btnPaypalProductNew = [[UIButton alloc]initWithFrame:CGRectMake(leftPadding, topPadding, buttonWidth,buttonHeight)];
                 [btnPaypalProductNew.layer setCornerRadius:cornerRadius];
-                [btnPaypalProductNew setBackgroundColor:[[SimiGlobalVar sharedInstance] colorWithHexString:@"#ffc439"]];
+                [btnPaypalProductNew setBackgroundColor:COLOR_WITH_HEX(@"#ffc439")];
                 [btnPaypalProductNew setContentEdgeInsets:UIEdgeInsetsMake(0, buttonWidth/2 -75, 0, buttonWidth/2 -75)];
                 [btnPaypalProductNew addTarget:self action:@selector(didClickProductPaypalButton:) forControlEvents:UIControlEventTouchUpInside];
                 [btnPaypalProductNew setImage:[UIImage imageNamed:@"en_paypal_express_product_btn"] forState:UIControlStateNormal];
@@ -139,11 +139,11 @@ static NSString *product_paypalcheckout_row = @"product_paypalcheckout_row";
         }
         
         if (btnPaypalCart == nil && cartVC.btnCheckout != nil) {
-            CGFloat padding = [SimiGlobalVar scaleValue:5];
-            CGFloat buttonHeight = [SimiGlobalVar scaleValue:40];
-            CGFloat buttonWidth = [SimiGlobalVar scaleValue:150];
+            CGFloat padding = SCALEVALUE(5);
+            CGFloat buttonHeight = SCALEVALUE(40);
+            CGFloat buttonWidth = SCALEVALUE(150);
             CGFloat buttonY = cartVC.btnCheckout.frame.origin.y;
-            CGFloat buttonDistance = [SimiGlobalVar scaleValue:10];
+            CGFloat buttonDistance = SCALEVALUE(10);
             btnPaypalCart = [[UIButton alloc]initWithFrame:CGRectMake(padding, buttonY, buttonWidth, buttonHeight)];
             [btnPaypalCart setBackgroundImage:[UIImage imageNamed:@"en_paypal_express_cart_btn"] forState:UIControlStateNormal];
             [btnPaypalCart addTarget:self action:@selector(startPaypalCheckout) forControlEvents:UIControlEventTouchUpInside];
@@ -163,7 +163,7 @@ static NSString *product_paypalcheckout_row = @"product_paypalcheckout_row";
             btnPaypalCart = [[UIButton alloc]initWithFrame:CGRectMake(20, 30, 180, 50)];
             [btnPaypalCart setBackgroundImage:[UIImage imageNamed:@"en_paypal_express_product_pad"] forState:UIControlStateNormal];
             btnPaypalCart.layer.masksToBounds = NO;
-            btnPaypalCart.layer.shadowColor = [[SimiGlobalVar sharedInstance] darkerColorForColor:[[SimiGlobalVar sharedInstance] colorWithHexString:@"#ffc439"]].CGColor;
+            btnPaypalCart.layer.shadowColor = [SimiGlobalFunction darkerColorForColor:COLOR_WITH_HEX(@"#ffc439")].CGColor;
             btnPaypalCart.layer.shadowOpacity = 0.7;
             btnPaypalCart.layer.shadowRadius = -1;
             btnPaypalCart.layer.shadowOffset = CGSizeMake(-0, 5);

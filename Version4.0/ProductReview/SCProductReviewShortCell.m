@@ -17,9 +17,9 @@
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier reviewData:(SimiModel*)reviewModel numberTitleLine:(NSInteger)titleLine numberBodyLine:(NSInteger)bodyLine{
     self = [super initWithStyle:UITableViewCellStyleDefault reuseIdentifier:reuseIdentifier];
-    padding = [SimiGlobalVar scaleValue:15];
-    sizeStar = [SimiGlobalVar scaleValue:12];
-    titleWidth = [SimiGlobalVar scaleValue:270];
+    padding = SCALEVALUE(15);
+    sizeStar = SCALEVALUE(12);
+    titleWidth = SCALEVALUE(270);
     labelHeight = 22;
     if (PADDEVICE) {
         titleWidth = SCREEN_WIDTH/2 - 50;
@@ -35,7 +35,7 @@
         [self setRatePoint:[[reviewModel valueForKey:@"rate_points"] floatValue]];
         self.cellHeight += sizeStar;
         
-        titleLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(padding, self.cellHeight, titleWidth, labelHeight*titleLine) andFontSize:[SimiGlobalVar scaleValue:13]];
+        titleLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(padding, self.cellHeight, titleWidth, labelHeight*titleLine) andFontSize:SCALEVALUE(13)];
         [titleLabel setText:[reviewModel valueForKey:@"title"]];
         if (titleLine == 0) {
             [titleLabel resizLabelToFit];
@@ -44,7 +44,7 @@
         self.cellHeight += CGRectGetHeight(titleLabel.frame);
         
         
-        bodyLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(padding, self.cellHeight, titleWidth, labelHeight*bodyLine) andFontSize:[SimiGlobalVar scaleValue:11]];
+        bodyLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(padding, self.cellHeight, titleWidth, labelHeight*bodyLine) andFontSize:SCALEVALUE(11)];
         bodyLabel.numberOfLines = bodyLine;
         [bodyLabel setText:[reviewModel valueForKey:@"detail"]];
         if (bodyLine == 0) {
@@ -53,7 +53,7 @@
         [self.contentView addSubview:bodyLabel];
         self.cellHeight += CGRectGetHeight(bodyLabel.frame);
         
-        timeLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(padding,self.cellHeight, titleWidth, labelHeight) andFontSize:[SimiGlobalVar scaleValue:10]];
+        timeLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(padding,self.cellHeight, titleWidth, labelHeight) andFontSize:SCALEVALUE(10)];
         [timeLabel setText:[NSString stringWithFormat:@"%@ by %@", [reviewModel valueForKey:@"created_at"], [reviewModel valueForKey:@"nickname"]]];
         [self.contentView addSubview:timeLabel];
         
@@ -62,7 +62,7 @@
         if (PADDEVICE) {
             screenWidth = SCREEN_WIDTH/2;
         }
-        [SimiGlobalVar sortViewForRTL:self.contentView andWidth:screenWidth];
+        [SimiGlobalFunction sortViewForRTL:self.contentView andWidth:screenWidth];
         [self setBackgroundColor:THEME_APP_BACKGROUND_COLOR];
     }
     return self;

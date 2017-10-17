@@ -60,15 +60,15 @@
         starReview = [[NSMutableArray alloc]init];
         labelViewCollection = [[NSMutableArray alloc] init];
         
-        reviewTypeLabel = [[SimiLabel alloc]initWithFrame:[SimiGlobalVar scaleFrame:CGRectMake(originXlabelStar, 0, reviewTypeLabel_With, reviewTypeLabel_Height)] andFontSize:[SimiGlobalVar scaleValue:16]];
+        reviewTypeLabel = [[SimiLabel alloc]initWithFrame:SCALEFRAME(CGRectMake(originXlabelStar, 0, reviewTypeLabel_With, reviewTypeLabel_Height)) andFontSize:SCALEVALUE(16)];
         reviewTypeLabel.text = SCLocalizedString(@"Customer Reviews");
         [self addSubview:reviewTypeLabel];
         float originY;
         for(int i = 0;i< 5;i++){
-            UIImageView *imgStar = [[UIImageView alloc] initWithFrame:[SimiGlobalVar scaleFrame:CGRectMake(0, originY_StarRate,sizeStar, sizeStar)]];
+            UIImageView *imgStar = [[UIImageView alloc] initWithFrame:SCALEFRAME(CGRectMake(0, originY_StarRate,sizeStar, sizeStar))];
             [imgStar setImage:[UIImage imageNamed:@"rate0"]];
             CGRect frameStar = [imgStar frame];
-            frameStar.origin.x = [SimiGlobalVar scaleValue:originXStarRate]+ i*[SimiGlobalVar scaleValue:sizeStar];
+            frameStar.origin.x = SCALEVALUE(originXStarRate)+ i*SCALEVALUE(sizeStar);
             [imgStar setFrame:frameStar];
             [self addSubview:imgStar];
             [starReview addObject:imgStar];
@@ -77,18 +77,18 @@
         for(int k = 0;k< 5;k++){
             for (int j = 0; j<5; j++) {
                 originY = maginTopRow*k +maginTop_Label_and_star;
-                UIImageView *imgStar = [[UIImageView alloc] initWithFrame:[SimiGlobalVar scaleFrame:CGRectMake(imageStarX, originY_StarRow,sizeStar, sizeStar)]];
+                UIImageView *imgStar = [[UIImageView alloc] initWithFrame:SCALEFRAME(CGRectMake(imageStarX, originY_StarRow,sizeStar, sizeStar))];
                 if(k >= j){
                     [imgStar setImage:[UIImage imageNamed:@"ic_star"]];
                 }else{
                     [imgStar setImage:[UIImage imageNamed:@"ic_star2"]];
                 }
                 CGRect frameStar = [imgStar frame];
-                frameStar.origin.x = [SimiGlobalVar scaleValue:originXlabelStar+ j*sizeStar];
+                frameStar.origin.x = SCALEVALUE(originXlabelStar+ j*sizeStar);
                 if([[SimiGlobalVar sharedInstance] isReverseLanguage]){
-                    frameStar.origin.x = [SimiGlobalVar scaleValue:imageStarX - j*sizeStar];
+                    frameStar.origin.x = SCALEVALUE(imageStarX - j*sizeStar);
                 }
-                frameStar.origin.y = [SimiGlobalVar scaleValue: originY];
+                frameStar.origin.y = SCALEVALUE( originY);
                 [imgStar setFrame:frameStar];
                 [self addSubview:imgStar];
             }
@@ -96,11 +96,11 @@
         }
         
         for (int f = 0; f< 5; f++) {
-            SimiLabel *lbViewColection = [[SimiLabel alloc]initWithFrame:[SimiGlobalVar scaleFrame:CGRectMake(0, 0, 50, 20)] andFontSize:THEME_FONT_SIZE_REGULAR];
+            SimiLabel *lbViewColection = [[SimiLabel alloc]initWithFrame:SCALEFRAME(CGRectMake(0, 0, 50, 20)) andFontSize:THEME_FONT_SIZE_REGULAR];
             lbViewColection.text = [NSString stringWithFormat:@"( %i )",(int)reviewNumber ];
             CGRect frameLbViewColection = [lbViewColection frame];
-            frameLbViewColection.origin.x =[SimiGlobalVar scaleValue: originXlableViewCollection];
-            frameLbViewColection.origin.y = [SimiGlobalVar scaleValue:(maginTop_Label_and_labelreView + f*maginTopRow)];
+            frameLbViewColection.origin.x =SCALEVALUE( originXlableViewCollection);
+            frameLbViewColection.origin.y = SCALEVALUE((maginTop_Label_and_labelreView + f*maginTopRow));
             [lbViewColection setFrame: frameLbViewColection];
             [self addSubview:lbViewColection];
             [labelViewCollection addObject:lbViewColection];

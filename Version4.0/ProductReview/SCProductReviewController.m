@@ -93,12 +93,12 @@ NSString *REVIEW_SHORT_REVIEW_CELL = @"REVIEW_SHORT_REVIEW_CELL";
             switch (i) {
                 case 0:{
                     row.identifier = REVIEW_PRODUCT_CELL;
-                    row.height = [SimiGlobalVar scaleValue:40];
+                    row.height = SCALEVALUE(40);
                 }
                     break;
                 case 1:{
                     row.identifier = REVIEW_REVIEWVIEW_CELL;
-                    row.height = [SimiGlobalVar scaleValue:185];
+                    row.height = SCALEVALUE(185);
                 }
                     break;
                             }
@@ -108,7 +108,7 @@ NSString *REVIEW_SHORT_REVIEW_CELL = @"REVIEW_SHORT_REVIEW_CELL";
             for (int i = 0; i < self.reviewCollection.count; i++) {
                 SimiRow *row = [[SimiRow alloc] init];
                 row.identifier = REVIEW_SHORT_REVIEW_CELL;
-                row.height = [SimiGlobalVar scaleValue:115];
+                row.height = SCALEVALUE(115);
                 [section addRow:row];
             }
         
@@ -165,12 +165,12 @@ NSString *REVIEW_SHORT_REVIEW_CELL = @"REVIEW_SHORT_REVIEW_CELL";
         cell = [tableView dequeueReusableCellWithIdentifier:simiRow.identifier];
         if (cell == nil) {
             cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:simiRow.identifier];
-            SimiLabel *nameProduct = [[SimiLabel alloc]initWithFrame:[SimiGlobalVar scaleFrame:CGRectMake(15, 0, 250, 40)] andFontName:THEME_FONT_NAME_REGULAR andFontSize:[SimiGlobalVar scaleValue:18] andTextColor:THEME_CONTENT_COLOR];
+            SimiLabel *nameProduct = [[SimiLabel alloc]initWithFrame:SCALEFRAME(CGRectMake(15, 0, 250, 40)) andFontName:THEME_FONT_NAME_REGULAR andFontSize:SCALEVALUE(18) andTextColor:THEME_CONTENT_COLOR];
             nameProduct.text = self.product.name;
             if([[SimiGlobalVar sharedInstance] isReverseLanguage]){
-                [nameProduct setFrame:[SimiGlobalVar scaleFrame:CGRectMake(55, 0, 250, 40)]];
+                [nameProduct setFrame:SCALEFRAME(CGRectMake(55, 0, 250, 40))];
                 if (PADDEVICE) {
-                   [nameProduct setFrame:[SimiGlobalVar scaleFrame:CGRectMake(418, 0, 250, 40)]];
+                   [nameProduct setFrame:SCALEFRAME(CGRectMake(418, 0, 250, 40))];
                 }
                 [nameProduct setTextAlignment:NSTextAlignmentRight];
             }

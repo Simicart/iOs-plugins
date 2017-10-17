@@ -34,7 +34,7 @@
         
         //Searchable iOS
         if(SIMI_SYSTEM_IOS >= 9){
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didGetProducts:) name:@"DidGetProductCollection" object:nil];
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didGetProducts:) name:Simi_DidGetProductCollection object:nil];
         }
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didInit:) name:@"DidInit" object:nil];
     }

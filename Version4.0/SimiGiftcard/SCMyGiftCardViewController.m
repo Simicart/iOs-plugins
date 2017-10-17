@@ -103,7 +103,7 @@
             SimiButton *addorRedeemaGiftCard = [[SimiButton alloc]initWithFrame:CGRectMake(padding*2 + detailWidth, padding*2+30, redeemWidth, 40) title:@"Add/Redeem A Gift Card" titleFont:[UIFont fontWithName:THEME_FONT_NAME_REGULAR size:14] cornerRadius:4 borderWidth:0 borderColor:0];
             [addorRedeemaGiftCard addTarget:self action:@selector(openAddOrRedeemScreen:) forControlEvents:UIControlEventTouchUpInside];
             [cell.contentView addSubview:addorRedeemaGiftCard];
-            [SimiGlobalVar sortViewForRTL:cell.contentView andWidth:cellWidth];
+            [SimiGlobalFunction sortViewForRTL:cell.contentView andWidth:cellWidth];
         }
         NSString *currencySymbol = @"";
         if ([giftCardCreditModel valueForKey:@"currency_symbol"] && ![[giftCardCreditModel valueForKey:@"currency_symbol"] isKindOfClass:[NSNull class]]) {
@@ -248,7 +248,7 @@
         SimiLabel *expiredValueLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(titleWidth+padding*2, height, valueWidth, labelHeight) andFontName:THEME_FONT_NAME andFontSize:14 andTextColor:THEME_CONTENT_COLOR text:expiredValue];
         [self.contentView addSubview:expiredValueLabel];
         height += labelHeight;
-        [SimiGlobalVar sortViewForRTL:self.contentView andWidth:cellWidth];
+        [SimiGlobalFunction sortViewForRTL:self.contentView andWidth:cellWidth];
     }
     return self;
 }

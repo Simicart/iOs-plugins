@@ -35,7 +35,7 @@
             frame.size.width -= 39;
         }
         [lblTagName setFrame:frame];
-        lblTagName.textColor = [[SimiGlobalVar sharedInstance] colorWithHexString:@"#393939"];
+        lblTagName.textColor = COLOR_WITH_HEX(@"#393939");
         [lblTagName setFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE - 4]];
         [self addSubview:lblTagName];
     }
