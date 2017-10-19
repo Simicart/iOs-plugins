@@ -12,12 +12,20 @@
 {
     SCNewAddressViewController *newAddressController;
     SimiModel *hiddenAddressModel;
+    SimiFormSelect *city;
+    NSArray *cities;
 }
 - (instancetype)init
 {
     self = [super init];
     if (self) {
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"SCNewAddressViewControllerViewDidLoad" object:nil];
+        if ([[[SimiGlobalVar sharedInstance].allConfig valueForKey:@"app_customizations"] isKindOfClass:[NSDictionary class]]) {
+            NSDictionary *appCustomizations = [[SimiGlobalVar sharedInstance].allConfig valueForKey:@"app_customizations"];
+            if ([[appCustomizations valueForKey:@"list_city"] isKindOfClass:[NSArray class]]) {
+                cities = [appCustomizations valueForKey:@"list_city"];
+            }
+        }
     }
     return self;
 }
@@ -120,12 +128,28 @@
             
             
             if ([self hasField:[hiddenAddressModel valueForKey:@"city_show"]]) {
-                [form addField:@"Text"
-                        config:@{
-                                 @"name" : @"city",
-                                 @"title": SCLocalizedString(@"City"),
-                                 @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:@"city_show"] isEqualToString:@"req"]]
-                                 }];
+                if (cities.count > 0) {
+                    city = (SimiFormSelect *)[form addField:@"Select"
+                                                     config:@{
+                                                              @"name": @"city",
+                                                              @"title": SCLocalizedString(@"City"),
+                                                              @"option_type": SimiFormOptionNavigation,
+                                                              @"nav_controller": self.navigationController,
+                                                              @"value_field": @"city_name",
+                                                              @"label_field": @"city_name",
+                                                              @"index_titles": @1,
+                                                              @"searchable": @1,
+                                                              @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:@"city_show"] isEqualToString:@"req"]]
+                                                              }];
+                    [city setDataSource:cities];
+                }else{
+                    [form addField:@"Text"
+                            config:@{
+                                     @"name": @"city",
+                                     @"title": SCLocalizedString(@"City"),
+                                     @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:@"city_show"] isEqualToString:@"req"]]
+                                     }];
+                }
             }
             
             if ([self hasField:[hiddenAddressModel valueForKey:@"country_id_show"]]) {
