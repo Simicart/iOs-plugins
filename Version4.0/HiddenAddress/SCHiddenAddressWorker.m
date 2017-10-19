@@ -134,7 +134,7 @@
                                                               @"name": @"city",
                                                               @"title": SCLocalizedString(@"City"),
                                                               @"option_type": SimiFormOptionNavigation,
-                                                              @"nav_controller": self.navigationController,
+                                                              @"nav_controller": newAddressController.navigationController,
                                                               @"value_field": @"city_name",
                                                               @"label_field": @"city_name",
                                                               @"index_titles": @1,
