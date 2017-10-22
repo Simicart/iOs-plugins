@@ -6,12 +6,11 @@
 //  Copyright © 2015 Trueplus. All rights reserved.
 //
 @import PassKit;
-#import "BraintreeApplePay.h"
 #import <Foundation/Foundation.h>
 #import "BraintreeCore.h"
-#import "BraintreeUI.h"
-#import "BTCardClient.h"
+#import "BraintreeDropIn.h"
+#import "BraintreeApplePay.h"
 
-@interface BraintreeInitWorker : NSObject<PKPaymentAuthorizationViewControllerDelegate,BTViewControllerPresentingDelegate,BTAppSwitchDelegate, BTDropInViewControllerDelegate, UIAlertViewDelegate>
+@interface BraintreeInitWorker : NSObject<PKPaymentAuthorizationViewControllerDelegate,BTViewControllerPresentingDelegate,BTAppSwitchDelegate, UIAlertViewDelegate>
 
 @end
