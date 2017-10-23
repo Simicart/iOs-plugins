@@ -18,7 +18,7 @@
 
 @protocol SimiStoreLocatorSearchViewControllerDelegate  <NSObject>
 @optional
-- (void)searchStoreLocatorWithCountryName:(NSString*)countryName countryCode:(NSString*)countryCode city:(NSString*)city state:(NSString*)state zipcode:(NSString*)zipcode tag:(NSString*)tag;
+- (void)searchStoreLocatorWithCountry:(NSDictionary *)country state:(NSDictionary *)state city:(NSDictionary *)city storeName:(NSString *)storeName tag:(NSString*)tag;
 - (void)cacheDataWithstoreLocatorModelCollection:(SimiStoreLocatorModelCollection*) collection simiTagModelCollection:(SimiTagModelCollection*)tagModelCollection tagChoise:(NSString*)tagString;
 @end
 
@@ -32,12 +32,13 @@
 
 @property (nonatomic) float currentLatitube;
 @property (nonatomic) float currentLongitube;
-@property (nonatomic, strong) NSString *stringCountrySearchCode;
-@property (nonatomic, strong) NSString *stringCountrySearchName;
-@property (nonatomic, strong) NSString *stringCitySearch;
-@property (nonatomic, strong) NSString *stringStateSearch;
-@property (nonatomic, strong) NSString *stringZipCodeSearch;
 @property (nonatomic, strong) NSString *stringTagSearch;
+@property (nonatomic, strong) NSDictionary *currentCountry;
+@property (nonatomic, strong) NSDictionary *currentCity;
+@property (nonatomic, strong) NSDictionary *currentState;
+@property (nonatomic, strong) NSString *tag;
+@property (nonatomic, strong) NSString *storeName;
+
 @property (nonatomic, weak) id<SimiStoreLocatorSearchViewControllerDelegate> delegate;
 
 
@@ -48,25 +49,24 @@
 
 @property (nonatomic, strong)  UIControl *viewSearchByCountry;
 @property (nonatomic, strong)  UITableView *tblViewCountry;
-@property (nonatomic, strong)  UILabel *lblContentCountry;
 @property (nonatomic, strong)  UILabel *lblCountry;
 @property (nonatomic, strong)  UIImageView *imgCountry;
 @property (nonatomic, strong)  UIButton *btnCountry;
 
 @property (nonatomic, strong)  UIControl *viewSearchByCity;
-@property (nonatomic, strong)  UIImageView *imgCity;
-@property (nonatomic, strong)  UITextField *txtCitySearch;
 @property (nonatomic, strong)  UILabel *lblCity;
+@property (nonatomic, strong)  UIImageView *imgCity;
+@property (nonatomic, strong)  UIButton *btnCity;
 
 @property (nonatomic, strong)  UIControl *viewSearchByState;
-@property (nonatomic, strong)  UITextField *txtStateSearch;
 @property (nonatomic, strong)  UILabel *lblState;
 @property (nonatomic, strong)  UIImageView *imgState;
+@property (nonatomic, strong)  UIButton *btnState;
 
-@property (nonatomic, strong)  UIControl *viewSearchByZipcode;
-@property (nonatomic, strong)  UITextField *txtZipCode;
-@property (nonatomic, strong)  UILabel *lblZipcode;
-@property (nonatomic, strong)  UIImageView *imgZipCode;
+@property (nonatomic, strong)  UIControl *viewSearchByStoreName;
+@property (nonatomic, strong)  UITextField *txtStoreName;
+@property (nonatomic, strong)  UILabel *lblStoreName;
+@property (nonatomic, strong)  UIImageView *imgStoreName;
 
 @property (nonatomic, strong)  UIView *viewSearch;
 @property (nonatomic, strong)  UIButton *btnSearch;

@@ -17,7 +17,7 @@
 
 @implementation SimiStoreLocatorListViewController
 @synthesize currentLongitube, currentLatitube, sLModelCollection, delegate;
-@synthesize sLModel,listViewOption, dictSearch;
+@synthesize sLModel,listViewOption;
 
 
 - (id)initWithStyle:(UITableViewStyle)style
@@ -196,7 +196,7 @@
             if (isFirstRun ||offset != [sLModelCollection count]) {
                 isFirstRun = NO;
                 offset = [sLModelCollection count];
-                [sLModelCollection getStoreListWithLatitude:[NSString stringWithFormat:@"%f",currentLatitube] longitude:[NSString stringWithFormat:@"%f",currentLongitube] offset:[NSString stringWithFormat:@"%d",(int)offset] limit:@"20" country:[dictSearch valueForKey:@"countryCode"] city:[dictSearch valueForKey:@"city"] state:[dictSearch valueForKey:@"state"] zipcode:[dictSearch valueForKey:@"zipcode"] tag:[dictSearch valueForKey:@"tag"]];
+                [sLModelCollection getStoreListWithLatitude:[NSString stringWithFormat:@"%f",currentLatitube] longitude:[NSString stringWithFormat:@"%f",currentLongitube] offset:[NSString stringWithFormat:@"%d",(int)offset] limit:@"20" country:[self.currentCountry objectForKey:@"country_code"] city:[self.currentCity objectForKey:@"city_name"] state:[self.currentState objectForKey:@"state_name"] storeName:self.storeName tag:self.tag];
                 [self.tableView.infiniteScrollingView startAnimating];
             }else
             {

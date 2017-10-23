@@ -18,7 +18,6 @@
 }
 @synthesize sLModelCollectionSyncList, currentLongitube, currentLatitube, mapViewOption;
 @synthesize sLModel, sLModelCollectionAll, sLModelCollectionUpdate, delegate, searchOption;
-@synthesize dictSearch;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -120,7 +119,7 @@
             [sLModelCollectionUpdate getStoreListWithLatitude:[NSString stringWithFormat:@"%f",position.target.latitude] longitude:[NSString stringWithFormat:@"%f",position.target.longitude] offset:@"0" limit:@"20"];
             break;
         case SearchOptionSearched:
-            [sLModelCollectionUpdate getStoreListWithLatitude:[NSString stringWithFormat:@"%f",position.target.latitude] longitude:[NSString stringWithFormat:@"%f",position.target.longitude] offset:@"0" limit:@"20" country:[dictSearch valueForKey:@"countryCode"] city:[dictSearch valueForKey:@"city"] state:[dictSearch valueForKey:@"state"] zipcode:[dictSearch valueForKey:@"zipcode"] tag:[dictSearch valueForKey:@"tag"]];
+            [sLModelCollectionUpdate getStoreListWithLatitude:[NSString stringWithFormat:@"%f",position.target.latitude] longitude:[NSString stringWithFormat:@"%f",position.target.longitude] offset:@"0" limit:@"20" country:[self.currentCountry objectForKey:@"country_code"] city:[self.currentCity objectForKey:@"city_name"] state:[self.currentState objectForKey:@"state_name"] storeName:self.storeName tag:self.tag];
             break;
         default:
             break;

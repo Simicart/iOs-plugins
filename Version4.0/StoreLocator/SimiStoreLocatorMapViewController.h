@@ -38,7 +38,11 @@ typedef NS_ENUM(NSInteger, SearchOption){
 @property (nonatomic, strong) SimiStoreLocatorModelCollection *sLModelCollectionUpdate;
 @property (nonatomic, strong) SimiStoreLocatorModelCollection *sLModelCollectionAll;
 @property (nonatomic, strong) SimiModel *sLModel;
-@property (nonatomic, strong) NSDictionary *dictSearch;
+@property (nonatomic, strong) NSDictionary *currentCountry;
+@property (nonatomic, strong) NSDictionary *currentCity;
+@property (nonatomic, strong) NSDictionary *currentState;
+@property (nonatomic, strong) NSString *tag;
+@property (nonatomic, strong) NSString *storeName;
 @property (nonatomic) float currentLatitube;
 @property (nonatomic) float currentLongitube;
 @property (nonatomic)   MapViewOption mapViewOption;

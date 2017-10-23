@@ -183,14 +183,11 @@
     sLSearchViewController.delegate = self;
     sLSearchViewController.currentLatitube = sLListViewController.currentLatitube;
     sLSearchViewController.currentLongitube = sLListViewController.currentLongitube;
-    if (sLListViewController.dictSearch != nil) {
-        sLSearchViewController.stringCountrySearchCode = [sLListViewController.dictSearch valueForKey:@"countryCode"];
-        sLSearchViewController.stringCountrySearchName = [sLListViewController.dictSearch valueForKey:@"countryName"];
-        sLSearchViewController.stringCitySearch = [sLListViewController.dictSearch valueForKey:@"city"];
-        sLSearchViewController.stringStateSearch = [sLListViewController.dictSearch valueForKey:@"state"];
-        sLSearchViewController.stringZipCodeSearch = [sLListViewController.dictSearch valueForKey:@"zipcode"];
-        sLSearchViewController.stringTagSearch = [sLListViewController.dictSearch valueForKey:@"tag"];
-    }
+    sLSearchViewController.currentCountry = sLListViewController.currentCountry;
+    sLSearchViewController.currentState = sLListViewController.currentState;
+    sLSearchViewController.currentCity = sLListViewController.currentCity;
+    sLSearchViewController.storeName = sLListViewController.storeName;
+    sLSearchViewController.tag = sLListViewController.tag;
     
     if (tagChoise != nil) {
         sLSearchViewController.tagChoise = tagChoise;
@@ -204,14 +201,23 @@
 
 #pragma  mark Search ViewController Delegate
 
-- (void)searchStoreLocatorWithCountryName:(NSString *)countryName countryCode:(NSString *)countryCode city:(NSString *)city state:(NSString *)state zipcode:(NSString *)zipcode tag:(NSString *)tag
+- (void)searchStoreLocatorWithCountry:(NSDictionary *)country state:(NSDictionary *)state city:(NSDictionary *)city storeName:(NSString *)storeName tag:(NSString *)tag
 {
-    sLListViewController.dictSearch = @{@"countryCode":countryCode,@"countryName":countryName,@"city":city,@"state":state,@"zipcode":zipcode,@"tag":tag};
+    sLListViewController.currentCountry = country;
+    sLListViewController.currentState = state;
+    sLListViewController.currentCity = city;
+    sLListViewController.tag = tag;
+    sLListViewController.storeName = storeName;
+    
     
     if (sLMapViewController == nil) {
         sLMapViewController = [[SimiStoreLocatorMapViewController alloc]init];
     }
-    sLMapViewController.dictSearch = @{@"countryCode":countryCode,@"countryName":countryName,@"city":city,@"state":state,@"zipcode":zipcode,@"tag":tag};
+    sLMapViewController.currentCountry = country;
+    sLMapViewController.currentState = state;
+    sLMapViewController.currentCity = city;
+    sLMapViewController.tag = tag;
+    sLMapViewController.storeName = storeName;
     
     sLListViewController.listViewOption = ListViewOptionSearched;
     sLMapViewController.searchOption = SearchOptionSearched;

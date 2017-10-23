@@ -248,16 +248,26 @@ NSInteger const heightButtonSearch = 50;
 }
 
 #pragma mark SearchView Controller Delegate
-- (void)searchStoreLocatorWithCountryName:(NSString *)countryName countryCode:(NSString *)countryCode city:(NSString *)city state:(NSString *)state zipcode:(NSString *)zipcode tag:(NSString *)tag
+- (void)searchStoreLocatorWithCountry:(NSDictionary *)country state:(NSDictionary *)state city:(NSDictionary *)city storeName:(NSString *)storeName tag:(NSString *)tag
 {
     [popOverController dismissPopoverAnimated:YES];
     popOverController = nil;
     
-    sLListViewControllerLandscape.dictSearch = @{@"countryCode":countryCode,@"countryName":countryName,@"city":city,@"state":state,@"zipcode":zipcode,@"tag":tag};
+    sLListViewControllerLandscape.currentCountry = country;
+    sLListViewControllerLandscape.currentState = state;
+    sLListViewControllerLandscape.currentCity = city;
+    sLListViewControllerLandscape.storeName = storeName;
+    sLListViewControllerLandscape.tag = tag;
+    
     if (sLMapViewController == nil) {
         sLMapViewController = [[SimiStoreLocatorMapViewController alloc]init];
     }
-    sLMapViewController.dictSearch = @{@"countryCode":countryCode,@"countryName":countryName,@"city":city,@"state":state,@"zipcode":zipcode,@"tag":tag};
+    sLMapViewController.currentCountry = country;
+    sLMapViewController.currentState = state;
+    sLMapViewController.currentCity = city;
+    sLMapViewController.storeName = storeName;
+    sLListViewControllerLandscape.tag = tag;
+    
     
     sLListViewControllerLandscape.listViewOption = ListViewOptionSearched;
     sLMapViewController.searchOption = SearchOptionSearched;
