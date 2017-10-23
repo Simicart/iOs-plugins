@@ -34,8 +34,8 @@
             }
         }
     } else {
-        [self showAlertWithTitle:SCLocalizedString(responder.status) message:responder.responseMessage];
         self.textFieldPassword.text = @"";
+        [self showAlertWithTitle:SCLocalizedString(responder.status) message:responder.responseMessage];
     }
     [self stopLoadingData];
 }

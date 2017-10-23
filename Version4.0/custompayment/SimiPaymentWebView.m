@@ -93,20 +93,24 @@
     NSString* requestURL = [NSString stringWithFormat:@"%@",request];
     if(_payment){
         if([requestURL rangeOfString:[_payment valueForKey:@"url_success"] ].location != NSNotFound){
-            [self showAlertWithTitle:@"" message:[_payment valueForKey:@"message_success"]];
-            [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+            [self showAlertWithTitle:@"" message:[_payment valueForKey:@"message_success"] completionHandler:^{
+                [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+            }];
             return NO;
         }else if([requestURL rangeOfString:[_payment valueForKey:@"url_fail"]].location != NSNotFound){
-            [self showAlertWithTitle:@"" message:[_payment valueForKey:@"message_fail"]];
-            [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+            [self showAlertWithTitle:@"" message:[_payment valueForKey:@"message_fail"] completionHandler:^{
+                [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+            }];
             return NO;
         }else if([requestURL rangeOfString:[_payment valueForKey:@"url_cancel"]].location != NSNotFound){
-            [self showAlertWithTitle:@"" message:[_payment valueForKey:@"message_cancel"]];
-            [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+            [self showAlertWithTitle:@"" message:[_payment valueForKey:@"message_cancel"] completionHandler:^{
+                [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+            }];
             return NO;
         }else if([requestURL rangeOfString:[_payment valueForKey:@"url_error"]].location != NSNotFound){
-            [self showAlertWithTitle:@"" message:[_payment valueForKey:@"message_error"]];
-            [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+            [self showAlertWithTitle:@"" message:[_payment valueForKey:@"message_error"] completionHandler:^{
+                [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+            }];
             return NO;
         }
     }
