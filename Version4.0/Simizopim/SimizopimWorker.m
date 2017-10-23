@@ -31,9 +31,65 @@
             [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"SCLeftMenu_DidSelectRow" object:nil];
             [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initRightItemsEnd:) name:@"SCNavigationBarPhone-InitRightItems-End" object:nil];
             [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initLeftItemsEnd:) name:@"SCNavigationBarPad-InitLeftItems-End" object:nil];
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didLogin:) name:DidLogin object:nil];
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didLogout:) name:DidLogout object:nil];
+//            [[ZDCTextEntryView appearance] setSemanticContentAttribute:UISemanticContentAttributeForceRightToLeft];
+//            [[ZDCChatView appearance] setSemanticContentAttribute:UISemanticContentAttributeForceRightToLeft];
+            // loading the chat
+            [[ZDCLoadingView appearance] setSemanticContentAttribute:UISemanticContentAttributeForceLeftToRight];
+            [[ZDCLoadingErrorView appearance] setSemanticContentAttribute:UISemanticContentAttributeForceLeftToRight];
+            
+            // pre-chat form
+            [[ZDCPreChatFormView appearance] setSemanticContentAttribute:UISemanticContentAttributeForceLeftToRight];
+            [[ZDCFormCell appearance] setSemanticContentAttribute:UISemanticContentAttributeForceLeftToRight];
+            
+            // offline message view
+            [[ZDCOfflineMessageView appearance] setSemanticContentAttribute:UISemanticContentAttributeForceLeftToRight];
+            
+            // chat view
+            [[ZDCChatView appearance] setSemanticContentAttribute:UISemanticContentAttributeForceLeftToRight];
+            [[ZDCTextEntryView appearance] setSemanticContentAttribute:UISemanticContentAttributeForceLeftToRight];
+            [[ZDCJoinLeaveCell appearance] setSemanticContentAttribute:UISemanticContentAttributeForceLeftToRight];
+            [[ZDCSystemTriggerCell appearance] setSemanticContentAttribute:UISemanticContentAttributeForceLeftToRight];
+            [[ZDCVisitorChatCell appearance] setSemanticContentAttribute:UISemanticContentAttributeForceLeftToRight];
+            [[ZDCAgentChatCell appearance] setSemanticContentAttribute:UISemanticContentAttributeForceLeftToRight];
+            [[ZDCChatTimedOutCell appearance] setSemanticContentAttribute:UISemanticContentAttributeForceLeftToRight];
+            [[ZDCRatingCell appearance] setSemanticContentAttribute:UISemanticContentAttributeForceLeftToRight];
+            [[ZDCAgentAttachmentCell appearance] setSemanticContentAttribute:UISemanticContentAttributeForceLeftToRight];
+            [[ZDCVisitorAttachmentCell appearance] setSemanticContentAttribute:UISemanticContentAttributeForceLeftToRight];
+            
+            // chat UI and nav buttons
+            [[ZDCChatUI appearance] setSemanticContentAttribute:UISemanticContentAttributeForceLeftToRight];
+            
+            // chat overlay icon
+            [[ZDCChatOverlay appearance] setSemanticContentAttribute:UISemanticContentAttributeForceLeftToRight];
+            
+            // agent chat avatar
+            [[ZDCChatAvatar appearance] setSemanticContentAttribute:UISemanticContentAttributeForceLeftToRight];
         }
     }
     return self;
+}
+
+- (void)didLogin:(NSNotification *)noti{
+    SimiResponder *responder = [noti.userInfo objectForKey:@"responder"];
+    if([responder.status isEqualToString:@"SUCCESS"]){
+        SimiCustomerModel *customer = noti.object;
+        [ZDCChat updateVisitor:^(ZDCVisitorInfo *visitor) {
+            visitor.name = [NSString stringWithFormat:@"%@ %@", [customer objectForKey:@"firstname"],[customer objectForKey:@"lastname"]];
+            visitor.email = [customer objectForKey:@"email"];
+        }];
+    }
+}
+
+- (void)didLogout:(NSNotification *)noti{
+    SimiResponder *responder = [noti.userInfo objectForKey:@"responder"];
+    if([responder.status isEqualToString:@"SUCCESS"]){
+        [ZDCChat updateVisitor:^(ZDCVisitorInfo *visitor) {
+            visitor.name = @"";
+            visitor.email = @"";
+        }];
+    }
 }
 
 - (void)didReceiveNotification:(NSNotification *)noti{
@@ -93,11 +149,11 @@
     }
 }
 
-- (void)move:(UIPanGestureRecognizer *)sender {
-    if (sender.state == UIGestureRecognizerStateChanged) {
-        self.messageButton.center = [sender locationInView:[[[UIApplication sharedApplication] delegate] window]];
-    }
-}
+//- (void)move:(UIPanGestureRecognizer *)sender {
+//    if (sender.state == UIGestureRecognizerStateChanged) {
+//        self.messageButton.center = [sender locationInView:[[[UIApplication sharedApplication] delegate] window]];
+//    }
+//}
 
 - (void)startZopimChat:(NSString *)accountKey showProfile:(NSString *)showProfile name:(NSString *)name email:(NSString *)email phone:(NSString *)phone{
     [ZDCChat initializeWithAccountKey:accountKey];
@@ -106,7 +162,7 @@
         config.preChatDataRequirements.email = [email integerValue];
         config.preChatDataRequirements.phone = [phone integerValue];
         config.preChatDataRequirements.department = [showProfile integerValue];
-        config.preChatDataRequirements.message = ZDCPreChatDataOptionalEditable;
+        config.preChatDataRequirements.message = ZDCPreChatDataRequired;
     }];
     [self styleApp];
     [ZDCLog enable:YES];
