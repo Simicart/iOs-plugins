@@ -20,14 +20,14 @@
 {
     self = [super init];
     if (self) {
-        [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(didReceiveNotification:) name:@"DidPlaceOrder-Before" object:nil];
+        [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(didReceiveNotification:) name:DidPlaceOrderBefore object:nil];
     }
     return self;
 }
 
 - (void)didReceiveNotification:(NSNotification *)noti
 {
-    if ([noti.name isEqualToString:@"DidPlaceOrder-Before"]) {
+    if ([noti.name isEqualToString:DidPlaceOrderBefore]) {
         order = noti.object;
         payment = [noti.userInfo valueForKey:@"payment"];
         if ([[[payment valueForKey:@"payment_method"] uppercaseString] isEqualToString:@"SIMIPAYU"] &&[order valueForKey:@"invoice_number"]) {

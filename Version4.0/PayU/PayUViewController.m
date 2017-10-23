@@ -42,19 +42,31 @@
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
 {
     NSString *stringRequest = [NSString stringWithFormat:@"%@",request];
-    if ([stringRequest containsString:@"session_id"]) {
-        [self stopLoadingData];
-    }
+    NSLog(@"%@",stringRequest);
+//    if ([stringRequest containsString:@"session_id"]) {
+//        [self stopLoadingData];
+//    }
     if ([stringRequest containsString:@"simipayu/index/success"]) {
-        [self showAlertWithTitle:@"SUCCESS" message:@"Thank your for purchase"];
-        [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+        [self showAlertWithTitle:@"SUCCESS" message:@"Thank your for purchase" completionHandler:^{
+            [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+        }];
         return NO;
     }else if ([stringRequest containsString:@"simipayu/index/failure"])
     {
-        [self showAlertWithTitle:@"ERROR" message:@"Have some errors, please try again"];
-        [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+        [self showAlertWithTitle:@"ERROR" message:@"Have some errors, please try again" completionHandler:^{
+            [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+        }];
         return NO;
     }
     return  YES;
 }
+
+- (void)webViewDidStartLoad:(UIWebView *)webView{
+    [self startLoadingData];
+}
+
+- (void)webViewDidFinishLoad:(UIWebView *)webView{
+    [self stopLoadingData];
+}
+
 @end

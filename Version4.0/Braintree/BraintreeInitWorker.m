@@ -10,7 +10,6 @@
 #import <SimiCartBundle/SimiOrderModel.h>
 #import <SimiCartBundle/SCThankYouPageViewController.h>
 #import "SimiBraintreeModel.h"
-#import "BraintreeDropIn.h"
 
 #define DidSelectPaymentMethod @"DidSelectPaymentMethod"
 #define BRAINTREE_PAYMENT_METHOD @"simibraintree"
@@ -30,7 +29,7 @@
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"ApplicationOpenURL" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:DidSelectPaymentMethod object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:DidPlaceOrderAfter object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:DidPlaceOrderBefore object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:PlaceOrder object:nil];
         [BTAppSwitch setReturnURLScheme:[NSString stringWithFormat:@"%@.payments",[NSBundle mainBundle].bundleIdentifier]];
     }
     return self;
@@ -55,7 +54,7 @@
             [order addEntriesFromDictionary:noti.object];
             [self showDropIn:[selectedPayment objectForKey:@"token"]];
         }
-    }else if([noti.name isEqualToString:DidPlaceOrderBefore]){
+    }else if([noti.name isEqualToString:PlaceOrder]){
         order = [[SimiOrderModel alloc] initWithDictionary:[noti.userInfo objectForKey:@"order"]];
     }
 }
@@ -85,9 +84,11 @@
             //             result.paymentDescription
             if(result.paymentOptionType == BTUIKPaymentOptionTypeApplePay){
                 PKPaymentAuthorizationViewController *viewController = [[PKPaymentAuthorizationViewController alloc] initWithPaymentRequest:[self applePaymentRequest]];
-                viewController.delegate = self;
-                [currentVC presentViewController:viewController animated:YES completion:nil];
-                applePayCompleted = NO;
+                if(viewController){
+                    viewController.delegate = self;
+                    [currentVC presentViewController:viewController animated:YES completion:nil];
+                    applePayCompleted = NO;
+                }
             }else {
                 if(result.paymentMethod.nonce){
                     [self postNonceToServer:result.paymentMethod.nonce];
@@ -170,7 +171,7 @@
     }
 }
 -(void) paymentAuthorizationViewControllerWillAuthorizePayment:(PKPaymentAuthorizationViewController *)controller{
-    
+
 }
 
 - (void)postNonceToServer:(NSString *)paymentMethodNonce {
@@ -182,6 +183,8 @@
 }
 
 - (void)didSendNonceToServer:(NSNotification *)noti{
+    [self removeObserverForNotification:noti];
+    [currentVC stopLoadingData];
     SimiResponder* responder = [noti.userInfo valueForKey:@"responder"];
     if([responder.status isEqualToString:@"SUCCESS"]){
         if([noti.name isEqualToString:BRAINTREE_SENDNONCETOSERVER]){
@@ -201,10 +204,10 @@
             }
         }
     }else{
-        [currentVC showAlertWithTitle:SCLocalizedString(@"") message:responder.responseMessage];
-        [currentVC.navigationController popToRootViewControllerAnimated:YES];
+        [currentVC showAlertWithTitle:SCLocalizedString(@"") message:responder.responseMessage completionHandler:^{
+            [currentVC.navigationController popToRootViewControllerAnimated:YES];
+        }];
     }
-    [self removeObserverForNotification:noti];
 }
 
 #pragma mark - BTViewControllerPresentingDelegate
@@ -253,24 +256,5 @@
                                                     name:UIApplicationDidBecomeActiveNotification
                                                   object:nil];
     [currentVC stopLoadingData];
-}
-
-#pragma mark BTDropInViewControllerDelegate
-- (void)dropInViewController:(BTDropInViewController *)viewController didSucceedWithTokenization:(BTPaymentMethodNonce *)paymentMethodNonce{
-    if(paymentMethodNonce.nonce){
-        [self postNonceToServer:paymentMethodNonce.nonce];
-    }
-}
-
-- (void)dropInViewControllerDidCancel:(BTDropInViewController *)viewController{
-    NSLog(@"DIDCANCEL");
-    [viewController dismissViewControllerAnimated:YES completion:nil];
-}
-
-- (void)dropInViewControllerDidLoad:(BTDropInViewController *)viewController{
-    
-}
-- (void)dropInViewControllerWillComplete:(BTDropInViewController *)viewController{
-    
 }
 @end
