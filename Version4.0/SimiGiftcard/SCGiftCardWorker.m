@@ -8,9 +8,9 @@
 
 #import "SCGiftCardWorker.h"
 #import <SimiCartBundle/SimiSection.h>
+#import <SimiCartBundle/SCAccountViewController.h>
 #import <SimiCartBundle/SCLeftMenuViewController.h>
 #import "SCGiftCardProductsViewController.h"
-#import "SCAccountViewController.h"
 #import "SCMyGiftCardViewController.h"
 
 static NSString *LEFTMENU_ROW_GIFTCARD = @"LEFTMENU_ROW_GIFTCARD";

@@ -7,7 +7,7 @@
 //
 
 #import <SimiCartBundle/SimiCartBundle.h>
-
+#import <SimiCartBundle/SimiCartModelCollection.h>
 #define DidUseGiftCardCreditOnCart @"DidUseGiftCardCreditOnCart"
 #define DidUseGiftCodeOnCart @"DidUseGiftCodeOnCart"
 #define DidUpdateGiftCodeOnCart @"DidUpdateGiftCodeOnCart"

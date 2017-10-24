@@ -6,7 +6,7 @@
 //  Copyright © 2017 Trueplus. All rights reserved.
 //
 
-#import "SimiProductModelCollection.h"
+#import <SimiCartBundle/SimiProductModelCollection.h>
 static NSString *DidGetGiftCardProductCollection = @"DidGetGiftCardProductCollection";
 @interface SimiGiftCardModelCollection : SimiProductModelCollection
 - (void)getGiftCardProductCollectionWithParams:(NSDictionary *)params;
