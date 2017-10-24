@@ -30,8 +30,8 @@
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:SCLoginViewController_InitCellsAfter object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didLogout:) name:DidLogout object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didLogin:) name:DidLogout object:nil];
-        
         //Init GIDSignin attributes
+        
         [GIDSignIn sharedInstance].delegate = self;
         [GIDSignIn sharedInstance].uiDelegate = self;
         [GIDSignIn sharedInstance].clientID = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"GoogleClientID"];
@@ -59,7 +59,6 @@
         SimiRow *row = [section objectAtIndex:indexPath.row];
         
         if ([row.identifier isEqualToString:GoogleLoginCell]) {
-            
             UITableViewCell *cell = noti.object;
             float loginViewWidth = CGRectGetWidth(loginViewController.view.frame);
             float heightCell = [SimiGlobalVar scaleValue:35];
