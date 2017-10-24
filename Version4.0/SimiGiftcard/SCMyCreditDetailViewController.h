@@ -7,8 +7,8 @@
 //
 
 #import "SimiGiftCardCreditModel.h"
-#import "SimiTable.h"
-#import "SimiTextField.h"
+#import <SimiCartBundle/SimiTable.h>
+#import <SimiCartBundle/SimiTextField.h>
 
 static NSString *mycredit_creditinfo_row = @"mycredit_creditinfo_row";
 static NSString *mycredit_credithistory_row = @"mycredit_credithistory_row";
