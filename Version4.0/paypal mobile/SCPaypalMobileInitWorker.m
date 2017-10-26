@@ -141,8 +141,10 @@
 
 - (void)didUpdatePaymentStatus:(NSNotification *)noti{
     SimiResponder *responder = [noti.userInfo valueForKey:@"responder"];
-    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:SCLocalizedString(responder.status) message:SCLocalizedString([paypalOrder valueForKey:@"message"]) delegate:nil cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles: nil];
-    [alertView show];
+    if([paypalOrder valueForKey:@"message"] && ![[paypalOrder valueForKey:@"message"] isEqualToString:@""]){
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"" message:SCLocalizedString([paypalOrder valueForKey:@"message"]) delegate:nil cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles: nil];
+        [alertView show];
+    }
     [self removeObserverForNotification:noti];
     [viewController stopLoadingData];
     [viewController.navigationController popViewControllerAnimated:YES];
