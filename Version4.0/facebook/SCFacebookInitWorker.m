@@ -12,6 +12,7 @@
 #import <SimiCartBundle/SCLeftMenuViewController.h>
 #import <SimiCartBundle/SCCategoryViewController.h>
 #import <SimiCartBundle/SCProductListViewControllerPad.h>
+#import <SimiCartBundle/SCLoginViewController.h>
 #import <Bolts/Bolts.h>
 
 //Product More View notifications
@@ -43,32 +44,32 @@
     UIWebView* commentWebView;
     NSString* productURL;
 }
--(id) init{
+- (instancetype)init{
     if(self == [super init]){
         //add notifications
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initViewMoreAction:) name:SCProductMoreViewController_InitViewMoreAction object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(beforeTouchMoreAction:) name:SCProductMoreViewController_BeforeTouchMoreAction object:nil];
-        
+
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initViewMoreAction:) name:@"SCProductViewController_InitViewMoreAction" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(beforeTouchMoreAction:) name:@"SCProductViewController_BeforeTouchMoreAction" object:nil];
-        
+
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(resetFacebookViewPosition:) name:@"SCProductSecondDesignViewControllerViewDidAppear" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(resetFacebookViewPosition:) name:@"SCProductMoreViewControllerViewDidAppear" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(resetFacebookViewPosition:) name:@"SCProductSecondDesignViewControllerPadViewDidAppear" object:nil];
         
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:[NSString stringWithFormat:@"%@%@",SCLoginViewController_RootEventName,SimiTableViewController_SubKey_InitCells_End] object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:ApplicationOpenURL object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:[NSString stringWithFormat:@"%@%@",SCLoginViewController_RootEventName,SimiTableViewController_SubKey_InitializedCell_End] object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initCellsOnLoginViewController:) name:[NSString stringWithFormat:@"%@%@",SCLoginViewController_RootEventName,SimiTableViewController_SubKey_InitCells_End] object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializedCellsOnLoginViewController:) name:[NSString stringWithFormat:@"%@%@",SCLoginViewController_RootEventName,SimiTableViewController_SubKey_InitializedCell_End] object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationOpenURL:) name:ApplicationOpenURL object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didLogin:) name:Simi_DidLogin object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didLogout:) name:Simi_DidLogout object:nil];
-        
-        //App Invite
+
+//        //App Invite
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didInitLeftMenuRows:) name:[NSString stringWithFormat:@"%@%@",SCLeftMenuViewController_RootEventName,SimiTableViewController_SubKey_InitCells_End] object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didSelectInviteFriends:) name:[NSString stringWithFormat:@"%@%@",SCLeftMenuViewController_RootEventName,SimiTableViewController_SubKey_InitializedCell_End] object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didSelectInviteFriends:) name:[NSString stringWithFormat:@"%@%@",SCLeftMenuViewController_RootEventName,SimiTableViewController_SubKey_DidSelectCell] object:nil];
         //Catch when done init the app
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didInitApp:) name:@"DidInit" object:nil];
         //ApplicationDidBecomeActive
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:ApplicationDidBecomeActive object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidBecomeActive:) name:ApplicationDidBecomeActive object:nil];
         //Facebook Analytics
         [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(trackingEvent:) name:TRACKINGEVENT object:nil];
         [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(trackingViewedScreen:) name:@"SimiViewControllerViewDidAppear" object:nil];
@@ -79,57 +80,60 @@
     return self;
 }
 
--(void) didReceiveNotification:(NSNotification *)noti{
-    if([noti.name isEqualToString:[NSString stringWithFormat:@"%@%@",SCLoginViewController_RootEventName,SimiTableViewController_SubKey_InitCells_End]]){
-        cells = noti.object;
-        loginViewController = [noti.userInfo objectForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.viewcontroller];
-        SimiSection *section = [cells getSectionByIdentifier:LOGIN_SECTION];
-        SimiRow *row = [[SimiRow alloc] initWithIdentifier:FacebookLoginCell height:SCALEVALUE(50) sortOrder:SIGNIN_SORT_ORDER + 1];
-        [section addRow:row];
-    }else if([noti.name isEqualToString:ApplicationOpenURL]){
-        BOOL numberBool = [[noti object] boolValue];
-        numberBool  = [[FBSDKApplicationDelegate sharedInstance] application:[[noti userInfo] valueForKey:@"application"] openURL:[[noti userInfo] valueForKey:@"url"] sourceApplication:[[noti userInfo] valueForKey:@"source_application"] annotation:[[noti userInfo] valueForKey:@"annotation"]];
-        if([noti.userInfo objectForKey:@"url"]){
-            NSURL* url = [noti.userInfo objectForKey:@"url"];
-            [self handleOpeningURL:url.absoluteString];
-        }
-    }else if([noti.name isEqualToString:ApplicationDidBecomeActive]){
-        //Active Facebook App
-        [FBSDKAppEvents activateApp];
-    }
-    else if([noti.name isEqualToString:[NSString stringWithFormat:@"%@%@",SCLoginViewController_RootEventName, SimiTableViewController_SubKey_InitializedCell_End]]){
-        NSIndexPath *indexPath = [noti.userInfo valueForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.indexpath];
-        SimiSection *section = [cells objectAtIndex:indexPath.section];
-        SimiRow *row = [section objectAtIndex:indexPath.row];
-        
-        if ([row.identifier isEqualToString:FacebookLoginCell]) {
-            UITableViewCell *cell = [noti.userInfo objectForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.cell];
-            float loginViewWidth = CGRectGetWidth(loginViewController.view.frame);
-            float heightCell = SCALEVALUE(35);
-            float paddingY = SCALEVALUE(7.5);
-            float paddingX = SCALEVALUE(20);
-            
-            float widthCell = loginViewWidth - 2* paddingX;
-            
-            FBSDKLoginButton *loginButton = [[FBSDKLoginButton alloc] initWithFrame:CGRectMake(paddingX, paddingY, widthCell, heightCell)];
-            loginButton.readPermissions = @[@"public_profile", @"email"];
-            loginButton.delegate = self;
-            cell.backgroundColor = [UIColor clearColor];
-            [cell addSubview:loginButton];
-            [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
-        }
-    }else if ([noti.name isEqualToString:@"ApplicationWillTerminate"])
-    {
-        NSHTTPCookieStorage* cookies = [NSHTTPCookieStorage sharedHTTPCookieStorage];
-        NSArray* facebookCookies = [cookies cookiesForURL:
-                                    [NSURL URLWithString:@"https://facebook.com"]];
-        for (NSHTTPCookie* cookie in facebookCookies) {
-            [cookies deleteCookie:cookie];
-        }
+- (void)initCellsOnLoginViewController:(NSNotification *)noti{
+    cells = noti.object;
+    loginViewController = [noti.userInfo objectForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.viewcontroller];
+    SimiSection *section = [cells getSectionByIdentifier:LOGIN_SECTION];
+    SimiRow *row = [[SimiRow alloc] initWithIdentifier:FacebookLoginCell height:SCALEVALUE(50) sortOrder:SIGNIN_SORT_ORDER + 1];
+    [section addRow:row];
+}
+
+- (void)applicationOpenURL:(NSNotification *)noti{
+    BOOL numberBool = [[noti object] boolValue];
+    numberBool  = [[FBSDKApplicationDelegate sharedInstance] application:[[noti userInfo] valueForKey:@"application"] openURL:[[noti userInfo] valueForKey:@"url"] sourceApplication:[[noti userInfo] valueForKey:@"source_application"] annotation:[[noti userInfo] valueForKey:@"annotation"]];
+    if([noti.userInfo objectForKey:@"url"]){
+        NSURL* url = [noti.userInfo objectForKey:@"url"];
+        [self handleOpeningURL:url.absoluteString];
     }
 }
 
--(void) didInitApp:(NSNotification*) noti{
+- (void)initializedCellsOnLoginViewController:(NSNotification *)noti{
+    NSIndexPath *indexPath = [noti.userInfo valueForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.indexpath];
+    SimiSection *section = [cells objectAtIndex:indexPath.section];
+    SimiRow *row = [section objectAtIndex:indexPath.row];
+    
+    if ([row.identifier isEqualToString:FacebookLoginCell]) {
+        UITableViewCell *cell = [noti.userInfo objectForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.cell];
+        float loginViewWidth = CGRectGetWidth(loginViewController.view.frame);
+        float heightCell = SCALEVALUE(35);
+        float paddingY = SCALEVALUE(7.5);
+        float paddingX = SCALEVALUE(20);
+        
+        float widthCell = loginViewWidth - 2* paddingX;
+        
+        FBSDKLoginButton *loginButton = [[FBSDKLoginButton alloc] initWithFrame:CGRectMake(paddingX, paddingY, widthCell, heightCell)];
+        loginButton.readPermissions = @[@"public_profile", @"email"];
+        loginButton.delegate = self;
+        cell.backgroundColor = [UIColor clearColor];
+        [cell addSubview:loginButton];
+        [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
+    }
+}
+
+- (void)applicationDidBecomeActive:(NSNotification*)noti{
+     [FBSDKAppEvents activateApp];
+}
+
+- (void)applicationWillTerminate:(NSNotification*)noti{
+    NSHTTPCookieStorage* cookies = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+    NSArray* facebookCookies = [cookies cookiesForURL:
+                                [NSURL URLWithString:@"https://facebook.com"]];
+    for (NSHTTPCookie* cookie in facebookCookies) {
+        [cookies deleteCookie:cookie];
+    }
+}
+
+- (void)didInitApp:(NSNotification*) noti{
     if([SimiGlobalVar sharedInstance].deepLinkURL != nil){
         [self handleOpeningURL:[SimiGlobalVar sharedInstance].deepLinkURL.absoluteString];
         [SimiGlobalVar sharedInstance].deepLinkURL = nil;
@@ -146,7 +150,7 @@
     [FBSDKAppEvents activateApp];
 }
 
--(void) updateUserProperties{
+- (void)updateUserProperties{
     if([SimiGlobalVar sharedInstance].isLogin){
         NSMutableDictionary* userProperties = [[NSMutableDictionary alloc] init];
         [userProperties addEntriesFromDictionary:@{@"$language":[GLOBALVAR.storeView.base objectForKey:@"store_name"],@"$country":[GLOBALVAR.storeView.base objectForKey:@"country_name"],@"$currency":[SimiGlobalVar sharedInstance].currencyCode}];
@@ -221,17 +225,8 @@
     }
      [self updateUserProperties];
 }
-
--(void) didAddToCart:(NSNotification*) noti{
-    
-}
-
--(void) didPlaceOrder:(NSNotification*) noti{
-
-}
-
 // Handle url 
--(void) handleOpeningURL:(NSString*) url{
+- (void)handleOpeningURL:(NSString*) url{
     if(![url isEqualToString:@""]){
         NSMutableDictionary *urlParamsDictionary = [[NSMutableDictionary alloc] init];
         NSArray *urlComponents = [url componentsSeparatedByString:@"?"];
@@ -382,7 +377,7 @@
     fbView.clipsToBounds = YES;
 }
 
--(void) didInitLeftMenuRows:(NSNotification*) noti{
+- (void)didInitLeftMenuRows:(NSNotification*) noti{
     if([GLOBALVAR.storeView objectForKey:@"facebook_connect"]){
         NSDictionary* fbConnect = [GLOBALVAR.storeView objectForKey:@"facebook_connect"];
         if(![[fbConnect objectForKey:@"invite_link"] isEqual:[NSNull null]]) {
@@ -441,7 +436,7 @@
 }
 
 //Handling button clicking
--(void) fbButtonClicked: (id) sender{
+- (void)fbButtonClicked: (id) sender{
     [[NSNotificationCenter defaultCenter]postNotificationName:TRACKINGEVENT object:@"facebook_connect_action" userInfo:@{@"action":@"clicked_facebook_connect_button",@"product_name":product.name,@"product_id":product.entityId,@"sku":product.sku}];
     if (!isShowFacebookView) {
         CGRect frame = fbView.frame;
@@ -468,7 +463,7 @@
     isShowFacebookView = !isShowFacebookView;
 }
 
--(void) fbCommentButtonClicked: (id) sender{
+- (void)fbCommentButtonClicked: (id) sender{
     if(productURL){
         UIView* commentView = [[UIView alloc]init];
         commentView.tag = COMMENT_VIEW_TAG;
@@ -524,7 +519,7 @@
     
 }
 
--(void) fbShareButtonClicked: (id) sender{
+- (void)fbShareButtonClicked: (id) sender{
     if(productURL){
         FBSDKShareLinkContent *content = [[FBSDKShareLinkContent alloc] init];
         content.contentURL = [NSURL URLWithString:productURL];
@@ -556,14 +551,14 @@
     }
 }
 
--(void) webViewDidStartLoad:(UIWebView *)webView{
+- (void)webViewDidStartLoad:(UIWebView *)webView{
     UIActivityIndicatorView* loadingView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
     [webView addSubview:loadingView];
     loadingView.center = webView.center;
     [loadingView startAnimating];
 }
 
--(void) webViewDidFinishLoad:(UIWebView *)webView{
+- (void)webViewDidFinishLoad:(UIWebView *)webView{
     for(UIView* view in webView.subviews){
         if([view isKindOfClass:[UIActivityIndicatorView class]]){
             [view removeFromSuperview];
@@ -572,7 +567,7 @@
 }
 
 #pragma mark FBSDKLoginButtonDelegate
--(void) loginButton:(FBSDKLoginButton *)loginButton didCompleteWithResult:(FBSDKLoginManagerLoginResult *)result error:(NSError *)error{
+- (void)loginButton:(FBSDKLoginButton *)loginButton didCompleteWithResult:(FBSDKLoginManagerLoginResult *)result error:(NSError *)error{
     if(!error){
         [self loginWithFacebookInfo];
     }else{
@@ -583,11 +578,11 @@
     }
 }
 
--(void) loginButtonDidLogOut:(FBSDKLoginButton *)loginButton{
+- (void)loginButtonDidLogOut:(FBSDKLoginButton *)loginButton{
 
 }
 
--(void) loginWithFacebookInfo{
+- (void)loginWithFacebookInfo{
     [[[FBSDKGraphRequest alloc] initWithGraphPath:@"/me?fields=id,email,first_name,last_name" parameters:nil]
      startWithCompletionHandler:^(FBSDKGraphRequestConnection *connection, id result, NSError *error) {
          if (!error) {
@@ -618,7 +613,7 @@
 }
 
 //login and logout notification
--(void) didLogin:(NSNotification*) noti{
+- (void)didLogin:(NSNotification*) noti{
     [loginViewController stopLoadingData];
     SimiResponder* responder = [noti.userInfo objectForKey:responderKey];
     if(responder.status == SUCCESS){
@@ -630,18 +625,13 @@
     }
 }
 
--(void) didLogout: (NSNotification* )noti{
+- (void)didLogout: (NSNotification* )noti{
     if([FBSDKAccessToken currentAccessToken]){
         [[FBSDKLoginManager alloc] logOut];
     }
 }
 
-- (void)dealloc
-{
-    [[NSNotificationCenter defaultCenter]removeObserver:self];
-}
-
--(void) resetFacebookViewPosition:(NSNotification*) noti{
+- (void)resetFacebookViewPosition:(NSNotification*) noti{
     if(isShowFacebookView){
         CGRect frame = fbView.frame;
         frame.origin.x += widthFacebookView;
@@ -654,6 +644,11 @@
         }];
         isShowFacebookView = NO;
     }
+}
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter]removeObserver:self];
 }
 
 @end

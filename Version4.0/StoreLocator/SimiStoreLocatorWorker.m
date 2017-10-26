@@ -10,10 +10,9 @@
 #import <SimiCartBundle/SimiSection.h>
 #import <SimiCartBundle/SCAppDelegate.h>
 #import <SimiCartBundle/SimiTable.h>
+#import <SimiCartBundle/SCLeftMenuViewController.h>
 #import "SimiStoreLocatorViewController.h"
 #import "SimiStoreLocatorViewControllerPad.h"
-#import <SimiCartBundle/SCNavigationBarPhone.h>
-#import <SimiCartBundle/SCNavigationBarPad.h>
 @implementation SimiStoreLocatorWorker
 {
     SimiTable *cells;
@@ -49,7 +48,6 @@
     cells = noti.object;
     SimiSection *section = [cells objectAtIndex:indexPath.section];
     SimiRow *row = [section objectAtIndex:indexPath.row];
-    SCNavigationBarPhone *navi = noti.object;
     if ([row.identifier isEqualToString:LEFTMENU_ROW_STORELOCATOR]) {
         UINavigationController *navigationController = kNavigationController;
         if (PADDEVICE) {
@@ -60,7 +58,6 @@
             SimiStoreLocatorViewController *storeLocatorViewController = [[SimiStoreLocatorViewController alloc]init];
             [navigationController pushViewController:storeLocatorViewController animated:YES];
         }
-        navi.isDiscontinue = YES;
     }
 }
 

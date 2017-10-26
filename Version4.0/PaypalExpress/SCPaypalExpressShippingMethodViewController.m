@@ -179,14 +179,7 @@
 - (void)didPlaceOrder:(NSNotification *)noti{
     [self stopLoadingData];
     SimiResponder *responder = [noti.userInfo valueForKey:responderKey];
-    if (PHONEDEVICE) {
-        SCCartViewController * cartVC = [[SCAppController sharedInstance].navigationBarPhone cartViewController];
-        [cartVC getCart];
-    }else
-    {
-        SCCartViewControllerPad * cartVC = [[SCAppController sharedInstance].navigationBarPad cartViewControllerPad];
-        [cartVC getCart];
-    }
+    [[SCAppController sharedInstance].navigationBarPhone.cartController getCart];
     if (responder.status == SUCCESS) {
         UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:SCLocalizedString(@"SUCCESS") message:SCLocalizedString(@"Thank you for your purchase") delegate:nil cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles: nil];
         [alertView show];

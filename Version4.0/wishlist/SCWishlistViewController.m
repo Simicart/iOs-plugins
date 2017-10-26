@@ -206,9 +206,7 @@
 - (void)didAddProductFromWishlistToCart: (NSNotification* ) noti{
     [self stopLoadingData];
     if(PHONEDEVICE)
-        [[[[SCAppController sharedInstance] navigationBarPhone] cartViewController] getCart];
-    else if(PADDEVICE)
-        [[[[SCAppController sharedInstance] navigationBarPad] cartViewControllerPad] getCart];
+        [[[[SCAppController sharedInstance] navigationBarPhone] cartController] getCart];
     // get wishlist again
     [self getWishlistItemsFromBegin];
 }

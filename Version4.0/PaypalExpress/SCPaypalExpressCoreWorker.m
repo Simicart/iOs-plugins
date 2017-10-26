@@ -131,8 +131,11 @@ static NSString *product_paypalcheckout_row = @"product_paypalcheckout_row";
 
 #pragma mark Add Button to Cart View Controller
 - (void)didChangeCart:(NSNotification *)noti{
+    SCCartViewController *cartVC = nil;
+    if ([noti.userInfo valueForKey:KEYEVENT.CARTVIEWCONTROLLER.viewcontroller]) {
+        cartVC = [noti.userInfo valueForKey:KEYEVENT.CARTVIEWCONTROLLER.viewcontroller];
+    }
     if (PHONEDEVICE) {
-        SCCartViewController * cartVC = [[SCAppController sharedInstance].navigationBarPhone cartViewController];
         if ((cartVC.cart == nil) || (cartVC.cart.count == 0)|| ![[paypalExpressConfig valueForKey:@"show_on_cart"]boolValue]) {
             btnPaypalCart.hidden = YES;
             return;
@@ -154,7 +157,6 @@ static NSString *product_paypalcheckout_row = @"product_paypalcheckout_row";
             [cartVC.view addSubview:btnPaypalCart];
         }
     }else {
-        SCCartViewController * cartVC = [[SCAppController sharedInstance].navigationBarPad cartViewControllerPad];
         if ((cartVC.cart == nil) || (cartVC.cart.count == 0) || ![[paypalExpressConfig valueForKey:@"show_on_cart"]boolValue]){
             btnPaypalCart.hidden = YES;
             return;
