@@ -75,7 +75,7 @@
             [currentVC.navigationController popToRootViewControllerAnimated:NO];
         } else if (result.cancelled) {
             NSLog(@"CANCELLED");
-            [currentVC.navigationController popToRootViewControllerAnimated:NO];
+            [self cancelOrder];
         } else {
             //             Use the BTDropInResult properties to update your UI
             //             result.paymentOptionType
@@ -100,6 +100,26 @@
         [currentVC presentViewController:dropIn animated:YES completion:nil];
     else
         [currentVC showAlertWithTitle:@"Braintree" message:SCLocalizedString(@"The provided authorization was invalid")];
+}
+
+- (void)cancelOrder{
+    if([order objectForKey:@"invoice_number"]){
+        [order cancelOrderWithId:[order objectForKey:@"invoice_number"]];
+        [currentVC startLoadingData];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didCancelOrder:) name:DidCancelOrder object:nil];
+    }else{
+        [currentVC.navigationController popToRootViewControllerAnimated:NO];
+    }
+}
+
+- (void)didCancelOrder:(NSNotification *)noti{
+    [currentVC stopLoadingData];
+    [self removeObserverForNotification:noti];
+    SimiResponder *responder = [noti.userInfo objectForKey:@"responder"];
+    [currentVC showAlertWithTitle:@"" message:responder.responseMessage completionHandler:^{
+        [currentVC.navigationController popToRootViewControllerAnimated:YES];
+    }];
+    
 }
 
 - (PKPaymentRequest *)applePaymentRequest {
