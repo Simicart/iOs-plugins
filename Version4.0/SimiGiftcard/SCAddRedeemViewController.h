@@ -5,7 +5,7 @@
 //  Created by Liam on 8/12/17.
 //  Copyright © 2017 Trueplus. All rights reserved.
 //
-#import "SimiTextField.h"
+#import <SimiCartBundle/SimiTextField.h>
 #import "SimiGiftCardCreditModel.h"
 
 @interface SCAddRedeemViewController : SimiViewController{

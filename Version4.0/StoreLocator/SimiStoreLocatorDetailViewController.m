@@ -684,13 +684,15 @@
 	}
 	if(result==MFMailComposeResultSent)
 	{
-        [self showAlertWithTitle:@"Success" message:@"Your email was sent succesfully"];
-		[controller dismissViewControllerAnimated:YES completion:NULL];
+        [self showAlertWithTitle:@"Success" message:@"Your email was sent succesfully" completionHandler:^{
+            [controller dismissViewControllerAnimated:YES completion:NULL];
+        }];
 	}
 	if(result==MFMailComposeResultFailed)
 	{
-        [self showAlertWithTitle:@"Failed" message:@"Your mail was not sent"];
-		[controller dismissViewControllerAnimated:YES completion:NULL];
+        [self showAlertWithTitle:@"Failed" message:@"Your mail was not sent" completionHandler:^{
+            [controller dismissViewControllerAnimated:YES completion:NULL];
+        }];
 	}
 }
 #pragma mark Convert HTML to String
