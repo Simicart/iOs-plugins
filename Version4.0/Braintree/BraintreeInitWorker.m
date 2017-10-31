@@ -51,7 +51,7 @@
             selectedPayment = [noti.userInfo objectForKey:@"payment"];
             selectedShipping = [noti.userInfo objectForKey:@"shipping"];
             currentVC = [noti.userInfo valueForKey:@"controller"];
-            [order addEntriesFromDictionary:noti.object];
+            order = noti.object;
             [self showDropIn:[selectedPayment objectForKey:@"token"]];
         }
     }else if([noti.name isEqualToString:PlaceOrder]){
@@ -116,10 +116,15 @@
     [currentVC stopLoadingData];
     [self removeObserverForNotification:noti];
     SimiResponder *responder = [noti.userInfo objectForKey:@"responder"];
-    [currentVC showAlertWithTitle:@"" message:responder.responseMessage completionHandler:^{
-        [currentVC.navigationController popToRootViewControllerAnimated:YES];
-    }];
-    
+    if([responder.status isEqualToString:@"SUCCESS"]){
+        [currentVC showAlertWithTitle:@"" message:@"Your order is cancelled" completionHandler:^{
+            [currentVC.navigationController popToRootViewControllerAnimated:YES];
+        }];
+    }else{
+        [currentVC showAlertWithTitle:@"" message:responder.responseMessage completionHandler:^{
+            [currentVC.navigationController popToRootViewControllerAnimated:YES];
+        }];
+    }
 }
 
 - (PKPaymentRequest *)applePaymentRequest {
