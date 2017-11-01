@@ -10,6 +10,7 @@
 #import <SimiCartBundle/SimiOrderModel.h>
 #import <SimiCartBundle/SCThankYouPageViewController.h>
 #import "SimiBraintreeModel.h"
+#import "BraintreeDropIn.h"
 
 #define DidSelectPaymentMethod @"DidSelectPaymentMethod"
 #define BRAINTREE_PAYMENT_METHOD @"simibraintree"
