@@ -22,7 +22,8 @@
 
 @synthesize paypalExpCheckOutWebView;
 
-- (void)viewWillAppearBefore:(BOOL)animated{
+- (void)viewWillAppearBefore:(BOOL)animated
+{
     
 }
 
@@ -81,7 +82,7 @@
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
 {
     NSString *urlRequest = request.URL.absoluteString;
-    if ((!([urlRequest rangeOfString:@"return"].location == NSNotFound)) && ([urlRequest rangeOfString:@"stsRedirectUri"].location == NSNotFound)){
+    if ((!([urlRequest rangeOfString:@"simiconnector/rest/v2/ppexpressapis/return"].location == NSNotFound))){
         if (self.needReviewAddress) {
             SCPaypalExpressAddressReviewViewController *addressReviewViewController = [SCPaypalExpressAddressReviewViewController new];
             UINavigationController *naviPresent = [[UINavigationController alloc]initWithRootViewController:addressReviewViewController];
@@ -112,13 +113,12 @@
     return YES;
 }
 
-- (void)webViewDidFinishLoad:(UIWebView *)webView{
-    CGRect frame = webView.frame;
-    frame.size.height = 1;
-    webView.frame = frame;
-    CGSize fittingSize = [webView sizeThatFits:CGSizeZero];
-    frame.size = fittingSize;
-    webView.frame = frame;
+- (void)webViewDidStartLoad:(UIWebView *)webView {
+    [self startLoadingData];
+}
+
+- (void)webViewDidFinishLoad:(UIWebView *)webView
+{
     [self stopLoadingData];
 }
 @end
