@@ -144,20 +144,26 @@
     paymentRequest.requiredShippingAddressFields = NO;
     NSMutableDictionary* fees = [order objectForKey:@"total"];
     
-    NSDecimalNumber* subTotal = [NSDecimalNumber decimalNumberWithString:[NSString stringWithFormat:@"%.2f",[[fees valueForKey:@"subtotal_incl_tax"] floatValue]]];
+    NSDecimalNumber* subTotalExclTax = [NSDecimalNumber decimalNumberWithString:[NSString stringWithFormat:@"%.2f",[[fees valueForKey:@"subtotal_excl_tax"] floatValue]]];
     NSDecimalNumber* shippingFee;
     if([fees objectForKey:@"shipping_hand_incl_tax"]){
         shippingFee = [NSDecimalNumber decimalNumberWithString:[NSString stringWithFormat:@"%.2f",[[fees valueForKey:@"shipping_hand_incl_tax"] floatValue]]];
     }else{
         shippingFee = [NSDecimalNumber decimalNumberWithString:@"0"];
     }
-    NSDecimalNumber* grandTotal = [NSDecimalNumber decimalNumberWithString:[NSString stringWithFormat:@"%.2f",[[fees valueForKey:@"grand_total_incl_tax"] floatValue]]];
+//    NSDecimalNumber* grandTotalExclTax = [NSDecimalNumber decimalNumberWithString:[NSString stringWithFormat:@"%.2f",[[fees valueForKey:@"grand_total_excl_tax"] floatValue]]];
+    NSDecimalNumber* grandTotalInclTax = [NSDecimalNumber decimalNumberWithString:[NSString stringWithFormat:@"%.2f",[[fees valueForKey:@"grand_total_incl_tax"] floatValue]]];
     NSMutableArray* summaryItems = [[NSMutableArray alloc] init];
-    [summaryItems addObject:[PKPaymentSummaryItem summaryItemWithLabel:@"Subtotal" amount:subTotal]];
-    if(shippingFee.floatValue > 0){
+    [summaryItems addObject:[PKPaymentSummaryItem summaryItemWithLabel:@"Subtotal" amount:subTotalExclTax]];
+    if(shippingFee.floatValue >= 0){
         [summaryItems addObject:[PKPaymentSummaryItem summaryItemWithLabel:@"Shipping" amount:shippingFee]];
     }
-    [summaryItems addObject:[PKPaymentSummaryItem summaryItemWithLabel:@"Grand Total" amount:grandTotal]];
+    NSDecimalNumber *tax = [NSDecimalNumber decimalNumberWithString:@"0"];
+    if([fees valueForKey:@"tax"]){
+        tax = [NSDecimalNumber decimalNumberWithString:[NSString stringWithFormat:@"%.2f",[[fees valueForKey:@"tax"] floatValue]]];
+    }
+    [summaryItems addObject:[PKPaymentSummaryItem summaryItemWithLabel:@"Tax" amount:tax]];
+    [summaryItems addObject:[PKPaymentSummaryItem summaryItemWithLabel:@"Grand Total" amount:grandTotalInclTax]];
     paymentRequest.paymentSummaryItems = summaryItems;
     return paymentRequest;
 }
