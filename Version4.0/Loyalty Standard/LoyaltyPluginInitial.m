@@ -377,7 +377,12 @@ static NSString *LEFTMENU_REWARDS_ROW     = @"leftmenu_rewards";
     SCProductInfoView *productInfoView = noti.object;
     UIView *loyalty = [productInfoView viewWithTag:LOYALTY_TAG];
     if (loyalty == nil) {
-        loyalty = [[UIView alloc] initWithFrame:CGRectMake(productInfoView.productNameLabel.frame.origin.x , productInfoView.heightCell+10, productInfoView.productNameLabel.frame.size.width, 44)];
+        float widthSize = SCREEN_WIDTH - 30;
+        if (PADDEVICE) {
+            widthSize = SCREEN_WIDTH *2/3 - 30;
+        }
+        float origionTitleX = 15;
+        loyalty = [[UIView alloc] initWithFrame:CGRectMake(origionTitleX ,productInfoView.heightCell+10, widthSize, 44)];
         loyalty.tag = LOYALTY_TAG;
         [productInfoView addSubview:loyalty];
         
