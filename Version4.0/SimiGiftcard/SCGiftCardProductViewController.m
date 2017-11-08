@@ -8,7 +8,9 @@
 
 #import "SCGiftCardProductViewController.h"
 
-@interface SCGiftCardProductViewController ()
+@interface SCGiftCardProductViewController (){
+    float insertInfoRowHeight;
+}
 
 @end
 
@@ -26,6 +28,7 @@
             [timeZoneTitles addObject:[timeZoneUnit valueForKey:@"label"]];
         }
     }
+    insertInfoRowHeight = 400;
 }
 
 - (void)setCells:(SimiTable *)cells{
@@ -152,26 +155,30 @@
             if (cell == nil) {
                 cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:row.identifier];
                 cell.selectionStyle = UITableViewCellSelectionStyleNone;
-                sendThroughPostOfficeCheckbox = [[M13Checkbox alloc]initWithFrame:CGRectMake(paddingEdge, 6, tableWidth - paddingEdge*3, 30) title:SCLocalizedString(@"Send through post office") checkHeight:20];
-                [sendThroughPostOfficeCheckbox setStrokeColor:[UIColor grayColor]];
-                [sendThroughPostOfficeCheckbox setCheckColor:[UIColor blackColor]];
-                [sendThroughPostOfficeCheckbox addTarget:self action:@selector(changeSendPostOfficeState) forControlEvents:UIControlEventValueChanged];
-                sendThroughPostOfficeCheckbox.checkAlignment = M13CheckboxAlignmentLeft;
-                [sendThroughPostOfficeCheckbox.titleLabel setFont:[UIFont fontWithName:THEME_FONT_NAME_REGULAR size:16]];
-                [cell.contentView addSubview:sendThroughPostOfficeCheckbox];
+                if (sendThroughPostOfficeCheckbox == nil) {
+                    sendThroughPostOfficeCheckbox = [[M13Checkbox alloc]initWithFrame:CGRectMake(paddingEdge, 6, tableWidth - paddingEdge*3, 30) title:SCLocalizedString(@"Send through post office") checkHeight:20];
+                    [sendThroughPostOfficeCheckbox setStrokeColor:[UIColor grayColor]];
+                    [sendThroughPostOfficeCheckbox setCheckColor:[UIColor blackColor]];
+                    [sendThroughPostOfficeCheckbox addTarget:self action:@selector(changeSendPostOfficeState) forControlEvents:UIControlEventValueChanged];
+                    sendThroughPostOfficeCheckbox.checkAlignment = M13CheckboxAlignmentLeft;
+                    [sendThroughPostOfficeCheckbox.titleLabel setFont:[UIFont fontWithName:THEME_FONT_NAME_REGULAR size:16]];
+                }
             }
+            [cell.contentView addSubview:sendThroughPostOfficeCheckbox];
         }else if ([row.identifier isEqualToString:giftcard_sendfriend_checkbox_row]){
             if (cell == nil) {
                 cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:row.identifier];
                 cell.selectionStyle = UITableViewCellSelectionStyleNone;
-                sendGiftcardToFriendCheckbox = [[M13Checkbox alloc]initWithFrame:CGRectMake(paddingEdge, 6, tableWidth - paddingEdge*3, 30) title:SCLocalizedString(@"Send Gift Card to friend") checkHeight:20];
-                sendGiftcardToFriendCheckbox.checkAlignment = M13CheckboxAlignmentLeft;
-                [sendGiftcardToFriendCheckbox setStrokeColor:[UIColor grayColor]];
-                [sendGiftcardToFriendCheckbox setCheckColor:[UIColor blackColor]];
-                [sendGiftcardToFriendCheckbox addTarget:self action:@selector(changeSendToFriendState) forControlEvents:UIControlEventValueChanged];
-                [sendGiftcardToFriendCheckbox.titleLabel setFont:[UIFont fontWithName:THEME_FONT_NAME_REGULAR size:16]];
-                [cell.contentView addSubview:sendGiftcardToFriendCheckbox];
+                if (sendGiftcardToFriendCheckbox == nil) {
+                    sendGiftcardToFriendCheckbox = [[M13Checkbox alloc]initWithFrame:CGRectMake(paddingEdge, 6, tableWidth - paddingEdge*3, 30) title:SCLocalizedString(@"Send Gift Card to friend") checkHeight:20];
+                    sendGiftcardToFriendCheckbox.checkAlignment = M13CheckboxAlignmentLeft;
+                    [sendGiftcardToFriendCheckbox setStrokeColor:[UIColor grayColor]];
+                    [sendGiftcardToFriendCheckbox setCheckColor:[UIColor blackColor]];
+                    [sendGiftcardToFriendCheckbox addTarget:self action:@selector(changeSendToFriendState) forControlEvents:UIControlEventValueChanged];
+                    [sendGiftcardToFriendCheckbox.titleLabel setFont:[UIFont fontWithName:THEME_FONT_NAME_REGULAR size:16]];
+                }
             }
+            [cell.contentView addSubview:sendGiftcardToFriendCheckbox];
         }else if ([row.identifier isEqualToString:giftcard_insertinfo_row]){
             if (cell == nil) {
                 cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:row.identifier];
@@ -248,7 +255,8 @@
                     [cell.contentView addSubview:selectTimeZoneTextField];
                     cellHeight += textFieldHeight;
                 }
-                row.height = cellHeight+20;
+                insertInfoRowHeight = cellHeight+20;
+                row.height = insertInfoRowHeight;
             }
         }else if ([row.identifier isEqualToString:giftcard_recommendinfo_row]){
             if (cell == nil) {
@@ -508,7 +516,7 @@
         [mainSection addRowWithIdentifier:giftcard_recommendinfo_row height:60 sortOrder:sendPostOfficeRow.sortOrder + 1];
         [mainSection sortItems];
         [self.productTableView beginUpdates];
-        [self.productTableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:rowIndex+1 inSection:sectionIndex]] withRowAnimation:UITableViewRowAnimationFade];
+        [self.productTableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:rowIndex+1 inSection:sectionIndex]] withRowAnimation:UITableViewRowAnimationNone];
         [self.productTableView endUpdates];
     }else{
         float rowIndex = [mainSection getRowIndexByIdentifier:giftcard_recommendinfo_row];
@@ -530,10 +538,10 @@
     if (isSendGiftcardToFriend) {
         float rowIndex = [mainSection getRowIndexByIdentifier:giftcard_sendfriend_checkbox_row];
         SimiRow *sendFriendRow = [mainSection getRowByIdentifier:giftcard_sendfriend_checkbox_row];
-        [mainSection addRowWithIdentifier:giftcard_insertinfo_row height:400 sortOrder:sendFriendRow.sortOrder+1];
+        [mainSection addRowWithIdentifier:giftcard_insertinfo_row height:insertInfoRowHeight sortOrder:sendFriendRow.sortOrder+1];
         [mainSection sortItems];
         [self.productTableView beginUpdates];
-        [self.productTableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:rowIndex+1 inSection:sectionIndex]] withRowAnimation:UITableViewRowAnimationFade];
+        [self.productTableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:rowIndex+1 inSection:sectionIndex]] withRowAnimation:UITableViewRowAnimationBottom];
         [self.productTableView endUpdates];
     }else{
         float rowIndex = [mainSection getRowIndexByIdentifier:giftcard_insertinfo_row];

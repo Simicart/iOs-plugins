@@ -7,8 +7,8 @@
 //
 
 #import "SCEmailToFriendViewController.h"
-#import "SimiTextView.h"
-#import "SimiTextField.h"
+#import <SimiCartBundle/SimiTextView.h>
+#import <SimiCartBundle/SimiTextField.h>
 #import "SimiGiftCardCreditModel.h"
 
 @interface SCEmailToFriendViewController ()<UITextFieldDelegate, UIScrollViewDelegate>{

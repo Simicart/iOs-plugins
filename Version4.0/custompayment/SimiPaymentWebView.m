@@ -22,6 +22,9 @@
     self.navigationItem.title = SCLocalizedString(self.navigationItem.title);
     UIBarButtonItem *cancel = [[UIBarButtonItem alloc] initWithTitle:SCLocalizedString(@"Cancel") style:UIBarButtonItemStylePlain target:self action:@selector(cancelPayment:)];
     self.navigationItem.rightBarButtonItem = cancel;
+    if(self.webTitle){
+        self.navigationItem.title = self.webTitle;
+    }
 }
 
 - (void)viewWillAppearBefore:(BOOL)animated
@@ -46,7 +49,6 @@
 -(void) cancelPayment:(id) sender{
     UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:SCLocalizedString(@"Confirmation") message:[NSString stringWithFormat:@"%@?",SCLocalizedString(@"Are you sure that you want to cancel the order")] delegate:self cancelButtonTitle:SCLocalizedString(@"Close") otherButtonTitles:SCLocalizedString(@"OK"), nil];
     [alertView show];
-    alertView.simiObjectName = @"cancelOrderAlert";
 }
 
 - (void)setUrlPath:(NSString *)path{
@@ -59,15 +61,13 @@
 }
 
 -(void) alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
-    if([alertView.simiObjectName isEqualToString:@"cancelOrderAlert"]){
-        if(buttonIndex == 0){
-            
-        }else if(buttonIndex == 1){
-            SimiOrderModel *orderModel = [SimiOrderModel new];
-            [orderModel cancelOrderWithId:_orderID];
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didCancelOrder:) name:@"DidCancelOrder" object:orderModel];
-            [self startLoadingData];
-        }
+    if(buttonIndex == 0){
+        
+    }else if(buttonIndex == 1){
+        SimiOrderModel *orderModel = [SimiOrderModel new];
+        [orderModel cancelOrderWithId:_orderID];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didCancelOrder:) name:@"DidCancelOrder" object:orderModel];
+        [self startLoadingData];
     }
 }
 
@@ -75,19 +75,14 @@
 #pragma mark WebView Delegates
 - (void)webViewDidStartLoad:(UIWebView *)webView{
     [self startLoadingData];
-    webView.hidden = YES;
-    NSLog(@"webViewDidStartLoad");
 }
 
 - (void)webViewDidFinishLoad:(UIWebView *)webView{
     [self stopLoadingData];
-    webView.hidden = NO;
-    if (_webTitle == nil || _webTitle.length == 0) {
+    if([webView stringByEvaluatingJavaScriptFromString:@"document.title"]){
         [self setWebTitle:[webView stringByEvaluatingJavaScriptFromString:@"document.title"]];
     }
-    NSLog(@"webViewDidFinishLoad");
 }
-
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
 {
     NSString* requestURL = [NSString stringWithFormat:@"%@",request];

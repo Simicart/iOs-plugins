@@ -7,7 +7,7 @@
 //
 
 #import "SimiGiftCardModelCollection.h"
-#import "UIScrollView+SVInfiniteScrolling.h"
+#import <SimiCartBundle/UIScrollView+SVInfiniteScrolling.h>
 
 @interface SCGiftCardProductsViewController : SimiViewController<UICollectionViewDelegate, UICollectionViewDataSource>{
     float totalNumberProduct;
