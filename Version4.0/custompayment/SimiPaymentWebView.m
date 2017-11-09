@@ -47,8 +47,18 @@
 
 
 -(void) cancelPayment:(id) sender{
-    UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:SCLocalizedString(@"Confirmation") message:[NSString stringWithFormat:@"%@?",SCLocalizedString(@"Are you sure that you want to cancel the order")] delegate:self cancelButtonTitle:SCLocalizedString(@"Close") otherButtonTitles:SCLocalizedString(@"OK"), nil];
-    [alertView show];
+    UIAlertController *alertView = [UIAlertController alertControllerWithTitle:@"Confirmation" message:[NSString stringWithFormat:@"%@?",SCLocalizedString(@"Are you sure that you want to cancel the order")] preferredStyle:UIAlertControllerStyleAlert];
+    [alertView addAction:[UIAlertAction actionWithTitle:SCLocalizedString(@"No") style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+        
+    }]];
+                                    
+    [alertView addAction:[UIAlertAction actionWithTitle:SCLocalizedString(@"Yes") style:UIAlertActionStyleDestructive handler:^(UIAlertAction * _Nonnull action) {
+        SimiOrderModel *orderModel = [SimiOrderModel new];
+        [orderModel cancelOrderWithId:_orderID];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didCancelOrder:) name:@"DidCancelOrder" object:orderModel];
+        [self startLoadingData];
+    }]];
+    [self presentViewController:alertView animated:YES completion:nil];
 }
 
 - (void)setUrlPath:(NSString *)path{
@@ -60,18 +70,6 @@
     }
 }
 
--(void) alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
-    if(buttonIndex == 0){
-        
-    }else if(buttonIndex == 1){
-        SimiOrderModel *orderModel = [SimiOrderModel new];
-        [orderModel cancelOrderWithId:_orderID];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didCancelOrder:) name:@"DidCancelOrder" object:orderModel];
-        [self startLoadingData];
-    }
-}
-
-
 #pragma mark WebView Delegates
 - (void)webViewDidStartLoad:(UIWebView *)webView{
     [self startLoadingData];
@@ -82,6 +80,7 @@
     if([webView stringByEvaluatingJavaScriptFromString:@"document.title"]){
         [self setWebTitle:[webView stringByEvaluatingJavaScriptFromString:@"document.title"]];
     }
+    [SimiGlobalVar clearAllCookies];
 }
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
 {

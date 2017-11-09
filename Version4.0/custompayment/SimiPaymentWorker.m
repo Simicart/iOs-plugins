@@ -80,6 +80,7 @@
             [nextController setOrderID:[order valueForKey:@"invoice_number" ]];
             [nextController setUrlPath:url];
             UINavigationController *navi = [[UINavigationController alloc]initWithRootViewController:nextController];
+            [SimiGlobalVar clearAllCookies];
             [currentVC presentViewController:navi animated:YES completion:nil];
         }else{
             [self showAlertWithTitle:@"Error" message:[NSString stringWithFormat:@"Sorry, %@ is not now available. Please try again later",paymentTitle]];
