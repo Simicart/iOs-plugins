@@ -91,9 +91,18 @@
 }
 
 #pragma mark Update Wishlist Icon
+- (BOOL)checkWishListState:(SimiProductModel*)productModel{
+    if ([productModel objectForKey:@"wishlist_item_id"] && ![[productModel objectForKey:@"wishlist_item_id"] isKindOfClass:[NSNull class]]) {
+        NSString *wishlistItemId = [NSString stringWithFormat:@"%@",[productModel objectForKey:@"wishlist_item_id"]];
+        if (![wishlistItemId isEqualToString:PRODUCT_IS_NOT_IN_WISHLIST]) {
+            return YES;
+        }
+    }
+    return NO;
+}
 -(void)updateWishlistIcon
 {
-    if (![product objectForKey:@"wishlist_item_id"] || [[product objectForKey:@"wishlist_item_id"] isEqualToString:PRODUCT_IS_NOT_IN_WISHLIST])
+    if (![self checkWishListState:product])
         [wishlistButton setImage:[UIImage imageNamed:@"wishlist_empty_icon"] forState:UIControlStateNormal];
     else
         [wishlistButton setImage:[UIImage imageNamed:@"wishlist_color_icon"] forState:UIControlStateNormal];
@@ -108,7 +117,7 @@
         return;
     }
     [wishlistButton setEnabled:NO];
-    if (![product objectForKey:@"wishlist_item_id"] || [[product objectForKey:@"wishlist_item_id"] isEqualToString:PRODUCT_IS_NOT_IN_WISHLIST])
+    if (![self checkWishListState:product])
         [self addProductToWishlist];
     else
         [self removeProductFromWishlist];
