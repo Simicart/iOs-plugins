@@ -41,20 +41,22 @@
     if([[giftCardData objectForKey:@"use_giftcard"] boolValue]) {
         cartCells = noti.object;
         SimiSection *totalSection = [cartCells getSectionByIdentifier:CART_TOTALS];
+        SimiRow *totalRow = [totalSection getRowByIdentifier:CART_TOTALS_ROW];
+        float sortOrder = totalRow.sortOrder - 1;
         NSDictionary *credit = [giftCardData objectForKey:@"credit"];
         NSDictionary *giftcode = [giftCardData objectForKey:@"giftcode"];
         if([[credit objectForKey:@"use_credit"] boolValue]) {
-            [totalSection addRowWithIdentifier:CART_VIEW_GIFTCART_CREDIT height:150 sortOrder:2000];
+            [totalSection addRowWithIdentifier:CART_VIEW_GIFTCART_CREDIT height:150 sortOrder:sortOrder];
             useGiftCardCredit = YES;
         }else {
             useGiftCardCredit = NO;
-            [totalSection addRowWithIdentifier:CART_VIEW_GIFTCART_CREDIT height:30 sortOrder:2000];
+            [totalSection addRowWithIdentifier:CART_VIEW_GIFTCART_CREDIT height:30 sortOrder:sortOrder];
         }
         if([[giftcode objectForKey:@"use_giftcode"] boolValue]) {
-            [totalSection addRowWithIdentifier:CART_VIEW_GIFTCODE height:220 + 30*(giftcode.allValues.count - 1) sortOrder:2100];
+            [totalSection addRowWithIdentifier:CART_VIEW_GIFTCODE height:220 + 30*(giftcode.allValues.count - 1) sortOrder:sortOrder];
             useGiftCode = YES;
         }else {
-            [totalSection addRowWithIdentifier:CART_VIEW_GIFTCODE height:30 sortOrder:2100];
+            [totalSection addRowWithIdentifier:CART_VIEW_GIFTCODE height:30 sortOrder:sortOrder];
             useGiftCode = NO;
         }
         [totalSection sortItems];

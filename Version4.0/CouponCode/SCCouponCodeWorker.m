@@ -11,7 +11,7 @@
 #import <SimiCartBundle/SCOrderViewControllerPad.h>
 
 #define CART_COUPONCODE_ROW @"CART_COUPONCODE_ROW"
-#define ORDER_VIEW_COUPONCODE @"ORDER_VIEW_COUPONCODE"
+#define ORDER_COUPONCODE_ROW @"ORDER_COUPONCODE_ROW"
 
 
 @implementation SCCouponCodeWorker {
@@ -35,7 +35,7 @@
     SimiTable *cartCells = noti.object;
     SimiSection *priceSection = [cartCells getSectionByIdentifier:CART_TOTALS];
     SimiRow *totalRow = [priceSection getRowByIdentifier:CART_TOTALS_ROW];
-    [priceSection addRowWithIdentifier:CART_COUPONCODE_ROW height:64 sortOrder:totalRow.sortOrder + 1];
+    [priceSection addRowWithIdentifier:CART_COUPONCODE_ROW height:64 sortOrder:totalRow.sortOrder - 2];
 }
 
 - (void)initializedCartCellBefore: (NSNotification *)noti {
@@ -47,36 +47,32 @@
     UITableView *tableView = cartVC.contentTableView;
     if([section.identifier isEqualToString:CART_TOTALS]) {
         if([row.identifier isEqualToString:CART_COUPONCODE_ROW]) {
-            UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:row.identifier];
-            if(!cell){
-                cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:row.identifier];
-                cell.selectionStyle = UITableViewCellSelectionStyleNone;
-                CGRect frame = CGRectMake(15, 10, CGRectGetWidth(tableView.frame) - 30 - 130, 44);
-                cartCouponTextField = [[SimiTextField alloc] initWithFrame:frame placeHolder:@"Enter a coupon code" font:[UIFont fontWithName:THEME_FONT_NAME_REGULAR size:THEME_FONT_SIZE] textColor:THEME_CONTENT_COLOR backgroundColor:COLOR_WITH_HEX(@"#e8e8e8") borderWidth:0 borderColor:[UIColor clearColor] paddingLeft:10];
-                cartCouponTextField.autocorrectionType = UITextAutocorrectionTypeNo;
-                cartCouponTextField.autocapitalizationType = UITextAutocapitalizationTypeNone;
-                cartCouponTextField.delegate = self;
-                [cartCouponTextField setClearButtonMode:UITextFieldViewModeWhileEditing];
-                
-                UIToolbar *couponCodeToolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, 44)];
-                couponCodeToolbar.items = @[[[UIBarButtonItem alloc] initWithTitle:SCLocalizedString(@"Done") style:UIBarButtonItemStyleDone target:self action:@selector(doneEditCouponCode:)]];
-                cartCouponTextField.inputAccessoryView = couponCodeToolbar;
-                
-                SimiButton *applyCouponCodeButton = [[SimiButton alloc]initWithFrame:CGRectMake(CGRectGetWidth(tableView.frame) - 15 - 120, 10, 120, 44)];
-                [applyCouponCodeButton setTitle:SCLocalizedString(@"Apply") forState:UIControlStateNormal];
-                [applyCouponCodeButton addTarget:self action:@selector(applyCouponOnCartView:) forControlEvents:UIControlEventTouchUpInside];
-                
-                [cell addSubview:cartCouponTextField];
-                [cell addSubview:applyCouponCodeButton];
-                [SimiGlobalFunction sortViewForRTL:cell andWidth:CGRectGetWidth(tableView.frame)];
-                if([[SimiGlobalVar sharedInstance].cart.cartTotal valueForKey:@"coupon_code"])
-                {
-                    [cartCouponTextField setText:[[SimiGlobalVar sharedInstance].cart.cartTotal valueForKey:@"coupon_code"]];
-                }else
-                    [cartCouponTextField setText:@""];
-                row.tableCell = cell;
-                cartVC.isDiscontinue = YES;
-            }
+            UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:row.identifier];
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+            CGRect frame = CGRectMake(15, 10, CGRectGetWidth(tableView.frame) - 30 - 130, 44);
+            cartCouponTextField = [[SimiTextField alloc] initWithFrame:frame placeHolder:@"Enter a coupon code" font:[UIFont fontWithName:THEME_FONT_NAME_REGULAR size:THEME_FONT_SIZE] textColor:THEME_CONTENT_COLOR backgroundColor:COLOR_WITH_HEX(@"#e8e8e8") borderWidth:0 borderColor:[UIColor clearColor] paddingLeft:10];
+            cartCouponTextField.autocorrectionType = UITextAutocorrectionTypeNo;
+            cartCouponTextField.autocapitalizationType = UITextAutocapitalizationTypeNone;
+            cartCouponTextField.delegate = self;
+            [cartCouponTextField setClearButtonMode:UITextFieldViewModeWhileEditing];
+            
+            UIToolbar *couponCodeToolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, 44)];
+            couponCodeToolbar.items = @[[[UIBarButtonItem alloc] initWithTitle:SCLocalizedString(@"Done") style:UIBarButtonItemStyleDone target:self action:@selector(doneEditCouponCode:)]];
+            cartCouponTextField.inputAccessoryView = couponCodeToolbar;
+            
+            SimiButton *applyCouponCodeButton = [[SimiButton alloc]initWithFrame:CGRectMake(CGRectGetWidth(tableView.frame) - 15 - 120, 10, 120, 44)];
+            [applyCouponCodeButton setTitle:SCLocalizedString(@"Apply") forState:UIControlStateNormal];
+            [applyCouponCodeButton addTarget:self action:@selector(applyCouponOnCartView:) forControlEvents:UIControlEventTouchUpInside];
+            
+            [cell addSubview:cartCouponTextField];
+            [cell addSubview:applyCouponCodeButton];
+            [SimiGlobalFunction sortViewForRTL:cell andWidth:CGRectGetWidth(tableView.frame)];
+            if([[SimiGlobalVar sharedInstance].cart.cartTotal valueForKey:@"coupon_code"]){
+                [cartCouponTextField setText:[[SimiGlobalVar sharedInstance].cart.cartTotal valueForKey:@"coupon_code"]];
+            }else
+                [cartCouponTextField setText:@""];
+            row.tableCell = cell;
+            cartVC.isDiscontinue = YES;
         }
     }
 }
@@ -105,15 +101,16 @@
 - (void)orderViewControllerInitTableAfter:(NSNotification *)noti {
     SimiTable *orderCells = noti.object;
     SimiSection *totalSection = [orderCells getSectionByIdentifier:ORDER_TOTALS_SECTION];
-    SimiRow *totalRow = [totalSection getRowByIdentifier:ORDER_VIEW_CART];
-    SimiRow *couponRow = [[SimiRow alloc] initWithIdentifier:ORDER_VIEW_COUPONCODE height:64 sortOrder:totalRow.sortOrder + 1];
+    SimiRow *totalRow = [totalSection getRowByIdentifier:ORDER_VIEW_TOTAL];
+    SimiRow *couponRow = [[SimiRow alloc] initWithIdentifier:ORDER_COUPONCODE_ROW height:64 sortOrder:totalRow.sortOrder - 2];
     [totalSection addRow:couponRow];
 }
 
 - (void)orderViewControllerInitRightTableAfter:(NSNotification *)noti {
     SimiTable *orderCells = noti.object;
     SimiSection *totalSection = [orderCells getSectionByIdentifier:ORDER_VIEW_TOTAL];
-    SimiRow *couponRow = [[SimiRow alloc] initWithIdentifier:ORDER_VIEW_COUPONCODE height:64 sortOrder:1000];
+    SimiRow *totalRow = [totalSection getRowByIdentifier:ORDER_VIEW_TOTAL];
+    SimiRow *couponRow = [[SimiRow alloc] initWithIdentifier:ORDER_COUPONCODE_ROW height:64 sortOrder:totalRow.sortOrder - 2];
     [totalSection addRow:couponRow];
 }
 
@@ -123,38 +120,35 @@
     SimiRow *row = [[cells objectAtIndex:indexPath.section] objectAtIndex:indexPath.row];
     orderVC = [noti.userInfo objectForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.viewcontroller];
     UITableView *tableView = orderVC.contentTableView;
-    if([row.identifier isEqualToString:ORDER_VIEW_COUPONCODE]){
-        UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:row.identifier];
-        if(!cell) {
-            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:row.identifier];;
-            cell.selectionStyle = UITableViewCellSelectionStyleNone;
-            CGRect frame = CGRectMake(15, 10, CGRectGetWidth(tableView.frame) - 30 - 130, 44);
-            orderCouponTextField = [[SimiTextField alloc] initWithFrame:frame placeHolder:@"Enter a coupon code" font:[UIFont fontWithName:THEME_FONT_NAME_REGULAR size:THEME_FONT_SIZE] textColor:THEME_CONTENT_COLOR backgroundColor:COLOR_WITH_HEX(@"#e8e8e8") borderWidth:0 borderColor:[UIColor clearColor] paddingLeft:10];
-            orderCouponTextField.autocorrectionType = UITextAutocorrectionTypeNo;
-            orderCouponTextField.autocapitalizationType = UITextAutocapitalizationTypeNone;
-            orderCouponTextField.delegate = self;
-            [orderCouponTextField setClearButtonMode:UITextFieldViewModeWhileEditing];
-            
-            UIToolbar *couponCodeToolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, 44)];
-            couponCodeToolbar.items = @[[[UIBarButtonItem alloc] initWithTitle:SCLocalizedString(@"Done") style:UIBarButtonItemStyleDone target:self action:@selector(doneEditCouponCode:)]];
-            orderCouponTextField.inputAccessoryView = couponCodeToolbar;
-            
-            SimiButton *applyCouponCodeButton = [[SimiButton alloc]initWithFrame:CGRectMake(CGRectGetWidth(tableView.frame) - 15 - 120, 10, 120, 44)];
-            [applyCouponCodeButton setTitle:SCLocalizedString(@"Apply") forState:UIControlStateNormal];
-            [applyCouponCodeButton addTarget:self action:@selector(applyCouponOnOrderView:) forControlEvents:UIControlEventTouchUpInside];
-            
-            [cell addSubview:orderCouponTextField];
-            [cell addSubview:applyCouponCodeButton];
-            [SimiGlobalFunction sortViewForRTL:cell andWidth:CGRectGetWidth(tableView.frame)];
-        }
-        if([orderVC.cart.cartTotal valueForKey:@"coupon_code"])
-        {
-            [orderCouponTextField setText:[orderVC.cart.cartTotal valueForKey:@"coupon_code"]];
-        }else
-            [orderCouponTextField setText:@""];
+    if([row.identifier isEqualToString:ORDER_COUPONCODE_ROW]){
+        UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:row.identifier];;
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        CGRect frame = CGRectMake(15, 10, CGRectGetWidth(tableView.frame) - 30 - 130, 44);
+        orderCouponTextField = [[SimiTextField alloc] initWithFrame:frame placeHolder:@"Enter a coupon code" font:[UIFont fontWithName:THEME_FONT_NAME_REGULAR size:THEME_FONT_SIZE] textColor:THEME_CONTENT_COLOR backgroundColor:COLOR_WITH_HEX(@"#e8e8e8") borderWidth:0 borderColor:[UIColor clearColor] paddingLeft:10];
+        orderCouponTextField.autocorrectionType = UITextAutocorrectionTypeNo;
+        orderCouponTextField.autocapitalizationType = UITextAutocapitalizationTypeNone;
+        orderCouponTextField.delegate = self;
+        [orderCouponTextField setClearButtonMode:UITextFieldViewModeWhileEditing];
+        
+        UIToolbar *couponCodeToolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, 44)];
+        couponCodeToolbar.items = @[[[UIBarButtonItem alloc] initWithTitle:SCLocalizedString(@"Done") style:UIBarButtonItemStyleDone target:self action:@selector(doneEditCouponCode:)]];
+        orderCouponTextField.inputAccessoryView = couponCodeToolbar;
+        
+        SimiButton *applyCouponCodeButton = [[SimiButton alloc]initWithFrame:CGRectMake(CGRectGetWidth(tableView.frame) - 15 - 120, 10, 120, 44)];
+        [applyCouponCodeButton setTitle:SCLocalizedString(@"Apply") forState:UIControlStateNormal];
+        [applyCouponCodeButton addTarget:self action:@selector(applyCouponOnOrderView:) forControlEvents:UIControlEventTouchUpInside];
+        
+        [cell addSubview:orderCouponTextField];
+        [cell addSubview:applyCouponCodeButton];
+        [SimiGlobalFunction sortViewForRTL:cell andWidth:CGRectGetWidth(tableView.frame)];
         row.tableCell = cell;
         orderVC.isDiscontinue = YES;
     }
+    if([orderVC.order.total valueForKey:@"coupon_code"])
+    {
+        [orderCouponTextField setText:[orderVC.order.total valueForKey:@"coupon_code"]];
+    }else
+        [orderCouponTextField setText:@""];
 }
 
 - (void)doneEditCouponCode: (id)sender {

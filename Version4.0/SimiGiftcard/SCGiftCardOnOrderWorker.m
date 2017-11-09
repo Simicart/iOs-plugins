@@ -40,25 +40,27 @@
         NSDictionary *giftCardData = [order objectForKey:@"gift_card"];
         orderTable = noti.object;
         SimiSection *totalSection = [orderTable getSectionByIdentifier:ORDER_TOTALS_SECTION];
+        SimiRow *totalRow = [totalSection getRowByIdentifier:ORDER_VIEW_TOTAL];
+        float sortOrder = totalRow.sortOrder - 1;
         if([[giftCardData objectForKey:@"use_giftcard"] boolValue]) {
             NSDictionary *credit = [giftCardData objectForKey:@"credit"];
             NSDictionary *giftcode = [giftCardData objectForKey:@"giftcode"];
             if([[credit objectForKey:@"use_credit"] boolValue]) {
-                [totalSection addRowWithIdentifier:ORDER_VIEW_GIFTCARD_CREDIT height:150 sortOrder:2000];
+                [totalSection addRowWithIdentifier:ORDER_VIEW_GIFTCARD_CREDIT height:150 sortOrder:sortOrder];
                 useGiftCardCredit = YES;
             }else {
-                [totalSection addRowWithIdentifier:ORDER_VIEW_GIFTCARD_CREDIT height:30 sortOrder:2000];
+                [totalSection addRowWithIdentifier:ORDER_VIEW_GIFTCARD_CREDIT height:30 sortOrder:sortOrder];
                 useGiftCardCredit = NO;
             }
             if([[giftcode objectForKey:@"use_giftcode"] boolValue]) {
-                [totalSection addRowWithIdentifier:ORDER_VIEW_GIFTCODE height:220 + 30*(giftcode.allValues.count - 1) sortOrder:2100];
+                [totalSection addRowWithIdentifier:ORDER_VIEW_GIFTCODE height:220 + 30*(giftcode.allValues.count - 1) sortOrder:sortOrder];
                 useGiftCode = YES;
             }else {
-                [totalSection addRowWithIdentifier:ORDER_VIEW_GIFTCODE height:30 sortOrder:2100];
+                [totalSection addRowWithIdentifier:ORDER_VIEW_GIFTCODE height:30 sortOrder:sortOrder];
                 useGiftCode = NO;
             }
         }else {
-            [totalSection addRowWithIdentifier:ORDER_VIEW_GIFTCARD_NONUSE height:30 sortOrder:2000];
+            [totalSection addRowWithIdentifier:ORDER_VIEW_GIFTCARD_NONUSE height:30 sortOrder:sortOrder];
         }
         [totalSection sortItems];
     }
