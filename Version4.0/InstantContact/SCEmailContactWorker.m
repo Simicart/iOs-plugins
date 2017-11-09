@@ -51,7 +51,10 @@
 
 - (void)didSelectCell:(NSNotification*)noti{
     UINavigationController *navigationController = kNavigationController;
-    SimiRow *row = [noti.userInfo valueForKey:@"simirow"];
+    NSIndexPath *indexPath = [noti.userInfo valueForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.indexpath];
+    cells = noti.object;
+    SimiSection *section = [cells objectAtIndex:indexPath.section];
+    SimiRow *row = [section objectAtIndex:indexPath.row];
     if ([row.identifier isEqualToString:LEFTMENU_ROW_CONTACTUS]) {
         SCEmailContactViewController *emailViewController = [[SCEmailContactViewController alloc]init];
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {

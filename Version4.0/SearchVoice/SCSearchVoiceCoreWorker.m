@@ -68,7 +68,7 @@
             SCProductListViewController *productListViewController = noti.object;
             [productListViewController.productSearchBar setFrame:SCALEFRAME(CGRectMake(5, 5, 310 - 28 - 5, 28))];
             [productListViewController.searchBarBackground setFrame:productListViewController.productSearchBar.frame];
-            self.searchVoiceBtn = [[UIButton alloc] initWithFrame:SCALEFRAME(CGRectMake(282, 0, 44, 44))];
+            self.searchVoiceBtn = [[UIButton alloc] initWithFrame:SCALEFRAME(CGRectMake(282, 0, 38, 38))];
             self.searchVoiceBtn.backgroundColor = [UIColor clearColor];
             self.searchVoiceBtn.imageView.backgroundColor = THEME_SEARCH_BOX_BACKGROUND_COLOR;
             [self.searchVoiceBtn setAlpha:0.9f];

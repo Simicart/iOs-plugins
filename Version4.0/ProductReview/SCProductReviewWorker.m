@@ -93,7 +93,7 @@
     if(PHONEDEVICE) {
         if([[product valueForKey:@"app_reviews"] isKindOfClass:[NSDictionary class]]){
             SCAddProductReviewViewController* reviewController = [SCAddProductReviewViewController new];
-            reviewController.productModel = [product copy];
+            reviewController.productModel = product;
             if(productVC)
                 [productVC.navigationController pushViewController:reviewController animated:YES];
             else if(productMoreVC) {
@@ -102,7 +102,7 @@
         }
     }else if(PADDEVICE) {
         SCAddProductReviewViewController* reviewController = [SCAddProductReviewViewController new];
-        reviewController.productModel = [product copy];
+        reviewController.productModel = product;
         if(productMoreVC) {
             [productMoreVC.navigationController pushViewController:reviewController animated:YES];
         }else if(productVC) {
