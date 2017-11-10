@@ -13,7 +13,7 @@
 
 #define ORDER_VIEW_GIFTCARD_CREDIT @"ORDER_VIEW_GIFTCARD_CREDIT"
 #define ORDER_VIEW_GIFTCODE @"CART_VIEW_GIFTCODE"
-#define ORDER_VIEW_GIFTCARD_NONUSE @"ORDER_VIEW_GIFTCARD_NONUSE"
+#define ORDER_VIEW_GIFTCARD_TITLE @"ORDER_VIEW_GIFTCARD_TITLE"
 
 @implementation SCGiftCardOnOrderWorker {
     SimiTable *orderTable;
@@ -43,14 +43,19 @@
         SimiRow *totalRow = [totalSection getRowByIdentifier:ORDER_VIEW_TOTAL];
         float sortOrder = totalRow.sortOrder - 1;
         if([[giftCardData objectForKey:@"use_giftcard"] boolValue]) {
+            SimiRow *titleRow = [[SimiRow alloc] initWithIdentifier:ORDER_VIEW_GIFTCARD_TITLE height:44 sortOrder:sortOrder];
+            [totalSection addObject:titleRow];
             NSDictionary *credit = [giftCardData objectForKey:@"credit"];
             NSDictionary *giftcode = [giftCardData objectForKey:@"giftcode"];
-            if([[credit objectForKey:@"use_credit"] boolValue]) {
-                [totalSection addRowWithIdentifier:ORDER_VIEW_GIFTCARD_CREDIT height:150 sortOrder:sortOrder];
-                useGiftCardCredit = YES;
-            }else {
-                [totalSection addRowWithIdentifier:ORDER_VIEW_GIFTCARD_CREDIT height:30 sortOrder:sortOrder];
-                useGiftCardCredit = NO;
+            NSDictionary *customer = [giftCardData objectForKey:@"customer"];
+            if([customer objectForKey:@"balance"]){
+                if([[credit objectForKey:@"use_credit"] boolValue]) {
+                    [totalSection addRowWithIdentifier:ORDER_VIEW_GIFTCARD_CREDIT height:150 sortOrder:sortOrder];
+                    useGiftCardCredit = YES;
+                }else {
+                    [totalSection addRowWithIdentifier:ORDER_VIEW_GIFTCARD_CREDIT height:30 sortOrder:sortOrder];
+                    useGiftCardCredit = NO;
+                }
             }
             if([[giftcode objectForKey:@"use_giftcode"] boolValue]) {
                 [totalSection addRowWithIdentifier:ORDER_VIEW_GIFTCODE height:220 + 30*(giftcode.allValues.count - 1) sortOrder:sortOrder];
@@ -60,9 +65,10 @@
                 useGiftCode = NO;
             }
         }else {
-            [totalSection addRowWithIdentifier:ORDER_VIEW_GIFTCARD_NONUSE height:30 sortOrder:sortOrder];
+            if([giftCardData objectForKey:@"label"] && ![[giftCardData objectForKey:@"label"] isEqualToString:@""]){
+                [totalSection addRowWithIdentifier:ORDER_VIEW_GIFTCARD_TITLE height:70 sortOrder:sortOrder];
+            }
         }
-        [totalSection sortItems];
     }
 }
 
@@ -71,7 +77,7 @@
     SimiTable *cells = noti.object;
     SimiSection *section = [cells objectAtIndex:indexPath.section];
     SimiRow *row = [section objectAtIndex:indexPath.row];
-    if([row.identifier isEqualToString:ORDER_VIEW_GIFTCODE] || [row.identifier isEqualToString:ORDER_VIEW_GIFTCARD_CREDIT] || [row.identifier isEqualToString:ORDER_VIEW_GIFTCARD_NONUSE]) {
+    if([row.identifier isEqualToString:ORDER_VIEW_GIFTCODE] || [row.identifier isEqualToString:ORDER_VIEW_GIFTCARD_CREDIT] || [row.identifier isEqualToString:ORDER_VIEW_GIFTCARD_TITLE]) {
         orderVC = [noti.userInfo objectForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.viewcontroller];
         orderTableView = orderVC.contentTableView;
         NSDictionary *giftCardData = [order objectForKey:@"gift_card"];
@@ -128,36 +134,39 @@
                 }
                 [cell.contentView addSubview:giftCodeTextField];
                 giftCodeTextField.frame = CGRectMake(padding, cellY, viewWidth, 40);
-                cellY += 40;
-                SimiLabel *giftCardExistingLabel = [[SimiLabel alloc] initWithFrame:CGRectMake(padding, cellY, viewWidth, 30)];
-                giftCardExistingLabel.text = @"or select from your existing Gift Card code(s)";
-                giftCardExistingLabel.numberOfLines = 0;
-                [giftCardExistingLabel sizeToFit];
-                [cell.contentView addSubview:giftCardExistingLabel];
-                cellY += giftCardExistingLabel.frame.size.height;
-                if(!existingCodeTextField) {
-                    existingCodeTextField = [[SimiTextField alloc] init];
-                    UIPickerView *existingCodePicker = [[UIPickerView alloc] init];
-                    existingCodePicker.delegate = self;
-                    existingCodePicker.dataSource = self;
-                    existingCodeTextField.inputView = existingCodePicker;
-                    UIToolbar *existingCodeToolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 140, SCREEN_WIDTH, 40)];
-                    existingCodeToolbar.items = @[[[UIBarButtonItem alloc] initWithTitle:SCLocalizedString(@"Cancel") style:UIBarButtonItemStylePlain target:self action:@selector(cancelExistingCodeSelection:)],[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil],[[UIBarButtonItem alloc] initWithTitle:SCLocalizedString(@"Select") style:UIBarButtonItemStyleDone target:self action:@selector(doneExistingCodeSelection:)]];
-                    existingCodeTextField.inputAccessoryView = existingCodeToolbar;
-                }
-                [cell.contentView addSubview:existingCodeTextField];
-                existingCodeTextField.frame = CGRectMake(padding, cellY, viewWidth, 40);
                 cellY += 40 + 5;
+                if(((NSArray *)[customerData objectForKey:@"list_code"]).count > 0){
+                    SimiLabel *giftCardExistingLabel = [[SimiLabel alloc] initWithFrame:CGRectMake(padding, cellY, viewWidth, 30)];
+                    giftCardExistingLabel.text = @"or select from your existing Gift Card code(s)";
+                    giftCardExistingLabel.numberOfLines = 0;
+                    [giftCardExistingLabel sizeToFit];
+                    [cell.contentView addSubview:giftCardExistingLabel];
+                    cellY += giftCardExistingLabel.frame.size.height;
+                    if(!existingCodeTextField) {
+                        existingCodeTextField = [[SimiTextField alloc] init];
+                        UIPickerView *existingCodePicker = [[UIPickerView alloc] init];
+                        existingCodePicker.delegate = self;
+                        existingCodePicker.dataSource = self;
+                        existingCodeTextField.inputView = existingCodePicker;
+                        UIToolbar *existingCodeToolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 140, SCREEN_WIDTH, 40)];
+                        existingCodeToolbar.items = @[[[UIBarButtonItem alloc] initWithTitle:SCLocalizedString(@"Cancel") style:UIBarButtonItemStylePlain target:self action:@selector(cancelExistingCodeSelection:)],[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil],[[UIBarButtonItem alloc] initWithTitle:SCLocalizedString(@"Select") style:UIBarButtonItemStyleDone target:self action:@selector(doneExistingCodeSelection:)]];
+                        existingCodeTextField.inputAccessoryView = existingCodeToolbar;
+                    }
+                    [cell.contentView addSubview:existingCodeTextField];
+                    existingCodeTextField.frame = CGRectMake(padding, cellY, viewWidth, 40);
+                    cellY += 40 + 5;
+                }
                 SimiButton *applyGiftCodeButton = [[SimiButton alloc] initWithFrame:CGRectMake(padding, cellY, 100, 40) title:@"APPLY" titleFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE]];
                 [applyGiftCodeButton addTarget:self action:@selector(applyGiftCode:) forControlEvents:UIControlEventTouchUpInside];
                 [cell.contentView addSubview:applyGiftCodeButton];
-                cellY += applyGiftCodeButton.frame.size.height + 5;
+                cellY += applyGiftCodeButton.frame.size.height;
             }
-            row.height = cellY;
+            row.height = cellY + 5;
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
             cell.separatorInset = UIEdgeInsetsMake(0, 1000, 0, 0);
             cell.layoutMargins = UIEdgeInsetsZero;
             orderVC.isDiscontinue = YES;
+             [SimiGlobalFunction sortViewForRTL:cell.contentView andWidth:CGRectGetWidth(orderTableView.frame)];
             row.tableCell = cell;
         }else if([row.identifier isEqualToString:ORDER_VIEW_GIFTCARD_CREDIT]) {
             NSDictionary *credit = [giftCardData objectForKey:@"credit"];
@@ -202,29 +211,34 @@
                 [cell.contentView addSubview:applyGiftCardCreditButton];
                 cellY += applyGiftCardCreditButton.frame.size.height;
             }
-            row.height = cellY;
+            row.height = cellY + 5;
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
             cell.separatorInset = UIEdgeInsetsMake(0, 1000, 0, 0);
             cell.layoutMargins = UIEdgeInsetsZero;
             orderVC.isDiscontinue = YES;
+             [SimiGlobalFunction sortViewForRTL:cell.contentView andWidth:CGRectGetWidth(orderTableView.frame)];
             row.tableCell = cell;
-        }else if([row.identifier isEqualToString:ORDER_VIEW_GIFTCARD_NONUSE]) {
-            UITableViewCell *cell = [orderTableView dequeueReusableCellWithIdentifier:ORDER_VIEW_GIFTCARD_NONUSE];
-            if(!cell) {
-                cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:ORDER_VIEW_GIFTCARD_NONUSE];
-                float cellY = 0;
-                SimiLabel *giftCardTitleLabel = [[SimiLabel alloc] initWithFrame:CGRectMake(padding, cellY, viewWidth, 30)];
-                giftCardTitleLabel.text = @"Gift Card";
-                [cell.contentView addSubview:giftCardTitleLabel];
-                cellY += 30;
+        }else if([row.identifier isEqualToString:ORDER_VIEW_GIFTCARD_TITLE]) {
+            UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:ORDER_VIEW_GIFTCARD_TITLE];
+            float cellY = 0;
+            SimiLabel *giftCardTitleLabel = [[SimiLabel alloc] initWithFrame:CGRectMake(padding, cellY, viewWidth, 30)];
+            giftCardTitleLabel.text = @"GIFT CARD";
+            giftCardTitleLabel.font = [UIFont fontWithName:THEME_FONT_NAME_REGULAR size:THEME_FONT_SIZE];
+            [cell.contentView addSubview:giftCardTitleLabel];
+            cellY += 30;
+            if([giftCardData objectForKey:@"label"] && ![[giftCardData objectForKey:@"label"] isEqualToString:@""]){
                 SimiLabel *nonUseLabel = [[SimiLabel alloc] initWithFrame:CGRectMake(padding, cellY, viewWidth, 30)];
                 nonUseLabel.text = [giftCardData objectForKey:@"label"];
-                nonUseLabel.numberOfLines = 2;
+                nonUseLabel.numberOfLines = 0;
                 [nonUseLabel sizeToFit];
                 [cell.contentView addSubview:nonUseLabel];
-                cellY += nonUseLabel.frame.size.height + 5;
-                row.height = cellY;
+                cellY += nonUseLabel.frame.size.height;
             }
+            row.height = cellY + 5;
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+            orderVC.isDiscontinue = YES;
+            [SimiGlobalFunction sortViewForRTL:cell.contentView andWidth:CGRectGetWidth(orderTableView.frame)];
+            row.tableCell = cell;
         }
         
     }
@@ -299,7 +313,7 @@
             [params addEntriesFromDictionary:@{@"giftcode":giftCodeTextField.text}];
             giftCodeTextField.text = @"";
         }
-        if(![giftCodeSelected isEqualToString:@""]) {
+        if(giftCodeSelected && ![giftCodeSelected isEqualToString:@""]) {
             [params addEntriesFromDictionary:@{@"existed_giftcode":giftCodeSelected}];
             existingCodeTextField.text = @"";
         }
