@@ -11,8 +11,6 @@
 #import <SimiCartBundle/SCAppDelegate.h>
 #import <SimiCartBundle/SCOrderViewController.h>
 
-#define ALERT_VIEW_ERROR 0
-
 #define PAYPAL_MOBILE @"PAYPAL_MOBILE"
 
 @implementation SCPaypalMobileInitWorker{
@@ -91,11 +89,15 @@
             [viewController startLoadingData];
             [viewController presentViewController:paymentViewController animated:YES completion:nil];
         }else{
-            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:SCLocalizedString(@"Error") message:SCLocalizedString(@"Sorry, PayPal is not now available. Please try again later") delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil];
-            alertView.tag = ALERT_VIEW_ERROR;
-            [alertView show];
             [viewController stopLoadingData];
-            [viewController.navigationController popViewControllerAnimated:YES];
+            UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"Error" message:SCLocalizedString(@"Sorry, PayPal is not now available. Please try again later") preferredStyle:UIAlertControllerStyleAlert];
+            [alertController addAction:[UIAlertAction actionWithTitle:SCLocalizedString(@"OK") style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+                [self updatePaymentToServerWithStatus:PaymentStatusCancelled andProof:@{}];
+                [viewController.navigationController popViewControllerAnimated:YES];
+            }]];
+            [viewController presentViewController:alertController animated:YES completion:^{
+                
+            }];
         }
     }
     @catch (NSException *exception) {
@@ -112,11 +114,17 @@
 
 - (void)didUpdatePaymentStatus:(NSNotification *)noti{
     SimiResponder *responder = [noti.userInfo valueForKey:responderKey];
-    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"" message:SCLocalizedString([paypalOrder valueForKey:@"message"]) delegate:nil cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles: nil];
-    [alertView show];
+    if(responder.status == SUCCESS){
+        [((SimiViewController *)[SimiGlobalVar sharedInstance].currentViewController) showAlertWithTitle:@"" message:[paypalOrder valueForKey:@"message"] completionHandler:^{
+            [viewController.navigationController popToRootViewControllerAnimated:YES];
+        }];
+    }else{
+        [((SimiViewController *)[SimiGlobalVar sharedInstance].currentViewController) showAlertWithTitle:@"" message:responder.message completionHandler:^{
+            [viewController.navigationController popToRootViewControllerAnimated:YES];
+        }];
+    }
     [self removeObserverForNotification:noti];
     [viewController stopLoadingData];
-    [viewController.navigationController popViewControllerAnimated:YES];
 }
 
 #pragma mark PayPalPaymentDelegate methods
@@ -145,11 +153,6 @@
     [viewController startLoadingData];
 }
 
-#pragma mark Alert View Delegate
-- (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex{
-    if (alertView.tag == ALERT_VIEW_ERROR) {
-        [self updatePaymentToServerWithStatus:PaymentStatusCancelled andProof:@{}];
-    }
-}
+
 
 @end

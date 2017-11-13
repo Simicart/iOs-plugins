@@ -34,8 +34,8 @@
             }
         }
     } else {
-        [self showAlertWithTitle:@"" message:responder.message];
         self.textFieldPassword.text = @"";
+        [self showAlertWithTitle:@"" message:responder.message];
     }
     [self stopLoadingData];
 }

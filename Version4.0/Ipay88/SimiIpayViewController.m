@@ -76,11 +76,14 @@
     [self stopLoadingData];
     [self removeObserverForNotification:noti];
     if (responder.status == SUCCESS) {
-        [self showAlertWithTitle:@"" message:@"Thank you for your purchase"];
+        [self showAlertWithTitle:@"" message:@"Thank you for your purchase" completionHandler:^{
+            [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+        }];
     }else{
-        [self showAlertWithTitle:@"" message:responder.message];
+        [self showAlertWithTitle:@"" message:responder.message completionHandler:^{
+            [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+        }];
     }
-    [self.navigationController dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)updateIpayCheckoutPayment: (NSMutableDictionary *) params
@@ -102,8 +105,9 @@
 - (void)didCancelPayment:(NSNotification *)noti{
     [self stopLoadingData];
     [self removeObserverForNotification:noti];
-    [self showAlertWithTitle:@"FAIL" message:@"Your order has been canceled"];
-    [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+    [self showAlertWithTitle:@"FAIL" message:@"Your order has been canceled" completionHandler:^{
+        [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+    }];
 }
 
 - (void)paymentSuccess:(NSString *)refNo withTransId:(NSString *)transId withAmount:(NSString *)amount withRemark:(NSString *)remark withAuthCode:(NSString *)authCode{

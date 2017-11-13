@@ -52,12 +52,14 @@
     }else if ([noti.name isEqualToString:Klarna_DidCheckoutWithKlarna]){
         SimiResponder *responder = [noti.userInfo valueForKey:responderKey];
         if (responder.status == SUCCESS) {
-            [self showAlertWithTitle:@"SUCCESS" message:@"Thank your for purchase"];
-            [self.navigationController popToRootViewControllerAnimated:YES];
+            [self showAlertWithTitle:@"SUCCESS" message:@"Thank your for purchase" completionHandler:^{
+                [self.navigationController popToRootViewControllerAnimated:YES];
+            }];
         }else
         {
-            [self showAlertWithTitle:@"Error" message:@"Have some errors, please try again"];
-            [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+            [self showAlertWithTitle:@"Error" message:@"Have some errors, please try again" completionHandler:^{
+                [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+            }];
         }
     }
 }
@@ -66,8 +68,9 @@
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType{
     NSString *stringRequest = [NSString stringWithFormat:@"%@",request];
     if ([stringRequest containsString:@"checkout/cart"]) {
-        [self showAlertWithTitle:@"FAIL" message:@"Your order has been canceled"];
-        [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+        [self showAlertWithTitle:@"FAIL" message:@"Your order has been canceled" completionHandler:^{
+            [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+        }];
         return NO;
     }else if([stringRequest containsString:@"simiklarnaapis/success/"])
     {
@@ -84,8 +87,9 @@
             return NO;
         }else
         {
-            [self showAlertWithTitle:@"FAIL" message:@"Your order has been canceled"];
-            [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+            [self showAlertWithTitle:@"FAIL" message:@"Your order has been canceled" completionHandler:^{
+                [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+            }];
             return NO;
         }
     }else if ([stringRequest containsString:@"fullscreen.html"])

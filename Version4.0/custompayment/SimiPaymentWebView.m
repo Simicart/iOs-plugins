@@ -20,6 +20,9 @@
     self.navigationItem.title = SCLocalizedString(self.navigationItem.title);
     UIBarButtonItem *cancel = [[UIBarButtonItem alloc] initWithTitle:SCLocalizedString(@"Cancel") style:UIBarButtonItemStylePlain target:self action:@selector(cancelPayment:)];
     self.navigationItem.rightBarButtonItem = cancel;
+    if(self.webTitle){
+        self.navigationItem.title = self.webTitle;
+    }
 }
 
 - (void)viewWillAppearBefore:(BOOL)animated{
@@ -78,7 +81,7 @@
 - (void)webViewDidFinishLoad:(UIWebView *)webView{
     [self stopLoadingData];
     webView.hidden = NO;
-    if (_webTitle == nil || _webTitle.length == 0) {
+    if([webView stringByEvaluatingJavaScriptFromString:@"document.title"]){
         [self setWebTitle:[webView stringByEvaluatingJavaScriptFromString:@"document.title"]];
     }
     NSLog(@"webViewDidFinishLoad");
@@ -88,20 +91,24 @@
     NSString* requestURL = [NSString stringWithFormat:@"%@",request];
     if(_payment){
         if([requestURL rangeOfString:[_payment valueForKey:@"url_success"] ].location != NSNotFound){
-            [self showAlertWithTitle:@"" message:[_payment valueForKey:@"message_success"]];
-            [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+            [self showAlertWithTitle:@"" message:[_payment valueForKey:@"message_success"] completionHandler:^{
+                [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+            }];
             return NO;
         }else if([requestURL rangeOfString:[_payment valueForKey:@"url_fail"]].location != NSNotFound){
-            [self showAlertWithTitle:@"" message:[_payment valueForKey:@"message_fail"]];
-            [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+            [self showAlertWithTitle:@"" message:[_payment valueForKey:@"message_fail"] completionHandler:^{
+                [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+            }];
             return NO;
         }else if([requestURL rangeOfString:[_payment valueForKey:@"url_cancel"]].location != NSNotFound){
-            [self showAlertWithTitle:@"" message:[_payment valueForKey:@"message_cancel"]];
-            [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+            [self showAlertWithTitle:@"" message:[_payment valueForKey:@"message_cancel"] completionHandler:^{
+                [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+            }];
             return NO;
         }else if([requestURL rangeOfString:[_payment valueForKey:@"url_error"]].location != NSNotFound){
-            [self showAlertWithTitle:@"" message:[_payment valueForKey:@"message_error"]];
-            [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+            [self showAlertWithTitle:@"" message:[_payment valueForKey:@"message_error"] completionHandler:^{
+                [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+            }];
             return NO;
         }
     }

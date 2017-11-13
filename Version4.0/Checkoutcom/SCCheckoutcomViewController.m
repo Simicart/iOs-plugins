@@ -54,9 +54,10 @@
     [self removeObserverForNotification:noti];
     SimiResponder* responder = [noti.userInfo objectForKey:responderKey];
     if (responder.status == SUCCESS) {
-        [self showAlertWithTitle:@"" message:[NSString stringWithFormat:@"%@!",SCLocalizedString(@"Thank you for your purchase")]];
+        [self showAlertWithTitle:@"" message:[NSString stringWithFormat:@"%@!",SCLocalizedString(@"Thank you for your purchase")] completionHandler:^{
+            [self dismissViewControllerAnimated:YES completion:nil];
+        }];
     }
-    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 @end

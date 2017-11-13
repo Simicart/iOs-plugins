@@ -66,7 +66,7 @@
             [orderViewController.navigationController popToRootViewControllerAnimated:NO];
         } else if (result.cancelled) {
             NSLog(@"CANCELLED");
-            [orderViewController.navigationController popToRootViewControllerAnimated:NO];
+            [self cancelOrder];
         } else {
             if(result.paymentOptionType == BTUIKPaymentOptionTypeApplePay){
                 PKPaymentAuthorizationViewController *viewController = [[PKPaymentAuthorizationViewController alloc] initWithPaymentRequest:[self applePaymentRequest]];
@@ -86,6 +86,26 @@
         [orderViewController showAlertWithTitle:@"Braintree" message:SCLocalizedString(@"The provided authorization was invalid")];
 }
 
+- (void)cancelOrder{
+    if(order.invoiceNumber){
+        [order cancelOrderWithId:order.invoiceNumber];
+        [orderViewController startLoadingData];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didCancelOrder:) name:Simi_DidCancelOrder object:nil];
+    }else{
+        [orderViewController.navigationController popToRootViewControllerAnimated:NO];
+    }
+}
+
+- (void)didCancelOrder:(NSNotification *)noti{
+    [orderViewController stopLoadingData];
+    [self removeObserverForNotification:noti];
+    SimiResponder *responder = [noti.userInfo objectForKey:@"responder"];
+    [orderViewController showAlertWithTitle:@"" message:responder.message completionHandler:^{
+        [orderViewController.navigationController popToRootViewControllerAnimated:YES];
+    }];
+    
+}
+
 - (PKPaymentRequest *)applePaymentRequest {
     PKPaymentRequest *paymentRequest = [[PKPaymentRequest alloc] init];
     paymentRequest.merchantIdentifier = [selectedPayment valueForKey:@"apple_merchant"];
@@ -100,22 +120,28 @@
     //Shipping and Billing is not required
     paymentRequest.requiredBillingAddressFields = NO;
     paymentRequest.requiredShippingAddressFields = NO;
-    NSMutableDictionary* fees = [order objectForKey:@"total"];
+    NSDictionary* fees = order.total;
     
-    NSDecimalNumber* subTotal = [NSDecimalNumber decimalNumberWithString:[NSString stringWithFormat:@"%.2f",[[fees valueForKey:@"subtotal_incl_tax"] floatValue]]];
+    NSDecimalNumber* subTotalExclTax = [NSDecimalNumber decimalNumberWithString:[NSString stringWithFormat:@"%.2f",[[fees valueForKey:@"subtotal_excl_tax"] floatValue]]];
     NSDecimalNumber* shippingFee;
     if([fees objectForKey:@"shipping_hand_incl_tax"]){
         shippingFee = [NSDecimalNumber decimalNumberWithString:[NSString stringWithFormat:@"%.2f",[[fees valueForKey:@"shipping_hand_incl_tax"] floatValue]]];
     }else{
         shippingFee = [NSDecimalNumber decimalNumberWithString:@"0"];
     }
-    NSDecimalNumber* grandTotal = [NSDecimalNumber decimalNumberWithString:[NSString stringWithFormat:@"%.2f",[[fees valueForKey:@"grand_total_incl_tax"] floatValue]]];
+    //    NSDecimalNumber* grandTotalExclTax = [NSDecimalNumber decimalNumberWithString:[NSString stringWithFormat:@"%.2f",[[fees valueForKey:@"grand_total_excl_tax"] floatValue]]];
+    NSDecimalNumber* grandTotalInclTax = [NSDecimalNumber decimalNumberWithString:[NSString stringWithFormat:@"%.2f",[[fees valueForKey:@"grand_total_incl_tax"] floatValue]]];
     NSMutableArray* summaryItems = [[NSMutableArray alloc] init];
-    [summaryItems addObject:[PKPaymentSummaryItem summaryItemWithLabel:@"Subtotal" amount:subTotal]];
-    if(shippingFee.floatValue > 0){
+    [summaryItems addObject:[PKPaymentSummaryItem summaryItemWithLabel:@"Subtotal" amount:subTotalExclTax]];
+    if(shippingFee.floatValue >= 0){
         [summaryItems addObject:[PKPaymentSummaryItem summaryItemWithLabel:@"Shipping" amount:shippingFee]];
     }
-    [summaryItems addObject:[PKPaymentSummaryItem summaryItemWithLabel:@"Grand Total" amount:grandTotal]];
+    NSDecimalNumber *tax = [NSDecimalNumber decimalNumberWithString:@"0"];
+    if([fees valueForKey:@"tax"]){
+        tax = [NSDecimalNumber decimalNumberWithString:[NSString stringWithFormat:@"%.2f",[[fees valueForKey:@"tax"] floatValue]]];
+    }
+    [summaryItems addObject:[PKPaymentSummaryItem summaryItemWithLabel:@"Tax" amount:tax]];
+    [summaryItems addObject:[PKPaymentSummaryItem summaryItemWithLabel:@"Grand Total" amount:grandTotalInclTax]];
     paymentRequest.paymentSummaryItems = summaryItems;
     return paymentRequest;
 }
@@ -186,8 +212,9 @@
             }
         }
     }else{
-        [orderViewController showAlertWithTitle:SCLocalizedString(@"") message:responder.message];
-        [orderViewController.navigationController popToRootViewControllerAnimated:YES];
+        [orderViewController showAlertWithTitle:@"" message:responder.message completionHandler:^{
+            [orderViewController.navigationController popToRootViewControllerAnimated:YES];
+        }];
     }
     [self removeObserverForNotification:noti];
 }

@@ -39,9 +39,9 @@
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
 {
     NSString *stringRequest = [NSString stringWithFormat:@"%@",request];
-    if ([stringRequest containsString:@"session_id"]) {
-        [self stopLoadingData];
-    }
+//    if ([stringRequest containsString:@"session_id"]) {
+//        [self stopLoadingData];
+//    }
     if ([stringRequest containsString:@"simipayu/index/success"]) {
         [self showAlertWithTitle:@"SUCCESS" message:@"Thank your for purchase"];
         [self.navigationController dismissViewControllerAnimated:YES completion:nil];
@@ -54,4 +54,13 @@
     }
     return  YES;
 }
+
+- (void)webViewDidStartLoad:(UIWebView *)webView{
+    [self startLoadingData];
+}
+
+- (void)webViewDidFinishLoad:(UIWebView *)webView{
+    [self stopLoadingData];
+}
+
 @end

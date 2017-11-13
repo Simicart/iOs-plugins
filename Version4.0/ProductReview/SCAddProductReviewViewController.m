@@ -146,8 +146,9 @@
     [self stopLoadingData];
     [self removeObserverForNotification:noti];
     if(responder.status == SUCCESS){
-        [self showAlertWithTitle:@"" message:[reviewModel.data valueForKey:@"message"]];
-        [self.navigationController popViewControllerAnimated:YES];
+        [self showAlertWithTitle:@"" message:[reviewModel.data valueForKey:@"message"] completionHandler:^{
+            [self.navigationController popViewControllerAnimated:YES];
+        }];
     }else{
         [self showAlertWithTitle:@"" message:responder.message];
     }

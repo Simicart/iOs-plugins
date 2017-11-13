@@ -87,20 +87,24 @@
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType{
     NSString *requestURL = [NSString stringWithFormat:@"%@",request];
     if([requestURL rangeOfString:@"success"].location != NSNotFound || ([requestURL rangeOfString:@"TransactionNo"].location != NSNotFound && [requestURL rangeOfString:@"AuthorizeId"].location != NSNotFound)){
-        [self showAlertWithTitle:@"SUCCESS" message:@"Thank your for purchase"];
-        [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+        [self showAlertWithTitle:@"SUCCESS" message:@"Thank your for purchase" completionHandler:^{
+            [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+        }];
         return NO;
     }else if([requestURL rangeOfString:@"failure"].location != NSNotFound){
-        [self showAlertWithTitle:@"FAIL" message:@"Your order has been canceled"];
-        [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+        [self showAlertWithTitle:@"FAIL" message:@"Your order has been canceled" completionHandler:^{
+            [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+        }];
         return NO;
     }else if([requestURL rangeOfString:@"review"].location != NSNotFound){
-        [self showAlertWithTitle:@"SUCCESS" message:@"Your order is under review"];
-        [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+        [self showAlertWithTitle:@"SUCCESS" message:@"Your order is under review" completionHandler:^{
+            [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+        }];
         return NO;
     }else if([requestURL rangeOfString:@"simiavenue/api/index"].location != NSNotFound){
-        [self showAlertWithTitle:@"ERROR" message:@"Have some errors, please try again"];
-        [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+        [self showAlertWithTitle:@"ERROR" message:@"Have some errors, please try again" completionHandler:^{
+            [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+        }];
         return NO;
     }
     return YES;
