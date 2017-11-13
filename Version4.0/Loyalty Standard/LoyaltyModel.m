@@ -17,7 +17,8 @@
     if([self.modelData objectForKey:@"loyalty_point"])
         self.loyaltyPoint = [[self.modelData objectForKey:@"loyalty_point"] floatValue];
     if([self.modelData objectForKey:@"invert_point"])
-        self.invertPoint = [[self.modelData objectForKey:@"invert_point"] floatValue];
+        self.invertPoint
+        = [NSString stringWithFormat:@"%@",[self.modelData objectForKey:@"invert_point"]];
     if([self.modelData objectForKey:@"loyalty_balance"])
         self.loyaltyBalance = [NSString stringWithFormat:@"%@",[self.modelData objectForKey:@"loyalty_balance"]];
     if([self.modelData objectForKey:@"loyalty_redeem"])

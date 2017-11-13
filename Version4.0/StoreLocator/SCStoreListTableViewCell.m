@@ -45,7 +45,7 @@
         
         lblStoreName = [[UILabel alloc]initWithFrame:CGRectMake(labelPaddingLeft , 5, labelWidth - labelDistanceWidth, labelHeight)];
         [lblStoreName setFont:[UIFont fontWithName:THEME_FONT_NAME_REGULAR size:THEME_FONT_SIZE - 2]];
-        [lblStoreName setText:[storeLocatorModel valueForKey:@"name"]];
+        [lblStoreName setText:storeLocatorModel.name];
         [lblStoreName setTextColor:COLOR_WITH_HEX(@"#393939")];
         [self addSubview:lblStoreName];
         
@@ -111,7 +111,7 @@
             [lblCall setFrame:CGRectMake(35, 13, 35, 21)];
             [btnCall addSubview:lblCall];
             [_viewButton addSubview:btnCall];
-            if (![storeLocatorModel valueForKey:@"phone"]) {
+            if (storeLocatorModel.phone == nil) {
                 [btnCall setEnabled:NO];
             }
         }

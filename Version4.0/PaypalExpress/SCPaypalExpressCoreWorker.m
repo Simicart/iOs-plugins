@@ -134,6 +134,8 @@ static NSString *product_paypalcheckout_row = @"product_paypalcheckout_row";
     SCCartViewController *cartVC = nil;
     if ([noti.userInfo valueForKey:KEYEVENT.CARTVIEWCONTROLLER.viewcontroller]) {
         cartVC = [noti.userInfo valueForKey:KEYEVENT.CARTVIEWCONTROLLER.viewcontroller];
+    }else if([noti.object isKindOfClass:[SCCartViewController class]]){
+        cartVC = noti.object;
     }
     if (PHONEDEVICE) {
         if ((cartVC.cart == nil) || (cartVC.cart.count == 0)|| ![[paypalExpressConfig valueForKey:@"show_on_cart"]boolValue]) {
