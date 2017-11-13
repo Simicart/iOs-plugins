@@ -131,7 +131,6 @@ static NSString *LEFTMENU_REWARDS_ROW     = @"leftmenu_rewards";
         if ([row.identifier isEqualToString:LOYALTY_CART]) {
             SCCartViewController *controller = noti.object;
             controller.isDiscontinue = YES;
-            
             UITableView *tableView = (UITableView *)[noti.userInfo objectForKey:@"tableView"];
             UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:LOYALTY_CART];
             if (cell == nil) {

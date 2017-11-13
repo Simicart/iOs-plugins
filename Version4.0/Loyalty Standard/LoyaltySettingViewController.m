@@ -151,7 +151,7 @@
 #pragma mark - Table View delegate
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return [[[self.table objectAtIndex:indexPath.section] objectAtIndex:indexPath.row] height];
+    return [((SimiRow *)[[self.table objectAtIndex:indexPath.section] objectAtIndex:indexPath.row]) height];
 }
 
 #pragma mark - Update settings
