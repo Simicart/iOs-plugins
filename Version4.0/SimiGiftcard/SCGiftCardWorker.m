@@ -37,8 +37,8 @@ static NSString *ACCOUNT_GIFTCARD_ROW = @"ACCOUNT_GIFTCARD_ROW";
 
 - (void)leftmenuInitCellsAfter:(NSNotification*)noti{
     cells = noti.object;
-    SimiSection *section = [cells getSectionByIdentifier:LEFTMENU_SECTION_MAIN];
-    SimiRow *row = [[SimiRow alloc]initWithIdentifier:LEFTMENU_ROW_GIFTCARD height:50 sortOrder:600];
+    SimiSection *section = [cells getSectionByIdentifier:LEFTMENU_SECTION_MORE];
+    SimiRow *row = [[SimiRow alloc]initWithIdentifier:LEFTMENU_ROW_GIFTCARD height:50 sortOrder:90];
     row.image = [UIImage imageNamed:@"ic_giftcard"];
     row.title = SCLocalizedString(@"GiftCard Products");
     row.accessoryType = UITableViewCellAccessoryDisclosureIndicator;

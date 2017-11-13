@@ -427,7 +427,7 @@
         [viewSpecialsDay addSubview:lblSpecialsDay];
         
         NSString *stringSpecialDaysContent = @"";
-        for (int i = 0; i < sLModel.holidayDays.count; i++) {
+        for (int i = 0; i < sLModel.specialDays.count; i++) {
             NSDictionary *dict = (NSDictionary*)[sLModel.specialDays objectAtIndex:i];
             stringSpecialDaysContent = [NSString stringWithFormat:@"%@%@, %@ - %@\n",stringSpecialDaysContent,[dict valueForKey:@"date"],[dict valueForKey:@"time_open"],[dict valueForKey:@"time_close"]];
         }

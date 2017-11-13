@@ -14,7 +14,7 @@ static NSString *const Loyalty_SavedLoyaltySettings = @"SavedLoyaltySettings";
 
 @property (strong, nonatomic) NSString *rewardId;
 @property (nonatomic) float loyaltyPoint;
-@property (nonatomic) float invertPoint;
+@property (strong, nonatomic) NSString *invertPoint;
 @property (strong, nonatomic) NSString *loyaltyBalance;
 @property (strong, nonatomic) NSString *loyaltyRedeem;
 @property (nonatomic) float loyaltyHold;
