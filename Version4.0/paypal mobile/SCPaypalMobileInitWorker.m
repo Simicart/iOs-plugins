@@ -89,27 +89,27 @@
             [viewController startLoadingData];
             [viewController presentViewController:paymentViewController animated:YES completion:nil];
         }else{
-            [viewController stopLoadingData];
-            UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"Error" message:SCLocalizedString(@"Sorry, PayPal is not now available. Please try again later") preferredStyle:UIAlertControllerStyleAlert];
-            [alertController addAction:[UIAlertAction actionWithTitle:SCLocalizedString(@"OK") style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
-                [self updatePaymentToServerWithStatus:PaymentStatusCancelled andProof:@{}];
-                [viewController.navigationController popViewControllerAnimated:YES];
-            }]];
-            [viewController presentViewController:alertController animated:YES completion:^{
-                
-            }];
+            [self paypalCancel];
         }
     }
     @catch (NSException *exception) {
-        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:SCLocalizedString(@"Error") message:[NSString stringWithFormat:SCLocalizedString(@"Sorry, %@ is not now available. Please try again later"),SCLocalizedString(@"Paypal")] delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil];
-        alertView.tag = ALERT_VIEW_ERROR;
-        [alertView show];
-        [viewController stopLoadingData];
-        [viewController.navigationController popViewControllerAnimated:YES];
+        [self paypalCancel];
     }
     @finally {
         
     }
+}
+
+- (void)paypalCancel{
+    [viewController stopLoadingData];
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"Error" message:SCLocalizedString(@"Sorry, PayPal is not now available. Please try again later") preferredStyle:UIAlertControllerStyleAlert];
+    [alertController addAction:[UIAlertAction actionWithTitle:SCLocalizedString(@"OK") style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+        [self updatePaymentToServerWithStatus:PaymentStatusCancelled andProof:@{}];
+        [viewController.navigationController popViewControllerAnimated:YES];
+    }]];
+    [viewController presentViewController:alertController animated:YES completion:^{
+        
+    }];
 }
 
 - (void)didUpdatePaymentStatus:(NSNotification *)noti{
