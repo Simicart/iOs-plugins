@@ -45,15 +45,18 @@
         float sortOrder = totalRow.sortOrder - 1;
         NSDictionary *credit = [giftCardData objectForKey:@"credit"];
         NSDictionary *giftcode = [giftCardData objectForKey:@"giftcode"];
+        NSDictionary *customer = [giftCardData objectForKey:@"customer"];
         if([[giftCardData objectForKey:@"use_giftcard"] boolValue]) {
             SimiRow *titleRow = [[SimiRow alloc] initWithIdentifier:CART_VIEW_GIFTCARD_TITLE height:44 sortOrder:sortOrder];
             [totalSection addObject:titleRow];
-            if([[credit objectForKey:@"use_credit"] boolValue]) {
-                [totalSection addRowWithIdentifier:CART_VIEW_GIFTCART_CREDIT height:150 sortOrder:sortOrder];
-                useGiftCardCredit = YES;
-            }else {
-                useGiftCardCredit = NO;
-                [totalSection addRowWithIdentifier:CART_VIEW_GIFTCART_CREDIT height:30 sortOrder:sortOrder];
+            if([customer objectForKey:@"balance"]){
+                if([[credit objectForKey:@"use_credit"] boolValue]) {
+                    [totalSection addRowWithIdentifier:CART_VIEW_GIFTCART_CREDIT height:150 sortOrder:sortOrder];
+                    useGiftCardCredit = YES;
+                }else {
+                    useGiftCardCredit = NO;
+                    [totalSection addRowWithIdentifier:CART_VIEW_GIFTCART_CREDIT height:30 sortOrder:sortOrder];
+                }
             }
             if([[giftcode objectForKey:@"use_giftcode"] boolValue]) {
                 [totalSection addRowWithIdentifier:CART_VIEW_GIFTCODE height:220 + 30*(giftcode.allValues.count - 1) sortOrder:sortOrder];

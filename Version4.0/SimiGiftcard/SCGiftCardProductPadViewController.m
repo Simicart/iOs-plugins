@@ -16,6 +16,7 @@
 @synthesize cells = _cells;
 - (void)viewDidLoadBefore
 {
+    self.rootEventName = SCProductSecondDesignViewController_RootEventName;
     [self configureLogo];
     [self configureNavigationBarOnViewDidLoad];
     
@@ -68,25 +69,22 @@
     }
 }
 
-- (void)setCells:(SimiTable *)cells{
-    if (cells) {
-        _cells = cells;
-    }else{
-        _cells = [SimiTable new];
-        SimiSection *mainSection = [[SimiSection alloc]initWithIdentifier:product_main_section];
-        [_cells addObject:mainSection];
-        [mainSection addRowWithIdentifier:product_nameandprice_row height:100];
-        [mainSection addRowWithIdentifier:giftcard_sendpostoffice_checkbox_row height:44];
-        [mainSection addRowWithIdentifier:giftcard_sendfriend_checkbox_row height:44];
-        [mainSection addRowWithIdentifier:product_description_row height:200];
-        if ([[self.product valueForKeyPath:@"additional"] isKindOfClass:[NSDictionary class]]) {
-            NSDictionary *additional = [self.product valueForKeyPath:@"additional"];
-            if (additional.count > 0) {
-                [mainSection addRowWithIdentifier:product_techspecs_row height:50];
-            }
+- (void)initCells{
+    _cells = [SimiTable new];
+    SimiSection *mainSection = [[SimiSection alloc]initWithIdentifier:product_main_section];
+    [_cells addObject:mainSection];
+    [mainSection addRowWithIdentifier:product_nameandprice_row height:100];
+    [mainSection addRowWithIdentifier:giftcard_sendpostoffice_checkbox_row height:44];
+    [mainSection addRowWithIdentifier:giftcard_sendfriend_checkbox_row height:44];
+    [mainSection addRowWithIdentifier:product_description_row height:200];
+    if ([[self.product valueForKeyPath:@"additional"] isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *additional = [self.product valueForKeyPath:@"additional"];
+        if (additional.count > 0) {
+            [mainSection addRowWithIdentifier:product_techspecs_row height:50];
         }
-        [[NSNotificationCenter defaultCenter] postNotificationName:[NSString stringWithFormat:@"%@%@",SCProductSecondDesignViewController_RootEventName,SimiTableViewController_SubKey_InitCells_End] object:_cells userInfo:@{@"controller":self,@"product":self.product}];
     }
+    [self endInitCellsWithInfo:@{}];
+    [mainSection sortItems];
     [self.contentTableView reloadData];
 }
 

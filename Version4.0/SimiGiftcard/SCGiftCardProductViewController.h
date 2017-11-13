@@ -10,6 +10,7 @@
 #import "SimiGiftCardModel.h"
 #import "SimiCheckbox.h"
 #import "SimiTextField.h"
+#import "SimiTextView.h"
 #import "ActionSheetPicker.h"
 #import "SCGiftCardGlobalVar.h"
 
@@ -26,15 +27,15 @@ static NSString *giftcard_insertinfo_row = @"giftcard_insertinfo_row";
     UICollectionView *templatesCollectionView;
     UIImageView *uploadImageView;
     SimiGiftCardModel *uploadImageModel;
-    M13Checkbox *sendThroughPostOfficeCheckbox;
-    M13Checkbox *sendGiftcardToFriendCheckbox;
-    BOOL isSendThroughPostOffice;
-    BOOL isSendGiftcardToFriend;
+    SimiCheckbox *sendThroughPostOfficeCheckbox;
+    SimiCheckbox *sendGiftcardToFriendCheckbox;
+//    BOOL isSendThroughPostOffice;
+//    BOOL isSendGiftcardToFriend;
     
     SimiTextField *senderNameTextField;
     SimiTextField *recipientNameTextField;
     SimiTextField *recipientEmailTextField;
-    UITextView *customMessageTextView;
+    SimiTextView *customMessageTextView;
     SimiCheckbox *getNotificationCheckbox;
     SimiTextField *dayToSendTextField;
     SimiTextField *selectTimeZoneTextField;

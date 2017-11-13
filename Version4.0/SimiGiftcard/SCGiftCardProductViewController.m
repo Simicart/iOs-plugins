@@ -12,7 +12,9 @@
 
 @end
 
-@implementation SCGiftCardProductViewController
+@implementation SCGiftCardProductViewController{
+    float insertRowHeight;
+}
 - (void)viewDidLoadAfter{
     if ([SCGiftCardGlobalVar sharedInstance].timeZoneModelCollection.count > 0) {
         timeZoneModelCollection = [SCGiftCardGlobalVar sharedInstance].timeZoneModelCollection;
@@ -136,11 +138,10 @@
 - (UITableViewCell*)createSendPostOfficeCheckBoxRow:(SimiRow*)row{
     UITableViewCell *cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:row.identifier];
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
-    sendThroughPostOfficeCheckbox = [[M13Checkbox alloc]initWithFrame:CGRectMake(paddingEdge, 6, tableWidth - paddingEdge*3, 30) title:SCLocalizedString(@"Send through post office") checkHeight:20];
+    sendThroughPostOfficeCheckbox = [[SimiCheckbox alloc]initWithFrame:CGRectMake(paddingEdge, 6, tableWidth - paddingEdge*3, 30) title:SCLocalizedString(@"Send through post office") checkHeight:20];
     [sendThroughPostOfficeCheckbox setStrokeColor:[UIColor grayColor]];
     [sendThroughPostOfficeCheckbox setCheckColor:[UIColor blackColor]];
     [sendThroughPostOfficeCheckbox addTarget:self action:@selector(changeSendPostOfficeState) forControlEvents:UIControlEventValueChanged];
-    sendThroughPostOfficeCheckbox.checkAlignment = M13CheckboxAlignmentLeft;
     [sendThroughPostOfficeCheckbox.titleLabel setFont:[UIFont fontWithName:THEME_FONT_NAME_REGULAR size:16]];
     [cell.contentView addSubview:sendThroughPostOfficeCheckbox];
     return cell;
@@ -149,8 +150,7 @@
 - (UITableViewCell*)createSendFriendCheckBoxRow:(SimiRow*)row{
     UITableViewCell *cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:row.identifier];
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
-    sendGiftcardToFriendCheckbox = [[M13Checkbox alloc]initWithFrame:CGRectMake(paddingEdge, 6, tableWidth - paddingEdge*3, 30) title:SCLocalizedString(@"Send Gift Card to friend") checkHeight:20];
-    sendGiftcardToFriendCheckbox.checkAlignment = M13CheckboxAlignmentLeft;
+    sendGiftcardToFriendCheckbox = [[SimiCheckbox alloc]initWithFrame:CGRectMake(paddingEdge, 6, tableWidth - paddingEdge*3, 30) title:SCLocalizedString(@"Send Gift Card to friend") checkHeight:20];
     [sendGiftcardToFriendCheckbox setStrokeColor:[UIColor grayColor]];
     [sendGiftcardToFriendCheckbox setCheckColor:[UIColor blackColor]];
     [sendGiftcardToFriendCheckbox addTarget:self action:@selector(changeSendToFriendState) forControlEvents:UIControlEventValueChanged];
@@ -198,7 +198,7 @@
     [cell.contentView addSubview:customMessageLabel];
     cellHeight += labelHeight;
     
-    customMessageTextView = [[UITextView alloc]initWithFrame:CGRectMake(paddingEdge, cellHeight, textFieldWidth, 100)];
+    customMessageTextView = [[SimiTextView alloc]initWithFrame:CGRectMake(paddingEdge, cellHeight, textFieldWidth, 100)];
     customMessageTextView.layer.borderWidth = 1;
     customMessageTextView.layer.borderColor = [UIColor lightGrayColor].CGColor;
     customMessageTextView.layer.cornerRadius = 6;
@@ -235,6 +235,7 @@
         cellHeight += textFieldHeight;
     }
     row.height = cellHeight+20;
+    insertRowHeight = row.height;
     return cell;
 }
 
@@ -500,52 +501,60 @@
 }
 #pragma mark Checkbox Action
 - (void)changeSendPostOfficeState{
-    if (sendThroughPostOfficeCheckbox.checkState == M13CheckboxStateChecked) {
-        isSendThroughPostOffice = YES;
-    }else{
-        isSendThroughPostOffice = NO;
-    }
+//    if (sendThroughPostOfficeCheckbox.checkState == M13CheckboxStateChecked) {
+//        isSendThroughPostOffice = YES;
+//    }else{
+//        isSendThroughPostOffice = NO;
+//    }
     SimiSection *mainSection = [self.cells getSectionByIdentifier:product_main_section];
     float sectionIndex = [self.cells getSectionIndexByIdentifier:product_main_section];
-    if (isSendThroughPostOffice) {
+    if (sendThroughPostOfficeCheckbox.checkState == M13CheckboxStateChecked) {
         float rowIndex = [mainSection getRowIndexByIdentifier:giftcard_sendpostoffice_checkbox_row];
         SimiRow *sendPostOfficeRow = [mainSection getRowByIdentifier:giftcard_sendpostoffice_checkbox_row];
         [mainSection addRowWithIdentifier:giftcard_recommendinfo_row height:60 sortOrder:sendPostOfficeRow.sortOrder + 1];
         [mainSection sortItems];
-        [self.contentTableView beginUpdates];
-        [self.contentTableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:rowIndex+1 inSection:sectionIndex]] withRowAnimation:UITableViewRowAnimationFade];
-        [self.contentTableView endUpdates];
+//        [self.contentTableView beginUpdates];
+//        [self.contentTableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:rowIndex+1 inSection:sectionIndex]] withRowAnimation:UITableViewRowAnimationFade];
+//        [self.contentTableView endUpdates];
+        [self.contentTableView reloadData];
+        [self.contentTableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:rowIndex inSection:sectionIndex] atScrollPosition:UITableViewScrollPositionTop animated:YES];
     }else{
         float rowIndex = [mainSection getRowIndexByIdentifier:giftcard_recommendinfo_row];
         [mainSection removeRowAtIndex:rowIndex];
-        [self.contentTableView beginUpdates];
-        [self.contentTableView deleteRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:rowIndex inSection:sectionIndex]] withRowAnimation:UITableViewRowAnimationFade];
-        [self.contentTableView endUpdates];
+//        [self.contentTableView beginUpdates];
+//        [self.contentTableView deleteRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:rowIndex inSection:sectionIndex]] withRowAnimation:UITableViewRowAnimationFade];
+//        [self.contentTableView endUpdates];
+         [self.contentTableView reloadData];
+        [self.contentTableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:rowIndex inSection:sectionIndex] atScrollPosition:UITableViewScrollPositionTop animated:YES];
     }
 }
 
 - (void)changeSendToFriendState{
-    if (sendGiftcardToFriendCheckbox.checkState == M13CheckboxStateChecked) {
-        isSendGiftcardToFriend = YES;
-    }else{
-        isSendGiftcardToFriend = NO;
-    }
+//    if (sendGiftcardToFriendCheckbox.checkState == M13CheckboxStateChecked) {
+//        isSendGiftcardToFriend = YES;
+//    }else{
+//        isSendGiftcardToFriend = NO;
+//    }
     SimiSection *mainSection = [self.cells getSectionByIdentifier:product_main_section];
     float sectionIndex = [self.cells getSectionIndexByIdentifier:product_main_section];
-    if (isSendGiftcardToFriend) {
+    if (sendGiftcardToFriendCheckbox.checkState == M13CheckboxStateChecked) {
         float rowIndex = [mainSection getRowIndexByIdentifier:giftcard_sendfriend_checkbox_row];
         SimiRow *sendFriendRow = [mainSection getRowByIdentifier:giftcard_sendfriend_checkbox_row];
-        [mainSection addRowWithIdentifier:giftcard_insertinfo_row height:400 sortOrder:sendFriendRow.sortOrder+1];
+        [mainSection addRowWithIdentifier:giftcard_insertinfo_row height:insertRowHeight sortOrder:sendFriendRow.sortOrder+1];
         [mainSection sortItems];
-        [self.contentTableView beginUpdates];
-        [self.contentTableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:rowIndex+1 inSection:sectionIndex]] withRowAnimation:UITableViewRowAnimationFade];
-        [self.contentTableView endUpdates];
+//        [self.contentTableView beginUpdates];
+//        [self.contentTableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:rowIndex+1 inSection:sectionIndex]] withRowAnimation:UITableViewRowAnimationFade];
+//        [self.contentTableView endUpdates];
+        [self.contentTableView reloadData];
+        [self.contentTableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:rowIndex inSection:sectionIndex] atScrollPosition:UITableViewScrollPositionTop animated:YES];
     }else{
         float rowIndex = [mainSection getRowIndexByIdentifier:giftcard_insertinfo_row];
         [mainSection removeRowAtIndex:rowIndex];
-        [self.contentTableView beginUpdates];
-        [self.contentTableView deleteRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:rowIndex inSection:sectionIndex]] withRowAnimation:UITableViewRowAnimationFade];
-        [self.contentTableView endUpdates];
+//        [self.contentTableView beginUpdates];
+//        [self.contentTableView deleteRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:rowIndex inSection:sectionIndex]] withRowAnimation:UITableViewRowAnimationFade];
+//        [self.contentTableView endUpdates];
+        [self.contentTableView reloadData];
+        [self.contentTableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:rowIndex inSection:sectionIndex] atScrollPosition:UITableViewScrollPositionTop animated:YES];
     }
 }
 
@@ -628,7 +637,7 @@
 #pragma mark Add To Cart
 - (void)addToCart{
     BOOL canAddToCart = NO;
-    if (isSendGiftcardToFriend) {
+    if (sendGiftcardToFriendCheckbox.checkState == M13CheckboxStateChecked) {
         if ([self isEnterAllRequireFields]) {
             canAddToCart =  YES;
         }
@@ -646,12 +655,12 @@
             [cartItem setValue:[[giftCardTemplateImages objectAtIndex:templateImageSelectedIndex] valueForKey:@"image"] forKey:@"giftcard_template_image"];
             [cartItem setValue:[[giftCardTemplateImages objectAtIndex:templateImageSelectedIndex] valueForKey:@"url"] forKey:@"url_image"];
         }
-        if (isSendThroughPostOffice) {
+        if (sendThroughPostOfficeCheckbox.checkState == M13CheckboxStateChecked) {
             [cartItem setValue:@"1" forKey:@"recipient_ship"];
         }else
             [cartItem setValue:@"0" forKey:@"recipient_ship"];
         
-        if (isSendGiftcardToFriend) {
+        if (sendGiftcardToFriendCheckbox.checkState == M13CheckboxStateChecked) {
             [cartItem setValue:@"1" forKey:@"send_friend"];
             [cartItem setValue:senderNameTextField.text forKey:@"customer_name"];
             [cartItem setValue:recipientNameTextField.text forKey:@"recipient_name"];
@@ -696,6 +705,7 @@
     }
     return YES;
 }
+
 @end
 
 @implementation GiftCardTemplateCollectionViewCell

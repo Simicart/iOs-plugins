@@ -39,7 +39,7 @@
         if (SIMI_SYSTEM_IOS >= 9) {
             giftCodeDetailTableView.cellLayoutMarginsFollowReadableWidth = NO;
         }
-        [giftCodeDetailTableView setContentInset:UIEdgeInsetsMake(0, 0, 60, 0)];
+        [giftCodeDetailTableView setContentInset:UIEdgeInsetsMake(0, 0, 100, 0)];
         [self.view addSubview:giftCodeDetailTableView];
     }
     [self getGiftCodeDetailInfo];
