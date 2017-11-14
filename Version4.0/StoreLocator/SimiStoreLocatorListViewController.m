@@ -210,6 +210,9 @@
 
 - (void) didGetStoreLocatorList
 {
+    NSLog(@"%@",[sLModelCollection.collectionData valueForKey:@"sort"]);
+    sLModelCollection.collectionData = [NSMutableArray arrayWithArray:[SimiGlobalFunction sortArray:sLModelCollection.collectionData byKey:@"sort"]];
+    NSLog(@"%@",[sLModelCollection.collectionData valueForKey:@"sort"]);
     [self.tableView reloadData];
     [self.tableView.infiniteScrollingView stopAnimating];
 }

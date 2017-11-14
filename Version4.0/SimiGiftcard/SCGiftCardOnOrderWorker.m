@@ -494,13 +494,13 @@
     [alertController addAction:cancelAction];
     UIAlertAction *editAction = [UIAlertAction actionWithTitle:SCLocalizedString(@"Change") style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
         UITextField *amountTextField = alertController.textFields.firstObject;
-        float changedAmount = [amountTextField.text floatValue];
-        if(changedAmount > amount) {
-            [orderVC showAlertWithTitle:@"" message:@"The new amount is exceeded the available amount"];
-        }else {
-            [self updateGiftCodeWithParams:@{@"giftcode":[giftCodeValue objectForKey:@"gift_code"],@"amount":amountTextField.text}];
+//        float changedAmount = [amountTextField.text floatValue];
+//        if(changedAmount > amount) {
+//            [orderVC showAlertWithTitle:@"" message:@"The new amount is exceeded the available amount"];
+//        }else {
+        [self updateGiftCodeWithParams:@{@"giftcode":[giftCodeValue objectForKey:@"gift_code"],@"amount":amountTextField.text}];
             
-        }
+//        }
     }];
     [alertController addAction:editAction];
     [orderVC presentViewController:alertController animated:YES completion:nil];
@@ -515,7 +515,7 @@
         return;
     }
     if(listCode.count > 0) {
-        NSDictionary *code = [listCode objectAtIndex:row];
+        NSDictionary *code = [listCode objectAtIndex:row - 1];
         existingCodeTextField.text = [code objectForKey:@"hidden_code"];
         giftCodeSelected = [code objectForKey:@"gift_code"];
     }

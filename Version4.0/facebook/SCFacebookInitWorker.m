@@ -302,7 +302,7 @@
     currentlyViewController = [noti.userInfo valueForKey:@"controller"];
     
     float likeViewSize = 68;
-    UIView *facebookLikeView = [[UIView alloc] initWithFrame:CGRectMake(SCALEVALUE(5), 5, likeViewSize, likeViewSize)];
+    UIView *facebookLikeView = [[UIView alloc] initWithFrame:CGRectMake(SCALEVALUE(5), -5, likeViewSize, likeViewSize)];
     
     UIImageView* fbLikeBackgroundImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"ic_bg_more"]];
     fbLikeBackgroundImageView.frame = CGRectMake(0, 0, likeViewSize, likeViewSize);

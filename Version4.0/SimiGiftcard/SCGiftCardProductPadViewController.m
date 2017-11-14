@@ -62,7 +62,7 @@
             if ([[self.product valueForKey:@"is_salable"]boolValue]) {
                 [self initViewAction];
             }
-            [self setCells:nil];
+            [self initCells];
             [self initGiftCardImageView];
         }
         [[NSNotificationCenter defaultCenter]removeObserverForNotification:noti];

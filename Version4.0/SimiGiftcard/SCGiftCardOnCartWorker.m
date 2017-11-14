@@ -497,13 +497,13 @@
     [alertController addAction:cancelAction];
     UIAlertAction *editAction = [UIAlertAction actionWithTitle:SCLocalizedString(@"Change") style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
         UITextField *amountTextField = alertController.textFields.firstObject;
-        float changedAmount = [amountTextField.text floatValue];
-        if(changedAmount > amount) {
-            [cartViewController showAlertWithTitle:@"" message:@"The new amount is exceeded the available amount"];
-        }else {
+//        float changedAmount = [amountTextField.text floatValue];
+//        if(changedAmount > amount) {
+//            [cartViewController showAlertWithTitle:@"" message:@"The new amount is exceeded the available amount"];
+//        }else {
             [self updateGiftCodeWithParams:@{@"giftcode":[giftCodeValue objectForKey:@"gift_code"],@"amount":amountTextField.text}];
             
-        }
+//        }
     }];
     [alertController addAction:editAction];
     [cartViewController presentViewController:alertController animated:YES completion:nil];
