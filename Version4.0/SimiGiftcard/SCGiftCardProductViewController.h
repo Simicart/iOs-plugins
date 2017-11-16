@@ -70,6 +70,7 @@ static NSString *giftcard_insertinfo_row = @"giftcard_insertinfo_row";
 @property (nonatomic) BOOL useUploadImage;
 
 - (void)selectUploadImage:(UIGestureRecognizer*)gesture;
+- (void)initializedGiftCardInfo;
 @end
 
 @interface GiftCardTemplateCollectionViewCell : UICollectionViewCell
