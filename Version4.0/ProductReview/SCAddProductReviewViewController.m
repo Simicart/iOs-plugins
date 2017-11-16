@@ -157,13 +157,13 @@
 #pragma mark - keyboard movements
 - (void)keyboardWillShow:(NSNotification *)notification
 {
-    keyboardSize = [[[notification userInfo] objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
+    keyboardSize = [[[notification userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue].size;
     reviewScrollView.contentInset = UIEdgeInsetsMake(0, 0, keyboardSize.height, 0);
 }
 
 - (void)keyboardWillHide:(NSNotification *)notification
 {
-    keyboardSize = [[[notification userInfo] objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
+    keyboardSize = [[[notification userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue].size;
     reviewScrollView.contentInset = UIEdgeInsetsMake(0, 0, 0, 0);
 }
 
