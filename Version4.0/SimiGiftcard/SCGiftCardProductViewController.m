@@ -8,7 +8,9 @@
 
 #import "SCGiftCardProductViewController.h"
 
-@interface SCGiftCardProductViewController ()
+@interface SCGiftCardProductViewController (){
+    BOOL canInsertMoreText;
+}
 
 @end
 
@@ -34,7 +36,9 @@
     [mainSection addRowWithIdentifier:product_images_row height:(tableWidth - paddingEdge*2)/1.88 + paddingEdge*2];
     [mainSection addRowWithIdentifier:giftcard_template_row height:180];
     [mainSection addRowWithIdentifier:product_nameandprice_row height:100];
-    [mainSection addRowWithIdentifier:giftcard_sendpostoffice_checkbox_row height:44];
+    if ([[giftCardSettings valueForKey:@"simigift_postoffice"]boolValue]) {
+        [mainSection addRowWithIdentifier:giftcard_sendpostoffice_checkbox_row height:44];
+    }
     [mainSection addRowWithIdentifier:giftcard_sendfriend_checkbox_row height:44];
     [mainSection addRowWithIdentifier:product_description_row height:200];
     if (self.product.additional) {
@@ -61,22 +65,35 @@
     SimiResponder *responder = [noti.userInfo valueForKey:responderKey];
     if ([noti.name isEqualToString:DidGetGiftCardDetail]) {
         if (responder.status == SUCCESS) {
-            if ([[self.product valueForKey:@"simigift_template_ids"] isKindOfClass:[NSArray class]]) {
-                NSArray *simiGiftTemplateIds = [self.product valueForKey:@"simigift_template_ids"];
-                if (simiGiftTemplateIds.count > 0) {
-                    NSDictionary *giftTemplate = [simiGiftTemplateIds objectAtIndex:0];
-                    giftCardTemplateID = [NSString stringWithFormat:@"%@",[giftTemplate valueForKey:@"giftcard_template_id"]];
-                    if ([[giftTemplate valueForKey:@"images"] isKindOfClass:[NSArray class]]) {
-                        giftCardTemplateImages = [giftTemplate valueForKey:@"images"];
-                    }
-                }
-            }
+            [self initializedGiftCardInfo];
             if ([[self.product valueForKey:@"is_salable"]boolValue]) {
                 [self initViewAction];
             }
+            [self initMoreViewAction];
             [self initCells];
         }
         [[NSNotificationCenter defaultCenter]removeObserverForNotification:noti];
+    }
+}
+
+- (void)initializedGiftCardInfo{
+    if ([[self.product valueForKey:@"simigiftcard_settings"] isKindOfClass:[NSDictionary class]]) {
+        giftCardSettings = [self.product valueForKey:@"simigiftcard_settings"];
+    }
+    if ([[self.product valueForKey:@"simigift_template_ids"] isKindOfClass:[NSArray class]]) {
+        NSArray *templates = [self.product valueForKey:@"simigift_template_ids"];
+        templateNames = [NSMutableArray new];
+        simiGiftTemplates = [NSMutableArray new];
+        for (NSDictionary *template in templates) {
+            if ([[template valueForKey:@"status"] isEqualToString:@"1"]) {
+                [simiGiftTemplates addObject:template];
+                [templateNames addObject:[template valueForKey:@"template_name"]];
+            }
+        }
+    }
+    if (simiGiftTemplates.count > 0) {
+        selectedTemplateIndex = 0;
+        [self updateCellWhenChangeTemplate];
     }
 }
 
@@ -101,37 +118,59 @@
     UITableViewCell *cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:row.identifier];
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     float heightCell = 10;
-    SimiLabel *titleLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(paddingEdge, heightCell, tableWidth - paddingEdge*2, 20) andFontName:THEME_FONT_NAME_REGULAR andFontSize:18 andTextColor:THEME_CONTENT_COLOR text:@"Choose an images"];
-    [cell.contentView addSubview:titleLabel];
-    heightCell += 20;
+    if (simiGiftTemplates.count > 0) {
+        if(simiGiftTemplates.count > 1){
+            SimiLabel *titleLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(paddingEdge, heightCell, tableWidth - paddingEdge*2, 20) andFontName:THEME_FONT_NAME_REGULAR andFontSize:18 andTextColor:THEME_CONTENT_COLOR text:@"Select a template"];
+            [cell.contentView addSubview:titleLabel];
+            heightCell += 20;
+            
+            UIImageView *dropdownImageView = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, 20, 40)];
+            [dropdownImageView setContentMode:UIViewContentModeScaleAspectFit];
+            [dropdownImageView setImage:[UIImage imageNamed:@"ic_dropdown"]];
+            selectTemplateTextField = [[SimiTextField alloc]initWithFrame:CGRectMake(paddingEdge, heightCell, tableWidth - paddingEdge*2, 40) placeHolder:@"" font:[UIFont fontWithName:THEME_FONT_NAME size:16] textColor:THEME_CONTENT_COLOR borderWidth:1 borderColor:[UIColor lightGrayColor] cornerRadius:4 leftView:[[UIView alloc]initWithFrame:CGRectMake(0, 0, 10, 40)] rightView:dropdownImageView];
+            selectTemplateTextField.delegate = self;
+            [selectTemplateTextField setText:[selectedTemplate valueForKey:@"template_name"]];
+            [cell.contentView addSubview:selectTemplateTextField];
+            heightCell += 50;
+        }else{
+            SimiLabel *titleLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(paddingEdge, heightCell, tableWidth - paddingEdge*2, 20) andFontName:THEME_FONT_NAME_REGULAR andFontSize:18 andTextColor:THEME_CONTENT_COLOR text:@"Choose an images"];
+            [cell.contentView addSubview:titleLabel];
+            heightCell += 20;
+        }
+        
+        UICollectionViewFlowLayout *flowLayout = [UICollectionViewFlowLayout new];
+        flowLayout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
+        flowLayout.minimumInteritemSpacing = 10;
+        flowLayout.minimumLineSpacing = 10;
+        templatesCollectionView = [[UICollectionView alloc]initWithFrame:CGRectMake(paddingEdge, heightCell, tableWidth - paddingEdge*2, 80) collectionViewLayout:flowLayout];
+        [templatesCollectionView setBackgroundColor:[UIColor whiteColor]];
+        templatesCollectionView.delegate = self;
+        templatesCollectionView.dataSource = self;
+        [cell.contentView addSubview:templatesCollectionView];
+        heightCell += 90;
+    }
     
-    UICollectionViewFlowLayout *flowLayout = [UICollectionViewFlowLayout new];
-    flowLayout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
-    flowLayout.minimumInteritemSpacing = 10;
-    flowLayout.minimumLineSpacing = 10;
-    templatesCollectionView = [[UICollectionView alloc]initWithFrame:CGRectMake(paddingEdge, heightCell, tableWidth - paddingEdge*2, 80) collectionViewLayout:flowLayout];
-    [templatesCollectionView setBackgroundColor:[UIColor whiteColor]];
-    templatesCollectionView.delegate = self;
-    templatesCollectionView.dataSource = self;
-    [cell.contentView addSubview:templatesCollectionView];
-    heightCell += 90;
-    
-    SimiLabel *uploadImageLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(paddingEdge, heightCell, tableWidth - paddingEdge*2, 20) andFontName:THEME_FONT_NAME_REGULAR andFontSize:18 andTextColor:THEME_CONTENT_COLOR text:@"Or upload your photo"];
-    [cell.contentView addSubview:uploadImageLabel];
-    heightCell += 30;
-    
-    SimiButton *uploadImageButton = [[SimiButton alloc]initWithFrame:CGRectMake(paddingEdge, heightCell, 140, 30) title:@"Upload image" titleFont:[UIFont fontWithName:THEME_FONT_NAME_REGULAR size:16] cornerRadius:4 borderWidth:0 borderColor:0];
-    [uploadImageButton addTarget:self action:@selector(uploadImage:) forControlEvents:UIControlEventTouchUpInside];
-    [cell.contentView addSubview:uploadImageButton];
-    
-    uploadImageView = [[UIImageView alloc]initWithFrame:CGRectMake(paddingEdge + 160, heightCell, 80, 80)];
-    uploadImageView.contentMode = UIViewContentModeScaleAspectFit;
-    uploadImageView.userInteractionEnabled = YES;
-    UITapGestureRecognizer *gesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(selectUploadImage:)];
-    [uploadImageView addGestureRecognizer:gesture];
-    heightCell += 90;
+    if ([giftCardSettings valueForKey:@"simigift_template_upload"]) {
+        BOOL useTemplateUpload = [[giftCardSettings valueForKey:@"simigift_template_upload"]boolValue];
+        if (useTemplateUpload) {
+            SimiLabel *uploadImageLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(paddingEdge, heightCell, tableWidth - paddingEdge*2, 20) andFontName:THEME_FONT_NAME_REGULAR andFontSize:18 andTextColor:THEME_CONTENT_COLOR text:@"Or upload your photo"];
+            [cell.contentView addSubview:uploadImageLabel];
+            heightCell += 30;
+            
+            SimiButton *uploadImageButton = [[SimiButton alloc]initWithFrame:CGRectMake(paddingEdge, heightCell, 140, 30) title:@"Upload" titleFont:[UIFont fontWithName:THEME_FONT_NAME_REGULAR size:16] cornerRadius:4 borderWidth:0 borderColor:0];
+            [uploadImageButton addTarget:self action:@selector(uploadImage:) forControlEvents:UIControlEventTouchUpInside];
+            [cell.contentView addSubview:uploadImageButton];
+            
+            uploadImageView = [[UIImageView alloc]initWithFrame:CGRectMake(paddingEdge + 160, heightCell, 80, 80)];
+            uploadImageView.contentMode = UIViewContentModeScaleAspectFit;
+            uploadImageView.userInteractionEnabled = YES;
+            UITapGestureRecognizer *gesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(selectUploadImage:)];
+            [uploadImageView addGestureRecognizer:gesture];
+            heightCell += 90;
+            [cell.contentView addSubview:uploadImageView];
+        }
+    }
     row.height = heightCell;
-    [cell.contentView addSubview:uploadImageView];
     return cell;
 }
 
@@ -202,6 +241,7 @@
     customMessageTextView.layer.borderWidth = 1;
     customMessageTextView.layer.borderColor = [UIColor lightGrayColor].CGColor;
     customMessageTextView.layer.cornerRadius = 6;
+    customMessageTextView.delegate = self;
     [customMessageTextView setFont:[UIFont fontWithName:THEME_FONT_NAME size:13]];
     [cell.contentView addSubview:customMessageTextView];
     cellHeight += 100;
@@ -210,30 +250,32 @@
     [getNotificationCheckbox setFrame:CGRectMake(paddingEdge, cellHeight, textFieldWidth, 30)];
     [cell.contentView addSubview:getNotificationCheckbox];
     cellHeight += 30;
-    
-    SimiLabel *dayToSendLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(paddingEdge, cellHeight, textFieldWidth, labelHeight) andFontName:THEME_FONT_NAME_REGULAR andFontSize:16 andTextColor:THEME_CONTENT_COLOR text:[NSString stringWithFormat:@"%@*",SCLocalizedString(@"Day to send")]];
-    [cell.contentView addSubview:dayToSendLabel];
-    cellHeight += labelHeight;
-    
-    dayToSendTextField = [[SimiTextField alloc]initWithFrame:CGRectMake(paddingEdge, cellHeight, textFieldWidth, textFieldHeight) placeHolder:@"" font:[UIFont fontWithName:THEME_FONT_NAME size:16] textColor:THEME_CONTENT_COLOR borderWidth:1 borderColor:[UIColor lightGrayColor] cornerRadius:6 leftView:[[UIView alloc]initWithFrame:CGRectMake(0, 0, 10, textFieldHeight)] rightView:nil];
-    dayToSendTextField.delegate = self;
-    [cell.contentView addSubview:dayToSendTextField];
-    cellHeight += textFieldHeight;
-    
-    if (timeZoneTitles.count > 0) {
-        SimiLabel *timeZoneLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(paddingEdge, cellHeight, textFieldWidth, labelHeight) andFontName:THEME_FONT_NAME_REGULAR andFontSize:16 andTextColor:THEME_CONTENT_COLOR text:@"Select time zone"];
-        [cell.contentView addSubview:timeZoneLabel];
+    if ([[giftCardSettings valueForKey:@"is_day_to_send"]boolValue]) {
+        SimiLabel *dayToSendLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(paddingEdge, cellHeight, textFieldWidth, labelHeight) andFontName:THEME_FONT_NAME_REGULAR andFontSize:16 andTextColor:THEME_CONTENT_COLOR text:[NSString stringWithFormat:@"%@*",SCLocalizedString(@"Day to send")]];
+        [cell.contentView addSubview:dayToSendLabel];
         cellHeight += labelHeight;
         
-        UIImageView *dropdownImageView = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, 20, 40)];
-        [dropdownImageView setContentMode:UIViewContentModeScaleAspectFit];
-        [dropdownImageView setImage:[UIImage imageNamed:@"ic_dropdown"]];
-        selectTimeZoneTextField = [[SimiTextField alloc]initWithFrame:CGRectMake(paddingEdge, cellHeight, textFieldWidth, textFieldHeight) placeHolder:@"" font:[UIFont fontWithName:THEME_FONT_NAME size:16] textColor:THEME_CONTENT_COLOR borderWidth:1 borderColor:[UIColor lightGrayColor] cornerRadius:6 leftView:[[UIView alloc]initWithFrame:CGRectMake(0, 0, 10, textFieldHeight)] rightView:dropdownImageView];
-        selectTimeZoneTextField.delegate = self;
-        selectTimeZoneTextField.text = [timeZoneTitles objectAtIndex:timeZoneSelectedIndex];
-        [cell.contentView addSubview:selectTimeZoneTextField];
+        dayToSendTextField = [[SimiTextField alloc]initWithFrame:CGRectMake(paddingEdge, cellHeight, textFieldWidth, textFieldHeight) placeHolder:@"" font:[UIFont fontWithName:THEME_FONT_NAME size:16] textColor:THEME_CONTENT_COLOR borderWidth:1 borderColor:[UIColor lightGrayColor] cornerRadius:6 leftView:[[UIView alloc]initWithFrame:CGRectMake(0, 0, 10, textFieldHeight)] rightView:nil];
+        dayToSendTextField.delegate = self;
+        [cell.contentView addSubview:dayToSendTextField];
         cellHeight += textFieldHeight;
+        
+        if (timeZoneTitles.count > 0) {
+            SimiLabel *timeZoneLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(paddingEdge, cellHeight, textFieldWidth, labelHeight) andFontName:THEME_FONT_NAME_REGULAR andFontSize:16 andTextColor:THEME_CONTENT_COLOR text:@"Select time zone"];
+            [cell.contentView addSubview:timeZoneLabel];
+            cellHeight += labelHeight;
+            
+            UIImageView *dropdownImageView = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, 20, 40)];
+            [dropdownImageView setContentMode:UIViewContentModeScaleAspectFit];
+            [dropdownImageView setImage:[UIImage imageNamed:@"ic_dropdown"]];
+            selectTimeZoneTextField = [[SimiTextField alloc]initWithFrame:CGRectMake(paddingEdge, cellHeight, textFieldWidth, textFieldHeight) placeHolder:@"" font:[UIFont fontWithName:THEME_FONT_NAME size:16] textColor:THEME_CONTENT_COLOR borderWidth:1 borderColor:[UIColor lightGrayColor] cornerRadius:6 leftView:[[UIView alloc]initWithFrame:CGRectMake(0, 0, 10, textFieldHeight)] rightView:dropdownImageView];
+            selectTimeZoneTextField.delegate = self;
+            selectTimeZoneTextField.text = [timeZoneTitles objectAtIndex:timeZoneSelectedIndex];
+            [cell.contentView addSubview:selectTimeZoneTextField];
+            cellHeight += textFieldHeight;
+        }
     }
+    
     row.height = cellHeight+20;
     insertRowHeight = row.height;
     return cell;
@@ -499,6 +541,17 @@
 - (void)selectUploadImage:(UIGestureRecognizer*)gesture{
     self.useUploadImage = !self.useUploadImage;
 }
+
+- (void)updateCellWhenChangeTemplate{
+    selectedTemplate = [simiGiftTemplates objectAtIndex:selectedTemplateIndex];
+    giftCardTemplateID = [NSString stringWithFormat:@"%@",[selectedTemplate valueForKey:@"giftcard_template_id"]];
+    if ([[selectedTemplate valueForKey:@"images"] isKindOfClass:[NSArray class]]) {
+        giftCardTemplateImages = [selectedTemplate valueForKey:@"images"];
+    }
+    templateImageSelectedIndex = 0;
+    selectTemplateTextField.text = [templateNames objectAtIndex:selectedTemplateIndex];
+    [templatesCollectionView reloadData];
+}
 #pragma mark Checkbox Action
 - (void)changeSendPostOfficeState{
 //    if (sendThroughPostOfficeCheckbox.checkState == M13CheckboxStateChecked) {
@@ -507,9 +560,9 @@
 //        isSendThroughPostOffice = NO;
 //    }
     SimiSection *mainSection = [self.cells getSectionByIdentifier:product_main_section];
-    float sectionIndex = [self.cells getSectionIndexByIdentifier:product_main_section];
+//    float sectionIndex = [self.cells getSectionIndexByIdentifier:product_main_section];
     if (sendThroughPostOfficeCheckbox.checkState == M13CheckboxStateChecked) {
-        float rowIndex = [mainSection getRowIndexByIdentifier:giftcard_sendpostoffice_checkbox_row];
+//        float rowIndex = [mainSection getRowIndexByIdentifier:giftcard_sendpostoffice_checkbox_row];
         SimiRow *sendPostOfficeRow = [mainSection getRowByIdentifier:giftcard_sendpostoffice_checkbox_row];
         [mainSection addRowWithIdentifier:giftcard_recommendinfo_row height:60 sortOrder:sendPostOfficeRow.sortOrder + 1];
         [mainSection sortItems];
@@ -517,6 +570,7 @@
 //        [self.contentTableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:rowIndex+1 inSection:sectionIndex]] withRowAnimation:UITableViewRowAnimationFade];
 //        [self.contentTableView endUpdates];
         [self.contentTableView reloadData];
+//        [self.contentTableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:rowIndex inSection:sectionIndex] atScrollPosition:UITableViewScrollPositionTop animated:YES];
     }else{
         float rowIndex = [mainSection getRowIndexByIdentifier:giftcard_recommendinfo_row];
         [mainSection removeRowAtIndex:rowIndex];
@@ -524,6 +578,7 @@
 //        [self.contentTableView deleteRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:rowIndex inSection:sectionIndex]] withRowAnimation:UITableViewRowAnimationFade];
 //        [self.contentTableView endUpdates];
          [self.contentTableView reloadData];
+//        [self.contentTableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:rowIndex inSection:sectionIndex] atScrollPosition:UITableViewScrollPositionTop animated:YES];
     }
 }
 
@@ -534,9 +589,9 @@
 //        isSendGiftcardToFriend = NO;
 //    }
     SimiSection *mainSection = [self.cells getSectionByIdentifier:product_main_section];
-    float sectionIndex = [self.cells getSectionIndexByIdentifier:product_main_section];
+//    float sectionIndex = [self.cells getSectionIndexByIdentifier:product_main_section];
     if (sendGiftcardToFriendCheckbox.checkState == M13CheckboxStateChecked) {
-        float rowIndex = [mainSection getRowIndexByIdentifier:giftcard_sendfriend_checkbox_row];
+//        float rowIndex = [mainSection getRowIndexByIdentifier:giftcard_sendfriend_checkbox_row];
         SimiRow *sendFriendRow = [mainSection getRowByIdentifier:giftcard_sendfriend_checkbox_row];
         [mainSection addRowWithIdentifier:giftcard_insertinfo_row height:insertRowHeight sortOrder:sendFriendRow.sortOrder+1];
         [mainSection sortItems];
@@ -544,6 +599,7 @@
 //        [self.contentTableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:rowIndex+1 inSection:sectionIndex]] withRowAnimation:UITableViewRowAnimationFade];
 //        [self.contentTableView endUpdates];
         [self.contentTableView reloadData];
+//        [self.contentTableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:rowIndex inSection:sectionIndex] atScrollPosition:UITableViewScrollPositionTop animated:YES];
     }else{
         float rowIndex = [mainSection getRowIndexByIdentifier:giftcard_insertinfo_row];
         [mainSection removeRowAtIndex:rowIndex];
@@ -551,6 +607,7 @@
 //        [self.contentTableView deleteRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:rowIndex inSection:sectionIndex]] withRowAnimation:UITableViewRowAnimationFade];
 //        [self.contentTableView endUpdates];
         [self.contentTableView reloadData];
+//        [self.contentTableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:rowIndex inSection:sectionIndex] atScrollPosition:UITableViewScrollPositionTop animated:YES];
     }
 }
 
@@ -563,6 +620,11 @@
 - (BOOL)textFieldShouldReturn:(UITextField *)textField{
     [textField resignFirstResponder];
     return YES;
+}
+
+- (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text{
+    NSInteger limit = [[giftCardSettings valueForKey:@"simigift_message_max"]integerValue];
+    return textView.text.length + (text.length - range.length) <= limit;
 }
 
 - (void)doneEditGiftCardValue:(UIButton*)sender{
@@ -585,6 +647,19 @@
     if ([textField isEqual:selectTimeZoneTextField]) {
         ActionSheetStringPicker *timeZonePicker = [[ActionSheetStringPicker alloc]initWithTitle:SCLocalizedString(@"Choose Time Zone") rows:timeZoneTitles initialSelection:timeZoneSelectedIndex target:self successAction:@selector(didSelectTimeZoneValue:element:) cancelAction:@selector(cancelActionSheet:) origin:textField];
         [timeZonePicker showActionSheetPicker];
+        [self.view endEditing:YES];
+        return NO;
+    }
+    if ([textField isEqual:selectTemplateTextField]) {
+        ActionSheetStringPicker *templatePicker = [[ActionSheetStringPicker alloc]initWithTitle:SCLocalizedString(@"Select a template") rows:templateNames initialSelection:selectedTemplateIndex doneBlock:^(ActionSheetStringPicker *picker, NSInteger selectedIndex, id selectedValue) {
+            if (selectedIndex != selectedTemplateIndex) {
+                selectedTemplateIndex = selectedIndex;
+                [self updateCellWhenChangeTemplate];
+            }
+        } cancelBlock:^(ActionSheetStringPicker *picker) {
+            
+        } origin:textField];
+        [templatePicker showActionSheetPicker];
         [self.view endEditing:YES];
         return NO;
     }
@@ -662,8 +737,10 @@
             [cartItem setValue:recipientNameTextField.text forKey:@"recipient_name"];
             [cartItem setValue:recipientEmailTextField.text forKey:@"recipient_email"];
             [cartItem setValue:customMessageTextView.text forKey:@"message"];
-            [cartItem setValue:dayToSendTextField.text forKey:@"day_to_send"];
-            [cartItem setValue:[[timeZoneModelCollection objectAtIndex:timeZoneSelectedIndex] valueForKey:@"value"] forKey:@"timezone_to_send"];
+            if([[giftCardSettings valueForKey:@"is_day_to_send"]boolValue]){
+                [cartItem setValue:dayToSendTextField.text forKey:@"day_to_send"];
+                [cartItem setValue:[[timeZoneModelCollection objectAtIndex:timeZoneSelectedIndex] valueForKey:@"value"] forKey:@"timezone_to_send"];
+            }
             if (getNotificationCheckbox.checkState == M13CheckboxStateChecked) {
                 [cartItem setValue:@"1" forKey:@"notify_success"];
             }else{
@@ -691,7 +768,7 @@
 }
 
 - (BOOL)isEnterAllRequireFields{
-    if ([recipientNameTextField.text isEqualToString:@""] || [recipientEmailTextField.text isEqualToString:@""] || [dayToSendTextField.text isEqualToString:@""]) {
+    if ([recipientNameTextField.text isEqualToString:@""] || [recipientEmailTextField.text isEqualToString:@""] || ([dayToSendTextField.text isEqualToString:@""] && [[giftCardSettings valueForKey:@"is_day_to_send"]boolValue])) {
         [self showToastMessage:@"Please enter all required fields" duration:1.5];
         return NO;
     }
@@ -710,7 +787,7 @@
     float maxWidth = height;
     float imgRatio = actualWidth/actualHeight;
     float maxRatio = maxWidth/maxHeight;
-    float compressionQuality = 0.5;//50 percent compression
+    float compressionQuality = 1;//50 percent compression
     
     if (actualHeight > maxHeight || actualWidth > maxWidth)
     {

@@ -12,6 +12,7 @@
 #import "SCGiftCardProductsViewController.h"
 #import "SCAccountViewController.h"
 #import "SCMyGiftCardViewController.h"
+#import "SCGiftCardProductPadViewController.h"
 
 static NSString *LEFTMENU_ROW_GIFTCARD = @"LEFTMENU_ROW_GIFTCARD";
 static NSString *ACCOUNT_GIFTCARD_ROW = @"ACCOUNT_GIFTCARD_ROW";
@@ -31,6 +32,8 @@ static NSString *ACCOUNT_GIFTCARD_ROW = @"ACCOUNT_GIFTCARD_ROW";
         //My Account Screen
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializedAccountCellAfter:) name:[NSString stringWithFormat:@"%@%@",SCAccountViewController_RootEventName,SimiTableViewController_SubKey_InitCells_End] object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didSelectAccountCellAtIndexPath:) name:[NSString stringWithFormat:@"%@%@",SCAccountViewController_RootEventName,SimiTableViewController_SubKey_DidSelectCell] object:nil];
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(showProductDetailFromCart:) name:SIMI_SHOWPRODUCTDETAIL object:nil];
     }
     return self;
 }
@@ -91,6 +94,28 @@ static NSString *ACCOUNT_GIFTCARD_ROW = @"ACCOUNT_GIFTCARD_ROW";
         SCMyGiftCardViewController *myGiftCardViewController = [SCMyGiftCardViewController new];
         [accountVC.navigationController pushViewController:myGiftCardViewController animated:YES];
         accountVC.isDiscontinue = YES;
+    }
+}
+
+- (void)showProductDetailFromCart:(NSNotification *)noti{
+    NSDictionary *userInfo = noti.userInfo;
+    if ([userInfo valueForKey:@"product_type"]) {
+        NSString *productType = [NSString stringWithFormat:@"%@",[userInfo valueForKey:@"product_type"]];
+        if ([productType isEqualToString:@"simigiftvoucher"]) {
+            UINavigationController *navi = [userInfo valueForKey:KEYEVENT.APPCONTROLLER.navigation_controller];
+            NSString *productId = [userInfo valueForKey:KEYEVENT.PRODUCTVIEWCONTROLLER.product_id];
+            SCAppController *appController = noti.object;
+            appController.isDiscontinue = YES;
+            if (PHONEDEVICE) {
+                SCGiftCardProductViewController *productViewController = [SCGiftCardProductViewController new];
+                productViewController.productId = productId;
+                [navi pushViewController:productViewController animated:YES];
+            }else{
+                SCGiftCardProductPadViewController *productViewController = [SCGiftCardProductPadViewController new];
+                productViewController.productId = productId;
+                [navi pushViewController:productViewController animated:YES];
+            }
+        }
     }
 }
 @end

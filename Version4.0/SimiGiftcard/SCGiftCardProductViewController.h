@@ -22,16 +22,24 @@ static NSString *giftcard_insertinfo_row = @"giftcard_insertinfo_row";
 
 @interface SCGiftCardProductViewController : SCProductSecondDesignViewController<UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextFieldDelegate, UITextViewDelegate>{
     UIImageView *giftCardImageView;
+    
+    NSMutableArray *simiGiftTemplates;
+    NSDictionary *selectedTemplate;
     NSArray *giftCardTemplateImages;
     NSInteger templateImageSelectedIndex;
     UICollectionView *templatesCollectionView;
     UIImageView *uploadImageView;
     SimiGiftCardModel *uploadImageModel;
+    NSString *giftCardTemplateID;
+    NSInteger selectedTemplateIndex;
+    NSMutableArray *templateNames;
+    
+    NSDictionary *giftCardSettings;
     SimiCheckbox *sendThroughPostOfficeCheckbox;
     SimiCheckbox *sendGiftcardToFriendCheckbox;
 //    BOOL isSendThroughPostOffice;
 //    BOOL isSendGiftcardToFriend;
-    
+    SimiTextField *selectTemplateTextField;
     SimiTextField *senderNameTextField;
     SimiTextField *recipientNameTextField;
     SimiTextField *recipientEmailTextField;
@@ -47,7 +55,6 @@ static NSString *giftcard_insertinfo_row = @"giftcard_insertinfo_row";
     NSMutableArray *giftCardValueTitles;
     NSInteger valueSelectedIndex;
     SimiTextField *giftCardValueTextField;
-    NSString *giftCardTemplateID;
     
     SimiGiftCardTimeZoneModelCollection *timeZoneModelCollection;
     NSMutableArray *timeZoneTitles;
@@ -63,6 +70,7 @@ static NSString *giftcard_insertinfo_row = @"giftcard_insertinfo_row";
 @property (nonatomic) BOOL useUploadImage;
 
 - (void)selectUploadImage:(UIGestureRecognizer*)gesture;
+- (void)initializedGiftCardInfo;
 @end
 
 @interface GiftCardTemplateCollectionViewCell : UICollectionViewCell
