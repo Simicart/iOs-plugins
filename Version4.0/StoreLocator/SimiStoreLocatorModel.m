@@ -84,5 +84,8 @@
     if([self.modelData objectForKey:@"image"]) {
         self.image = [NSString stringWithFormat:@"%@",[self.modelData objectForKey:@"image"]];
     }
+    if([self.modelData objectForKey:@"zoom_level"]){
+        self.zoomLevel = [NSString stringWithFormat:@"%@",[self.modelData objectForKey:@"zoom_level"]];
+    }
 }
 @end

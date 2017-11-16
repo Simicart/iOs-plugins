@@ -48,7 +48,7 @@
         case MapViewSelectedMarker:
             camera = [GMSCameraPosition cameraWithLatitude:latitude
                                                  longitude:longitude
-                                                      zoom:15];
+                                                      zoom:[sLModel.zoomLevel floatValue]];
             break;
         default:
             return;
@@ -56,6 +56,7 @@
     }
     
     mapView_ = [GMSMapView mapWithFrame:CGRectZero camera:camera];
+    
     mapView_.myLocationEnabled = YES;
     mapView_.delegate = self;
     [self.view addSubview:mapView_];
@@ -228,7 +229,7 @@
         float latitude = [sLModel.latitude floatValue];
         float longitude = [sLModel.longtitude floatValue];
         
-        GMSCameraPosition *cameraPosition = [GMSCameraPosition cameraWithLatitude:latitude longitude:longitude zoom:15];
+        GMSCameraPosition *cameraPosition = [GMSCameraPosition cameraWithLatitude:latitude longitude:longitude zoom:[sLModel.zoomLevel floatValue]];
         [mapView_ setCamera:cameraPosition];
     }
 }

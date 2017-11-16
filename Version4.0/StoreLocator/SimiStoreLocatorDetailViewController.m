@@ -110,7 +110,7 @@
 - (void)initGoogleImage
 {
     imgStore = [[UIImageView alloc]initWithFrame:CGRectMake(widthContent - sizeStoreImage - edgeSpace, heightScrViewContentSize, sizeStoreImage, sizeStoreImage)];
-    NSString* stringURL = [NSString stringWithFormat:@"http://maps.googleapis.com/maps/api/staticmap?center=%@,%@&zoom=20&size=400x400",sLModel.latitude,sLModel.longtitude];
+    NSString* stringURL = [NSString stringWithFormat:@"http://maps.googleapis.com/maps/api/staticmap?center=%@,%@&zoom=%@&size=400x400",sLModel.latitude,sLModel.longtitude,sLModel.zoomLevel];
     stringURL  = [NSString stringWithFormat:@"%@%@",stringURL,@"&markers=size:large%7Ccolor:red%7Clabel:S%7C"];
     stringURL = [NSString stringWithFormat:@"%@%@,%@",stringURL,sLModel.latitude,sLModel.longtitude];
     [imgStore sd_setImageWithURL:[NSURL URLWithString:stringURL]];

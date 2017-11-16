@@ -12,6 +12,7 @@
 {
     NSInteger offset;
     BOOL isFirstRun;
+    SimiLabel *emptyLabel;
 }
 @end
 
@@ -37,6 +38,8 @@
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     [self.tableView setContentInset:UIEdgeInsetsZero];
+    self.tableView.tableFooterView = [UIView new];
+    self.tableView.tableHeaderView = [UIView new];
     if (self.listViewOption != ListViewOptionSearched) {
         self.listViewOption = ListViewOptionNoneSearch;
     }
@@ -53,6 +56,12 @@
     [cLController.locationManager startUpdatingLocation];
     isFirstRun = YES;
     offset = 0;
+    emptyLabel = [[SimiLabel alloc] initWithFrame:self.tableView.bounds andFontName:THEME_FONT_NAME andFontSize:THEME_FONT_SIZE];
+    [self.tableView addSubview:emptyLabel];
+    emptyLabel.numberOfLines = 0;
+    emptyLabel.textAlignment = NSTextAlignmentCenter;
+    emptyLabel.text = @"List of store are empty";
+    emptyLabel.hidden = YES;
 }
 
 -(void)viewDidAppear:(BOOL)animated
@@ -177,7 +186,7 @@
             if (sLModelCollection == nil) {
                 sLModelCollection = [[SimiStoreLocatorModelCollection alloc]init];
             }
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didGetStoreLocatorList) name:StoreLocator_DidGetStoreList object:sLModelCollection];
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didGetStoreLocatorList:) name:StoreLocator_DidGetStoreList object:sLModelCollection];
             if (isFirstRun || offset != [sLModelCollection count]) {
                 isFirstRun = NO;
                 offset = [sLModelCollection count];
@@ -192,7 +201,7 @@
             if (sLModelCollection == nil) {
                 sLModelCollection = [[SimiStoreLocatorModelCollection alloc]init];
             }
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didGetStoreLocatorList) name:StoreLocator_DidGetStoreList object:sLModelCollection];
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didGetStoreLocatorList:) name:StoreLocator_DidGetStoreList object:sLModelCollection];
             if (isFirstRun ||offset != [sLModelCollection count]) {
                 isFirstRun = NO;
                 offset = [sLModelCollection count];
@@ -208,11 +217,21 @@
     }
 }
 
-- (void) didGetStoreLocatorList
+- (void) didGetStoreLocatorList:(NSNotification *)noti
 {
-    [SimiGlobalFunction sortCollection:sLModelCollection byKey:@"sort"];
-    [self.tableView reloadData];
+    [self removeObserverForNotification:noti];
+    SimiResponder *responder = [noti.userInfo objectForKey:responderKey];
     [self.tableView.infiniteScrollingView stopAnimating];
+    if(responder.status == SUCCESS){
+        if(sLModelCollection.count > 0){
+            [self.tableView reloadData];
+            emptyLabel.hidden = YES;
+        }else{
+            emptyLabel.hidden = NO;
+        }
+    }else{
+        [SimiGlobalFunction showAlertWithTitle:@"" message:responder.message];
+    }
 }
 
 #pragma mark Mail Delegate

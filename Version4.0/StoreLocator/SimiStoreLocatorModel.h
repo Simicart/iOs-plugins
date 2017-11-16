@@ -50,5 +50,5 @@
 @property (strong, nonatomic) NSString *sundayOpen;
 @property (strong, nonatomic) NSString *sundayClose;
 @property (strong, nonatomic) NSString *image;
-
+@property (strong, nonatomic) NSString *zoomLevel;
 @end
