@@ -185,7 +185,7 @@
             UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:ORDER_VIEW_GIFTCARD_CREDIT];
             float cellY = 0;
             if(!giftCardCreditCb) {
-                giftCardCreditCb = [[SimiCheckbox alloc] initWithTitle:[NSString stringWithFormat:@"%@(%@)",SCLocalizedString(@"Use Gift Card credit to check out"),[customerData objectForKey:@"balance"]]];
+                giftCardCreditCb = [[SimiCheckbox alloc] initWithTitle:[NSString stringWithFormat:@"%@%@",SCLocalizedString(@"Use Gift Card credit to check out"),[customerData objectForKey:@"balance"]?[NSString stringWithFormat:@"(%@)",[customerData objectForKey:@"balance"]]:@""]];
                 [giftCardCreditCb addTarget:self action:@selector(giftCardCreditCbChangedValue:) forControlEvents:UIControlEventValueChanged];
             }
             if(!didGetCreditConfig){
@@ -197,7 +197,7 @@
                 didGetCreditConfig = YES;
             }
             giftCardCreditCb.frame = CGRectMake(paddingX, cellY, viewWidth, 30);
-            giftCardCreditCb.titleLabel.text = [NSString stringWithFormat:@"%@(%@)",SCLocalizedString(@"Use Gift Card credit to check out"),[customerData objectForKey:@"balance"]];
+            giftCardCreditCb.titleLabel.text = [NSString stringWithFormat:@"%@%@",SCLocalizedString(@"Use Gift Card credit to check out"),[customerData objectForKey:@"balance"]?[NSString stringWithFormat:@"(%@)",[customerData objectForKey:@"balance"]]:@""];
             [cell.contentView addSubview:giftCardCreditCb];
             cellY += giftCardCreditCb.frame.size.height + paddingY;
             if(giftCardCreditCb.checkState == M13CheckboxStateChecked) {
