@@ -158,6 +158,7 @@
 {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRemoveProductFromWishlist:) name:DidRemoveWishlistItem object:nil];
     [wishlistModelCollection removeItemWithWishlistItemID:[product objectForKey:@"wishlist_item_id"]];
+    [currentlyViewController startLoadingData];
 }
 
 - (void)didRemoveProductFromWishlist:(NSNotification *)noti
@@ -171,6 +172,7 @@
     else {
         [currentlyViewController showAlertWithTitle:@"" message:responder.message];
     }
+    [currentlyViewController stopLoadingData];
     [self removeObserverForNotification:noti];
 }
 
@@ -240,6 +242,7 @@
                 return;
             }
         }
+        [currentVC popToRootViewControllerAnimated:NO];
         [currentVC pushViewController:wishlistViewController animated:YES];
         [(SCNavigationBarPhone*)noti.object setIsDiscontinue:YES];
     }

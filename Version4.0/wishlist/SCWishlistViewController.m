@@ -29,8 +29,6 @@
     float paddingX = 5;
     float paddingY = 5;
     //Add notifications
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didAddProductFromWishlistToCart:) name:DidAddProductFromWishlistToCart object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didDeleteWishlistItem:) name:DidRemoveWishlistItem object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didGetWishlistItems:) name:DidGetWishlistItems object:nil];
     //Init Model and request get wishlist items
     wishlistModelCollection = [SCWishlistModelCollection new];
@@ -159,17 +157,19 @@
 
 #pragma mark SCWishlistCollectionViewCellDelegate
 - (void)deleteWishlistItem:(SCWishlistModel *)wishlistItem{
-    [wishlistModelCollection removeItemWithWishlistItemID:wishlistItem.wishlistItemId];
-    [self startLoadingData];
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:SCLocalizedString(@"Confirmation") message:[NSString stringWithFormat:@"%@?",SCLocalizedString(@"Are you sure you want to remove this product from wishlist")] preferredStyle:UIAlertControllerStyleAlert];
+    [alert addAction:[UIAlertAction actionWithTitle:SCLocalizedString(@"Yes") style:UIAlertActionStyleDestructive handler:^(UIAlertAction * _Nonnull action) {
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didDeleteWishlistItem:) name:DidRemoveWishlistItem object:nil];
+        [wishlistModelCollection removeItemWithWishlistItemID:wishlistItem.wishlistItemId];
+        [self startLoadingData];
+    }]];
+    [alert addAction:[UIAlertAction actionWithTitle:SCLocalizedString(@"No") style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+        
+    }]];
+     [self presentViewController:alert animated:YES completion:nil];
 }
 
 - (void)tapToWishlistItem:(SCWishlistModel *)wishlistItem{
-    SCProductViewController* productVC;
-    if(PHONEDEVICE){
-        productVC = [SCProductViewController new];
-    }else{
-        productVC = [SCProductViewControllerPad new];
-    }
     [[SCAppController sharedInstance] openProductWithNavigationController:self.navigationController productId:wishlistItem.productId moreParams:@{}];
     
 }
@@ -177,12 +177,14 @@
 - (void)addToCartWithWishlistItem:(SCWishlistModel *)wishlistItem{
     
     if(wishlistItem.selectedAllRequiredOptions){
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didAddProductFromWishlistToCart:) name:DidAddProductFromWishlistToCart object:nil];
         [wishlistModelCollection addProductToCartWithWishlistID:wishlistItem.wishlistItemId];
         [self startLoadingData];
     }else{
         [[SCAppController sharedInstance]openProductWithNavigationController:self.navigationController productId:wishlistItem.productId moreParams:nil];
     }
 }
+
 
 - (void)shareWishlistItem:(SCWishlistModel *)wishlistItem inView:(UIView *)view{
     [self shareWishlistWithText:wishlistItem.productSharingMessage url:wishlistItem.productSharingUrl  inView:view];
@@ -205,6 +207,13 @@
 //Notifications Catched
 - (void)didAddProductFromWishlistToCart: (NSNotification* ) noti{
     [self stopLoadingData];
+    [self removeObserverForNotification:noti];
+    SimiResponder *responder = [noti.userInfo objectForKey:responderKey];
+    if(responder.status == SUCCESS){
+        [self showToastMessage:@"Added to cart and removed from wishlist"];
+    }else{
+        [self showAlertWithTitle:@"" message:responder.message];
+    }
     if(PHONEDEVICE)
         [[[[SCAppController sharedInstance] navigationBarPhone] cartController] getCart];
     // get wishlist again
@@ -212,6 +221,13 @@
 }
 - (void)didDeleteWishlistItem: (NSNotification*) noti{
     [self stopLoadingData];
+    [self removeObserverForNotification:noti];
+    SimiResponder *responder = [noti.userInfo objectForKey:responderKey];
+    if(responder.status == SUCCESS){
+        [self showToastMessage:@"Removed from wishlist"];
+    }else{
+        [self showAlertWithTitle:@"" message:responder.message];
+    }
     [wishlistCollectionView reloadData];
     [self handleWishlistItemsCount];
 }
