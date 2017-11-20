@@ -280,7 +280,7 @@
     float padding = 10;
     float titleWidth = 120;
     float cellWidth = SCREEN_WIDTH;
-    if (padding) {
+    if (PADDEVICE) {
         cellWidth = SCREEN_WIDTH*2/3;
     }
     float valueWidth = cellWidth - titleWidth - padding*3;
@@ -361,8 +361,9 @@
         [self.contentView addSubview:commentsLabel];
         if (![[info valueForKey:@"comments"] isKindOfClass:[NSNull class]] && [info valueForKey:@"comments"]) {
             SimiLabel *commentsValueLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(titleWidth+padding*2, height, valueWidth, labelHeight) andFontName:THEME_FONT_NAME andFontSize:14 andTextColor:THEME_CONTENT_COLOR text:[info valueForKey:@"comments"]];
+            [commentsValueLabel resizLabelToFit];
             [self.contentView addSubview:commentsValueLabel];
-            height += labelHeight;
+            height += labelHeight*2;
         }
         
         [SimiGlobalFunction sortViewForRTL:self.contentView andWidth:cellWidth];

@@ -549,6 +549,9 @@
         giftCardTemplateImages = [selectedTemplate valueForKey:@"images"];
     }
     templateImageSelectedIndex = 0;
+    if (giftCardTemplateImages.count > 0) {
+        [giftCardImageView sd_setImageWithURL:[NSURL URLWithString:[[giftCardTemplateImages objectAtIndex:0] valueForKey:@"url"]] placeholderImage:[UIImage imageNamed:@"logo"]];
+    }
     selectTemplateTextField.text = [templateNames objectAtIndex:selectedTemplateIndex];
     [templatesCollectionView reloadData];
 }
