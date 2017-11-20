@@ -24,6 +24,7 @@
     NSString *giftCodeSelected;
     SCCartViewController *cartViewController;
     BOOL didGetGiftCodeConfig,didGetCreditConfig;
+    UIPickerView *existingCodePicker;
 }
 
 - (instancetype)init{
@@ -59,17 +60,21 @@
         if([[giftCardData objectForKey:@"use_giftcard"] boolValue]) {
             SimiRow *titleRow = [[SimiRow alloc] initWithIdentifier:CART_VIEW_GIFTCARD_TITLE height:44 sortOrder:sortOrder];
             [totalSection addObject:titleRow];
-            if([customer objectForKey:@"balance"]){
+            if([customer objectForKey:@"balance"] && ![[customer objectForKey:@"balance"] isEqual:[NSNull null]]){
                 if([[credit objectForKey:@"use_credit"] boolValue]) {
                     [totalSection addRowWithIdentifier:CART_VIEW_GIFTCART_CREDIT height:150 sortOrder:sortOrder];
+                    giftCardCreditCb.checkState = M13CheckboxStateChecked;
                 }else {
                     [totalSection addRowWithIdentifier:CART_VIEW_GIFTCART_CREDIT height:30 sortOrder:sortOrder];
+                    giftCardCreditCb.checkState = M13CheckboxStateUnchecked;
                 }
             }
             if([[giftcode objectForKey:@"use_giftcode"] boolValue]) {
                 [totalSection addRowWithIdentifier:CART_VIEW_GIFTCODE height:220 + 30*(giftcode.allValues.count - 1) sortOrder:sortOrder];
+                giftCodeCb.checkState = M13CheckboxStateChecked;
             }else {
                 [totalSection addRowWithIdentifier:CART_VIEW_GIFTCODE height:30 sortOrder:sortOrder];
+                giftCodeCb.checkState = M13CheckboxStateUnchecked;
             }
         }else{
             if([giftCardData objectForKey:@"label"] && ![[giftCardData objectForKey:@"label"] isEqualToString:@""]){
@@ -94,6 +99,7 @@
     float paddingX = 10;
     float paddingY = 5;
     float viewWidth = cartTableView.frame.size.width - 2* paddingX;
+#pragma mark GIFT CODE CELL
     if([row.identifier isEqualToString:CART_VIEW_GIFTCODE]) {
         float cellY = paddingY;
         UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CART_VIEW_GIFTCODE];
@@ -115,26 +121,24 @@
             didGetGiftCodeConfig = YES;
         }
         if(giftCodeCb.checkState == M13CheckboxStateChecked) {
-            if([[giftCode objectForKey:@"use_giftcode"] boolValue]){
-                for(NSObject *giftCodeValue in giftCode.allValues) {
-                    if([giftCodeValue isKindOfClass:[NSDictionary class]]) {
-                        UIButton *editButton = [[UIButton alloc] initWithFrame:CGRectMake(paddingX, cellY - 5, 40, 40)];
-                        [editButton setImage:[UIImage imageNamed:@"ic_address_edit"] forState:UIControlStateNormal];
-                        editButton.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
-                        editButton.simiObjectIdentifier = giftCodeValue;
-                        [editButton addTarget:self action:@selector(giftCodeSelectedEditing:) forControlEvents:UIControlEventTouchUpInside];
-                        [cell.contentView addSubview:editButton];
-                        SimiLabel *giftCodeLabel = [[SimiLabel alloc] initWithFrame:CGRectMake(paddingX + 40, cellY, viewWidth - 80, 30)];
-                        giftCodeLabel.text = [NSString stringWithFormat:@"%@ (%@%@)",[((NSDictionary *)giftCodeValue) objectForKey:@"hidden_code"],[customerData objectForKey:@"currency_symbol"],[((NSDictionary *)giftCodeValue) objectForKey:@"amount"]];
-                        [cell.contentView addSubview:giftCodeLabel];
-                        UIButton *deleteButton = [[UIButton alloc] initWithFrame:CGRectMake(paddingX + viewWidth - 40, cellY - 5, 40, 40)];
-                        [deleteButton setImage:[UIImage imageNamed:@"delete"] forState:UIControlStateNormal];
-                        deleteButton.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
-                        deleteButton.simiObjectIdentifier = giftCodeValue;
-                        [deleteButton addTarget:self action:@selector(giftCodeSelectedDelete:) forControlEvents:UIControlEventTouchUpInside];
-                        [cell.contentView addSubview:deleteButton];
-                        cellY += 30 + paddingY;
-                    }
+            for(NSObject *giftCodeValue in giftCode.allValues) {
+                if([giftCodeValue isKindOfClass:[NSDictionary class]]) {
+                    UIButton *editButton = [[UIButton alloc] initWithFrame:CGRectMake(paddingX, cellY - 5, 40, 40)];
+                    [editButton setImage:[UIImage imageNamed:@"ic_address_edit"] forState:UIControlStateNormal];
+                    editButton.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
+                    editButton.simiObjectIdentifier = giftCodeValue;
+                    [editButton addTarget:self action:@selector(giftCodeSelectedEditing:) forControlEvents:UIControlEventTouchUpInside];
+                    [cell.contentView addSubview:editButton];
+                    SimiLabel *giftCodeLabel = [[SimiLabel alloc] initWithFrame:CGRectMake(paddingX + 40, cellY, viewWidth - 80, 30)];
+                    giftCodeLabel.text = [NSString stringWithFormat:@"%@ (%@%@)",[((NSDictionary *)giftCodeValue) objectForKey:@"hidden_code"],[customerData objectForKey:@"currency_symbol"],[((NSDictionary *)giftCodeValue) objectForKey:@"amount"]];
+                    [cell.contentView addSubview:giftCodeLabel];
+                    UIButton *deleteButton = [[UIButton alloc] initWithFrame:CGRectMake(paddingX + viewWidth - 40, cellY - 5, 40, 40)];
+                    [deleteButton setImage:[UIImage imageNamed:@"delete"] forState:UIControlStateNormal];
+                    deleteButton.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
+                    deleteButton.simiObjectIdentifier = giftCodeValue;
+                    [deleteButton addTarget:self action:@selector(giftCodeSelectedDelete:) forControlEvents:UIControlEventTouchUpInside];
+                    [cell.contentView addSubview:deleteButton];
+                    cellY += 30 + paddingY;
                 }
             }
             SimiLabel *giftCardLabel = [[SimiLabel alloc] initWithFrame:CGRectMake(paddingX, cellY, viewWidth, 30)];
@@ -160,15 +164,17 @@
                 cellY += giftCardExistingLabel.frame.size.height + paddingY;
                 if(!existingCodeTextField) {
                     existingCodeTextField = [[SimiTextField alloc] init];
-                    UIPickerView *existingCodePicker = [[UIPickerView alloc] init];
+                    existingCodePicker = [[UIPickerView alloc] init];
                     existingCodePicker.delegate = self;
                     existingCodePicker.dataSource = self;
                     existingCodeTextField.inputView = existingCodePicker;
+                    existingCodeTextField.placeholder = SCLocalizedString(@"Please select");
                     UIToolbar *existingCodeToolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 140, SCREEN_WIDTH, 40)];
                     existingCodeToolbar.items = @[[[UIBarButtonItem alloc] initWithTitle:SCLocalizedString(@"Cancel") style:UIBarButtonItemStylePlain target:self action:@selector(cancelExistingCodeSelection:)],[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil],[[UIBarButtonItem alloc] initWithTitle:SCLocalizedString(@"Select") style:UIBarButtonItemStyleDone target:self action:@selector(doneExistingCodeSelection:)]];
                     existingCodeTextField.inputAccessoryView = existingCodeToolbar;
                 }
                 [cell.contentView addSubview:existingCodeTextField];
+                [existingCodePicker selectRow:0 inComponent:0 animated:nil];
                 existingCodeTextField.frame = CGRectMake(paddingX, cellY, viewWidth, 40);
                 cellY += 40 + paddingY;
             }
@@ -184,6 +190,7 @@
          [SimiGlobalFunction sortViewForRTL:cell.contentView andWidth:CGRectGetWidth(cartTableView.frame)];
         row.tableCell = cell;
         cartViewController.isDiscontinue = YES;
+#pragma mark CREDIT CELL
     }else if([row.identifier isEqualToString:CART_VIEW_GIFTCART_CREDIT]) {
         float cellY = paddingY;
         UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CART_VIEW_GIFTCART_CREDIT];
@@ -260,6 +267,7 @@
     }
 }
 
+
 - (void)cancelGiftCodeSelection: (id)sender {
     giftCodeTextField.text = @"";
     [giftCodeTextField endEditing:YES];
@@ -327,6 +335,8 @@
     }else {
         [params addEntriesFromDictionary:@{@"giftvoucher":@"0"}];
     }
+    [giftCodeTextField endEditing:YES];
+    [existingCodeTextField endEditing:YES];
     [[SimiGlobalVar sharedInstance].cart useGiftCodeWithParams:params];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUseGiftCode:) name:DidUseGiftCodeOnCart object:nil];
     [cartViewController startLoadingData];
@@ -339,6 +349,7 @@
     }else {
         [params addEntriesFromDictionary:@{@"usecredit":@"0"}];
     }
+    [giftCardCreditTextField endEditing:YES];
     [[SimiGlobalVar sharedInstance].cart useGiftCardCreditWithParams:params];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUseGiftCardCredit:) name:DidUseGiftCardCreditOnCart object:nil];
     [cartViewController startLoadingData];
@@ -355,24 +366,13 @@
     [self removeObserverForNotification:noti];
     [cartViewController stopLoadingData];
     SimiResponder *responder = [noti.userInfo objectForKey:responderKey];
-    NSDictionary *giftCardData = [[SimiGlobalVar sharedInstance].cart.data valueForKey:@"gift_card"];;
     if(responder.status == SUCCESS) {
         [self showGiftCardMessageOnCart];
-        NSDictionary *credit = [giftCardData objectForKey:@"credit"];
-        SimiSection *cartTotalSection = [cartCells getSectionByIdentifier:CART_TOTALS];
-        SimiRow *giftCardCreditRow = [cartTotalSection getRowByIdentifier:CART_VIEW_GIFTCART_CREDIT];
-        if([[credit objectForKey:@"use_credit"] boolValue]) {
-            giftCardCreditCb.checkState = M13CheckboxStateChecked;
-            giftCardCreditRow.height = 150;
-            giftCardCreditTextField.text = [NSString stringWithFormat:@"%@",[credit objectForKey:@"use_credit_amount"]];
-        }else {
-            giftCardCreditCb.checkState = M13CheckboxStateUnchecked;
-            giftCardCreditRow.height = 30;
-            giftCardCreditTextField.text = @"";
-        }
         [cartViewController changeCartData:noti];
     }else {
-        [cartViewController showAlertWithTitle:@"" message:responder.message];
+        [cartViewController showAlertWithTitle:@"" message:responder.message completionHandler:^{
+            [cartViewController getCart];
+        }];
     }
 }
 
@@ -382,20 +382,11 @@
     SimiResponder *responder = [noti.userInfo objectForKey:responderKey];
     if(responder.status == SUCCESS) {
         [self showGiftCardMessageOnCart];
-        NSDictionary *giftCardData = [[SimiGlobalVar sharedInstance].cart.data valueForKey:@"gift_card"];;
-        NSDictionary *giftCode = [giftCardData objectForKey:@"giftcode"];
-        SimiSection *cartTotalSection = [cartCells getSectionByIdentifier:CART_TOTALS];
-        SimiRow *giftCardRow = [cartTotalSection getRowByIdentifier:CART_VIEW_GIFTCODE];
-        if([[giftCode objectForKey:@"use_giftcode"] boolValue]) {
-            giftCardRow.height = 220 + 30*(giftCode.allValues.count - 1);
-            giftCodeCb.checkState = M13CheckboxStateChecked;
-        }else {
-            giftCardRow.height = 30;
-            giftCodeCb.checkState = M13CheckboxStateUnchecked;
-        }
         [cartViewController changeCartData:noti];
     }else {
-        [cartViewController showAlertWithTitle:@"" message:responder.message];
+        [cartViewController showAlertWithTitle:@"" message:responder.message completionHandler:^{
+            [cartViewController getCart];
+        }];
     }
 }
 
@@ -417,20 +408,11 @@
     SimiResponder *responder = [noti.userInfo objectForKey:responderKey];
     if(responder.status == SUCCESS) {
         [self showGiftCardMessageOnCart];
-        NSDictionary *giftCardData = [[SimiGlobalVar sharedInstance].cart.data valueForKey:@"gift_card"];;
-        NSDictionary *giftCode = [giftCardData objectForKey:@"giftcode"];
-        SimiSection *cartTotalSection = [cartCells getSectionByIdentifier:CART_TOTALS];
-        SimiRow *giftCardRow = [cartTotalSection getRowByIdentifier:CART_VIEW_GIFTCODE];
-        if([[giftCode objectForKey:@"use_giftcode"] boolValue]) {
-            giftCardRow.height = 220 + 30*(giftCode.allValues.count - 1);
-            giftCodeCb.checkState = M13CheckboxStateChecked;
-        }else {
-            giftCardRow.height = 30;
-            giftCodeCb.checkState = M13CheckboxStateUnchecked;
-        }
         [cartViewController changeCartData:noti];
     }else {
-        [cartViewController showAlertWithTitle:@"" message:responder.message];
+        [cartViewController showAlertWithTitle:@"" message:responder.message completionHandler:^{
+            [cartViewController getCart];
+        }];
     }
 }
 
@@ -442,7 +424,9 @@
         [self showGiftCardMessageOnCart];
         [cartViewController changeCartData:noti];
     }else {
-        [cartViewController showAlertWithTitle:@"" message:responder.message];
+        [cartViewController showAlertWithTitle:@"" message:responder.message completionHandler:^{
+            [cartViewController getCart];
+        }];
     }
 }
 
@@ -454,7 +438,9 @@
         [self showGiftCardMessageOnCart];
         [cartViewController changeCartData:noti];
     }else {
-        [cartViewController showAlertWithTitle:@"" message:responder.message];
+        [cartViewController showAlertWithTitle:@"" message:responder.message completionHandler:^{
+            [cartViewController getCart];
+        }];
     }
 }
 
@@ -473,18 +459,16 @@
         [self showGiftCardMessageOnCart];
         NSDictionary *giftCardData = [[SimiGlobalVar sharedInstance].cart.data valueForKey:@"gift_card"];;
         NSDictionary *giftCode = [giftCardData objectForKey:@"giftcode"];
-        SimiSection *cartTotalSection = [cartCells getSectionByIdentifier:CART_TOTALS];
-        SimiRow *giftCardRow = [cartTotalSection getRowByIdentifier:CART_VIEW_GIFTCODE];
         if([[giftCode objectForKey:@"use_giftcode"] boolValue]) {
-            giftCardRow.height = 220 + 30*(giftCode.allValues.count - 1);
             giftCodeCb.checkState = M13CheckboxStateChecked;
         }else {
-            giftCardRow.height = 30;
             giftCodeCb.checkState = M13CheckboxStateUnchecked;
         }
         [cartViewController changeCartData:noti];
     }else {
-        [cartViewController showAlertWithTitle:@"" message:responder.message];
+        [cartViewController showAlertWithTitle:@"" message:responder.message completionHandler:^{
+            [cartViewController getCart];
+        }];
     }
 }
 
@@ -502,13 +486,7 @@
     [alertController addAction:cancelAction];
     UIAlertAction *editAction = [UIAlertAction actionWithTitle:SCLocalizedString(@"Change") style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
         UITextField *amountTextField = alertController.textFields.firstObject;
-//        float changedAmount = [amountTextField.text floatValue];
-//        if(changedAmount > amount) {
-//            [cartViewController showAlertWithTitle:@"" message:@"The new amount is exceeded the available amount"];
-//        }else {
-            [self updateGiftCodeWithParams:@{@"giftcode":[giftCodeValue objectForKey:@"gift_code"],@"amount":amountTextField.text}];
-            
-//        }
+        [self updateGiftCodeWithParams:@{@"giftcode":[giftCodeValue objectForKey:@"gift_code"],@"amount":amountTextField.text}];
     }];
     [alertController addAction:editAction];
     [cartViewController presentViewController:alertController animated:YES completion:nil];
