@@ -90,24 +90,28 @@
 }
 
 - (void)didTouchReviewButton: (id)sender {
-    if(PHONEDEVICE) {
-        if([[product valueForKey:@"app_reviews"] isKindOfClass:[NSDictionary class]]){
+    if ([SimiGlobalVar sharedInstance].isLogin || [SimiGlobalVar sharedInstance].isReviewAllowGuest) {
+        if(PHONEDEVICE) {
+            if([[product valueForKey:@"app_reviews"] isKindOfClass:[NSDictionary class]]){
+                SCAddProductReviewViewController* reviewController = [SCAddProductReviewViewController new];
+                reviewController.productModel = [product copy];
+                if(productVC)
+                    [productVC.navigationController pushViewController:reviewController animated:YES];
+                else if(productMoreVC) {
+                    [productMoreVC.navigationController pushViewController:reviewController animated:YES];
+                }
+            }
+        }else if(PADDEVICE) {
             SCAddProductReviewViewController* reviewController = [SCAddProductReviewViewController new];
             reviewController.productModel = [product copy];
-            if(productVC)
-                [productVC.navigationController pushViewController:reviewController animated:YES];
-            else if(productMoreVC) {
+            if(productMoreVC) {
                 [productMoreVC.navigationController pushViewController:reviewController animated:YES];
+            }else if(productVC) {
+                [productVC presentWithRootViewController:reviewController];
             }
         }
-    }else if(PADDEVICE) {
-        SCAddProductReviewViewController* reviewController = [SCAddProductReviewViewController new];
-        reviewController.productModel = [product copy];
-        if(productMoreVC) {
-            [productMoreVC.navigationController pushViewController:reviewController animated:YES];
-        }else if(productVC) {
-            [productVC presentWithRootViewController:reviewController];
-        }
+    }else{
+        [((SimiViewController *)[SimiGlobalVar sharedInstance].currentViewController) showAlertWithTitle:@"" message:@"Only registered users can write reviews"];
     }
 }
 
