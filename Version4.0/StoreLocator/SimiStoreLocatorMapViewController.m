@@ -19,16 +19,6 @@
 @synthesize sLModelCollectionSyncList, currentLongitube, currentLatitube, mapViewOption;
 @synthesize sLModel, sLModelCollectionAll, sLModelCollectionUpdate, delegate, searchOption;
 @synthesize dictSearch;
-
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
-{
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (self) {
-        // Custom initialization
-    }
-    return self;
-}
-
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -167,7 +157,6 @@
     }
 }
 
-#pragma mark
 #pragma mark Show Choice Maker on iPad
 - (void)syncDataFromList
 {
@@ -180,6 +169,13 @@
             for (int i = 0; i < storeLocatorModelCollectionSyncListCount; i++)
             {
                 [sLModelCollectionAll addObject:[sLModelCollectionSyncList objectAtIndex:i]];
+                SimiStoreLocatorMaker * storeLocatorMaker_ = [[SimiStoreLocatorMaker alloc]init];
+                storeLocatorMaker_.storeLocatorModel = [sLModelCollectionSyncList objectAtIndex:i];
+                float lat = (float)[[NSString stringWithFormat:@"%@",storeLocatorMaker_.storeLocatorModel.latitude] floatValue];
+                float lng = (float)[[NSString stringWithFormat:@"%@",storeLocatorMaker_.storeLocatorModel.longtitude] floatValue];
+                storeLocatorMaker_.position = CLLocationCoordinate2DMake(lat,lng);
+                storeLocatorMaker_.icon = [UIImage imageNamed:@"storelocator_point"];
+                storeLocatorMaker_.map = mapView_;
             }
         }else
         {
@@ -192,6 +188,13 @@
                 }
                 if (isNewStoreLocatorModel) {
                     [sLModelCollectionAll addObject:[sLModelCollectionSyncList objectAtIndex:i]];
+                    SimiStoreLocatorMaker * storeLocatorMaker_ = [[SimiStoreLocatorMaker alloc]init];
+                    storeLocatorMaker_.storeLocatorModel = [sLModelCollectionSyncList objectAtIndex:i];
+                    float lat = (float)[[NSString stringWithFormat:@"%@",storeLocatorMaker_.storeLocatorModel.latitude] floatValue];
+                    float lng = (float)[[NSString stringWithFormat:@"%@",storeLocatorMaker_.storeLocatorModel.longtitude] floatValue];
+                    storeLocatorMaker_.position = CLLocationCoordinate2DMake(lat,lng);
+                    storeLocatorMaker_.icon = [UIImage imageNamed:@"storelocator_point"];
+                    storeLocatorMaker_.map = mapView_;
                 }
             }
         }

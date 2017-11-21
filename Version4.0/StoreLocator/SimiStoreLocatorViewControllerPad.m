@@ -24,16 +24,6 @@ NSInteger const heightButtonSearch = 50;
     BOOL isDetailViewController;
 }
 @synthesize popOverController, btnSearch;
-
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
-{
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (self) {
-        // Custom initialization
-    }
-    return self;
-}
-
 #pragma mark View Cycle
 
 - (void)viewDidLoadBefore
@@ -63,23 +53,23 @@ NSInteger const heightButtonSearch = 50;
     [self setInterfaceLandscape];
 }
 
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+- (void)viewWillAppearBefore:(BOOL)animated{
+    
 }
 
-#pragma mark
 #pragma mark SimiCLController Delegate
 - (void)locationUpdate:(CLLocation *)location
 {
     [cLController.locationManager stopUpdatingLocation];
     [self didGetCurrentLocationWithLatitube:location.coordinate.latitude andLongitube:location.coordinate.longitude];
+    cLController = nil;
 }
 
 - (void)locationError:(NSError *)error
 {
+    [cLController.locationManager stopUpdatingLocation];
     [self didGetCurrentLocationWithLatitube:0 andLongitube:0];
+    cLController = nil;
 }
 
 - (void) didGetCurrentLocationWithLatitube:(float)la andLongitube:(float)lng
@@ -95,7 +85,6 @@ NSInteger const heightButtonSearch = 50;
     [self addChildViewController:sLMapViewController];
 }
 
-#pragma mark
 #pragma mark Search Action
 - (void)btnSearch_Click
 {
@@ -123,7 +112,6 @@ NSInteger const heightButtonSearch = 50;
 {
     sLMapViewController.sLModelCollectionSyncList =  sLListViewControllerLandscape.sLModelCollection;
     [sLMapViewController syncDataFromList];
-    [sLMapViewController showMaker];
 }
 
 #pragma mark btnSearch
@@ -280,6 +268,10 @@ NSInteger const heightButtonSearch = 50;
     }
     
     [sLMapViewController showMaker];
+}
+
+- (void)dealloc{
+    [[NSNotificationCenter defaultCenter]removeObserver:self];
 }
 
 @end
