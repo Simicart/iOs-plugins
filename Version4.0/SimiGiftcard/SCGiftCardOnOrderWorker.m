@@ -319,35 +319,41 @@
 }
 
 - (void)applyGiftCode: (SimiButton *)button {
+    [giftCodeTextField endEditing:YES];
+    [existingCodeTextField endEditing:YES];
     NSMutableDictionary *params = [NSMutableDictionary new];
-    if(![giftCodeTextField.text isEqualToString:@""] || ![giftCodeSelected isEqualToString:@""]) {
+    if(![giftCodeTextField.text isEqualToString:@""] || ![existingCodeTextField.text isEqualToString:@""]) {
         [params addEntriesFromDictionary:@{@"giftvoucher":@"1"}];
         if(![giftCodeTextField.text isEqualToString:@""]) {
             [params addEntriesFromDictionary:@{@"giftcode":giftCodeTextField.text}];
             giftCodeTextField.text = @"";
         }
-        if(giftCodeSelected && ![giftCodeSelected isEqualToString:@""]) {
+        if(![existingCodeTextField.text isEqualToString:@""]) {
             [params addEntriesFromDictionary:@{@"existed_giftcode":giftCodeSelected}];
             existingCodeTextField.text = @"";
         }
     }else {
-        [params addEntriesFromDictionary:@{@"giftvoucher":@"0"}];
+        [orderVC showAlertWithTitle:@"" message:@"No gift card code selected"];
+        return;
     }
-    [giftCodeTextField endEditing:YES];
-    [existingCodeTextField endEditing:YES];
     [order useGiftCodeWithParams:params];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUseGiftCode:) name:DidUseGiftCodeOnOrder object:nil];
     [orderVC startLoadingData];
 }
 
 - (void)applyGiftCardCredit: (SimiButton *)button {
-    NSMutableDictionary *params = [NSMutableDictionary new];
-    if([giftCardCreditTextField.text floatValue] > 0) {
-        [params addEntriesFromDictionary:@{@"usecredit":@"1",@"credit_amount":giftCardCreditTextField.text}];
-    }else {
-        [params addEntriesFromDictionary:@{@"usecredit":@"0"}];
-    }
     [giftCardCreditTextField endEditing:YES];
+    NSMutableDictionary *params = [NSMutableDictionary new];
+    if(![giftCardCreditTextField.text isEqualToString:@""]){
+        if([giftCardCreditTextField.text floatValue] > 0) {
+            [params addEntriesFromDictionary:@{@"usecredit":@"1",@"credit_amount":giftCardCreditTextField.text}];
+        }else if([giftCardCreditTextField.text floatValue] == 0){
+            [params addEntriesFromDictionary:@{@"usecredit":@"0"}];
+        }
+    }else{
+        [orderVC showAlertWithTitle:@"" message:@"Please change amount"];
+        return;
+    }
     [order useGiftCardCreditWithParams:params];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUseGiftCardCredit:) name:DidUseGiftCardCreditOnOrder object:nil];
     [orderVC startLoadingData];
