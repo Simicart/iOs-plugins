@@ -50,7 +50,7 @@
         [mainSection addRowWithIdentifier:mycredit_creditinfo_row height:110];
         if (myCreditHistories.count > 0) {
             for (int i = 0; i < myCreditHistories.count; i++) {
-                SimiRow *row = [mainSection addRowWithIdentifier:mycredit_credithistory_row height:160 sortOrder:0];
+                SimiRow *row = [mainSection addRowWithIdentifier:mycredit_credithistory_row height:170 sortOrder:0];
                 row.data = [[NSMutableDictionary alloc]initWithDictionary:[myCreditHistories objectAtIndex:i]];
             }
         }
