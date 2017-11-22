@@ -41,7 +41,4 @@ typedef NS_ENUM(NSInteger, ListViewOption){
 @property (nonatomic) float currentLongitube;
 @property (nonatomic, strong) NSDictionary *dictSearch;
 
-- (void)getStoreLocatorList;
-- (void)didGetStoreLocatorList;
-
 @end

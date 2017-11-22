@@ -163,7 +163,7 @@ NSInteger const heightButtonSearch = 50;
     [imageSearch setFrame:CGRectMake(70, 15, 16, 16)];
     [self.view addSubview:imageSearch];
     
-    [sLListViewControllerLandscape.view setFrame:CGRectMake(0, heightButtonSearch, widthListView, self.view.bounds.size.height)];
+    [sLListViewControllerLandscape.view setFrame:CGRectMake(0, heightButtonSearch, widthListView, self.view.bounds.size.height - heightButtonSearch)];
     [self.view addSubview:sLListViewControllerLandscape.view];
     
     [sLMapViewController.view setFrame:CGRectMake(widthListView, 0, SCREEN_WIDTH - widthListView, self.view.bounds.size.height)];

@@ -56,16 +56,17 @@
     [cLController.locationManager startUpdatingLocation];
     isFirstRun = YES;
     offset = 0;
-    emptyLabel = [[SimiLabel alloc] initWithFrame:self.tableView.bounds andFontName:THEME_FONT_NAME andFontSize:THEME_FONT_SIZE];
-    [self.tableView addSubview:emptyLabel];
-    emptyLabel.numberOfLines = 0;
+    emptyLabel = [[SimiLabel alloc] initWithFrame:CGRectZero andFontName:THEME_FONT_NAME andFontSize:THEME_FONT_SIZE];
     emptyLabel.textAlignment = NSTextAlignmentCenter;
     emptyLabel.text = @"List of store are empty";
+    [self.tableView addSubview:emptyLabel];
+    emptyLabel.numberOfLines = 0;
     emptyLabel.hidden = YES;
 }
 
 -(void)viewDidAppear:(BOOL)animated
 {
+    emptyLabel.frame = CGRectMake(0, 0, self.tableView.frame.size.width, 100);
     [super viewDidAppear:YES];
     switch (listViewOption) {
         case ListViewOptionNoneSearch:
@@ -217,7 +218,7 @@
     }
 }
 
-- (void) didGetStoreLocatorList:(NSNotification *)noti
+- (void)didGetStoreLocatorList:(NSNotification *)noti
 {
     [self removeObserverForNotification:noti];
     SimiResponder *responder = [noti.userInfo objectForKey:responderKey];

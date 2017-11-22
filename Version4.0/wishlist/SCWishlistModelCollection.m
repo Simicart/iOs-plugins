@@ -16,6 +16,22 @@
 
 @implementation SCWishlistModelCollection
 
+- (void)parseData{
+    [super parseData];
+    if([[self.data objectForKey:@"message"] isKindOfClass:[NSArray class]]){
+        NSArray *sharingMessages = [self.data objectForKey:@"message"];
+        if(sharingMessages.count > 0){
+            self.sharingMessage = [NSString stringWithFormat:@"%@",[sharingMessages objectAtIndex:0]];
+        }
+    }
+    if([[self.data objectForKey:@"sharing_url"] isKindOfClass:[NSArray class]]){
+        NSArray *sharingURLs = [self.data objectForKey:@"sharing_url"];
+        if(sharingURLs.count > 0){
+            self.sharingURL = [NSString stringWithFormat:@"%@",[sharingURLs objectAtIndex:0]];
+        }
+    }
+}
+
 -(void) getWishlistItemsWithParams: (NSDictionary*) params{
     notificationName = DidGetWishlistItems;
     actionType = CollectionActionTypeInsert;

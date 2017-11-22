@@ -39,7 +39,7 @@
     wishlistShareView.backgroundColor = COLOR_WITH_HEX(@"#e8e8e8");
     UILabel* wishlistShareLabel = [[UILabel alloc] init];
     wishlistShareLabel.text = SCLocalizedString(@"Share Wishlist");
-    wishlistShareLabel.font = [UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE];
+    wishlistShareLabel.font = [UIFont fontWithName:THEME_FONT_NAME_REGULAR size:THEME_FONT_SIZE - 2];
     [wishlistShareView addSubview:wishlistShareLabel];
     UIImageView* wishlistShareImageView = [[UIImageView alloc] init];
     wishlistShareImageView.image = [UIImage imageNamed:@"wishlist_share_icon"];
@@ -50,7 +50,7 @@
     frame.origin.x = SCREEN_WIDTH - frame.size.width - paddingX;
     wishlistShareView.frame = frame;
     wishlistShareLabel.frame = CGRectMake(frame.size.width - fittingShareLabelSize.width - paddingX, 0, fittingShareLabelSize.width, wishlistShareViewHeight);
-    wishlistShareImageView.frame = CGRectMake(wishlistShareViewHeight/4, wishlistShareViewHeight/4, wishlistShareViewHeight/2, wishlistShareViewHeight/2);
+    wishlistShareImageView.frame = CGRectMake(wishlistShareViewHeight/3, wishlistShareViewHeight/3, wishlistShareViewHeight/3, wishlistShareViewHeight/3);
     [wishlistShareView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(wishlistShareViewTapped:)]];
     [self.view addSubview:wishlistShareView];
     

@@ -16,20 +16,18 @@
     UILabel* itemNameLabel;
     UIButton* deleteButton;
     UIButton* shareButton;
-    UIButton* addToCartButton;
+    SimiButton* addToCartButton;
 }
 
 -(void) setWishlistItem:(SCWishlistModel *)wishlistItem{
     _wishlistItem = wishlistItem;
-    float paddingLeft = 5;
+    float paddingLeft = 10;
     float paddingTop = 5;
     float rightButtonWidth = 30;
     float wishlistCellWidth = CGRectGetWidth(self.frame) - rightButtonWidth - paddingLeft;
     float wishlistCellHeight =CGRectGetHeight(self.frame);
     if(!wishlistImageView){
         wishlistImageView = [[UIImageView alloc] initWithFrame:CGRectMake(paddingLeft, paddingTop, wishlistCellWidth/3 - paddingLeft, wishlistCellHeight - paddingTop)];
-        wishlistImageView.layer.borderColor = COLOR_WITH_HEX(@"#e8e8e8").CGColor;
-        wishlistImageView.layer.borderWidth = 1;
         wishlistImageView.contentMode = UIViewContentModeScaleAspectFit;
         [wishlistImageView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(wishlistImageViewTapped:)]];
         wishlistImageView.userInteractionEnabled = YES;
@@ -43,22 +41,19 @@
         float wishlistItemWidth = CGRectGetWidth(wishlistItemInfoView.frame);
         [self addSubview:wishlistItemInfoView];
         itemNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, wishlistItemY, wishlistItemWidth, labelHeight)];
-        itemNameLabel.font = [UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE];
+        itemNameLabel.font = [UIFont fontWithName:THEME_FONT_NAME_REGULAR size:THEME_FONT_SIZE];
         [wishlistItemInfoView addSubview:itemNameLabel];
         wishlistItemY += itemNameLabel.frame.size.height;
         priceView = [[SCPriceView alloc] initWithFrame:CGRectMake(0, wishlistItemY, wishlistItemWidth, 0)];
         [wishlistItemInfoView addSubview:priceView];
-        addToCartButton = [[UIButton alloc] init];
-        [addToCartButton setBackgroundColor:THEME_BUTTON_BACKGROUND_COLOR];
-        addToCartButton.titleLabel.font = [UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE];
-        [addToCartButton setTitleColor:THEME_BUTTON_TEXT_COLOR forState:UIControlStateNormal];
+        addToCartButton = [[SimiButton alloc] init];
+        [addToCartButton.titleLabel setFont:[UIFont fontWithName:THEME_FONT_NAME_REGULAR size:THEME_FONT_SIZE - 2]];
         [addToCartButton addTarget:self action:@selector(addToCartButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
-        addToCartButton.layer.cornerRadius = 3;
         [wishlistItemInfoView addSubview:addToCartButton];
         if(wishlistItem.stockStatus)
-            [addToCartButton setTitle:SCLocalizedString(@"Add To Cart") forState:UIControlStateNormal];
+            [addToCartButton setTitle:SCLocalizedString(@"Add to Cart") forState:UIControlStateNormal];
         else{
-            [addToCartButton setTitle:SCLocalizedString(@"Out Of Stock") forState:UIControlStateNormal];
+            [addToCartButton setTitle:SCLocalizedString(@"Out of Stock") forState:UIControlStateNormal];
             addToCartButton.enabled = NO;
             addToCartButton.alpha = 0.5f;
         }
@@ -71,7 +66,7 @@
     float rightButtonY = paddingTop;
     if(!deleteButton){
         deleteButton = [[UIButton alloc] initWithFrame:CGRectMake(CGRectGetWidth(self.frame) - rightButtonWidth, rightButtonY, rightButtonWidth, rightButtonWidth)];
-        [deleteButton setContentEdgeInsets:UIEdgeInsetsMake(5, 5, 5, 5)];
+        [deleteButton setContentEdgeInsets:UIEdgeInsetsMake(8, 8, 8, 8)];
         [deleteButton setImage:[UIImage imageNamed:@"wishlist_remove_icon"] forState:UIControlStateNormal];
         [deleteButton addTarget:self action:@selector(deleteButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
         [self addSubview:deleteButton];
@@ -79,7 +74,7 @@
     }
     if(!shareButton){
         shareButton = [[UIButton alloc] initWithFrame:CGRectMake(CGRectGetWidth(self.frame) - rightButtonWidth, rightButtonY, rightButtonWidth, rightButtonWidth)];
-        [shareButton setContentEdgeInsets:UIEdgeInsetsMake(5, 5, 5, 5)];
+        [shareButton setContentEdgeInsets:UIEdgeInsetsMake(8, 8, 8, 8)];
         [shareButton setImage:[UIImage imageNamed:@"wishlist_share_icon"] forState:UIControlStateNormal];
         [shareButton addTarget:self action:@selector(shareButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
         [self addSubview:shareButton];
