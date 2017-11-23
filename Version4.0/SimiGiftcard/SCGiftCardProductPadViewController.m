@@ -122,7 +122,7 @@
         [giftCardImageView sd_setImageWithURL:[NSURL URLWithString:[[giftCardTemplateImages objectAtIndex:0] valueForKey:@"url"]] placeholderImage:[UIImage imageNamed:@"logo"]];
     }
     
-    if ([giftCardSettings valueForKey:@"simigift_template_upload"]) {
+    if ([[giftCardSettings valueForKey:@"simigift_template_upload"]boolValue]) {
         SimiLabel *uploadImageLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(paddingEdge, heightCell, tableWidth - paddingEdge*2, 20) andFontName:THEME_FONT_NAME_REGULAR andFontSize:18 andTextColor:THEME_CONTENT_COLOR text:@"Or upload your photo"];
         [self.view addSubview:uploadImageLabel];
         heightCell += 30;
