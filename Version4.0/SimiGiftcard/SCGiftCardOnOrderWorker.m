@@ -127,7 +127,7 @@
                         [editButton addTarget:self action:@selector(giftCodeSelectedEditing:) forControlEvents:UIControlEventTouchUpInside];
                         [cell.contentView addSubview:editButton];
                         SimiLabel *giftCodeLabel = [[SimiLabel alloc] initWithFrame:CGRectMake(paddingX + 40, cellY, viewWidth - 80, 30)];
-                        giftCodeLabel.text = [NSString stringWithFormat:@"%@ (%@%@)",[((NSDictionary *)giftCodeValue) objectForKey:@"hidden_code"],[customerData objectForKey:@"currency_symbol"], [((NSDictionary *)giftCodeValue) objectForKey:@"amount"]];
+                        giftCodeLabel.text = [NSString stringWithFormat:@"%@ (%@%@)",[((NSDictionary *)giftCodeValue) objectForKey:@"hidden_code"],[SimiGlobalVar sharedInstance].currencySymbol, [((NSDictionary *)giftCodeValue) objectForKey:@"amount"]];
                         [cell.contentView addSubview:giftCodeLabel];
                         UIButton *deleteButton = [[UIButton alloc] initWithFrame:CGRectMake(paddingX + viewWidth - 40, cellY - 5, 40, 40)];
                         [deleteButton setImage:[UIImage imageNamed:@"delete"] forState:UIControlStateNormal];
