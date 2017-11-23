@@ -43,6 +43,9 @@
         _tableView.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin;
         _tableView.dataSource = self;
         _tableView.delegate = self;
+        if (SIMI_SYSTEM_IOS >= 9) {
+            _tableView.cellLayoutMarginsFollowReadableWidth = NO;
+        }
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             _tableView.rowHeight = 108;
         } else {

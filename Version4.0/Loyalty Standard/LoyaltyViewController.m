@@ -37,6 +37,9 @@
     self.contentTableView.dataSource = self;
     self.contentTableView.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     self.cells = [SimiTable new];
+    if (SIMI_SYSTEM_IOS >= 9) {
+        self.contentTableView.cellLayoutMarginsFollowReadableWidth = NO;
+    }
     [self.view addSubview:self.contentTableView];
 }
 

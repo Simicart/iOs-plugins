@@ -63,15 +63,14 @@
             [navigationController pushViewController:emailViewController animated:YES];
         }else
         {
-            SCNavigationBarPad *navigationBarPad = noti.object;
+            UIViewController *baseViewController = [UIApplication sharedApplication].delegate.window.rootViewController;
             UINavigationController *navi = [[UINavigationController alloc]initWithRootViewController:emailViewController];
             navi.modalPresentationStyle = UIModalPresentationPopover;
             UIPopoverPresentationController *popover = navi.popoverPresentationController;
             popover.sourceRect = CGRectMake(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 1, 1);
-            popover.sourceView = navigationController.view;
+            popover.sourceView = baseViewController.view;
             popover.permittedArrowDirections = 0;
-            [navigationController presentViewController:navi animated:YES completion:nil];
-            navigationBarPad.isDiscontinue = YES;
+            [baseViewController presentViewController:navi animated:YES completion:nil];
         }
     }
 }
