@@ -322,13 +322,13 @@
     [giftCodeTextField endEditing:YES];
     [existingCodeTextField endEditing:YES];
     NSMutableDictionary *params = [NSMutableDictionary new];
-    if(![giftCodeTextField.text isEqualToString:@""] || ![existingCodeTextField.text isEqualToString:@""]) {
+    if((![giftCodeTextField.text isEqualToString:@""] && giftCodeTextField != nil) || (![existingCodeTextField.text isEqualToString:@""] && existingCodeTextField != nil)) {
         [params addEntriesFromDictionary:@{@"giftvoucher":@"1"}];
         if(![giftCodeTextField.text isEqualToString:@""]) {
             [params addEntriesFromDictionary:@{@"giftcode":giftCodeTextField.text}];
             giftCodeTextField.text = @"";
         }
-        if(![existingCodeTextField.text isEqualToString:@""]) {
+        if(![existingCodeTextField.text isEqualToString:@""] && existingCodeTextField != nil) {
             [params addEntriesFromDictionary:@{@"existed_giftcode":giftCodeSelected}];
             existingCodeTextField.text = @"";
         }
