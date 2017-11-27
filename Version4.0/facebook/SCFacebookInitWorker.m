@@ -597,24 +597,20 @@
          if (!error) {
              if([result isKindOfClass:[NSDictionary class]]){
                  NSString *email = [result objectForKey:@"email"];
-                 if(!email){
-                     email = [NSString stringWithFormat:@"%@@facebook.com",[result objectForKey:@"id"]];
-                 }
                  NSString *firstName = [result objectForKey:@"first_name"];
                  NSString *lastName = [result objectForKey:@"last_name"];
-                 if(customerModel == nil)
-                     customerModel = [[SimiCustomerModel alloc] init];
                  if(email && firstName && lastName){
+                     if(customerModel == nil)
+                         customerModel = [[SimiCustomerModel alloc] init];
                      NSString* password = [[SimiGlobalVar sharedInstance] md5PassWordWithEmail:email];
-                     [customerModel loginWithSocialEmail:email password:password firstName:firstName lastName:lastName];
-                     NSDictionary *info = [[NSBundle mainBundle] infoDictionary];
-                     NSString *bundleIdentifier = [NSString stringWithFormat:@"%@", [info objectForKey:@"CFBundleIdentifier"]];
-                     KeychainItemWrapper *wrapper = [[KeychainItemWrapper alloc] initWithIdentifier:bundleIdentifier accessGroup:nil];
-                     [wrapper setObject:email forKey:(__bridge id)(kSecAttrAccount)];
-                     [wrapper setObject:password forKey:(__bridge id)(kSecAttrDescription)];
-                     
+                     [customerModel loginWithSocialEmail:email password:password firstName:firstName lastName:lastName];[[NSUserDefaults standardUserDefaults] setObject:email forKey:saved_user_email];
+                     [[NSUserDefaults standardUserDefaults] setObject:password forKey:saved_user_password];
+                     [[NSUserDefaults standardUserDefaults] setObject:@"1" forKey:is_account_remembered];
+                     [[NSUserDefaults standardUserDefaults] synchronize];
                      [[NSNotificationCenter defaultCenter] postNotificationName:SimiFaceBookWorker_StartLoginWithFaceBook object:nil];
                      [loginViewController startLoadingData];
+                 }else{
+                     [loginViewController showAlertWithTitle:@"" message:@"Couldn't get user information"];
                  }
              }
          }
