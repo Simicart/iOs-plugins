@@ -17,7 +17,7 @@
 #import "SCDeeplinkModel.h"
 
 @implementation SCAppEngageInitworker {
-    NSArray *productList;
+//    NSArray *productList;
 }
 - (id)init{
     if(self == [super init]){
@@ -41,10 +41,10 @@
     return self;
 }
 
-- (void)indexSearchableItems{
-    if(productList && productList.count > 0){
+- (void)indexSearchableProducts:(NSArray *)products{
+    if(products && products.count > 0){
         NSMutableArray* searchableItems = [[NSMutableArray alloc] initWithCapacity:0];
-        for(NSDictionary* product in productList){
+        for(NSDictionary* product in products){
             NSUserActivity* userActivity = [[NSUserActivity alloc] initWithActivityType:[NSString stringWithFormat:@"%@.%@",[[NSBundle mainBundle] bundleIdentifier],[product objectForKey:@"entity_id"]]];
             userActivity.title = [product objectForKey:@"name"];
             userActivity.userInfo = @{@"id":[product objectForKey:@"entity_id"]};
@@ -69,8 +69,7 @@
 
 - (void)didGetProducts: (NSNotification*) noti{
     if([noti.object isKindOfClass:[NSArray class]]){
-        productList = noti.object;
-        [NSThread detachNewThreadSelector: @selector(indexSearchableItems) toTarget:self withObject:NULL];
+        [self indexSearchableProducts:noti.object];
     }
 }
 

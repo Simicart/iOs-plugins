@@ -13,7 +13,6 @@
 #import <SimiCartBundle/SimiSection.h>
 #import <SimiCartBundle/SimiViewController.h>
 #import <SimiCartBundle/SimiCustomerModel.h>
-#import <SimiCartBundle/KeychainItemWrapper.h>
 #import <SimiCartBundle/SCProductMoreViewController.h>
 
 @interface SCFacebookInitWorker : NSObject<FBSDKLoginButtonDelegate, UIWebViewDelegate, FBSDKAppInviteDialogDelegate>

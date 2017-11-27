@@ -89,6 +89,7 @@
                         [reviewContentView addSubview:titleLabel];
                         viewY += titleLabel.frame.size.height;
                         SimiTextView *contentTextView = [[SimiTextView alloc] initWithFrame:CGRectMake(paddingWidth, viewY, viewWidth - 2*paddingWidth, 40) font:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE] borderWidth:1 borderColor:COLOR_WITH_HEX(@"#cacaca") paddingLeft:5];
+                        contentTextView.scrollEnabled = NO;
                         [reviewContentView addSubview:contentTextView];
                         viewY += contentTextView.frame.size.height;
                         contentTextView.simiObjectIdentifier = formKey;

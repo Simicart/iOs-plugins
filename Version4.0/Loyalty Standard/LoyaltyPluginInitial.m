@@ -29,6 +29,7 @@
 
 static NSString *ACCOUNT_REWARDS_ROW     = @"account_rewards";
 static NSString *LEFTMENU_REWARDS_ROW     = @"leftmenu_rewards";
+static NSString *CHERRY_REWARDS_ROW = @"CHERRY_REWARDS_ROW";
 
 
 @implementation LoyaltyPluginInitial{
@@ -55,6 +56,10 @@ static NSString *LEFTMENU_REWARDS_ROW     = @"leftmenu_rewards";
         //Product Info View
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(productInforViewSetInterfacecellAfter:) name:@"SCProductInforViewSetInterfacecell_After" object:nil];
         
+        //Cherry Theme
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(cherryInitCellsEnd:) name:InitProductCellsAfter object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(cherryCellForRowEnd:) name:InitializedProductCellBefore object:nil];
+        
         // Spend Point when Checkout
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orderViewControllerViewDidLoad:) name:@"SCOrderViewControllerViewDidLoad" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"DidGetOrderConfig" object:nil];
@@ -77,6 +82,48 @@ static NSString *LEFTMENU_REWARDS_ROW     = @"leftmenu_rewards";
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"LoadedProgramOverview" object:nil];
     }
     return self;
+}
+
+- (void)cherryInitCellsEnd:(NSNotification *)noti{
+    SimiTable *cells = noti.object;
+    SCProductSecondDesignViewController *cherryVC = [noti.userInfo objectForKey:@"controller"];
+    if([cherryVC.product objectForKey:@"loyalty_label"]){
+        SimiSection *section = [cells getSectionByIdentifier:product_main_section];
+        SimiRow *row = [section getRowByIdentifier:product_nameandprice_row];
+        [section addRowWithIdentifier:CHERRY_REWARDS_ROW height:44 sortOrder:row.sortOrder + 1];
+    }
+}
+
+- (void)cherryCellForRowEnd:(NSNotification *)noti{
+    SCProductSecondDesignViewController *cherryVC = noti.object;
+    UITableView *tableView = [noti.userInfo objectForKey:@"tableView"];
+    SimiRow *row = [noti.userInfo objectForKey:@"row"];
+    if([row.identifier isEqualToString:CHERRY_REWARDS_ROW]){
+        UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CHERRY_REWARDS_ROW];
+        if(!cell){
+            cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CHERRY_REWARDS_ROW];
+            float cellWidth = CGRectGetWidth(tableView.frame);
+            float paddingX = 15, paddingY = 5, contentWidth = cellWidth - 2*paddingX;
+            UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(paddingX, paddingY, 18, 18)];
+            [imageView sd_setImageWithURL:[NSURL URLWithString:[cherryVC.product objectForKey:@"loyalty_image"]] placeholderImage:nil options:SDWebImageRetryFailed];
+            imageView.contentMode = UIViewContentModeScaleAspectFit;
+            SimiLabel *label = [[SimiLabel alloc] initWithFrame:CGRectMake(paddingX + imageView.frame.size.width + paddingX, paddingY, contentWidth - CGRectGetWidth(imageView.frame) - 2*paddingX, 20) andFontName:THEME_FONT_NAME_REGULAR andFontSize:THEME_FONT_SIZE - 2 andTextColor:THEME_CONTENT_COLOR];
+            label.text = [cherryVC.product objectForKey:@"loyalty_label"];
+            [label resizLabelToFit];
+            float cellHeight = 2*paddingY + label.labelHeight;
+            if(cellHeight < 44){
+                cellHeight = 44;
+            }
+            imageView.frame = CGRectMake(paddingX, (cellHeight - 18)/2, 18, 18);
+            label.frame = CGRectMake(paddingX + imageView.frame.size.width + paddingX, (cellHeight - label.labelHeight)/2, contentWidth - CGRectGetWidth(imageView.frame) - 2*paddingX, label.labelHeight);
+            [cell.contentView addSubview:imageView];
+            [cell.contentView addSubview:label];
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        }
+        cherryVC.isDiscontinue = YES;
+        cherryVC.simiObjectIdentifier = cell;
+    }
+
 }
 
 - (void)dealloc
