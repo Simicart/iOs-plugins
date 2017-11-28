@@ -189,7 +189,6 @@ static NSString *product_paypalcheckout_row = @"product_paypalcheckout_row";
         [cell addSubview:btnPaypalCart];
         SCCartViewController * cartVC = [noti.userInfo valueForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.viewcontroller];
         [cartVC.btnCheckout setFrame:CGRectMake(220, 30, 180, 50)];
-        [self removeObserverForNotification:noti];
     }
 }
 

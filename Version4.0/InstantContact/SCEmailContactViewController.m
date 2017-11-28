@@ -212,14 +212,7 @@
         
         [controller setSubject:[NSString stringWithFormat:@""]];
         [controller setMessageBody:emailContent isHTML:NO];
-        
-        if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
-        {
-            [self presentViewController:controller animated:YES completion:NULL];
-        }
-        else {
-            [self presentViewController:controller animated:YES completion:NULL];
-        }
+        [self presentViewController:controller animated:YES completion:NULL];
     }
     else{
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:SCLocalizedString(@"You haven’t setup email account") message:SCLocalizedString(@"You must go to Settings/ Mail, Contact, Calendars and choose Add Account")
