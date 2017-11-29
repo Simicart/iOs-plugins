@@ -11,8 +11,6 @@
 NSInteger const widthListView = 420;
 NSInteger const heightButtonSearch = 50;
 
-
-
 @interface SimiStoreLocatorViewControllerPad ()
 
 @end

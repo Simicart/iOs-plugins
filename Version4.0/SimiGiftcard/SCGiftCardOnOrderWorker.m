@@ -293,7 +293,7 @@
 }
 
 - (void)giftCardCreditCbChangedValue: (SimiCheckbox *)checkbox {
-    NSDictionary *giftCardData = [[SimiGlobalVar sharedInstance].cart.data valueForKey:@"gift_card"];
+    NSDictionary *giftCardData = [order valueForKey:@"gift_card"];
     NSDictionary *credit = [giftCardData objectForKey:@"credit"];
     if(checkbox.checkState == M13CheckboxStateChecked) {
         
@@ -306,7 +306,7 @@
 }
 
 - (void)giftCodeCbChangedValue: (SimiCheckbox *)checkbox {
-    NSDictionary *giftCardData = [[SimiGlobalVar sharedInstance].cart.data valueForKey:@"gift_card"];
+    NSDictionary *giftCardData = [order valueForKey:@"gift_card"];
     NSDictionary *giftcode = [giftCardData objectForKey:@"giftcode"];
     if(checkbox.checkState == M13CheckboxStateChecked) {
         
