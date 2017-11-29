@@ -119,6 +119,7 @@ static NSString *CHERRY_REWARDS_ROW = @"CHERRY_REWARDS_ROW";
             [cell.contentView addSubview:imageView];
             [cell.contentView addSubview:label];
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
+            row.height = cellHeight;
         }
         cherryVC.isDiscontinue = YES;
         cherryVC.simiObjectIdentifier = cell;
