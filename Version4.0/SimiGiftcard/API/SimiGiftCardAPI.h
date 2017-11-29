@@ -6,7 +6,7 @@
 //  Copyright © 2017 Trueplus. All rights reserved.
 //
 
-#import "SimiProductAPI.h"
+#import <SimiCartBundle/SimiProductAPI.h>
 
 @interface SimiGiftCardAPI : SimiProductAPI
 

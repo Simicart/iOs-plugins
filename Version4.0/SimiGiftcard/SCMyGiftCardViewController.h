@@ -6,10 +6,9 @@
 //  Copyright © 2017 Trueplus. All rights reserved.
 //
 
-#import <SimiCartBundle/SimiCartBundle.h>
+#import <SimiCartBundle/SimiTable.h>
+#import <SimiCartBundle/SimiTextView.h>
 #import "SimiGiftCardCreditModel.h"
-#import "SimiTable.h"
-#import "SimiTextView.h"
 static NSString *mygiftcard_creditinfo_row = @"mygiftcard_creditinfo_row";
 static NSString *mygiftcard_giftcode_row = @"mygiftcard_giftcode_row";
 

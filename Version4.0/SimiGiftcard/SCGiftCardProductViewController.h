@@ -6,12 +6,12 @@
 //  Copyright © 2017 Trueplus. All rights reserved.
 //
 
-#import "SCProductSecondDesignViewController.h"
+#import <SimiCartBundle/SimiCheckbox.h>
+#import <SimiCartBundle/SimiTextField.h>
+#import <SimiCartBundle/SimiTextView.h>
+#import <SimiCartBundle/ActionSheetPicker.h>
+#import <SimiCartBundle/SCProductSecondDesignViewController.h>
 #import "SimiGiftCardModel.h"
-#import "SimiCheckbox.h"
-#import "SimiTextField.h"
-#import "SimiTextView.h"
-#import "ActionSheetPicker.h"
 #import "SCGiftCardGlobalVar.h"
 
 static NSString *giftcard_template_row = @"giftcard_template_row";

@@ -6,9 +6,9 @@
 //  Copyright © 2017 Trueplus. All rights reserved.
 //
 
+#import <SimiCartBundle/SimiTable.h>
+#import <SimiCartBundle/SimiTextField.h>
 #import "SimiGiftCardCreditModel.h"
-#import "SimiTable.h"
-#import "SimiTextField.h"
 
 static NSString *mycredit_creditinfo_row = @"mycredit_creditinfo_row";
 static NSString *mycredit_credithistory_row = @"mycredit_credithistory_row";

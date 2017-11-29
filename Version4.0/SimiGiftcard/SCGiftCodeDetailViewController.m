@@ -6,9 +6,9 @@
 //  Copyright © 2017 Trueplus. All rights reserved.
 //
 
-#import "SCGiftCodeDetailViewController.h"
-#import "SimiTable.h"
-#import "SimiTextView.h"
+#import <SimiCartBundle/SimiTable.h>
+#import <SimiCartBundle/SimiTextView.h>
+#import "SCGiftCodeDetailViewController.h"""
 #import "SimiGiftCardCreditModel.h"
 #import "SCEmailToFriendViewController.h"
 

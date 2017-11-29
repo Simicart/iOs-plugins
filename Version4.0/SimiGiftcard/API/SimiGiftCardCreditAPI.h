@@ -6,7 +6,7 @@
 //  Copyright © 2017 Trueplus. All rights reserved.
 //
 
-#import <SimiCartBundle/SimiCartBundle.h>
+#import <SimiCartBundle/SimiAPI.h>
 
 @interface SimiGiftCardCreditAPI : SimiAPI
 - (void)getCustomerCreditWithParams:(NSDictionary *)params target:(id)target selector:(SEL)selector;

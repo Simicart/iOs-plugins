@@ -6,9 +6,9 @@
 //  Copyright © 2017 Trueplus. All rights reserved.
 //
 
+#import <SimiCartBundle/SimiTextView.h>
+#import <SimiCartBundle/SimiTextField.h>
 #import "SCEmailToFriendViewController.h"
-#import "SimiTextView.h"
-#import "SimiTextField.h"
 #import "SimiGiftCardCreditModel.h"
 
 @interface SCEmailToFriendViewController ()<UITextFieldDelegate, UIScrollViewDelegate>{

@@ -6,8 +6,8 @@
 //  Copyright © 2017 Trueplus. All rights reserved.
 //
 
+#import <SimiCartBundle/UIScrollView+SVInfiniteScrolling.h>
 #import "SimiGiftCardModelCollection.h"
-#import "UIScrollView+SVInfiniteScrolling.h"
 
 @interface SCGiftCardProductsViewController : SimiViewController<UICollectionViewDelegate, UICollectionViewDataSource>{
     float totalNumberProduct;

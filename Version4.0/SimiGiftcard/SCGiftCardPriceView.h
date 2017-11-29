@@ -6,7 +6,7 @@
 //  Copyright © 2017 Trueplus. All rights reserved.
 //
 
-#import "SCPriceView.h"
+#import <SimiCartBundle/SCPriceView.h>
 
 @interface SCGiftCardPriceView : SCPriceView
 

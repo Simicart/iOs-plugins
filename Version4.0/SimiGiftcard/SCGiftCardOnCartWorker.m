@@ -6,10 +6,10 @@
 //  Copyright © 2017 Trueplus. All rights reserved.
 //
 
-#import "SCGiftCardOnCartWorker.h"
 #import <SimiCartBundle/SCCartViewController.h>
 #import <SimiCartBundle/SimiCheckbox.h>
 #import <SimiCartBundle/SimiTextField.h>
+#import "SCGiftCardOnCartWorker.h"
 #import "SimiQuoteItemModelCollection+GiftCard.h"
 
 #define CART_VIEW_GIFTCART_CREDIT @"CART_VIEW_GIFTCART_CREDIT"

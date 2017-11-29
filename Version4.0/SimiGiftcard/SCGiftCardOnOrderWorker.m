@@ -6,9 +6,9 @@
 //  Copyright © 2017 Trueplus. All rights reserved.
 //
 
-#import "SCGiftCardOnOrderWorker.h"
 #import <SimiCartBundle/SimiTable.h>
 #import <SimiCartBundle/SCOrderViewControllerPad.h>
+#import "SCGiftCardOnOrderWorker.h"
 #import "SimiOrderModel+SimiGiftCard.h"
 
 #define ORDER_VIEW_GIFTCARD_CREDIT @"ORDER_VIEW_GIFTCARD_CREDIT"

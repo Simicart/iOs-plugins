@@ -6,7 +6,7 @@
 //  Copyright © 2017 Trueplus. All rights reserved.
 //
 
-#import "SimiProductModel.h"
+#import <SimiCartBundle/SimiProductModel.h>
 static NSString *const DidGetGiftCardDetail = @"DidGetGiftCardDetail";
 static NSString *const DidUploadImage = @"DidUploadImage";
 
