@@ -212,7 +212,7 @@
     senderNameTextField = [[SimiTextField alloc]initWithFrame:CGRectMake(paddingEdge, cellHeight, textFieldWidth, textFieldHeight) placeHolder:@"" font:[UIFont fontWithName:THEME_FONT_NAME size:16] textColor:THEME_CONTENT_COLOR borderWidth:1 borderColor:[UIColor lightGrayColor] cornerRadius:6 leftView:[[UIView alloc]initWithFrame:CGRectMake(0, 0, 10, textFieldHeight)] rightView:nil];
     senderNameTextField.delegate = self;
     [cell.contentView addSubview:senderNameTextField];
-    cellHeight += textFieldHeight;
+    cellHeight += textFieldHeight + 5;
     
     SimiLabel *recipientNameLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(paddingEdge, cellHeight, textFieldWidth, labelHeight) andFontName:THEME_FONT_NAME_REGULAR andFontSize:16 andTextColor:THEME_CONTENT_COLOR text:[NSString stringWithFormat:@"%@*",SCLocalizedString(@"Recipient name")]];
     [cell.contentView addSubview:recipientNameLabel];
@@ -221,7 +221,7 @@
     recipientNameTextField = [[SimiTextField alloc]initWithFrame:CGRectMake(paddingEdge, cellHeight, textFieldWidth, textFieldHeight) placeHolder:@"" font:[UIFont fontWithName:THEME_FONT_NAME size:16] textColor:THEME_CONTENT_COLOR borderWidth:1 borderColor:[UIColor lightGrayColor] cornerRadius:6 leftView:[[UIView alloc]initWithFrame:CGRectMake(0, 0, 10, textFieldHeight)] rightView:nil];
     recipientNameTextField.delegate = self;
     [cell.contentView addSubview:recipientNameTextField];
-    cellHeight += textFieldHeight;
+    cellHeight += textFieldHeight + 5;
     
     SimiLabel *recipientEmailLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(paddingEdge, cellHeight, textFieldWidth, labelHeight) andFontName:THEME_FONT_NAME_REGULAR andFontSize:16 andTextColor:THEME_CONTENT_COLOR text:[NSString stringWithFormat:@"%@*",SCLocalizedString(@"Recipient email address")]];
     [cell.contentView addSubview:recipientEmailLabel];
@@ -231,7 +231,7 @@
     recipientEmailTextField.keyboardType = UIKeyboardTypeEmailAddress;
     recipientEmailTextField.delegate = self;
     [cell.contentView addSubview:recipientEmailTextField];
-    cellHeight += textFieldHeight;
+    cellHeight += textFieldHeight + 5;
     
     SimiLabel *customMessageLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(paddingEdge, cellHeight, textFieldWidth, labelHeight) andFontName:THEME_FONT_NAME_REGULAR andFontSize:16 andTextColor:THEME_CONTENT_COLOR text:@"Custom message"];
     [cell.contentView addSubview:customMessageLabel];
@@ -244,12 +244,12 @@
     customMessageTextView.delegate = self;
     [customMessageTextView setFont:[UIFont fontWithName:THEME_FONT_NAME size:13]];
     [cell.contentView addSubview:customMessageTextView];
-    cellHeight += 100;
+    cellHeight += 105;
     
     getNotificationCheckbox = [[SimiCheckbox alloc]initWithTitle:@"Get notification email when your friend receives Gift Card"];
     [getNotificationCheckbox setFrame:CGRectMake(paddingEdge, cellHeight, textFieldWidth, 30)];
     [cell.contentView addSubview:getNotificationCheckbox];
-    cellHeight += 30;
+    cellHeight += 45;
     if ([[giftCardSettings valueForKey:@"is_day_to_send"]boolValue]) {
         SimiLabel *dayToSendLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(paddingEdge, cellHeight, textFieldWidth, labelHeight) andFontName:THEME_FONT_NAME_REGULAR andFontSize:16 andTextColor:THEME_CONTENT_COLOR text:[NSString stringWithFormat:@"%@*",SCLocalizedString(@"Day to send")]];
         [cell.contentView addSubview:dayToSendLabel];
@@ -258,7 +258,7 @@
         dayToSendTextField = [[SimiTextField alloc]initWithFrame:CGRectMake(paddingEdge, cellHeight, textFieldWidth, textFieldHeight) placeHolder:@"" font:[UIFont fontWithName:THEME_FONT_NAME size:16] textColor:THEME_CONTENT_COLOR borderWidth:1 borderColor:[UIColor lightGrayColor] cornerRadius:6 leftView:[[UIView alloc]initWithFrame:CGRectMake(0, 0, 10, textFieldHeight)] rightView:nil];
         dayToSendTextField.delegate = self;
         [cell.contentView addSubview:dayToSendTextField];
-        cellHeight += textFieldHeight;
+        cellHeight += textFieldHeight + 5;
         
         if (timeZoneTitles.count > 0) {
             SimiLabel *timeZoneLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(paddingEdge, cellHeight, textFieldWidth, labelHeight) andFontName:THEME_FONT_NAME_REGULAR andFontSize:16 andTextColor:THEME_CONTENT_COLOR text:@"Select time zone"];

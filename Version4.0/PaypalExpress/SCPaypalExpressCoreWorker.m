@@ -136,7 +136,7 @@ static NSString *product_paypalcheckout_row = @"product_paypalcheckout_row";
     }else if([noti.object isKindOfClass:[SCCartViewController class]]){
         cartVC = noti.object;
     }
-    if ((cartVC.cart == nil) || (cartVC.cart.count == 0)|| ![[paypalExpressConfig valueForKey:@"show_on_cart"]boolValue]) {
+    if ((cartVC.cart == nil) || (cartVC.cart.count == 0)|| ![[paypalExpressConfig valueForKey:@"show_on_cart"]boolValue] || !cartVC.cart.canCheckOut) {
         btnPaypalCart.hidden = YES;
         return;
     }
