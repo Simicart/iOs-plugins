@@ -22,7 +22,6 @@
     NSArray *rateFields, *formKeys;
     SimiReviewModel* reviewModel;
     NSMutableArray *ratingViews, *reviewTextViews;
-    CGSize keyboardSize;
     SimiButton *submitButton;
 }
 
@@ -38,6 +37,7 @@
     }
 }
 - (void)viewWillDisappearBefore:(BOOL)animated{
+    [self.view endEditing:YES];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
 }
@@ -157,13 +157,12 @@
 #pragma mark - keyboard movements
 - (void)keyboardWillShow:(NSNotification *)notification
 {
-    keyboardSize = [[[notification userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue].size;
+    CGSize keyboardSize = [[[notification userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue].size;
     reviewScrollView.contentInset = UIEdgeInsetsMake(0, 0, keyboardSize.height, 0);
 }
 
 - (void)keyboardWillHide:(NSNotification *)notification
 {
-    keyboardSize = [[[notification userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue].size;
     reviewScrollView.contentInset = UIEdgeInsetsMake(0, 0, 0, 0);
 }
 
