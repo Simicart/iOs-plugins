@@ -9,6 +9,8 @@
 #import <Foundation/Foundation.h>
 #import <SimiCartBundle/SimiNavigationController.h>
 #import "BarCodeViewController.h"
+
+#define SCBarcodeInitWorker @"SCBarcodeInitWorker"
 static NSString *LEFTMENU_ROW_BARCODE = @"LEFTMENU_ROW_BARCODE";
 
 @interface BarCodeWorker : NSObject
