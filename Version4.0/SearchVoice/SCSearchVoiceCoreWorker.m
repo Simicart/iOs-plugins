@@ -39,7 +39,7 @@
     [voiceSearchButton setImageEdgeInsets:UIEdgeInsetsMake(3, 3, 3, 3)];
     [voiceSearchButton addTarget:self action:@selector(searchVoiceStart:) forControlEvents:UIControlEventTouchUpInside];
     UIBarButtonItem *voiceSearchItem = [[UIBarButtonItem alloc] initWithCustomView:voiceSearchButton];
-    
+    voiceSearchItem.sortOrder = navigationbar_pad_search_voice_sort_order;
     UIBarButtonItem *itemSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
     itemSpace.width = 20;
     NSMutableArray *rightButtonItems = noti.object;

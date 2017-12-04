@@ -66,6 +66,7 @@
     [chatButton setImage:[[UIImage imageNamed:@"ic_livechat"] imageWithColor:THEME_NAVIGATION_ICON_COLOR] forState:UIControlStateNormal];
     [chatButton addTarget:self action:@selector(didSelectChatBarItem:) forControlEvents:UIControlEventTouchUpInside];
     UIBarButtonItem *chatItem = [[UIBarButtonItem alloc] initWithCustomView:chatButton];
+    chatItem.sortOrder = navigationbar_phone_chat_sort_order;
     NSMutableArray *rightButtonItems = noti.object;
     [rightButtonItems addObject:chatItem];
 }
@@ -77,6 +78,7 @@
     [chatButton setImage:[[UIImage imageNamed:@"ic_livechat"] imageWithColor:THEME_NAVIGATION_ICON_COLOR] forState:UIControlStateNormal];
     [chatButton addTarget:self action:@selector(didSelectChatBarItem:) forControlEvents:UIControlEventTouchUpInside];
     UIBarButtonItem *chatItem = [[UIBarButtonItem alloc] initWithCustomView:chatButton];
+    chatItem.sortOrder = navigationbar_pad_chat_sort_order;
     NSMutableArray *rightButtonItems = noti.object;
     [rightButtonItems addObjectsFromArray:@[itemSpace,chatItem]];
 }
