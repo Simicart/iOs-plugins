@@ -33,9 +33,32 @@
     if (self) {
         [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(didInitCellsAfter:) name:@"SCLeftMenu_InitCellsAfter" object:nil];
         [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(didSelectRow:) name:@"SCLeftMenu_DidSelectRow" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initPhoneRightItemsEnd:) name:@"SCNavigationBarPhone-InitRightItems-End" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initPadRightItemsEnd:) name:@"SCNavigationBarPad-InitRightItems-End" object:nil];
     }
     return self;
 }
+
+- (void)initPhoneRightItemsEnd:(NSNotification*)noti{
+    UIButton *chatButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 25, 25)];
+    [chatButton setImage:[[UIImage imageNamed:@"barcode_icon"] imageWithColor:THEME_NAVIGATION_ICON_COLOR] forState:UIControlStateNormal];
+    [chatButton addTarget:self action:@selector(didTapButtonScan) forControlEvents:UIControlEventTouchUpInside];
+    UIBarButtonItem *chatItem = [[UIBarButtonItem alloc] initWithCustomView:chatButton];
+    NSMutableArray *rightButtonItems = noti.object;
+    [rightButtonItems addObject:chatItem];
+}
+
+- (void)initPadRightItemsEnd:(NSNotification*)noti{
+    UIBarButtonItem *itemSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
+    itemSpace.width = 20;
+    UIButton *chatButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 25, 25)];
+    [chatButton setImage:[[UIImage imageNamed:@"barcode_icon"] imageWithColor:THEME_NAVIGATION_ICON_COLOR] forState:UIControlStateNormal];
+    [chatButton addTarget:self action:@selector(didTapButtonScan) forControlEvents:UIControlEventTouchUpInside];
+    UIBarButtonItem *chatItem = [[UIBarButtonItem alloc] initWithCustomView:chatButton];
+    NSMutableArray *rightButtonItems = noti.object;
+    [rightButtonItems addObjectsFromArray:@[itemSpace,chatItem]];
+}
+
 
 - (void)didInitCellsAfter:(NSNotification*)noti
 {
