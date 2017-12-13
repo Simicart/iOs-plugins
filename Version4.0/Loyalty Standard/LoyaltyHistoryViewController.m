@@ -169,7 +169,7 @@
     if ([[transaction objectForKey:@"expiration_date"] isEqualToString:@""]) {
         top += 11;
     } else {
-        expires.text = [SCLocalizedString(@"Expire on:") stringByAppendingString:[SimiDateTime formatDate:[transaction objectForKey:@"expiration_date"]]];
+        expires.text = [SCLocalizedString(@"Expire on: ") stringByAppendingString:[SimiDateTime formatDate:[transaction objectForKey:@"expiration_date"]]];
     }
     title.frame = CGRectMake(46, top, width, height);
     view.frame = CGRectMake(46, top + height, width, 66);

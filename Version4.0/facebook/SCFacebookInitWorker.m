@@ -13,8 +13,10 @@
 #import <SimiCartBundle/SCCategoryViewController.h>
 #import <SimiCartBundle/SCProductListViewControllerPad.h>
 #import <Bolts/Bolts.h>
+#import <SimiCartBundle/SimiFacebookShareModel.h>
 
 //Product More View notifications
+#define SCProductMoreViewController_ViewDidLoadBefore @"SCProductViewMoreController-ViewDidLoadBefore"
 #define SCProductMoreViewController_InitViewMoreAction @"SCProductMoreViewController_InitViewMoreAction"
 #define SCProductMoreViewController_BeforeTouchMoreAction @"SCProductMoreViewController-BeforeTouchMoreAction"
 //Login view controller notifications
@@ -44,8 +46,12 @@
     UIView* fbView;
     UIButton* fbButton;
     BOOL isShowFacebookView;
+//    UIActivityIndicatorView* activityView;
     UIWebView* commentWebView;
+    NSString* commentHTMLString;
+    UIButton* btnClearAllFacebookCookies;
     NSString* productURL;
+    BOOL isShowedRewardAlert;
 }
 -(id) init{
     if(self == [super init]){
@@ -78,6 +84,46 @@
         [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(trackingViewedScreen:) name:@"SimiViewControllerViewDidAppear" object:nil];
         
         facebookAppID = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"FacebookAppID"];
+        commentHTMLString = @"\
+                             <!DOCTYPE html>\
+                             <html xmlns:fb='http://ogp.me/ns/fb#'>\
+                             <head>\
+                             <meta name='viewport' content='width=%f, initial-scale=1.0'>\
+                             </head>\
+                             <body high=100%>\
+                             <div id='fb-root'></div>\
+                             <script>\
+                             window.fbAsyncInit = function() {\
+                             FB.init({\
+                             appId      : '%@',\
+                             cookie     : true,\
+                             status     : true,\
+                             xfbml      : true\
+                             });\
+                             FB.Event.subscribe('xfbml.render', function(response) {\
+                             FB.Canvas.setSize();\
+                             });\
+                             };\
+                             (function(d, s, id){\
+                             var js, fjs = d.getElementsByTagName(s)[0];\
+                             if (d.getElementById(id)) {return;}\
+                             js = d.createElement(s); js.id = id;\
+                             js.src = 'http://connect.facebook.net/en_US/all.js';\
+                             fjs.parentNode.insertBefore(js, fjs);\
+                             }(document, 'script', 'facebook-jssdk'));\
+                             </script>\
+                             <div class='fb-comments' data-href='%@' data-numposts='5' data-colorscheme='light'></div>\
+                             </body>\
+                             </html>\
+                             <style type=\"text/css\">\
+                             .fb_hide_iframes iframe {\
+                             left: 0;\
+                             top:0;\
+                             right:0;\
+                             bottom:0;\
+                             }\
+                             </style>\
+                             ";
         [FBSDKAppEvents activateApp];
     }
     return self;
@@ -95,7 +141,24 @@
         numberBool  = [[FBSDKApplicationDelegate sharedInstance] application:[[noti userInfo] valueForKey:@"application"] openURL:[[noti userInfo] valueForKey:@"url"] sourceApplication:[[noti userInfo] valueForKey:@"source_application"] annotation:[[noti userInfo] valueForKey:@"annotation"]];
         if([noti.userInfo objectForKey:@"url"]){
             NSURL* url = [noti.userInfo objectForKey:@"url"];
-            [self handleOpeningURL:url.absoluteString];
+            if([url.absoluteString containsString:@"bridge/like"]){
+                NSArray *urlPaths = [url.absoluteString componentsSeparatedByString:@"?"];
+                if(urlPaths.count > 1){
+                    NSString *paramsPath = [urlPaths objectAtIndex:1];
+                    paramsPath = [paramsPath stringByRemovingPercentEncoding];
+                    paramsPath = [paramsPath stringByReplacingOccurrencesOfString:@"&" withString:@","];
+                    paramsPath = [paramsPath stringByReplacingOccurrencesOfString:@"=" withString:@":"];
+                    paramsPath = [paramsPath stringByReplacingOccurrencesOfString:@"\"" withString:@""];
+                    if([paramsPath containsString:@"object_is_liked:true"] && [paramsPath containsString:@"completionGesture:like"]){
+                        SimiFacebookShareModel *facebookModel = [SimiFacebookShareModel new];
+                        [facebookModel likeURL:productURL];
+                        [currentlyViewController startLoadingData];
+                        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didShareFacebookURL:) name:FacebookDidLikeURL object:nil];
+                    }
+                }
+            }else{
+                [self handleOpeningURL:url.absoluteString];
+            }
         }
     }else if([noti.name isEqualToString:ApplicationDidBecomeActive]){
         //Active Facebook App
@@ -292,7 +355,6 @@
     fbButton.layer.shadowOpacity = 0.5;
     [fbButton setBackgroundColor:[UIColor whiteColor]];
     [fbButton addTarget:self action:@selector(fbButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
-    fbButton.tag = 4000;
     moreActionView.numberIcon += 1;
     [moreActionView.arrayIcon addObject:fbButton];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(afterInitViewMore:) name:@"SCProductMoreViewController-AfterInitViewMore" object:nil];
@@ -303,6 +365,7 @@
 {
     [self removeObserverForNotification:noti];
     product = [noti.userInfo valueForKey:@"productModel"];
+    isShowedRewardAlert = NO;
     if([product objectForKey:@"url_path"]){
         productURL = [NSString stringWithFormat:@"%@%@",kBaseURL, [product objectForKey:@"url_path"]];
     }else{
@@ -349,23 +412,6 @@
     [fbShareButton setBackgroundColor:[UIColor whiteColor]];
     [fbShareButton addTarget:self action:@selector(fbShareButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
     
-    float shareViewSize = 68;
-    UIView *facebookShareView = [[UIView alloc] initWithFrame:CGRectMake([SimiGlobalVar scaleValue:170], -5, shareViewSize, shareViewSize)];
-    
-    UIImageView* fbShareBackgroundImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"ic_bg_more"]];
-    fbShareBackgroundImageView.frame = CGRectMake(0, 0, shareViewSize, shareViewSize);
-    fbShareBackgroundImageView.contentMode = UIViewContentModeScaleAspectFit;
-    
-    FBSDKShareButton *shareButton = [[FBSDKShareButton alloc]initWithFrame:CGRectMake(0,shareViewSize/3,shareViewSize, shareViewSize / 3)];
-    shareButton.transform = CGAffineTransformMakeScale(0.75, 0.75);
-    FBSDKShareLinkContent *content = [[FBSDKShareLinkContent alloc] init];
-    content.contentURL = [NSURL URLWithString:productURL];
-    shareButton.shareContent = content;
-    
-    [facebookShareView addSubview:fbShareBackgroundImageView];
-    [facebookShareView addSubview:shareButton];
-    [facebookShareView setBackgroundColor:[UIColor clearColor]];
-    
     if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone){
         widthFacebookView = SCREEN_WIDTH - fbButton.frame.size.width - 30;
     }
@@ -380,7 +426,7 @@
         fbView.frame =  CGRectMake(CGRectGetWidth(currentlyViewController.view.frame) - fbButton.frame.size.width - 15, moreActionView.frame.origin.y - moreActionView.heightMoreView + fbButton.frame.origin.y -5, 0, fbButton.frame.size.height+10);
     [fbView addSubview:facebookLikeView];
     [fbView addSubview:fbCommentButton];
-    [fbView addSubview:facebookShareView];
+    [fbView addSubview:fbShareButton];
     
     [currentlyViewController.view addSubview:fbView];
     fbView.clipsToBounds = YES;
@@ -389,16 +435,14 @@
 -(void) didInitLeftMenuRows:(NSNotification*) noti{
     if([[SimiGlobalVar sharedInstance].allConfig objectForKey:@"facebook_connect"]){
         NSDictionary* fbConnect = [[SimiGlobalVar sharedInstance].allConfig objectForKey:@"facebook_connect"];
-        if(![[fbConnect objectForKey:@"invite_link"] isEqual:[NSNull null]]) {
-            NSString *inviteLink = [NSString stringWithFormat:@"%@",[fbConnect objectForKey:@"invite_link"]];
-            if(![inviteLink isEqualToString:@""]){
-                SimiTable* leftMenuCells = noti.object;
-                SimiSection* moreSection = [leftMenuCells getSectionByIdentifier:LEFTMENU_SECTION_MORE];
-                SimiRow *inviteRow = [[SimiRow alloc]initWithIdentifier:LEFTMENU_ROW_FACEBOOK_INVITE height:50 sortOrder:9999];
-                inviteRow.image = [UIImage imageNamed:@"facebook_invite"];
-                inviteRow.title = SCLocalizedString(@"Invite Friends");
-                [moreSection addObject:inviteRow];
-            }
+        if([fbConnect objectForKey:@"invite_link"] && ![[NSString stringWithFormat:@"%@",[fbConnect objectForKey:@"invite_link"]] isEqualToString:@""]){
+            SimiTable* leftMenuCells = noti.object;
+            SimiSection* moreSection = [leftMenuCells getSectionByIdentifier:LEFTMENU_SECTION_MORE];
+            SimiRow *inviteRow = [[SimiRow alloc]initWithIdentifier:LEFTMENU_ROW_FACEBOOK_INVITE height:50 sortOrder:9999];
+            inviteRow.image = [UIImage imageNamed:@"facebook_invite"];
+            inviteRow.title = SCLocalizedString(@"Invite Friends");
+            inviteRow.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+            [moreSection addObject:inviteRow];
         }
     }
 }
@@ -454,6 +498,22 @@
         } completion:^(BOOL finished) {
             
         }];
+        if(!isShowedRewardAlert){
+            isShowedRewardAlert = YES;
+            if([product objectForKey:@"loyalty_facebook_message"]){
+                NSString *message = @"";
+                NSDictionary *facebookMessage = [product objectForKey:@"loyalty_facebook_message"];
+                if([facebookMessage isKindOfClass:[NSDictionary class]]){
+                    if([facebookMessage objectForKey:@"share_message"]){
+                        message = [NSString stringWithFormat:@"%@",[facebookMessage objectForKey:@"share_message"]];
+                    }
+                    if([facebookMessage objectForKey:@"like_message"]){
+                        message = [NSString stringWithFormat:@"\n%@",[facebookMessage objectForKey:@"like_message"]];
+                    }
+                    [currentlyViewController showAlertWithTitle:@"" message:message];
+                }
+            }
+        }
     }else{
         CGRect frame = fbView.frame;
         frame.origin.x += widthFacebookView;
@@ -498,6 +558,17 @@
         [viewContent.layer setMasksToBounds:YES];
         [commentView addSubview:viewContent];
         
+        btnClearAllFacebookCookies = [[UIButton alloc]initWithFrame:CGRectMake(20, 25, frame.size.width - 60, 35)];
+        [btnClearAllFacebookCookies setTitle:SCLocalizedString(@"Logout your facebook account") forState:UIControlStateNormal];
+        [btnClearAllFacebookCookies setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        [btnClearAllFacebookCookies setBackgroundColor:[UIColor colorWithRed:70.0/255 green:98.0/255 blue:158.0/255 alpha:1.0]];
+        [btnClearAllFacebookCookies.layer setCornerRadius:5.0f];
+        [btnClearAllFacebookCookies.layer setMasksToBounds:YES];
+        [btnClearAllFacebookCookies addTarget:self action:@selector(btnClearAllFacebookCookiesClicked:) forControlEvents:UIControlEventTouchUpInside];
+        [btnClearAllFacebookCookies.titleLabel setFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE]];
+        [commentView addSubview:btnClearAllFacebookCookies];
+        btnClearAllFacebookCookies.hidden = YES;
+        
         UIButton *btnClose = [[UIButton alloc]initWithFrame:CGRectMake(frame.size.width - 40, 20, 50, 50)];
         [btnClose setImage:[UIImage imageNamed:@"facebookconnect_close"] forState:UIControlStateNormal];
         [btnClose setImageEdgeInsets:UIEdgeInsetsMake(10, 26, 26, 10)];
@@ -519,8 +590,7 @@
         {    UIWindow *currentVC = [[UIApplication sharedApplication] keyWindow];
             [currentVC addSubview:commentView];
         }
-        [commentWebView loadHTMLString:[NSString stringWithFormat:@"<div class='fb-comments' data-href='%@' data-width='%ld' data-numposts='5'></div><div id='fb-root'></div><script>(function(d, s, id) {var js, fjs = d.getElementsByTagName(s)[0];if (d.getElementById(id)) return;js = d.createElement(s); js.id = id;js.src = '//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.9';fjs.parentNode.insertBefore(js, fjs);}(document, 'script', 'facebook-jssdk'));</script>",productURL,lroundf(commentWebView.frame.size.width)] baseURL:[NSURL URLWithString:productURL]];
-
+        [commentWebView loadHTMLString:[NSString stringWithFormat:commentHTMLString,commentWebView.frame.size.width,facebookAppID,productURL ] baseURL:[NSURL URLWithString:productURL]];
     }
     
 }
@@ -528,7 +598,7 @@
 -(void) fbShareButtonClicked: (id) sender{
     if(productURL){
         FBSDKShareLinkContent *content = [[FBSDKShareLinkContent alloc] init];
-        content.contentURL = [NSURL URLWithString:productURL];
+            content.contentURL = [NSURL URLWithString:productURL];
         if ([product objectForKey:@"name"]) {
             content.contentTitle = [NSString stringWithFormat:@"%@",[product objectForKey:@"name"]];
         }
@@ -542,8 +612,26 @@
         
         [FBSDKShareDialog showFromViewController:currentlyViewController
                                      withContent:content
-                                        delegate:nil];
+                                        delegate:self];
     }
+}
+
+
+
+- (void)btnClearAllFacebookCookiesClicked:(id) sender
+{
+    NSHTTPCookieStorage* cookies = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+    
+    NSArray *allCookies = [cookies cookies];
+    
+    for(NSHTTPCookie *cookie in allCookies) {
+        NSLog(@"%@",cookie);
+        if([[cookie domain] rangeOfString:@"facebook.com"].location != NSNotFound) {
+            [cookies deleteCookie:cookie];
+        }
+    }
+    
+    [commentWebView loadHTMLString:commentHTMLString baseURL:[NSURL URLWithString:productURL]];
 }
 
 -(void)didClickCloseCommentView: (id) sender
@@ -558,6 +646,28 @@
         UIView* commentView = closeButton.superview;
         [commentView removeFromSuperview];
     }
+}
+
+#pragma mark UIWebViewDelegate
+- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
+{
+    NSString *stringURL = [NSString stringWithFormat:@"%@",request.URL];
+    if ([stringURL containsString:@"facebook.com/plugins/comments.php?api_key"]) {
+        
+    }else if([stringURL containsString:@"facebook.com/plugins/close_popup.php"]){
+        [webView loadHTMLString:[NSString stringWithFormat:commentHTMLString,webView.frame.size.width,facebookAppID,productURL ] baseURL:[NSURL URLWithString:productURL]];
+    }else if([stringURL containsString:productURL]){
+        NSHTTPCookieStorage* cookies = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+        NSArray *allCookies = [cookies cookies];
+        btnClearAllFacebookCookies.hidden = YES;
+        for(NSHTTPCookie *cookie in allCookies) {
+            if([[cookie domain] rangeOfString:@"facebook.com"].location != NSNotFound) {
+                btnClearAllFacebookCookies.hidden = NO;
+                return YES;
+            }
+        }
+    }
+    return YES;
 }
 
 -(void) webViewDidStartLoad:(UIWebView *)webView{
@@ -597,20 +707,24 @@
          if (!error) {
              if([result isKindOfClass:[NSDictionary class]]){
                  NSString *email = [result objectForKey:@"email"];
+                 if(!email){
+                     email = [NSString stringWithFormat:@"%@@facebook.com",[result objectForKey:@"id"]];
+                 }
                  NSString *firstName = [result objectForKey:@"first_name"];
                  NSString *lastName = [result objectForKey:@"last_name"];
+                 if(customerModel == nil)
+                     customerModel = [[SimiCustomerModel alloc] init];
                  if(email && firstName && lastName){
-                     if(customerModel == nil)
-                         customerModel = [[SimiCustomerModel alloc] init];
                      NSString* password = [[SimiGlobalVar sharedInstance] md5PassWordWithEmail:email];
-                     [customerModel loginWithSocialEmail:email password:password firstName:firstName lastName:lastName];[[NSUserDefaults standardUserDefaults] setObject:email forKey:saved_user_email];
-                     [[NSUserDefaults standardUserDefaults] setObject:password forKey:saved_user_password];
-                     [[NSUserDefaults standardUserDefaults] setObject:@"1" forKey:is_account_remembered];
-                     [[NSUserDefaults standardUserDefaults] synchronize];
+                     [customerModel loginWithSocialEmail:email password:password firstName:firstName lastName:lastName];
+                     NSDictionary *info = [[NSBundle mainBundle] infoDictionary];
+                     NSString *bundleIdentifier = [NSString stringWithFormat:@"%@", [info objectForKey:@"CFBundleIdentifier"]];
+                     KeychainItemWrapper *wrapper = [[KeychainItemWrapper alloc] initWithIdentifier:bundleIdentifier accessGroup:nil];
+                     [wrapper setObject:email forKey:(__bridge id)(kSecAttrAccount)];
+                     [wrapper setObject:password forKey:(__bridge id)(kSecAttrDescription)];
+                     
                      [[NSNotificationCenter defaultCenter] postNotificationName:SimiFaceBookWorker_StartLoginWithFaceBook object:nil];
                      [loginViewController startLoadingData];
-                 }else{
-                     [loginViewController showAlertWithTitle:@"" message:@"Couldn't get user information"];
                  }
              }
          }
@@ -622,7 +736,7 @@
     [loginViewController stopLoadingData];
     SimiResponder* responder = [noti.userInfo objectForKey:@"responder"];
     if([responder.status isEqualToString:@"SUCCESS"]){
-    
+        
     }else{
         if([FBSDKAccessToken currentAccessToken]){
             [[FBSDKLoginManager alloc] logOut];
@@ -653,6 +767,31 @@
             
         }];
         isShowFacebookView = NO;
+    }
+}
+
+- (void)sharer:(id<FBSDKSharing>)sharer didCompleteWithResults:(NSDictionary *)results{
+    SimiFacebookShareModel *facebookModel = [SimiFacebookShareModel new];
+    [facebookModel shareURL:productURL];
+    [currentlyViewController startLoadingData];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didShareFacebookURL:) name:FacebookDidShareURL object:nil];
+}
+
+- (void)sharer:(id<FBSDKSharing>)sharer didFailWithError:(NSError *)error{
+    
+}
+
+- (void)sharerDidCancel:(id<FBSDKSharing>)sharer{
+    
+}
+
+- (void)didShareFacebookURL:(NSNotification *)noti{
+    [currentlyViewController stopLoadingData];
+    [self removeObserverForNotification:noti];
+    SimiResponder *responder = [noti.userInfo objectForKey:@"responder"];
+    SimiFacebookShareModel *model = noti.object;
+    if([responder.status isEqualToString:@"SUCCESS"]){
+        [currentlyViewController showToastMessage:[model objectForKey:@"message"]];
     }
 }
 

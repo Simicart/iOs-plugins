@@ -32,15 +32,12 @@ static NSString *LEFTMENU_REWARDS_ROW     = @"leftmenu_rewards";
 static NSString *CHERRY_REWARDS_ROW = @"CHERRY_REWARDS_ROW";
 
 
-@implementation LoyaltyPluginInitial{
-    NSDictionary *loyaltyData;
-    SimiGlobalVar *globalVar;
-}
+@implementation LoyaltyPluginInitial
 
 - (instancetype)init
 {
     if (self = [super init]) {
-        globalVar = [SimiGlobalVar sharedInstance];
+        
         // Show Label on Shopping Cart
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"InitCartCell-Before" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"InitializedCartCell-Before" object:nil];
@@ -57,8 +54,8 @@ static NSString *CHERRY_REWARDS_ROW = @"CHERRY_REWARDS_ROW";
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(productInforViewSetInterfacecellAfter:) name:@"SCProductInforViewSetInterfacecell_After" object:nil];
         
         //Cherry Theme
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(cherryInitCellsEnd:) name:InitProductCellsAfter object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(cherryCellForRowEnd:) name:InitializedProductCellBefore object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(cherryInitCellsEnd:) name:@"InitProductCells-After" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(cherryCellForRowEnd:) name:@"InitializedProductCell-After" object:nil];
         
         // Spend Point when Checkout
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orderViewControllerViewDidLoad:) name:@"SCOrderViewControllerViewDidLoad" object:nil];
@@ -68,7 +65,7 @@ static NSString *CHERRY_REWARDS_ROW = @"CHERRY_REWARDS_ROW";
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"DidSpendPointsOrder" object:nil];
         
         //Order screen init order table on iphone
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:SCOrderViewControllerInitTableBefore object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"SCOrderViewController-InitTableBefore" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:@"SCOrderViewController-InitTableAfter" object:nil];
         
         //Order screen init order table on ipad
@@ -103,11 +100,11 @@ static NSString *CHERRY_REWARDS_ROW = @"CHERRY_REWARDS_ROW";
         if(!cell){
             cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CHERRY_REWARDS_ROW];
             float cellWidth = CGRectGetWidth(tableView.frame);
-            float paddingX = 15, paddingY = 5, contentWidth = cellWidth - 2*paddingX;
-            UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(paddingX, paddingY, 18, 18)];
+            float paddingX = 5, paddingY = 5, contentWidth = cellWidth - 2*paddingX;
+            UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(15, 11, 18, 18)];
             [imageView sd_setImageWithURL:[NSURL URLWithString:[cherryVC.product objectForKey:@"loyalty_image"]] placeholderImage:nil options:SDWebImageRetryFailed];
             imageView.contentMode = UIViewContentModeScaleAspectFit;
-            SimiLabel *label = [[SimiLabel alloc] initWithFrame:CGRectMake(paddingX + imageView.frame.size.width + paddingX, paddingY, contentWidth - CGRectGetWidth(imageView.frame) - 2*paddingX, 20) andFontName:THEME_FONT_NAME_REGULAR andFontSize:THEME_FONT_SIZE - 2 andTextColor:THEME_CONTENT_COLOR];
+            SimiLabel *label = [[SimiLabel alloc] initWithFrame:CGRectMake(35, 0, SCREEN_WIDTH - 50, 44) andFontName:THEME_FONT_NAME_REGULAR andFontSize:THEME_FONT_SIZE - 2 andTextColor:THEME_CONTENT_COLOR];
             label.text = [cherryVC.product objectForKey:@"loyalty_label"];
             [label resizLabelToFit];
             float cellHeight = 2*paddingY + label.labelHeight;
@@ -135,7 +132,7 @@ static NSString *CHERRY_REWARDS_ROW = @"CHERRY_REWARDS_ROW";
 - (void)didReceiveNotification:(NSNotification *)noti
 {
 #pragma mark set Order Table
-    if (([noti.name isEqualToString:@"DidGetOrderConfig"] || [noti.name isEqualToString:@"DidSpendPointsOrder"] || [noti.name isEqualToString:@"DidSetCouponCode"] || [noti.name isEqualToString:@"DidSaveShippingMethod"] || [noti.name isEqualToString:SCOrderViewControllerInitTableBefore] || [noti.name isEqualToString:@"SCOrderViewController-InitTableAfter"]||[noti.name isEqualToString:@"SCOrderViewController-InitRightTableAfter"]) && self.orderViewController) {
+    if (([noti.name isEqualToString:@"DidGetOrderConfig"] || [noti.name isEqualToString:@"DidSpendPointsOrder"] || [noti.name isEqualToString:@"DidSetCouponCode"] || [noti.name isEqualToString:@"DidSaveShippingMethod"] || [noti.name isEqualToString:@"SCOrderViewController-InitTableBefore"] || [noti.name isEqualToString:@"SCOrderViewController-InitTableAfter"]||[noti.name isEqualToString:@"SCOrderViewController-InitRightTableAfter"]) && self.orderViewController) {
         SimiOrderModel *order = [self.orderViewController order];
         SimiTable *orderTable = [self.orderViewController orderTable];
         if (PADDEVICE) {
@@ -150,7 +147,7 @@ static NSString *CHERRY_REWARDS_ROW = @"CHERRY_REWARDS_ROW";
                     SimiSection *section = [orderTable addSectionWithIdentifier:LOYALTY_CHECKOUT atIndex:index];
                     section.headerTitle = SCLocalizedString(@"Spend my Points");
                     CGFloat height = [[rule objectForKey:@"optionType"] isEqualToString:@"slider"] ? 105 : 40;
-                    if (![globalVar isLogin]) height = 40;
+                    if (![[SimiGlobalVar sharedInstance] isLogin]) height = 40;
                     [section addRowWithIdentifier:LOYALTY_CHECKOUT height:height];
                 }
             }
@@ -170,9 +167,8 @@ static NSString *CHERRY_REWARDS_ROW = @"CHERRY_REWARDS_ROW";
         }
 #pragma mark init Cart Cell
     } else if ([noti.name isEqualToString:@"InitCartCell-Before"]) {
-        SimiCartModelCollection *cart = [globalVar cart];
-        loyaltyData = [cart.responseObject valueForKey:@"loyalty"];
-        if (cart.count && loyaltyData.count > 0) {
+        SimiCartModelCollection *cart = [[SimiGlobalVar sharedInstance] cart];
+        if (cart.count && cart.loyaltyData.count > 0) {
             // Add Row to show Loyalty Labels
             SimiTable *cartCells = (SimiTable *)noti.object;
             SimiSection *loyaltySection = [cartCells addSectionWithIdentifier:LOYALTY_CART];
@@ -211,15 +207,14 @@ static NSString *CHERRY_REWARDS_ROW = @"CHERRY_REWARDS_ROW";
                 label.tag = 3822;
                 [loyalty addSubview:label];
             }
-            SimiCartModelCollection *cart = [globalVar cart];
+            SimiCartModelCollection *cart = [[SimiGlobalVar sharedInstance] cart];
             
             UIView *loyalty = [cell viewWithTag:LOYALTY_TAG];
             UIImageView *imageView = (UIImageView *)[loyalty viewWithTag:3821];
             UILabel *label = (UILabel *)[loyalty viewWithTag:3822];
             
-            loyaltyData = [cart.responseObject valueForKey:@"loyalty"];
-            [imageView sd_setImageWithURL:[NSURL URLWithString:[loyaltyData objectForKey:@"loyalty_image"]] placeholderImage:nil options:SDWebImageRetryFailed];
-            label.text = [loyaltyData objectForKey:@"loyalty_label"];
+            [imageView sd_setImageWithURL:[NSURL URLWithString:[cart.loyaltyData objectForKey:@"loyalty_image"]] placeholderImage:nil options:SDWebImageRetryFailed];
+            label.text = [cart.loyaltyData objectForKey:@"loyalty_label"];
             
             // Center label and image
             CGFloat textWidth = [label textRectForBounds:CGRectMake(24, 0, loyalty.frame.size.width - 24, 40) limitedToNumberOfLines:2].size.width;
@@ -231,8 +226,8 @@ static NSString *CHERRY_REWARDS_ROW = @"CHERRY_REWARDS_ROW";
 #pragma mark Did Place Order
     } else if ([noti.name isEqualToString:@"DidPlaceOrder"]) {
         if ([noti.object objectForKey:@"loyalty_balance"]) {
-            SimiCustomerModel *customer = [globalVar customer];
-            if ([globalVar isLogin] && customer) {
+            SimiCustomerModel *customer = [[SimiGlobalVar sharedInstance] customer];
+            if ([[SimiGlobalVar sharedInstance] isLogin] && customer) {
                 [customer setValue:[noti.object objectForKey:@"loyalty_balance"] forKey:@"loyalty_balance"];
                 [self.loyaltyMenuRow setTitle:[self rewardMenuLabel]];
             }
@@ -240,8 +235,8 @@ static NSString *CHERRY_REWARDS_ROW = @"CHERRY_REWARDS_ROW";
 #pragma mark Loaded Program OverView
     } else if ([noti.name isEqualToString:@"LoadedProgramOverview"]) {
         if ([noti.object objectForKey:@"loyalty_redeem"]) {
-            SimiCustomerModel *customer = [globalVar customer];
-            if ([globalVar isLogin] && customer) {
+            SimiCustomerModel *customer = [[SimiGlobalVar sharedInstance] customer];
+            if ([[SimiGlobalVar sharedInstance] isLogin] && customer) {
                 [customer setValue:[noti.object objectForKey:@"loyalty_redeem"] forKey:@"loyalty_balance"];
                 [self.loyaltyMenuRow setTitle:[self rewardMenuLabel]];
             }
@@ -280,8 +275,8 @@ static NSString *CHERRY_REWARDS_ROW = @"CHERRY_REWARDS_ROW";
 
 - (NSString *)rewardMenuLabel
 {
-    SimiCustomerModel *customer = [globalVar customer];
-    if ([globalVar isLogin] && customer && [customer objectForKey:@"loyalty_balance"]) {
+    SimiCustomerModel *customer = [[SimiGlobalVar sharedInstance] customer];
+    if ([[SimiGlobalVar sharedInstance] isLogin] && customer && [customer objectForKey:@"loyalty_balance"]) {
         return [[SCLocalizedString(@"My Rewards") stringByAppendingString:@" "] stringByAppendingString:[customer objectForKey:@"loyalty_balance"]];
     }
     return SCLocalizedString(@"My Rewards");
@@ -301,11 +296,11 @@ static NSString *CHERRY_REWARDS_ROW = @"CHERRY_REWARDS_ROW";
                 if (row.identifier == ACCOUNT_REWARDS_ROW)
                     return;
             }
-            SimiRow *loyaltyRow = [[SimiRow alloc]initWithIdentifier:ACCOUNT_REWARDS_ROW height:rowHeight sortOrder:310];
-            loyaltyRow.title = SCLocalizedString(@"My Rewards");
-            loyaltyRow.image = [UIImage imageNamed:@"loyalty_reward"];
-            loyaltyRow.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-            [section addRow:loyaltyRow];
+            SimiRow *wishlistRow = [[SimiRow alloc]initWithIdentifier:ACCOUNT_REWARDS_ROW height:rowHeight sortOrder:310];
+            wishlistRow.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+            wishlistRow.title = SCLocalizedString(@"My Rewards");
+            wishlistRow.image = [UIImage imageNamed:@"loyalty_reward"];
+            [section addRow:wishlistRow];
             [section sortItems];
         }
     }
@@ -325,7 +320,7 @@ static NSString *CHERRY_REWARDS_ROW = @"CHERRY_REWARDS_ROW";
 -(void)listMenuInitCellsAfter:(NSNotification *)noti
 {
     NSArray * cells = noti.object;
-    if ([globalVar isLogin]) {
+    if ([[SimiGlobalVar sharedInstance] isLogin]) {
         for (SimiSection *section in cells) {
             if ([section isKindOfClass:[SimiSection class]]) {
                 if (section.identifier != LEFTMENU_SECTION_MAIN)
@@ -337,10 +332,10 @@ static NSString *CHERRY_REWARDS_ROW = @"CHERRY_REWARDS_ROW";
                         return;
                 }
                 
-                SimiRow *loyaltyRow = [[SimiRow alloc]initWithIdentifier:LEFTMENU_REWARDS_ROW height:rowHeight sortOrder:310];
-                loyaltyRow.title = SCLocalizedString(@"My Rewards");
-                loyaltyRow.image = [UIImage imageNamed:@"loyalty_reward_invert"];
-                [section addRow:loyaltyRow];
+                SimiRow *wishlistRow = [[SimiRow alloc]initWithIdentifier:LEFTMENU_REWARDS_ROW height:rowHeight sortOrder:310];
+                wishlistRow.title = SCLocalizedString(@"My Rewards");
+                wishlistRow.image = [UIImage imageNamed:@"loyalty_reward_invert"];
+                [section addRow:wishlistRow];
                 [section sortItems];
             }
         }
@@ -413,7 +408,7 @@ static NSString *CHERRY_REWARDS_ROW = @"CHERRY_REWARDS_ROW";
             SimiSection *section = [orderTable addSectionWithIdentifier:LOYALTY_CHECKOUT atIndex:0];
             section.headerTitle = SCLocalizedString(@"Spend my Points");
             CGFloat height = [[rule objectForKey:@"optionType"] isEqualToString:@"slider"] ? 105 : 40;
-            if (![globalVar isLogin]) height = 40;
+            if (![[SimiGlobalVar sharedInstance] isLogin]) height = 40;
             [section addRowWithIdentifier:LOYALTY_CHECKOUT height:height];
         }
     }
@@ -421,11 +416,11 @@ static NSString *CHERRY_REWARDS_ROW = @"CHERRY_REWARDS_ROW";
 
 - (void)initializeOrderCellAfter:(NSNotification *)noti
 {
-    SimiRow *row = [noti.userInfo objectForKey:@"row"];
+    SimiRow *row = noti.object;
     if ([row.identifier isEqualToString:LOYALTY_CHECKOUT]) {
         UITableViewCell *cell = (UITableViewCell *)[noti.userInfo objectForKey:@"cell"];
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
-        if (![globalVar isLogin]) {
+        if (![[SimiGlobalVar sharedInstance] isLogin]) {
             cell.textLabel.font = [UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE];
             cell.textLabel.numberOfLines = 2;
             cell.textLabel.text = SCLocalizedString(@"Please login before using points to spend");
