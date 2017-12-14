@@ -189,10 +189,7 @@ static NSString *product_paypalcheckout_row = @"product_paypalcheckout_row";
 - (void)didPlaceOrder:(NSNotification *)noti{
     SimiPaymentMethodModel *payment = [noti.userInfo valueForKey:KEYEVENT.ORDERVIEWCONTROLLER.selected_payment];
     if ([payment.code isEqualToString:@"PAYPAL_EXPRESS"]) {
-        SimiResponder *responder = [noti.userInfo valueForKey:responderKey];
-        if (responder.status == SUCCESS) {
-            [self startPaypalCheckout];
-        }
+        [self startPaypalCheckout];
     }
 }
 
