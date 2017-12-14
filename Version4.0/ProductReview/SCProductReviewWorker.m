@@ -18,7 +18,6 @@
     SCProductMoreViewController *productMoreVC;
     SCProductSecondDesignViewController *productVC;
     UIButton *reviewButton;
-    SimiReviewModelCollection *reviewCollection;
     SimiTable *cells;
     NSDictionary *appReviews;
     UITableView *productTableView;
@@ -113,9 +112,7 @@
 
 
 - (void)getReviews{
-    if (reviewCollection == nil) {
-        reviewCollection = [[SimiReviewModelCollection alloc] init];
-    }
+    SimiReviewModelCollection *reviewCollection = [[SimiReviewModelCollection alloc] init];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didGetReviewCollection:) name:@"DidGetReviewCollection" object:reviewCollection];
     [reviewCollection getReviewCollectionWithProductId:[product valueForKey:@"entity_id"] offset:0 limit:6];
 }
@@ -126,15 +123,20 @@
         NSInteger mainSectionIndex = [cells getSectionIndexByIdentifier:product_main_section];
         SimiSection *reviewSection = [cells addSectionWithIdentifier:product_reviews_section atIndex:mainSectionIndex+1];
         reviewSection.headerTitle = SCLocalizedString(@"Review");
+        SimiReviewModelCollection *reviewCollection = noti.object;
         if ([[appReviews valueForKey:@"number"]floatValue] > 3) {
             for (int i = 0; i < 3; i++) {
-                [reviewSection addRowWithIdentifier:product_reviews_normal_row height:SCALEVALUE(120)];
+                SimiRow *row = [[SimiRow alloc]initWithIdentifier:product_reviews_normal_row height:SCALEVALUE(120)];
+                row.model = [reviewCollection objectAtIndex:i];
+                [reviewSection addRow:row];
             }
             [reviewSection addRowWithIdentifier:product_reviews_viewall_row height:50];
         }else
         {
             for (int i = 0; i < [[appReviews valueForKey:@"number"]floatValue]; i++) {
-                [reviewSection addRowWithIdentifier:product_reviews_normal_row height:SCALEVALUE(120)];
+                SimiRow *row = [[SimiRow alloc]initWithIdentifier:product_reviews_normal_row height:SCALEVALUE(120)];
+                row.model = [reviewCollection objectAtIndex:i];
+                [reviewSection addRow:row];
             }
             if ([SimiGlobalVar sharedInstance].isLogin || [SimiGlobalVar sharedInstance].isReviewAllowGuest) {
                 [reviewSection addRowWithIdentifier:product_reviews_add_row height:50];
@@ -177,7 +179,7 @@
     if ([section.identifier isEqualToString:product_reviews_section]) {
         productVC.isDiscontinue = YES;
         if ([row.identifier isEqualToString:product_reviews_normal_row]) {
-            SimiModel *reviewModel = [reviewCollection objectAtIndex:indexPath.row];
+            SimiModel *reviewModel = row.model;
             NSString *cellIdentifier = [NSString stringWithFormat:@"%@_%@",row.identifier,[reviewModel valueForKey:@"review_id"]];
             SCProductReviewShortCell *cell = [productTableView dequeueReusableCellWithIdentifier:cellIdentifier];
             if(!cell) {
@@ -303,7 +305,7 @@
     if([section.identifier isEqualToString:product_reviews_section]) {
         if([row.identifier isEqualToString:product_reviews_normal_row]) {
             UIViewController *nextController = [[UIViewController alloc]init];
-            SimiModel *reviewModel = [reviewCollection objectAtIndex:indexPath.row];
+            SimiModel *reviewModel = row.model;
             UIScrollView *scrollView = [[UIScrollView alloc]initWithFrame:nextController.view.bounds];
             nextController.title = [reviewModel valueForKey:@"title"];
             
