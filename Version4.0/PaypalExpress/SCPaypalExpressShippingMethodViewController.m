@@ -55,13 +55,17 @@
     [self stopLoadingData];
     if (responder.status == SUCCESS) {
         listShippingMethods = [[NSMutableArray alloc]initWithArray:[paypalShippingModel valueForKey:@"methods"]];
-        for(int i = 0; i < listShippingMethods.count; i++) {
-            SimiModel *shippingMethod = [listShippingMethods objectAtIndex:i];
-            if([[shippingMethod objectForKey:@"s_method_selected"] boolValue]) {
-                checkedData = [NSIndexPath indexPathForRow:i inSection:0];
+        if(listShippingMethods.count > 0){
+            for(int i = 0; i < listShippingMethods.count; i++) {
+                SimiModel *shippingMethod = [listShippingMethods objectAtIndex:i];
+                if([[shippingMethod objectForKey:@"s_method_selected"] boolValue]) {
+                    checkedData = [NSIndexPath indexPathForRow:i inSection:0];
+                }
             }
+            [shippingMethodTableView reloadData];
+        }else{
+            [self placeOrder:nil];
         }
-        [shippingMethodTableView reloadData];
     }
     else {
         UIAlertView * alert = [[UIAlertView alloc]initWithTitle:SCLocalizedString(@"Error") message:responder.message delegate:self cancelButtonTitle:SCLocalizedString(@"OK") otherButtonTitles: nil];
@@ -165,13 +169,17 @@
         paypalModel = [[SCPaypalExpressModel alloc]init];
     }
     SCPaypalExpressModel *selected;
-    if (checkedData == nil) {
-        selected = [listShippingMethods objectAtIndex:0];
-    }else{
-        selected = [listShippingMethods objectAtIndex:checkedData.row];
+    if(listShippingMethods.count > 0){
+        if (checkedData == nil) {
+            selected = [listShippingMethods objectAtIndex:0];
+        }else{
+            selected = [listShippingMethods objectAtIndex:checkedData.row];
+        }
     }
     NSMutableDictionary *method = [NSMutableDictionary new];
-    [method setValue:@{@"method":[NSString stringWithFormat:@"%@",[selected objectForKey:@"s_method_code"]]}forKey:@"s_method"];
+    if(selected){
+        [method setValue:@{@"method":[NSString stringWithFormat:@"%@",[selected objectForKey:@"s_method_code"]]}forKey:@"s_method"];
+    }
     [paypalModel placeOrderWithParam:method];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didPlaceOrder:) name:SCPaypalExpress_PaypalExpressDidPlaceOrder object:nil];
 }
