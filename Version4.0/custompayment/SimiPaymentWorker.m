@@ -49,6 +49,7 @@
         payment = [noti.userInfo valueForKey:@"payment"];
         for(NSDictionary* payment1 in _customPayment){
             if ([[NSString stringWithFormat:@"%@",[payment1 valueForKey:@"paymentmethod"]] caseInsensitiveCompare:[NSString stringWithFormat:@"%@",[payment valueForKey:@"payment_method"]]] == NSOrderedSame) {
+                [SimiGlobalVar clearAllCookies];
                 [self didPlaceOrder:noti];
                 break;
             }
