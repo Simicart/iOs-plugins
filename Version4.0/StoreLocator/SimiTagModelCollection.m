@@ -7,14 +7,17 @@
 //
 
 #import "SimiTagModelCollection.h"
-#import "SimiTagAPI.h"
 
 @implementation SimiTagModelCollection
 - (void)getTagWithOffset:(NSString*)offset limit:(NSString*)limit{
     notificationName = @"DidFinishGetTagList";
     actionType = CollectionActionTypeInsert;
     self.parseKey = @"storelocatortags";
+    self.resource = @"storelocatortags";
+    [self addOffsetToParams:offset];
+    [self addLimitToParams:limit];
+    self.method = MethodGet;
     [self preDoRequest];
-    [[SimiTagAPI new] getTagListWithParams:@{@"offset":offset,@"limit":limit} target:self selector:@selector(didGetResponseFromNetwork:)];
+    [self request];
 }
 @end

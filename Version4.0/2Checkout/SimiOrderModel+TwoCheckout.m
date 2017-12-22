@@ -7,14 +7,16 @@
 //
 
 #import "SimiOrderModel+TwoCheckout.h"
-#import "SimiOrderAPI+TwoCheckout.h"
 
 @implementation SimiOrderModel (TwoCheckout)
-
 - (void)updateTwoutOrderWithParams:(NSDictionary *)params{
     self.parseKey = @"twoutapi";
     notificationName = TwoutCheckOut_DidUpdate2CheckoutPayment;
-    [[SimiOrderAPI new] updateTwoutOrderWithParams:params target:self selector:@selector(didGetResponseFromNetwork:)];
+    self.resource = @"twoutapis/update_order";
+    if (params.count > 0) {
+        [self.body addEntriesFromDictionary:params];
+    }
+    self.method = MethodPut;
+    [self request];
 }
-
 @end

@@ -7,13 +7,17 @@
 //
 
 #import "SimiGiftCardTimeZoneModelCollection.h"
-#import "SimiGiftCardTimeZoneAPI.h"
 
 @implementation SimiGiftCardTimeZoneModelCollection
 - (void)getGiftCardTimeZoneWithParams:(NSDictionary *)params{
     notificationName = DidGetSimiTimeZone;
     self.parseKey = @"timezones";
+    self.resource = @"simitimezones";
+    if (params.count > 0) {
+        [self.params addEntriesFromDictionary:params];
+    }
+    self.method = MethodGet;
     [self preDoRequest];
-    [[SimiGiftCardTimeZoneAPI new] getGiftCardTimeZoneWithParams:params target:self selector:@selector(didGetResponseFromNetwork:)];
+    [self request];
 }
 @end

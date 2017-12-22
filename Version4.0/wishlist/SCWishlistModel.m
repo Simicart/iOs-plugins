@@ -7,9 +7,6 @@
 //
 
 #import "SCWishlistModel.h"
-
-#define kAddProductToWishlistURL @"simiconnector/rest/v2/wishlistitems"
-
 @implementation SCWishlistModel
 
 - (void)parseData {
@@ -28,21 +25,14 @@
     self.stockStatus = [[self.modelData objectForKey:@"stock_status"] boolValue];
 }
 
--(void) addProductWithParams:(NSDictionary *)params{
+- (void)addProductWithParams:(NSDictionary *)params{
     notificationName = DidAddProductToWishList;
     self.parseKey = @"wishlistitem";
-    NSMutableDictionary *currentParams = [[NSMutableDictionary alloc]initWithDictionary:params];
-    if (![SimiGlobalVar sharedInstance].isLogin) {
-        NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
-        NSString *quoteID = @"";
-        if ([userDefaults objectForKey:@"simi_quote_id"]) {
-            quoteID = [userDefaults objectForKey:@"simi_quote_id"];
-            if (![quoteID isEqualToString:@""] && quoteID != nil) {
-                [currentParams setValue:quoteID forKey:@"quote_id"];
-            }
-        }
+    self.resource = @"wishlistitems";
+    if (params.count > 0) {
+        [self.body addEntriesFromDictionary:params];
     }
-    NSString* url = [NSString stringWithFormat:@"%@%@",kBaseURL,kAddProductToWishlistURL];
-    [[SimiAPI new] requestWithMethod:POST URL:url params:currentParams target:self selector:@selector(didGetResponseFromNetwork:) header:nil];
+    self.method = MethodPost;
+    [self request];
 }
 @end

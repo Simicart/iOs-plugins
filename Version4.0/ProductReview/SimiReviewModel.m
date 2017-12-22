@@ -8,14 +8,16 @@
 
 #import "SimiReviewModel.h"
 
-#define kSubmitReviewURL @"simiconnector/rest/v2/reviews/"
-
 @implementation SimiReviewModel
-
-- (void)submitReviewForProductWithParams:(NSDictionary *) params{
+- (void)submitReviewForProductWithParams:(NSDictionary *)params{
     notificationName = DidSubmitProductReview;
     actionType = ModelActionTypeGet;
+    self.resource = @"reviews";
+    if (params.count > 0) {
+        [self.body addEntriesFromDictionary:params];
+    }
+    self.method = MethodPost;
     [self preDoRequest];
-    [[SimiAPI new] requestWithMethod:POST URL:[NSString stringWithFormat:@"%@%@",kBaseURL,kSubmitReviewURL] params:params target:self selector:@selector(didGetResponseFromNetwork:) header:nil];
+    [self request];
 }
 @end

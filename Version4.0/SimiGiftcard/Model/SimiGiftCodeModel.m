@@ -13,7 +13,14 @@
 - (void)getGiftCodeDetailWithParams:(NSDictionary *)params{
     notificationName = DidGetGiftCodeDetail;
     self.parseKey = @"simigiftcode";
+    self.resource = @"simigiftcodes";
+    [self addExtendsUrlWithKey:[params valueForKey:@"id"]];
+    if (params.count > 0) {
+        [self.params addEntriesFromDictionary:params];
+        [self.params removeObjectForKey:@"id"];
+    }
+    self.method = MethodGet;
     [self preDoRequest];
-    [[SimiGiftCodeAPI new]getGiftCodeDetailWithParams:params target:self selector:@selector(didGetResponseFromNetwork:)];
+    [self request];
 }
 @end

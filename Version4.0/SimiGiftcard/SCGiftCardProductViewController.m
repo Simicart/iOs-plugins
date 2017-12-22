@@ -387,6 +387,11 @@
 {
     SimiSection *section = [self.cells objectAtIndex:indexPath.section];
     SimiRow *row = [section objectAtIndex:indexPath.row];
+    [self beginInitializedCellAtIndexPath:indexPath];
+    if (self.isDiscontinue) {
+        self.isDiscontinue = NO;
+        return row.tableCell;
+    }
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:row.identifier];
     if ([section.identifier isEqualToString:product_main_section]) {
 #pragma mark Image

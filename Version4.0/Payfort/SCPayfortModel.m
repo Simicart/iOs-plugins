@@ -11,9 +11,12 @@
 @implementation SCPayfortModel
 - (void)updateOrderWithInvoiceNumber: (NSString *)invoiceNumber {
     notificationName = DidUpdatePayfortPayment;
-    self.parseKey = @"payfortapi";
     actionType = ModelActionTypeEdit;
+    self.parseKey = @"payfortapi";
+    self.resource = @"payfortapis/update_payment";
+    [self.params addEntriesFromDictionary:@{@"invoice_number":invoiceNumber}];
+    self.method = MethodGet;
     [self preDoRequest];
-    [[SimiAPI new] requestWithMethod:GET URL:[NSString stringWithFormat:@"%@simiconnector/rest/v2/payfortapis/update_payment",kBaseURL] params:@{@"invoice_number":invoiceNumber} target:self selector:@selector(didGetResponseFromNetwork:) header:nil];
+    [self request];
 }
 @end

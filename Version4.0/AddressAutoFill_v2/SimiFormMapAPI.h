@@ -12,8 +12,7 @@
 
 #define SimiFormMapAPI_DidGetAddress @"SimiFormMapAPI_DidGetAddress"
 
-@interface SimiFormMapAPI : SimiFormAbstract <UIActionSheetDelegate,GMSMapViewDelegate,CLLocationManagerDelegate>
-{
+@interface SimiFormMapAPI : SimiFormAbstract <UIActionSheetDelegate,GMSMapViewDelegate,CLLocationManagerDelegate>{
     CLLocationManager* locationManager;
 }
 

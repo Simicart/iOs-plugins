@@ -11,7 +11,5 @@
 #define DidSubmitProductReview @"DidSubmitProductReview"
 
 @interface SimiReviewModel : SimiModel
-
-- (void)submitReviewForProductWithParams:(NSDictionary *) params;
-
+- (void)submitReviewForProductWithParams:(NSDictionary *)params;
 @end

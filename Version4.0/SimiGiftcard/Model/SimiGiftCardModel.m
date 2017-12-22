@@ -7,23 +7,27 @@
 //
 
 #import "SimiGiftCardModel.h"
-#import "SimiGiftCardAPI.h"
 
 @implementation SimiGiftCardModel
 - (void)getGiftCardWithID:(NSString*)giftcardID params:(NSDictionary*)params{
     notificationName = DidGetGiftCardDetail;
     self.parseKey = @"simigiftcard";
+    self.resource = @"simigiftcards";
+    if (params.count > 0) {
+        [self.params addEntriesFromDictionary:params];
+    }
+    [self addExtendsUrlWithKey:giftcardID];
+    self.method = MethodGet;
     [self preDoRequest];
-    NSMutableDictionary *currentParams = [NSMutableDictionary dictionaryWithDictionary:params];
-    [currentParams setValue:giftcardID forKey:@"entity_id"];
-    [[SimiGiftCardAPI new] getGiftCardProductWithParams:currentParams target:self selector:@selector(didGetResponseFromNetwork:)];
+    [self request];
 }
 
 - (void)uploadImageWithParams:(NSDictionary *)params{
     notificationName = DidUploadImage;
     self.parseKey = @"images";
+    self.url = [NSString stringWithFormat:@"%@%@%@", kBaseURL, kSimiConnectorURL, @"simigiftcards/uploadimage"];
     [self preDoRequest];
-    [[SimiGiftCardAPI new] uploadImageWithParams:params target:self selector:@selector(didGetResponseFromNetwork:)];
+    [self requestWithMethod:MethodPost URL:self.url params:@{} body:@{} uploadDataParams:[params valueForKey:@"image_content"] uploadKey:@"image" uploadFileName:@"image_name.png" header:nil];
 }
 
 - (float)heightPriceOnGrid{

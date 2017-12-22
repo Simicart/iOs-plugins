@@ -14,9 +14,14 @@
 - (void)getReviewCollectionWithProductId:(NSString *)productId offset:(NSInteger)offset limit:(NSInteger)limit{
     notificationName = @"DidGetReviewCollection";
     self.parseKey = @"reviews";
+    self.resource = @"reviews";
     actionType = CollectionActionTypeInsert;
+    [self addOffsetToParams:[NSString stringWithFormat:@"%ld",offset]];
+    [self addLimitToParams:[NSString stringWithFormat:@"%ld",limit]];
+    [self addFilterWithKey:@"product_id" value:productId];
+    self.method = MethodGet;
     [self preDoRequest];
-    [[SimiReviewAPI new] getReviewCollectionWithParams:@{@"filter[product_id]": productId, @"offset": [NSString stringWithFormat:@"%ld", (long)offset], @"limit": [NSString stringWithFormat:@"%ld",(long)limit]} target:self selector:@selector(didGetResponseFromNetwork:)];
+    [self request];
 }
 
 @end

@@ -9,7 +9,5 @@
 #import <SimiCartBundle/SimiModelCollection.h>
 static NSString *const Loyalty_DidGetLoyaltyTransactions = @"DidGetLoyaltyTransactions";
 @interface LoyaltyModelCollection : SimiModelCollection
-
 - (void)getTransactionsWithOffset:(NSInteger)offset limit:(NSInteger)limit;
-
 @end

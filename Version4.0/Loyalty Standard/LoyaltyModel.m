@@ -7,7 +7,6 @@
 //
 
 #import "LoyaltyModel.h"
-#import "LoyaltyAPI.h"
 
 @implementation LoyaltyModel
 - (void)parseData {
@@ -52,22 +51,30 @@
     }
 }
 
-- (void)loadProgramOverview
-{
+- (void)loadProgramOverview{
     notificationName = Loyalty_LoadedProgramOverview;
     self.parseKey = @"simirewardpoint";
     actionType = ModelActionTypeGet;
+    self.resource = @"simirewardpoints/home";
+    if (self.modelData.count > 0) {
+        [self.params addEntriesFromDictionary:self.modelData];
+    }
+    self.method = MethodGet;
     [self preDoRequest];
-    [[LoyaltyAPI new] loadProgramOverviewWithParams:self.modelData target:self selector:@selector(didGetResponseFromNetwork:)];
+    [self request];
 }
 
-- (void)saveSettings
-{
+- (void)saveSettings{
     notificationName = Loyalty_SavedLoyaltySettings;
-    self.parseKey = @"simirewardpoint";
     actionType = ModelActionTypeEdit;
+    self.parseKey = @"simirewardpoint";
+    self.resource = @"simirewardpoints/savesetting";
+    if (self.modelData.count > 0) {
+        [self.body addEntriesFromDictionary:self.modelData];
+    }
+    self.method = MethodPut;
     [self preDoRequest];
-    [[LoyaltyAPI new] saveSettingsWithParams:self.modelData target:self selector:@selector(didGetResponseFromNetwork:)];
+    [self request];
 }
 
 @end

@@ -8,12 +8,6 @@
 
 #import "SCWishlistModelCollection.h"
 
-//API URLs
-#define kGetWishlistItemsURL @"simiconnector/rest/v2/wishlistitems"
-#define kGetWishlistProductDetailURL @"simiconnector/rest/v2/products/"
-#define kRemoveWishlistItemURL @"simiconnector/rest/v2/wishlistitems/"
-#define kAddProductFromWishlistToCartURL @"simiconnector/rest/v2/wishlistitems/"
-
 @implementation SCWishlistModelCollection
 
 - (void)parseData{
@@ -32,27 +26,35 @@
     }
 }
 
--(void) getWishlistItemsWithParams: (NSDictionary*) params{
+- (void)getWishlistItemsWithParams:(NSDictionary*)params{
     notificationName = DidGetWishlistItems;
     actionType = CollectionActionTypeInsert;
     self.parseKey = @"wishlistitems";
-    NSString* url = [NSString stringWithFormat:@"%@%@",kBaseURL,kGetWishlistItemsURL];
-    [[SimiAPI new] requestWithMethod:GET URL:url params:params target:self selector:@selector(didGetResponseFromNetwork:) header:nil];
+    self.resource = @"wishlistitems";
+    if (params.count > 0) {
+        [self.params addEntriesFromDictionary:params];
+    }
+    self.method = MethodGet;
+    [self request];
 }
--(void) removeItemWithWishlistItemID: (NSString*) wishlistItemID{
+- (void)removeItemWithWishlistItemID:(NSString*)wishlistItemID{
     notificationName = DidRemoveWishlistItem;
-    self.parseKey = @"wishlistitems";
     actionType = CollectionActionTypeGet;
-    NSString* url = [NSString stringWithFormat:@"%@%@%@",kBaseURL,kRemoveWishlistItemURL,wishlistItemID];
-    [[SimiAPI new] requestWithMethod:DELETE URL:url params:nil target:self selector:@selector(didGetResponseFromNetwork:) header:nil];
+    self.parseKey = @"wishlistitems";
+    self.resource = @"wishlistitems";
+    [self addExtendsUrlWithKey:wishlistItemID];
+    self.method = MethodDelete;
+    [self request];
 }
--(void) addProductToCartWithWishlistID: (NSString*) wishlistItemID{
+- (void)addProductToCartWithWishlistID:(NSString*)wishlistItemID{
     notificationName = DidAddProductFromWishlistToCart;
-    self.parseKey = @"wishlistitems";
     actionType = CollectionActionTypeGet;
-    NSString* url = [NSString stringWithFormat:@"%@%@%@",kBaseURL,kAddProductFromWishlistToCartURL,wishlistItemID];
-    NSDictionary* params = @{@"add_to_cart":@"1"};
-    [[SimiAPI new] requestWithMethod:GET URL:url params:params target:self selector:@selector(didGetResponseFromNetwork:) header:nil];
+    self.parseKey = @"wishlistitems";
+    self.resource = @"wishlistitems";
+    [self addExtendsUrlWithKey:wishlistItemID];
+    [self addParamsWithKey:@"add_to_cart" value:@"1"];
+    self.method = MethodGet;
+    [self request];
 }
 
 @end

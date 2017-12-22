@@ -13,30 +13,46 @@
 - (void)startPaypalExpress{
     notificationName = SCPaypalExpress_DidStartPaypalExpress;
     self.parseKey = @"ppexpressapi";
-    [[SCPaypalExpressAPI new] startPaypalExpress:self selector:@selector(didGetResponseFromNetwork:)];
+    self.resource = @"ppexpressapis/start";
+    self.method = MethodGet;
+    [self request];
 }
 
 - (void)reviewAddress{
     notificationName = SCPaypalExpress_DidGetPaypalAddressInformation;
     self.parseKey = @"ppexpressapi";
-    [[SCPaypalExpressAPI new] reviewAddress:self selector:@selector(didGetResponseFromNetwork:)];
+    self.resource = @"ppexpressapis/checkout_address";
+    self.method = MethodGet;
+    [self request];
 }
 
 - (void)placeOrderWithParam:(NSDictionary *)params{
     notificationName = SCPaypalExpress_PaypalExpressDidPlaceOrder;
     self.parseKey = @"order";
-    [[SCPaypalExpressAPI new] placeOrderWithParam:params target:self selector:@selector(didGetResponseFromNetwork:)];
+    self.resource = @"ppexpressapis/place";
+    if (params.count > 0) {
+        [self.body addEntriesFromDictionary:params];
+    }
+    self.method = MethodPost;
+    [self request];
 }
 
 - (void)updateAddressWithParam:(NSDictionary *)params{
     notificationName = SCPaypalExpress_DidUpdatePaypalCheckoutAddress;
     self.parseKey = @"ppexpressapi";
-    [[SCPaypalExpressAPI new] updateAddressWithParam:params target:self selector:@selector(didGetResponseFromNetwork:)];
+    self.resource = @"ppexpressapis/checkout_address";
+    if (params.count > 0) {
+        [self.body addEntriesFromDictionary:params];
+    }
+    self.method = MethodPut;
+    [self request];
 }
 
 - (void)getShippingMethods{
     notificationName = SCPaypalExpress_DidGetPaypalCheckoutShippingMethods;
     self.parseKey = @"ppexpressapi";
-    [[SCPaypalExpressAPI new] getShippingMethod:self selector:@selector(didGetResponseFromNetwork:)];
+    self.resource = @"ppexpressapis/shipping_methods";
+    self.method = MethodGet;
+    [self request];
 }
 @end

@@ -12,8 +12,12 @@
 - (void)getAddressWithParams:(NSDictionary*)params{
     notificationName = @"DidGetAddress";
     self.parseKey = @"address";
+    self.resource = @"addresses/geocoding";
+    if (params.count > 0) {
+        [self.params addEntriesFromDictionary:params];
+    }
+    self.method = MethodGet;
     [self preDoRequest];
-    NSString *url = [NSString stringWithFormat:@"%@%@%@",kBaseURL, kSimiConnectorURL, @"addresses/geocoding"];
-    [[SimiAPI new] requestWithMethod:GET URL:url params:params target:self selector:@selector(didGetResponseFromNetwork:) header:nil];
+    [self request];
 }
 @end

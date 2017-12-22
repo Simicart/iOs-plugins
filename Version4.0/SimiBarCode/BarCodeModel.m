@@ -24,8 +24,12 @@
 
 - (void)getProductIdWithBarCode:(NSString *)barCode type:(NSString *)type{
     notificationName = BarCodeDidGetProductID;
-    self.parseKey = @"simibarcode";
     actionType = ModelActionTypeGet;
-    [[BarCodeAPI new] getProductIdWithBarCode:barCode type:type target:self selector:@selector(didGetResponseFromNetwork:)];
+    self.parseKey = @"simibarcode";
+    self.resource = @"simibarcodes";
+    [self addParamsWithKey:@"type" value:type];
+    [self addExtendsUrlWithKey:barCode];
+    self.method = MethodGet;
+    [self request];
 }
 @end

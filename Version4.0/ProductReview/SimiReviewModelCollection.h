@@ -9,7 +9,6 @@
 #import <SimiCartBundle/SimiModelCollection.h>
 
 @interface SimiReviewModelCollection : SimiModelCollection
-
 /*
  Notification name: DidGetReviewCollection
  */

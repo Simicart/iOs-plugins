@@ -7,15 +7,18 @@
 //
 
 #import "SimiOrderModel+Avenue.h"
-#import "SimiOrderAPI+Avenue.h"
 
 @implementation SimiOrderModel (Avenue)
 
 - (void)updateAvenueOrderWithParams:(NSDictionary *)params{
     self.parseKey = @"twoutapi";
     notificationName = CCAvenue_DidUpdateAvenuePayment;
+    self.resource = @"twoutapis/update_order";
+    if (params.count > 0) {
+        [self.body addEntriesFromDictionary:params];
+    }
+    self.method = MethodPut;
     [self preDoRequest];
-    [[SimiOrderAPI new] updateAvenueOrderWithParams:params target:self selector:@selector(didGetResponseFromNetwork:)];
+    [self request];
 }
-
 @end

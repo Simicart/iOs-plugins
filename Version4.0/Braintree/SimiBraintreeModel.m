@@ -8,15 +8,14 @@
 
 #import "SimiBraintreeModel.h"
 
-NSString* const kBraintreeUpdatePayment = @"simiconnector/rest/v2/braintreeapis";
-
 @implementation SimiBraintreeModel
 - (void)sendNonceToServer:(NSString* )nonce andOrder:(SimiOrderModel *)order{
     notificationName = BRAINTREE_SENDNONCETOSERVER;
-    NSString* url = [NSString stringWithFormat:@"%@%@", kBaseURL, kBraintreeUpdatePayment];
-    NSDecimalNumber* amount = [NSDecimalNumber decimalNumberWithString:[NSString stringWithFormat:@"%.02f",[[order.total valueForKey:@"grand_total_incl_tax"] floatValue]]];
-    NSMutableDictionary* params = [[NSMutableDictionary alloc] initWithDictionary:@{@"nonce":nonce,@"order_id":order.invoiceNumber,@"amount":amount}];
-    SimiAPI *braintreeAPI = [[SimiAPI alloc] init];
-    [braintreeAPI requestWithMethod:POST URL:url params:params target:self selector:@selector(didGetResponseFromNetwork:) header:nil];
+    self.parseKey = @"";
+    self.resource = @"braintreeapis";
+    self.method = MethodPost;
+    NSDecimalNumber *amount = [NSDecimalNumber decimalNumberWithString:[NSString stringWithFormat:@"%.02f",[[order.total valueForKey:@"grand_total_incl_tax"] floatValue]]];
+    [self.body addEntriesFromDictionary:@{@"nonce":nonce,@"order_id":order.invoiceNumber,@"amount":amount}];
+    [self request];
 }
 @end

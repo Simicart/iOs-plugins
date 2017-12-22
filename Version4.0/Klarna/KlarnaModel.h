@@ -7,7 +7,6 @@
 //
 
 #import <SimiCartBundle/SimiCartBundle.h>
-#import "KlarnaAPI.h"
 static NSString *const Klarna_DidCheckoutWithKlarna = @"Klarna_DidCheckoutWithKlarna";
 static NSString *const Klarna_DidGetKlarnaParam = @"Klarna_DidGetKlarnaParam";
 

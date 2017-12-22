@@ -13,8 +13,10 @@
 - (void)getDeeplinkInformation:(NSString *)deeplinkURL {
     self.parseKey = @"deeplink";
     notificationName = DidGetDeeplinkInformation;
+    self.resource = @"deeplinks";
+    [self addParamsWithKey:@"url" value:deeplinkURL];
+    self.method = MethodGet;
     [self preDoRequest];
-    NSString *url = [NSString stringWithFormat:@"%@%@deeplinks?url=%@", kBaseURL, kSimiConnectorURL,deeplinkURL];
-    [[SimiAPI new] requestWithMethod:GET URL:url params:@{} target:self selector:@selector(didGetResponseFromNetwork:) header:nil];
+    [self request];
 }
 @end

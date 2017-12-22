@@ -12,7 +12,12 @@
 - (void)completeOrderWithParams:(NSDictionary *)params{
     notificationName = CheckoutCom_DidUpdateCheckoutComPayment;
     self.parseKey = @"checkoutcomapi";
+    self.resource = @"checkoutcomapis/update_payment";
+    if (params.count > 0) {
+        [self.params addEntriesFromDictionary:params];
+    }
+    self.method = MethodGet;
     [self preDoRequest];
-    [[SimiAPI new] requestWithMethod:GET URL:[NSString stringWithFormat:@"%@simiconnector/rest/v2/checkoutcomapis/update_payment",kBaseURL] params:params target:self selector:@selector(didGetResponseFromNetwork:) header:nil];
+    [self request];
 }
 @end

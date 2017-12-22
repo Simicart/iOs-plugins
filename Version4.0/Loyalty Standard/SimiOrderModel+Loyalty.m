@@ -7,17 +7,18 @@
 //
 
 #import "SimiOrderModel+Loyalty.h"
-#import "LoyaltyAPI.h"
 
 @implementation SimiOrderModel (Loyalty)
 
-- (void)spendPoints:(NSInteger)points ruleId:(id)ruleId
-{
+- (void)spendPoints:(NSInteger)points ruleId:(id)ruleId{
     actionType = ModelActionTypeGet;
     notificationName = Loyalty_DidSpendPointsOrder;
     self.parseKey = @"order";
+    self.resource = @"simirewardpoints/spend";
+    [self.body addEntriesFromDictionary:@{@"ruleid":ruleId, @"usepoint": [NSNumber numberWithInteger:points]}];
+    self.method = MethodPut;
     [self preDoRequest];
-    [[LoyaltyAPI new] spendPointsWithParams:@{@"ruleid":ruleId, @"usepoint": [NSNumber numberWithInteger:points]} target:self selector:@selector(didGetResponseFromNetwork:)];
+    [self request];
 }
 
 @end

@@ -10,7 +10,6 @@
 #import <SimiCartBundle/SimiOrderModel.h>
 
 static NSString *const BRAINTREE_SENDNONCETOSERVER = @"BRAINTREE-SENDNONCETOSERVER";
-extern NSString *const kBraintreeUpdatePayment;
 
 @interface SimiBraintreeModel : SimiModel
 - (void)sendNonceToServer:(NSString* )nonce andOrder:(SimiOrderModel*)order;

@@ -7,14 +7,18 @@
 //
 
 #import "SimiGiftCardModelCollection.h"
-#import "SimiGiftCardAPI.h"
 
 @implementation SimiGiftCardModelCollection
 - (void)getGiftCardProductCollectionWithParams:(NSDictionary *)params{
     notificationName = DidGetGiftCardProductCollection;
     self.parseKey = @"simigiftcards";
     actionType = CollectionActionTypeInsert;
+    self.resource = @"simigiftcards";
+    if (params.count > 0) {
+        [self.params addEntriesFromDictionary:params];
+    }
+    self.method = MethodGet;
     [self preDoRequest];
-    [[SimiGiftCardAPI new] getGiftCardProductCollectionWithParams:params target:self selector:@selector(didGetResponseFromNetwork:)];
+    [self request];
 }
 @end

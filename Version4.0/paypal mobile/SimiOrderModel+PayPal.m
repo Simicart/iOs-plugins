@@ -17,8 +17,10 @@
     if(!proof){
         proof = @{};
     }
-    NSString* url = [NSString stringWithFormat:@"%@%@",kBaseURL,kSavePaymentURL];
-    [[SimiAPI new] requestWithMethod:POST URL:url params:@{@"payment_status":paymentStatus,@"invoice_number":invoiceNumber,@"proof":proof} target:self selector:@selector(didGetResponseFromNetwork:) header:nil];
+    self.resource = @"paypalmobiles";
+    [self.body addEntriesFromDictionary:@{@"payment_status":paymentStatus,@"invoice_number":invoiceNumber,@"proof":proof}];
+    self.method = MethodPost;
+    [self request];
 }
 
 @end

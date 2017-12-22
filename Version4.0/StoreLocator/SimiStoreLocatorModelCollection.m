@@ -10,21 +10,26 @@
 
 @implementation SimiStoreLocatorModelCollection
 
-- (void)getStoreListWithLatitude:(NSString*)lat longitude:(NSString*)lng offset:(NSString*)offset limit:(NSString*)limit
-{
-     notificationName = StoreLocator_DidGetStoreList;
-    self.parseKey = @"storelocations";
-    [self preDoRequest];
+- (void)getStoreListWithLatitude:(NSString*)lat longitude:(NSString*)lng offset:(NSString*)offset limit:(NSString*)limit{
+    notificationName = StoreLocator_DidGetStoreList;
     actionType = CollectionActionTypeInsert;
-    [[SimiStoreLocatorAPI new] getStoreListWithParams:@{@"lat":lat,@"lng":lng,@"offset":offset,@"limit":limit} target:self selector:@selector(didGetResponseFromNetwork:)];
+    self.parseKey = @"storelocations";
+    self.resource = @"storelocations";
+    [self.params addEntriesFromDictionary:@{@"lat":lat,@"lng":lng,@"offset":offset,@"limit":limit}];
+    self.method = MethodGet;
+    [self preDoRequest];
+    [self request];
 }
 
 - (void)getStoreListWithLatitude:(NSString *)lat longitude:(NSString *)lng offset:(NSString *)offset limit:(NSString *)limit country:(NSString*)country city:(NSString*)city state:(NSString*)state zipcode:(NSString*)zipcode tag:(NSString *)tag
 {
     notificationName = StoreLocator_DidGetStoreList;
-    self.parseKey = @"storelocations";
     actionType = CollectionActionTypeInsert;
+    self.parseKey = @"storelocations";
+    self.resource = @"storelocations";
+    [self.params addEntriesFromDictionary:@{@"lat":lat,@"lng":lng,@"offset":offset,@"limit":limit,@"country":country,@"city":city,@"state":state,@"zipcode":zipcode,@"tag":tag}];
+    self.method = MethodGet;
     [self preDoRequest];
-    [[SimiStoreLocatorAPI new] getStoreListWithParams:@{@"lat":lat,@"lng":lng,@"offset":offset,@"limit":limit,@"country":country,@"city":city,@"state":state,@"zipcode":zipcode,@"tag":tag} target:self selector:@selector(didGetResponseFromNetwork:)];
+    [self request];
 }
 @end

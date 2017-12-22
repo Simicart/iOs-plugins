@@ -149,7 +149,8 @@
 
 - (void)initProductCellsAfter: (NSNotification *)noti {
     cells = noti.object;
-    SCProductSecondDesignViewController *productVC = [noti.userInfo objectForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.viewcontroller];
+    productVC = [noti.userInfo objectForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.viewcontroller];
+    productTableView = productVC.contentTableView;
     product = productVC.product;
     appReviews = [product valueForKey:@"app_reviews"];
     hadReviews = NO;

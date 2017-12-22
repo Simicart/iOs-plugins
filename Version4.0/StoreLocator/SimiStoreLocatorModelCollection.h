@@ -8,7 +8,6 @@
 
 #import <SimiCartBundle/SimiCartBundle.h>
 #import <SimiCartBundle/SimiModelCollection.h>
-#import "SimiStoreLocatorAPI.h"
 static NSString *const StoreLocator_DidGetStoreList = @"StoreLocator_DidGetStoreList";
 
 @interface SimiStoreLocatorModelCollection:SimiModelCollection
