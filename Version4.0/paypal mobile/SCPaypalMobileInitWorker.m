@@ -66,16 +66,17 @@
         pay.currencyCode = [[SimiGlobalVar sharedInstance] currencyCode];
         pay.bnCode = bnCode;
         pay.shortDescription = [NSString stringWithFormat:@"%@ #: %@", SCLocalizedString(@"Invoice"), [order valueForKey:@"invoice_number"]];
-        
-        SimiAddressModel *shippingAddress = order.shippingAddress;
-        PayPalShippingAddress *paypalShippingAddress = [[PayPalShippingAddress alloc] init];
-        paypalShippingAddress.city = shippingAddress.city;
-        paypalShippingAddress.countryCode = shippingAddress.countryId;
-        paypalShippingAddress.recipientName = [NSString stringWithFormat:@"%@ %@",shippingAddress.firstName,shippingAddress.lastName];
-        paypalShippingAddress.postalCode = shippingAddress.postcode;
-        paypalShippingAddress.state = shippingAddress.region;
-        paypalShippingAddress.line1 = shippingAddress.street;
-        pay.shippingAddress = paypalShippingAddress;
+        if(order.shippingAddress.count > 0){
+            SimiAddressModel *shippingAddress = order.billingAddress;
+            PayPalShippingAddress *paypalShippingAddress = [[PayPalShippingAddress alloc] init];
+            paypalShippingAddress.city = shippingAddress.city;
+            paypalShippingAddress.countryCode = shippingAddress.countryId;
+            paypalShippingAddress.recipientName = [NSString stringWithFormat:@"%@ %@",shippingAddress.firstName,shippingAddress.lastName];
+            paypalShippingAddress.postalCode = shippingAddress.postcode;
+            paypalShippingAddress.state = shippingAddress.region;
+            paypalShippingAddress.line1 = shippingAddress.street;
+            pay.shippingAddress = paypalShippingAddress;
+        }
         
         
         // Check whether payment is processable.

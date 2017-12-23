@@ -249,7 +249,7 @@ static NSString *CHERRY_REWARDS_ROW = @"CHERRY_REWARDS_ROW";
                 label.text = [NSString stringWithFormat:SCLocalizedString(@"Each of %@ gets %@ discount"), [rule objectForKey:@"pointStepLabel"], [rule objectForKey:@"pointStepDiscount"]];
                 [cell addSubview:label];
                 
-                UISlider *slider = [[UISlider alloc] initWithFrame:CGRectMake(15, 44, width, 28)];
+                UISlider *slider = [[UISlider alloc] initWithFrame:CGRectMake(30, 44, width - 30, 28)];
                 slider.minimumValue = [[rule objectForKey:@"minPoints"] floatValue];
                 slider.maximumValue = [[rule objectForKey:@"maxPoints"] floatValue];
                 if ([[order.modelData valueForKey:@"loyalty"] objectForKey:@"loyalty_spend"]) {
@@ -272,7 +272,7 @@ static NSString *CHERRY_REWARDS_ROW = @"CHERRY_REWARDS_ROW";
                 points.simiObjectIdentifier = [rule objectForKey:@"pointStep"];
                 
                 UILabel *minLabel = [label clone];
-                minLabel.frame = CGRectMake(20, 72, 70, 22);
+                minLabel.frame = CGRectMake(30, 72, 70, 22);
                 minLabel.text = [[rule objectForKey:@"minPoints"] stringValue];
                 minLabel.textColor = [UIColor grayColor];
                 [cell addSubview:minLabel];
