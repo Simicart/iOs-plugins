@@ -39,23 +39,25 @@
     return self;
 }
 - (void)initViewMoreAction: (NSNotification *)noti {
-    moreActionView = noti.object;
-    float sizeButton = 50;
-    reviewButton = [UIButton new];
-    [reviewButton setImage:[[UIImage imageNamed:@"ic_review"] imageWithColor:[UIColor blackColor]] forState:UIControlStateNormal];
-    [reviewButton setImageEdgeInsets:UIEdgeInsetsMake(9, 9, 9, 9)];
-    [reviewButton.layer setCornerRadius:sizeButton/2.0f];
-    [reviewButton.layer setShadowOffset:CGSizeMake(1, 1)];
-    [reviewButton.layer setShadowRadius:2];
-    reviewButton.layer.shadowOpacity = 0.5;
-    [reviewButton setBackgroundColor:[UIColor whiteColor]];
-    [reviewButton addTarget:self action:@selector(didTouchReviewButton:) forControlEvents:UIControlEventTouchUpInside];
-    reviewButton.tag = 1000;
-    moreActionView.numberIcon += 1;
-    [moreActionView.arrayIcon addObject:reviewButton];
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(afterInitViewMoreOnProductMoreViewController:) name:SCProductMoreViewControllerAfterInitViewMore object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(afterInitViewMoreOnProductViewController:) name:SCProductViewControllerAfterInitViewMore object:nil];
+    if ([SimiGlobalVar sharedInstance].isLogin || (![SimiGlobalVar sharedInstance].isLogin && [SimiGlobalVar sharedInstance].isReviewAllowGuest)) {
+        moreActionView = noti.object;
+        float sizeButton = 50;
+        reviewButton = [UIButton new];
+        [reviewButton setImage:[[UIImage imageNamed:@"ic_review"] imageWithColor:[UIColor blackColor]] forState:UIControlStateNormal];
+        [reviewButton setImageEdgeInsets:UIEdgeInsetsMake(9, 9, 9, 9)];
+        [reviewButton.layer setCornerRadius:sizeButton/2.0f];
+        [reviewButton.layer setShadowOffset:CGSizeMake(1, 1)];
+        [reviewButton.layer setShadowRadius:2];
+        reviewButton.layer.shadowOpacity = 0.5;
+        [reviewButton setBackgroundColor:[UIColor whiteColor]];
+        [reviewButton addTarget:self action:@selector(didTouchReviewButton:) forControlEvents:UIControlEventTouchUpInside];
+        reviewButton.tag = 1000;
+        moreActionView.numberIcon += 1;
+        [moreActionView.arrayIcon addObject:reviewButton];
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(afterInitViewMoreOnProductMoreViewController:) name:SCProductMoreViewControllerAfterInitViewMore object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(afterInitViewMoreOnProductViewController:) name:SCProductViewControllerAfterInitViewMore object:nil];
+     }
 }
 
 - (void)productMoreViewControllerInitTab: (NSNotification *)noti {

@@ -57,43 +57,45 @@
             
             float paddingWidth = 15;
             float viewY = 10;
-            if([[[formAddReviews objectAtIndex:0] objectForKey:@"rates"] isKindOfClass:[NSArray class]]){
-                SimiLabel *titleLabel = [[SimiLabel alloc] initWithFrame:CGRectMake(paddingWidth, viewY, viewWidth - 2*paddingWidth, 40) andFontName:THEME_FONT_NAME_REGULAR andFontSize:THEME_FONT_SIZE andTextColor:THEME_CONTENT_COLOR text:[NSString stringWithFormat:@"%@?",SCLocalizedString(@"HOW DO YOU RATE THIS PRODUCT")]];
-                [reviewContentView addSubview:titleLabel];
-                viewY += titleLabel.frame.size.height;
-                rateFields = [[formAddReviews objectAtIndex:0] objectForKey:@"rates"];
-                ratingViews = [[NSMutableArray alloc] initWithCapacity:0];
-                for(int i = 0;i<rateFields.count;i++) {
-                    NSDictionary* rateField = [rateFields objectAtIndex:i];
-                    UIView* ratingView = [[UIView alloc] initWithFrame:CGRectMake(0, viewY, viewWidth, 30)];
-                    [reviewContentView addSubview:ratingView];
-                    SimiLabel* ratingLabel = [[SimiLabel alloc] initWithFrame:CGRectMake(paddingWidth, 0, viewWidth/2 - paddingWidth, 30) andFontName:THEME_FONT_NAME andFontSize:THEME_FONT_SIZE andTextColor:THEME_CONTENT_COLOR text:[rateField objectForKey:@"rate_code"]];
-                    ASStarRatingView* ratingStarView = [[ASStarRatingView alloc] initWithFrame:CGRectMake(viewWidth/2, 0, viewWidth/2 - paddingWidth, 30)];
-                    ratingStarView.simiRateData = [rateField objectForKey:@"rate_options"];
-                    [ratingViews addObject:ratingStarView];
-                    ratingStarView.rating = 1;
-                    ratingStarView.minAllowedRating = 1;
-                    ratingStarView.maxAllowedRating = 5;
-                    [ratingView addSubview:ratingLabel];
-                    [ratingView addSubview:ratingStarView];
-                    viewY += ratingStarView.frame.size.height;
+            if ([[formAddReviews objectAtIndex:0] isKindOfClass:[NSDictionary class]]) {
+                if([[[formAddReviews objectAtIndex:0] objectForKey:@"rates"] isKindOfClass:[NSArray class]]){
+                    SimiLabel *titleLabel = [[SimiLabel alloc] initWithFrame:CGRectMake(paddingWidth, viewY, viewWidth - 2*paddingWidth, 40) andFontName:THEME_FONT_NAME_REGULAR andFontSize:THEME_FONT_SIZE andTextColor:THEME_CONTENT_COLOR text:[NSString stringWithFormat:@"%@?",SCLocalizedString(@"HOW DO YOU RATE THIS PRODUCT")]];
+                    [reviewContentView addSubview:titleLabel];
+                    viewY += titleLabel.frame.size.height;
+                    rateFields = [[formAddReviews objectAtIndex:0] objectForKey:@"rates"];
+                    ratingViews = [[NSMutableArray alloc] initWithCapacity:0];
+                    for(int i = 0;i<rateFields.count;i++) {
+                        NSDictionary* rateField = [rateFields objectAtIndex:i];
+                        UIView* ratingView = [[UIView alloc] initWithFrame:CGRectMake(0, viewY, viewWidth, 30)];
+                        [reviewContentView addSubview:ratingView];
+                        SimiLabel* ratingLabel = [[SimiLabel alloc] initWithFrame:CGRectMake(paddingWidth, 0, viewWidth/2 - paddingWidth, 30) andFontName:THEME_FONT_NAME andFontSize:THEME_FONT_SIZE andTextColor:THEME_CONTENT_COLOR text:[rateField objectForKey:@"rate_code"]];
+                        ASStarRatingView* ratingStarView = [[ASStarRatingView alloc] initWithFrame:CGRectMake(viewWidth/2, 0, viewWidth/2 - paddingWidth, 30)];
+                        ratingStarView.simiRateData = [rateField objectForKey:@"rate_options"];
+                        [ratingViews addObject:ratingStarView];
+                        ratingStarView.rating = 1;
+                        ratingStarView.minAllowedRating = 1;
+                        ratingStarView.maxAllowedRating = 5;
+                        [ratingView addSubview:ratingLabel];
+                        [ratingView addSubview:ratingStarView];
+                        viewY += ratingStarView.frame.size.height;
+                    }
                 }
-            }
-            if([[[formAddReviews objectAtIndex:0] objectForKey:@"form_review"] isKindOfClass:[NSDictionary class]]){
-                NSDictionary *formReview = [[formAddReviews objectAtIndex:0] objectForKey:@"form_review"];
-                formKeys = [formReview objectForKey:@"form_key"];
-                if(formKeys.count > 0) {
-                    reviewTextViews = [[NSMutableArray alloc] init];
-                    for(NSDictionary *formKey in formKeys) {
-                        SimiLabel *titleLabel = [[SimiLabel alloc] initWithFrame:CGRectMake(paddingWidth, viewY, viewWidth - 2*paddingWidth, 30) andFontName:THEME_FONT_NAME_REGULAR andFontSize:THEME_FONT_SIZE andTextColor:THEME_CONTENT_COLOR text:[NSString stringWithFormat:@"%@ (*)",[formKey objectForKey:@"value"]]];
-                        [reviewContentView addSubview:titleLabel];
-                        viewY += titleLabel.frame.size.height;
-                        SimiTextView *contentTextView = [[SimiTextView alloc] initWithFrame:CGRectMake(paddingWidth, viewY, viewWidth - 2*paddingWidth, 40) font:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE] borderWidth:1 borderColor:COLOR_WITH_HEX(@"#cacaca") paddingLeft:5];
-                        [reviewContentView addSubview:contentTextView];
-                        viewY += contentTextView.frame.size.height;
-                        contentTextView.simiObjectIdentifier = formKey;
-                        contentTextView.delegate = self;
-                        [reviewTextViews addObject:contentTextView];
+                if([[[formAddReviews objectAtIndex:0] objectForKey:@"form_review"] isKindOfClass:[NSDictionary class]]){
+                    NSDictionary *formReview = [[formAddReviews objectAtIndex:0] objectForKey:@"form_review"];
+                    formKeys = [formReview objectForKey:@"form_key"];
+                    if(formKeys.count > 0) {
+                        reviewTextViews = [[NSMutableArray alloc] init];
+                        for(NSDictionary *formKey in formKeys) {
+                            SimiLabel *titleLabel = [[SimiLabel alloc] initWithFrame:CGRectMake(paddingWidth, viewY, viewWidth - 2*paddingWidth, 30) andFontName:THEME_FONT_NAME_REGULAR andFontSize:THEME_FONT_SIZE andTextColor:THEME_CONTENT_COLOR text:[NSString stringWithFormat:@"%@ (*)",[formKey objectForKey:@"value"]]];
+                            [reviewContentView addSubview:titleLabel];
+                            viewY += titleLabel.frame.size.height;
+                            SimiTextView *contentTextView = [[SimiTextView alloc] initWithFrame:CGRectMake(paddingWidth, viewY, viewWidth - 2*paddingWidth, 40) font:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE] borderWidth:1 borderColor:COLOR_WITH_HEX(@"#cacaca") paddingLeft:5];
+                            [reviewContentView addSubview:contentTextView];
+                            viewY += contentTextView.frame.size.height;
+                            contentTextView.simiObjectIdentifier = formKey;
+                            contentTextView.delegate = self;
+                            [reviewTextViews addObject:contentTextView];
+                        }
                     }
                 }
             }
