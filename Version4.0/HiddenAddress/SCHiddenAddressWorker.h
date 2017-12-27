@@ -7,7 +7,12 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <SimiCartBundle/SCNewAddressViewController.h>
 
 @interface SCHiddenAddressWorker : NSObject
 @property (nonatomic) BOOL available;
+@end
+
+@interface SCConfigureNewAddressViewController:SCNewAddressViewController
+
 @end
