@@ -124,7 +124,18 @@
 - (void)didTouchWishlistButton
 {
     if (![[SimiGlobalVar sharedInstance] isLogin]) {
-        [currentlyViewController.navigationController pushViewController:[SCLoginViewController new] animated:YES];
+        if(PHONEDEVICE){
+            [currentlyViewController.navigationController pushViewController:[SCLoginViewController new] animated:YES];
+        }else{
+            SCLoginViewController *loginViewController = [SCLoginViewController new];
+            UINavigationController *navi = [[UINavigationController alloc]initWithRootViewController:loginViewController];
+            navi.modalPresentationStyle = UIModalPresentationPopover;
+            UIPopoverPresentationController *popover = navi.popoverPresentationController;
+            popover.sourceRect = CGRectMake(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 1, 1);
+            popover.sourceView = currentlyViewController.navigationController.view;
+            popover.permittedArrowDirections = 0;
+            [currentlyViewController.navigationController presentViewController:navi animated:YES completion:nil];
+        }
         return;
     }
 //    [wishlistButton setEnabled:NO];
