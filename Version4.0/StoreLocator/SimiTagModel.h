@@ -7,9 +7,3 @@
 //
 
 #import <SimiCartBundle/SimiCartBundle.h>
-
-@interface SimiTagModel : SimiModel
-@property (strong, nonatomic) NSString *tagId;
-@property (strong, nonatomic) NSString *simistorelocatorId;
-@property (strong, nonatomic) NSString *value;
-@end

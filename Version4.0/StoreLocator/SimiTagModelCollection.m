@@ -8,6 +8,15 @@
 
 #import "SimiTagModelCollection.h"
 
+@implementation SimiTagModel
+- (void)parseData{
+    [super parseData];
+    self.tagId = [NSString stringWithFormat:@"%@",[self.modelData objectForKey:@"tag_id"]];
+    self.simistorelocatorId = [NSString stringWithFormat:@"%@",[self.modelData objectForKey:@"simistorelocator_id"]];
+    self.value = [NSString stringWithFormat:@"%@",[self.modelData objectForKey:@"value"]];
+}
+@end
+
 @implementation SimiTagModelCollection
 - (void)getTagWithOffset:(NSString*)offset limit:(NSString*)limit{
     notificationName = @"DidFinishGetTagList";
