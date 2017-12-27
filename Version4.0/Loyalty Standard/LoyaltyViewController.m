@@ -21,11 +21,9 @@
 @synthesize skipReloadData = _skipReloadData;
 
 - (void)viewDidLoadBefore {
-    [self setToSimiView];
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         [super viewDidLoadBefore];
-    }else
-    {
+    }else{
         [self configureNavigationBarOnViewDidLoad];
     }
     // Init Views
@@ -35,24 +33,21 @@
     self.contentTableView = [[UITableView alloc] initWithFrame:self.view.frame style:UITableViewStyleGrouped];
     self.contentTableView.delegate = self;
     self.contentTableView.dataSource = self;
-    self.contentTableView.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
-    self.cells = [SimiTable new];
+    self.contentTableView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     if (SIMI_SYSTEM_IOS >= 9) {
         self.contentTableView.cellLayoutMarginsFollowReadableWidth = NO;
     }
     [self.view addSubview:self.contentTableView];
 }
 
-- (void)viewWillAppearBefore:(BOOL)animated
-{
+- (void)viewWillAppearBefore:(BOOL)animated{
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         [super viewWillAppearBefore:YES];
     }
 }
 
-- (void)viewDidAppear:(BOOL)animated
-{
-    [super viewDidAppear:animated];
+- (void)viewDidAppearBefore:(BOOL)animated{
+    [super viewDidAppearBefore:animated];
     if (_skipReloadData) {
         _skipReloadData = NO;
         return;
@@ -67,21 +62,13 @@
     [_loyaltyPolicy loadProgramOverview];
 }
 
-- (void)dealloc
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
 - (void)didReceiveNotification:(NSNotification *)noti{
     [self stopLoadingData];
     [self initCells];
-    [self.contentTableView reloadData];
-    
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (void)initCells{
-    self.cells = [SimiTable new];
+- (void)createCells{
     if ([[SimiGlobalVar sharedInstance] isLogin]) {
         SimiSection *section = [self.cells addSectionWithIdentifier:LOYALTY_BALANCE];
         CGFloat height = 98;
@@ -128,18 +115,7 @@
 }
 
 #pragma mark - table view datasource
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
-{
-    return [self.cells count];
-}
-
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
-{
-    return [[self.cells objectAtIndex:section] count];
-}
-
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-{
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     UITableViewCell *cell;
     SimiSection *section = [self.cells objectAtIndex:indexPath.section];
     SimiRow *row = [section objectAtIndex:indexPath.row];
@@ -154,8 +130,8 @@
             } else if (_reloadDataFlag) {
                 [[cell viewWithTag:100] removeFromSuperview];
             }
-            CGFloat width = MIN(tableView.frame.size.width, 360);
-            UIView *view = [[UIView alloc] initWithFrame:CGRectMake((tableView.frame.size.width - width) / 2, 0, width, row.height)];
+            CGFloat width = MIN(CGRectGetWidth(tableView.frame), 360);
+            UIView *view = [[UIView alloc] initWithFrame:CGRectMake((CGRectGetWidth(tableView.frame) - width) / 2, 0, width, row.height)];
             view.tag = 100;
             [cell addSubview:view];
             // Draw Reward Points Information
@@ -328,17 +304,6 @@
         cell.textLabel.text = row.title;
     }
     return cell;
-}
-
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    SimiRow *row = [[self.cells objectAtIndex:indexPath.section] objectAtIndex:indexPath.row];
-    return row.height;
-}
-
-- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
-{
-    return [[self.cells objectAtIndex:section] headerTitle];
 }
 
 #pragma mark - table view delegate

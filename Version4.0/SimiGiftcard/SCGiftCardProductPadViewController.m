@@ -60,8 +60,7 @@
     }
 }
 
-- (void)initCells{
-    _cells = [SimiTable new];
+- (void)createCells{
     SimiSection *mainSection = [[SimiSection alloc]initWithIdentifier:product_main_section];
     [_cells addObject:mainSection];
     [mainSection addRowWithIdentifier:product_nameandprice_row height:100];
@@ -76,9 +75,6 @@
             [mainSection addRowWithIdentifier:product_techspecs_row height:50];
         }
     }
-    [self endInitCellsWithInfo:@{}];
-    [mainSection sortItems];
-    [self.contentTableView reloadData];
 }
 
 - (void)initGiftCardImageView{

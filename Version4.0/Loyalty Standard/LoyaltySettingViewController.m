@@ -12,17 +12,14 @@
 #import "LoyaltyViewController.h"
 
 @interface LoyaltySettingViewController ()
-@property (strong, nonatomic) SimiTable *table;
 @property (strong, nonatomic) LoyaltyModel *settings;
 @end
 
 @implementation LoyaltySettingViewController
-@synthesize tableView = _tableView, model = _model;
-@synthesize table = _table, settings = _settings;
+@synthesize model = _model;
+@synthesize settings = _settings;
 
-- (void)viewDidLoadBefore
-{
-    [self setToSimiView];
+- (void)viewDidLoadBefore{
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         [super viewDidLoadBefore];
     }else
@@ -32,13 +29,14 @@
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(saveSettings)];
     
     // Init Table View Data
-    _tableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStyleGrouped];
+    self.contentTableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStyleGrouped];
+    self.contentTableView.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
     if (SIMI_SYSTEM_IOS >= 9) {
-        _tableView.cellLayoutMarginsFollowReadableWidth = NO;
+        self.contentTableView.cellLayoutMarginsFollowReadableWidth = NO;
     }
-    _tableView.dataSource = self;
-    _tableView.delegate = self;
-    [self.view addSubview:_tableView];
+    self.contentTableView.dataSource = self;
+    self.contentTableView.delegate = self;
+    [self.view addSubview:self.contentTableView];
     
     // Init Settings Data
     _settings = [LoyaltyModel new];
@@ -46,19 +44,8 @@
     [_settings setValue:_model.expireNotification?@"1":@"0" forKey:@"expire_notification"];
 }
 
-- (void)viewWillAppearBefore:(BOOL)animated
-{
+- (void)viewWillAppearBefore:(BOOL)animated{
     
-}
-
-- (void)viewDidAppearBefore:(BOOL)animated
-{
-    [_tableView setFrame:self.view.bounds];
-}
-
-- (void)dealloc
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)saveSettings
@@ -84,46 +71,18 @@
     [self removeObserverForNotification:noti];
 }
 
-- (SimiTable *)table
-{
-    if (_table != nil) {
-        return _table;
-    }
-    _table = [SimiTable new];
-    
-    SimiSection *section = [_table addSectionWithIdentifier:LOYALTY_EMAIL_NOTI headerTitle:SCLocalizedString(@"Email Subscriptions") footerTitle:SCLocalizedString(@"Subscribe to receive updates on your point balance")];
+- (void)createCells{
+    SimiSection *section = [self.cells addSectionWithIdentifier:LOYALTY_EMAIL_NOTI headerTitle:SCLocalizedString(@"Email Subscriptions") footerTitle:SCLocalizedString(@"Subscribe to receive updates on your point balance")];
     [[section addRowWithIdentifier:LOYALTY_EMAIL_NOTI height:44 sortOrder:0] setTitle:SCLocalizedString(@"Point Balance Update")];
     
-    section = [_table addSectionWithIdentifier:LOYALTY_EMAIL_EXP headerTitle:nil footerTitle:SCLocalizedString(@"Subscribe to receive notifications of expiring points in advance")];
+    section = [self.cells addSectionWithIdentifier:LOYALTY_EMAIL_EXP headerTitle:nil footerTitle:SCLocalizedString(@"Subscribe to receive notifications of expiring points in advance")];
     [[section addRowWithIdentifier:LOYALTY_EMAIL_EXP height:44 sortOrder:0] setTitle:SCLocalizedString(@"Expired Point Transaction")];
-    
-    return _table;
 }
 
 #pragma mark - Table view datasource
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
-{
-    return [self.table count];
-}
-
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
-{
-    return [[self.table objectAtIndex:section] count];
-}
-
-- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
-{
-    return [[self.table objectAtIndex:section] headerTitle];
-}
-
-- (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section
-{
-    return [[self.table objectAtIndex:section] footerTitle];
-}
-
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    SimiSection *section = [self.table objectAtIndex:indexPath.section];
+    SimiSection *section = [self.cells objectAtIndex:indexPath.section];
     SimiRow *row = [section objectAtIndex:indexPath.row];
     UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];
     if ([section.identifier isEqualToString:LOYALTY_EMAIL_NOTI]) {
@@ -144,13 +103,6 @@
     cell.textLabel.text = row.title;
     return cell;
 }
-
-#pragma mark - Table View delegate
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    return [((SimiRow *)[[self.table objectAtIndex:indexPath.section] objectAtIndex:indexPath.row]) height];
-}
-
 #pragma mark - Update settings
 - (void)toggleSwitcher:(UISwitch *)sender
 {

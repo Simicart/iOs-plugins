@@ -6,14 +6,13 @@
 //  Copyright (c) 2015 Magestore. All rights reserved.
 //
 
-#import <SimiCartBundle/SimiViewController.h>
+#import <SimiCartBundle/SimiTableViewController.h>
 #import "LoyaltyModel.h"
 
 static NSString *LOYALTY_EMAIL_NOTI     = @"email";
 static NSString *LOYALTY_EMAIL_EXP      = @"expire";
 
-@interface LoyaltySettingViewController : SimiViewController <UITableViewDataSource, UITableViewDelegate>
-@property (strong, nonatomic) UITableView *tableView;
+@interface LoyaltySettingViewController : SimiTableViewController
 @property (strong, nonatomic) LoyaltyModel *model;
 
 @end

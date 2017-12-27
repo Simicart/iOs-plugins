@@ -8,7 +8,7 @@
 
 #import <SimiCartBundle/SimiTable.h>
 #import <SimiCartBundle/SimiTextView.h>
-#import "SCGiftCodeDetailViewController.h"""
+#import "SCGiftCodeDetailViewController.h"
 #import "SimiGiftCardCreditModel.h"
 #import "SCEmailToFriendViewController.h"
 

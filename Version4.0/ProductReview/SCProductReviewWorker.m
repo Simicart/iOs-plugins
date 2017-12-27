@@ -32,7 +32,7 @@
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initProductCellsAfter:) name:[NSString stringWithFormat:@"%@%@",SCProductSecondDesignViewController_RootEventName,SimiTableViewController_SubKey_InitCells_End] object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializedProductCellBegin:) name:[NSString stringWithFormat:@"%@%@",SCProductSecondDesignViewController_RootEventName,SimiTableViewController_SubKey_InitializedCell_Begin] object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(productSecondDesignViewControllerViewForHeader:) name:[NSString stringWithFormat:@"%@%@",SCProductSecondDesignViewController_RootEventName,SimiTableViewController_SubKey_InitializedHeader_End] object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(productSecondDesignViewControllerViewForHeader:) name:[NSString stringWithFormat:@"%@%@",SCProductSecondDesignViewController_RootEventName,SimiTableViewController_SubKey_InitializedHeader_Begin] object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(productSecondDesignViewControllerDidSelectRow:) name:[NSString stringWithFormat:@"%@%@",SCProductSecondDesignViewController_RootEventName,SimiTableViewController_SubKey_DidSelectCell] object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(productMoreViewControllerInitTab:) name:SCProductMoreViewControllerInitTab object:nil];
     }
@@ -122,7 +122,7 @@
     if (responder.status == SUCCESS) {
         NSInteger mainSectionIndex = [cells getSectionIndexByIdentifier:product_main_section];
         SimiSection *reviewSection = [cells addSectionWithIdentifier:product_reviews_section atIndex:mainSectionIndex+1];
-        reviewSection.headerTitle = SCLocalizedString(@"Review");
+        reviewSection.header = [[SimiSectionHeader alloc]initWithTitle:SCLocalizedString(@"Review") height:44]; ;
         SimiReviewModelCollection *reviewCollection = noti.object;
         if ([[appReviews valueForKey:@"number"]floatValue] > 3) {
             for (int i = 0; i < 3; i++) {
@@ -231,8 +231,9 @@
 
 - (void)productSecondDesignViewControllerViewForHeader: (NSNotification *)noti {
     productVC = [noti.userInfo objectForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.viewcontroller];
-    SimiSection *section = [noti.userInfo objectForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.section];
-    UITableViewHeaderFooterView *headerView = [noti.userInfo objectForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.footer];
+    NSNumber *sectionNumber = [noti.userInfo objectForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.section];
+    SimiSection *section = [productVC.cells objectAtIndex:[sectionNumber intValue]];
+    UITableViewHeaderFooterView *headerView = [noti.userInfo objectForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.header];
     UITableView *tableView = productVC.contentTableView;
     float paddingEdge = 15;
     float heightHeader = 44;
@@ -242,11 +243,11 @@
         [headerView.contentView setBackgroundColor:THEME_SECTION_COLOR];
         if (!hadReviews) {
             SimiLabel *titleLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(paddingEdge, 10, tableWidth - paddingEdge*3, 30) andFontName:THEME_FONT_NAME_REGULAR andFontSize:THEME_FONT_SIZE + 2];
-            [titleLabel setText:section.headerTitle];
+            [titleLabel setText:section.header.title];
             [headerView addSubview:titleLabel];
         }else
         {
-            NSString *title = [NSString stringWithFormat:@"%@ (%@)",section.headerTitle, [appReviews valueForKey:@"number"]];
+            NSString *title = [NSString stringWithFormat:@"%@ (%@)",section.header.title, [appReviews valueForKey:@"number"]];
             float titleWidth = [title sizeWithAttributes:@{NSFontAttributeName:[UIFont fontWithName:THEME_FONT_NAME_REGULAR size:THEME_FONT_SIZE + 2]}].width;
             SimiLabel *titleLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(paddingEdge, 6, titleWidth, 30) andFontName:THEME_FONT_NAME_REGULAR andFontSize:THEME_FONT_SIZE + 2];
             [titleLabel setText:title];

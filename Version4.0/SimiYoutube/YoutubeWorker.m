@@ -52,7 +52,7 @@ static NSString *PRODUCT_ROW_YOUTUBE = @"PRODUCT_ROW_YOUTUBE";
         if(youtubeArray.count > 0){
             SimiTable *cells = noti.object;
             SimiSection *videoSection = [[SimiSection alloc]initWithIdentifier:product_video_section];
-            videoSection.headerTitle = SCLocalizedString(@"Video");
+            videoSection.header = [[SimiSectionHeader alloc]initWithTitle:SCLocalizedString(@"Video") height:44];
             SimiRow *videoRow = [[SimiRow alloc]initWithIdentifier:product_video_row height:220];
             [videoSection addRow:videoRow];
             [cells addObject:videoSection];

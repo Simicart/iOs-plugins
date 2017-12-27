@@ -6,7 +6,7 @@
 //  Copyright (c) 2015 Magestore. All rights reserved.
 //
 
-#import <SimiCartBundle/SimiViewController.h>
+#import <SimiCartBundle/SimiTableViewController.h>
 #import <SimiCartBundle/SimiTable.h>
 
 #import "LoyaltyModel.h"
@@ -19,7 +19,7 @@ static NSString *LOYALTY_HISTORY    = @"history";
 static NSString *LOYALTY_SETTING    = @"setting";
 static NSString *LOYALTY_LOGIN      = @"login";
 
-@interface LoyaltyViewController : SimiTableViewController <UITableViewDataSource, UITableViewDelegate>
+@interface LoyaltyViewController : SimiTableViewController
 @property (strong, nonatomic) LoyaltyModel *loyaltyPolicy;
 @property (nonatomic) BOOL skipReloadData;
 

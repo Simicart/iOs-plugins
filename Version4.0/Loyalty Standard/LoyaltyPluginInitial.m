@@ -198,7 +198,7 @@ static NSString *CHERRY_REWARDS_ROW = @"CHERRY_REWARDS_ROW";
                 NSUInteger index = [orderTable getSectionIndexByIdentifier:ORDER_TOTALS_SECTION];
                 if (index != NSNotFound) {
                     SimiSection *section = [orderTable addSectionWithIdentifier:LOYALTY_CHECKOUT atIndex:index];
-                    section.headerTitle = SCLocalizedString(@"Spend my Points");
+                    section.header = [[SimiSectionHeader alloc]initWithTitle:SCLocalizedString(@"Spend my Points") height:44];
                     CGFloat height = [[rule objectForKey:@"optionType"] isEqualToString:@"slider"] ? 105 : 40;
                     if (![globalVar isLogin]) height = 40;
                     [section addRowWithIdentifier:LOYALTY_CHECKOUT height:height];

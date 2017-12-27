@@ -37,8 +37,6 @@ static NSString *giftcard_insertinfo_row = @"giftcard_insertinfo_row";
     NSDictionary *giftCardSettings;
     SimiCheckbox *sendThroughPostOfficeCheckbox;
     SimiCheckbox *sendGiftcardToFriendCheckbox;
-//    BOOL isSendThroughPostOffice;
-//    BOOL isSendGiftcardToFriend;
     SimiTextField *selectTemplateTextField;
     SimiTextField *senderNameTextField;
     SimiTextField *recipientNameTextField;

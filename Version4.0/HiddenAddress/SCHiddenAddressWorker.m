@@ -295,8 +295,8 @@
             // Remove state before get country
             [form.fields removeObject:newAddressController.stateId];
             [form.fields removeObject:newAddressController.stateName];
-            [[NSNotificationCenter defaultCenter] removeObserver:self name:@"SCHiddenAddress_DidGetAddressHide" object:nil];
-            
+            [[NSNotificationCenter defaultCenter] postNotificationName:SCNewAddressViewController_DidInitForm object:newAddressController.contentTableView userInfo:@{@"newAddressView": newAddressController}];
+            [newAddressController setCountryData];
         }
     }
 }
