@@ -60,7 +60,8 @@
         collectionViewLayout.itemSize = CGSizeMake(SCREEN_WIDTH, COLLECTIONVIEWCELLHEIGHT);
     else if(PADDEVICE)
         collectionViewLayout.itemSize = CGSizeMake(SCREEN_WIDTH/2 - paddingX, COLLECTIONVIEWCELLHEIGHT);
-    wishlistCollectionView = [[UICollectionView alloc] initWithFrame:CGRectMake(0, wishlistShareViewHeight + paddingY, self.view.bounds.size.width, self.view.bounds.size.height - wishlistShareViewHeight - paddingY * 2 - 64) collectionViewLayout:collectionViewLayout];
+    wishlistCollectionView = [[UICollectionView alloc] initWithFrame:CGRectMake(0, wishlistShareViewHeight + paddingY, self.view.bounds.size.width, self.view.bounds.size.height - wishlistShareViewHeight - paddingY) collectionViewLayout:collectionViewLayout];
+    wishlistCollectionView.autoresizingMask = UIViewAutoresizingFlexibleHeight;
     wishlistCollectionView.backgroundColor = [UIColor whiteColor];
     wishlistCollectionView.delegate = self;
     wishlistCollectionView.dataSource = self;
@@ -101,7 +102,7 @@
 
 - (void)getWishlistItemsFromBegin{
     [wishlistModelCollection removeAllObjects];
-    [wishlistCollectionView setContentOffset:CGPointZero animated:NO];
+    [wishlistCollectionView reloadData];
     [wishlistModelCollection getWishlistItemsWithParams:@{@"offset":[NSString stringWithFormat:@"%ld",(long) wishlistModelCollection.count],@"limit":@"10"}];
     [self startLoadingData];
 }
@@ -124,11 +125,7 @@
     }
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-}
-
-- (void)wishlistShareViewTapped: (id) sender{
+- (void)wishlistShareViewTapped:(id)sender{
     UIView* view = ((UITapGestureRecognizer* )sender).view;
     [self shareWishlistWithText:wishlistModelCollection.sharingMessage url:wishlistModelCollection.sharingURL inView:view];
 }
@@ -139,10 +136,11 @@
 }
 
 - (UICollectionViewCell* )collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath{
-    NSString* identifier = [NSString stringWithFormat:@"%@%ld",WISHLISTCOLLECTIONVIEWCELL,(long) indexPath.row];
+    SCWishlistModel *wishlistModel = [wishlistModelCollection objectAtIndex:indexPath.row];
+    NSString* identifier = [NSString stringWithFormat:@"%@%@",WISHLISTCOLLECTIONVIEWCELL,wishlistModel.wishlistItemId];
     [collectionView registerClass:[SCWishlistCollectionViewCell class] forCellWithReuseIdentifier:identifier];
     SCWishlistCollectionViewCell* cell = [collectionView dequeueReusableCellWithReuseIdentifier:identifier forIndexPath:indexPath];
-    cell.wishlistItem = [wishlistModelCollection objectAtIndex:indexPath.row];
+    cell.wishlistItem = wishlistModel;
     cell.delegate = self;
     return cell;
 }
@@ -175,7 +173,6 @@
 }
 
 - (void)addToCartWithWishlistItem:(SCWishlistModel *)wishlistItem{
-    
     if(wishlistItem.selectedAllRequiredOptions){
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didAddProductFromWishlistToCart:) name:DidAddProductFromWishlistToCart object:nil];
         [wishlistModelCollection addProductToCartWithWishlistID:wishlistItem.wishlistItemId];

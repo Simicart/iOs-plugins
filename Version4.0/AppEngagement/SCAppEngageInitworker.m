@@ -46,7 +46,9 @@
         NSMutableArray* searchableItems = [[NSMutableArray alloc] initWithCapacity:0];
         NSUserActivity* userActivity = [[NSUserActivity alloc] initWithActivityType:[NSString stringWithFormat:@"%@.%@",[[NSBundle mainBundle] bundleIdentifier],productModel.entityId]];
         userActivity.title = productModel.name;
-        userActivity.userInfo = @{@"id":productModel.entityId};
+        if (productModel.entityId) {
+            userActivity.userInfo = @{@"id":productModel.entityId};
+        }
         userActivity.eligibleForSearch = YES;
         CSSearchableItemAttributeSet* searchableItemAttributeSet = [[CSSearchableItemAttributeSet alloc] initWithItemContentType:@"product"];
         NSArray* images = productModel.images;

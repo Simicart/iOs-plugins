@@ -7,7 +7,6 @@
 //
 
 #import "SimiGiftCodeModel.h"
-#import "SimiGiftCodeAPI.h"
 
 @implementation SimiGiftCodeModel
 - (void)getGiftCodeDetailWithParams:(NSDictionary *)params{

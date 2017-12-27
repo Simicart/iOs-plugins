@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Tan Hoang. All rights reserved.
 //
 #import <SimiCartBundle/SimiModel.h>
-#import "SimiTagModel.h"
+#import "SimiTagModelCollection.h"
 @interface SimiTagCollectionCell : UICollectionViewCell
 @property (nonatomic, strong)  UIImageView *imgTag;
 @property (nonatomic, strong)  UILabel *lblTagName;
