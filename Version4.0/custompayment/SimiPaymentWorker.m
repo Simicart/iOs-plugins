@@ -80,6 +80,7 @@
             }
             [nextController setOrderID:[order valueForKey:@"invoice_number" ]];
             [nextController setUrlPath:url];
+            [SimiGlobalVar clearAllCookies];
             UINavigationController *navi = [[UINavigationController alloc]initWithRootViewController:nextController];
             [currentVC presentViewController:navi animated:YES completion:nil];
         }else{
