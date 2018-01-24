@@ -27,6 +27,11 @@
     self.parseKey = @"images";
     self.url = [NSString stringWithFormat:@"%@%@%@", kBaseURL, kSimiConnectorURL, @"simigiftcards/uploadimage"];
     [self preDoRequest];
+    [self processParamsWithDemoMode];
+    [self processHeaderWithSecretKey];
+    if (GLOBALVAR.isLogin) {
+        [self processParamsWithLoginCustomer];
+    }
     [self requestWithMethod:MethodPost URL:self.url params:@{} body:@{} uploadDataParams:[params valueForKey:@"image_content"] uploadKey:@"image" uploadFileName:@"image_name.png" header:nil];
 }
 
