@@ -25,78 +25,79 @@
 - (void)didReceiveNotification:(NSNotification *)noti{
     SimiProductModel *product = [noti.userInfo valueForKey:@"product"];
     UIImageView *imageView = [noti.userInfo valueForKey:@"imageView"];
-    NSDictionary* productLabel = [product objectForKey:@"product_label"];
-    if(productLabel){
-        CGRect frame = imageView.frame;
-        frame.size.width = frame.size.width/3 < frame.size.height/3 ? frame.size.width/3 : frame.size.height/3;
-        frame.size.height = frame.size.width;
-        
-        UIButton *labelView = [UIButton buttonWithType:UIButtonTypeCustom];
-        labelView.frame = frame;
-        labelView.simiObjectIdentifier = PRODUCT_LABEL_IDENTIFIER;
-        labelView.contentMode = UIViewContentModeScaleAspectFit;
-        NSURL *url = [NSURL URLWithString:[productLabel valueForKey:@"image"]];
-        [labelView sd_setBackgroundImageWithURL:url forState:UIControlStateNormal];
-        [labelView setTitle:[productLabel valueForKey:@"text"] forState:UIControlStateNormal];
-        [labelView.titleLabel setFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE - 6]];
-        [labelView.titleLabel setTextAlignment:NSTextAlignmentCenter];
-        [labelView setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-        labelView.userInteractionEnabled = NO;
-        labelView.backgroundColor = [UIColor clearColor];
-        labelView.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin|UIViewAutoresizingFlexibleHeight|UIViewAutoresizingFlexibleLeftMargin|UIViewAutoresizingFlexibleRightMargin|UIViewAutoresizingFlexibleTopMargin|UIViewAutoresizingFlexibleWidth;
-        
-        CGPoint center;
-        
-        switch ([[productLabel valueForKey:@"position"] integerValue]) {
-            //Left
-            case LabelPositionLeftTop:{
-                center = CGPointMake(imageView.frame.size.width/6, imageView.frame.size.height/6);
-            }
-                break;
-            case LabelPositionLeftMiddle:{
-                center = CGPointMake(imageView.frame.size.width/6, imageView.frame.size.height/2);
-            }
-                break;
-            case LabelPositionLeftBottom:{
-                center = CGPointMake(imageView.frame.size.width/6, 5*imageView.frame.size.height/6);
-            }
-                break;
-                
-            //Center
-            case LabelPositionCenterTop:{
-                center = CGPointMake(imageView.frame.size.width/2, imageView.frame.size.height/6);
-            }
-                break;
-            case LabelPositionCenterMiddle:{
-                center = CGPointMake(imageView.frame.size.width/2, imageView.frame.size.height/2);
-            }
-                break;
-            case LabelPositionCenterBottom:{
-                center = CGPointMake(imageView.frame.size.width/2, 5*imageView.frame.size.height/6);
-            }
-                break;
-                
-            //Right
-            case LabelPositionRightTop:{
-                center = CGPointMake(5*imageView.frame.size.width/6, imageView.frame.size.height/6);
-            }
-                break;
-            case LabelPositionRightMiddle:{
-                center = CGPointMake(5*imageView.frame.size.width/6, imageView.frame.size.height/2);
-            }
-                break;
-            case LabelPositionRightBottom:{
-                center = CGPointMake(5*imageView.frame.size.width/6, 5*imageView.frame.size.height/6);
-            }
-                break;
+    NSArray *productLabels = [product objectForKey:@"product_labels"];
+    if(productLabels.count){
+        for(NSDictionary *productLabel in productLabels){
+            CGRect frame = imageView.frame;
+            frame.size.width = frame.size.width/3 < frame.size.height/3 ? frame.size.width/3 : frame.size.height/3;
+            frame.size.height = frame.size.width;
             
-            default:
-                center = CGPointMake(imageView.frame.size.width/6, imageView.frame.size.height/6);
-                break;
+            UIButton *labelView = [UIButton buttonWithType:UIButtonTypeCustom];
+            labelView.frame = frame;
+            labelView.simiObjectIdentifier = PRODUCT_LABEL_IDENTIFIER;
+            labelView.contentMode = UIViewContentModeScaleAspectFit;
+            NSURL *url = [NSURL URLWithString:[productLabel valueForKey:@"image"]];
+            [labelView sd_setBackgroundImageWithURL:url forState:UIControlStateNormal];
+            [labelView setTitle:[productLabel valueForKey:@"text"] forState:UIControlStateNormal];
+            [labelView.titleLabel setFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE - 6]];
+            [labelView.titleLabel setTextAlignment:NSTextAlignmentCenter];
+            [labelView setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+            labelView.userInteractionEnabled = NO;
+            labelView.backgroundColor = [UIColor clearColor];
+            
+            CGPoint center;
+            
+            switch ([[productLabel valueForKey:@"position"] integerValue]) {
+                    //Left
+                case LabelPositionLeftTop:{
+                    center = CGPointMake(imageView.frame.size.width/6, imageView.frame.size.height/6);
+                }
+                    break;
+                case LabelPositionLeftMiddle:{
+                    center = CGPointMake(imageView.frame.size.width/6, imageView.frame.size.height/2);
+                }
+                    break;
+                case LabelPositionLeftBottom:{
+                    center = CGPointMake(imageView.frame.size.width/6, 5*imageView.frame.size.height/6);
+                }
+                    break;
+                    
+                    //Center
+                case LabelPositionCenterTop:{
+                    center = CGPointMake(imageView.frame.size.width/2, imageView.frame.size.height/6);
+                }
+                    break;
+                case LabelPositionCenterMiddle:{
+                    center = CGPointMake(imageView.frame.size.width/2, imageView.frame.size.height/2);
+                }
+                    break;
+                case LabelPositionCenterBottom:{
+                    center = CGPointMake(imageView.frame.size.width/2, 5*imageView.frame.size.height/6);
+                }
+                    break;
+                    
+                    //Right
+                case LabelPositionRightTop:{
+                    center = CGPointMake(5*imageView.frame.size.width/6, imageView.frame.size.height/6);
+                }
+                    break;
+                case LabelPositionRightMiddle:{
+                    center = CGPointMake(5*imageView.frame.size.width/6, imageView.frame.size.height/2);
+                }
+                    break;
+                case LabelPositionRightBottom:{
+                    center = CGPointMake(5*imageView.frame.size.width/6, 5*imageView.frame.size.height/6);
+                }
+                    break;
+
+                default:
+                    center = CGPointMake(imageView.frame.size.width/6, imageView.frame.size.height/6);
+                    break;
+            }
+
+            labelView.center = center;
+            [imageView addSubview:labelView];
         }
-        
-        labelView.center = center;
-        [imageView addSubview:labelView];
     }else{
         for (UIView *view in imageView.subviews) {
             if ([view.simiObjectIdentifier isEqual:PRODUCT_LABEL_IDENTIFIER]) {
