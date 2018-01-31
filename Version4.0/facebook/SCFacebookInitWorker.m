@@ -84,7 +84,8 @@
     cells = noti.object;
     loginViewController = [noti.userInfo objectForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.viewcontroller];
     SimiSection *section = [cells getSectionByIdentifier:LOGIN_SECTION];
-    SimiRow *row = [[SimiRow alloc] initWithIdentifier:FacebookLoginCell height:SCALEVALUE(50) sortOrder:SIGNIN_SORT_ORDER + 1];
+    SimiRow *signInRow = [section getRowByIdentifier:LOGIN_SIGNIN_BUTTON];
+    SimiRow *row = [[SimiRow alloc] initWithIdentifier:FacebookLoginCell height:SCALEVALUE(50) sortOrder:signInRow.sortOrder + 1];
     [section addRow:row];
 }
 
