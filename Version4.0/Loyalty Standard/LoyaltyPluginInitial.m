@@ -195,9 +195,9 @@ static NSString *CHERRY_REWARDS_ROW = @"CHERRY_REWARDS_ROW";
         if ([rules count]) {
             NSDictionary *rule = [rules objectAtIndex:0];
             if ([orderTable getSectionIndexByIdentifier:LOYALTY_CHECKOUT] == NSNotFound) {
-                NSUInteger index = [orderTable getSectionIndexByIdentifier:ORDER_TOTALS_SECTION];
-                if (index != NSNotFound) {
-                    SimiSection *section = [orderTable addSectionWithIdentifier:LOYALTY_CHECKOUT atIndex:index];
+                SimiSection *totalSection = [orderTable getSectionByIdentifier:ORDER_TOTALS_SECTION];
+                if (totalSection != nil) {
+                    SimiSection *section = [orderTable addSectionWithIdentifier:LOYALTY_CHECKOUT headerTitle:nil footerTitle:nil sortOrder:totalSection.sortOrder - 10];
                     section.header = [[SimiSectionHeader alloc]initWithTitle:SCLocalizedString(@"Spend my Points") height:44];
                     CGFloat height = [[rule objectForKey:@"optionType"] isEqualToString:@"slider"] ? 105 : 40;
                     if (![globalVar isLogin]) height = 40;
@@ -369,8 +369,7 @@ static NSString *CHERRY_REWARDS_ROW = @"CHERRY_REWARDS_ROW";
 }
 
 #pragma mark Add to Left Menu
-- (void)listMenuInitCellsAfter:(NSNotification *)noti
-{
+- (void)listMenuInitCellsAfter:(NSNotification *)noti{
     SimiTable *cells = noti.object;
     if ([globalVar isLogin]) {
         for (SimiSection *section in cells) {
