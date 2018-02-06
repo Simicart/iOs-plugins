@@ -73,6 +73,15 @@
                          }];
     }
     
+    if ([self hasField:[hiddenAddressModel valueForKey:@"taxvat_show"]]) {
+        [self.form addField:@"Text"
+                     config:@{
+                              @"name" : @"vat_id",
+                              @"title": SCLocalizedString(@"VAT Number"),
+                              @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:@"taxvat_show"] isEqualToString:@"req"]]
+                              }];
+    }
+    
     if (![[SimiGlobalVar sharedInstance] isLogin]) {
         [self.form addField:@"Email"
                 config:@{
@@ -193,12 +202,12 @@
             }
         }
         
-        if ([self hasField:[hiddenAddressModel valueForKey:@"taxvat_show"]]) {
+        if (![[GLOBALVAR taxvatShow] isEqualToString:@""]) {
             [self.form addField:@"Text"
                     config:@{
                              @"name": @"taxvat",
                              @"title": SCLocalizedString(@"Tax/VAT number"),
-                             @"required": [NSNumber numberWithBool:[[config taxvatShow] isEqualToString:@"req"]]
+                             @"required": [NSNumber numberWithBool:[[GLOBALVAR taxvatShow] isEqualToString:@"req"]]
                              }];
         }
     }
