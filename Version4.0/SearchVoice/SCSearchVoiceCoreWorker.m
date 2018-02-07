@@ -41,6 +41,7 @@
     UIBarButtonItem *voiceSearchItem = [[UIBarButtonItem alloc] initWithCustomView:voiceSearchButton];
     voiceSearchItem.sortOrder = navigationbar_pad_search_voice_sort_order;
     UIBarButtonItem *itemSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
+    itemSpace.sortOrder = navigationbar_pad_search_voice_sort_order - 1;
     itemSpace.width = 20;
     NSMutableArray *rightButtonItems = noti.object;
     [rightButtonItems addObjectsFromArray:@[itemSpace,voiceSearchItem]];

@@ -79,6 +79,7 @@
     [chatButton addTarget:self action:@selector(didSelectChatBarItem:) forControlEvents:UIControlEventTouchUpInside];
     UIBarButtonItem *chatItem = [[UIBarButtonItem alloc] initWithCustomView:chatButton];
     chatItem.sortOrder = navigationbar_pad_chat_sort_order;
+    itemSpace.sortOrder = navigationbar_pad_chat_sort_order - 1;
     NSMutableArray *rightButtonItems = noti.object;
     [rightButtonItems addObjectsFromArray:@[itemSpace,chatItem]];
 }
