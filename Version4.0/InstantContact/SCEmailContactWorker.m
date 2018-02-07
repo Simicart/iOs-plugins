@@ -42,7 +42,6 @@
             SimiRow *row = [[SimiRow alloc]initWithIdentifier:LEFTMENU_ROW_CONTACTUS height:50 sortOrder:70];
             row.image = [UIImage imageNamed:@"ic_contact"];
             row.title = SCLocalizedString(@"Contact Us");
-            row.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
             [section addObject:row];
             [section sortItems];
         }
