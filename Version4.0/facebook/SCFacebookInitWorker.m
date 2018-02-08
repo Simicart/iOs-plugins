@@ -235,7 +235,7 @@
     [fbShareButton addTarget:self action:@selector(fbShareButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
     */
     
-    UIView *facebookShareView = [[UIView alloc] initWithFrame:CGRectMake(92, 0, FB_BUTTON_SIZE, FB_BUTTON_SIZE)];
+    UIView *facebookShareView = [[UIView alloc] initWithFrame:CGRectMake(92, 5, FB_BUTTON_SIZE, FB_BUTTON_SIZE)];
     [facebookShareView.layer setCornerRadius:FB_BUTTON_SIZE/2.0f];
     [facebookShareView.layer setShadowOffset:CGSizeMake(1, 1)];
     [facebookShareView.layer setShadowRadius:2];
@@ -243,7 +243,7 @@
     [facebookShareView setBackgroundColor:[UIColor whiteColor]];
     
     FBSDKShareButton *shareButton = [[FBSDKShareButton alloc]initWithFrame:CGRectMake(0,FB_BUTTON_SIZE/3,FB_BUTTON_SIZE, FB_BUTTON_SIZE / 3)];
-    shareButton.transform = CGAffineTransformMakeScale(0.75, 0.75);
+    shareButton.transform = CGAffineTransformMakeScale(0.8, 0.8);
     FBSDKShareLinkContent *content = [[FBSDKShareLinkContent alloc] init];
     content.contentURL = [NSURL URLWithString:productURL];
     shareButton.shareContent = content;
@@ -383,7 +383,7 @@
         [commentView removeFromSuperview];
     }
 }
-
+/*
 - (void)fbShareButtonClicked: (id) sender{
     if(productURL){
         FBSDKShareLinkContent *content = [[FBSDKShareLinkContent alloc] init];
@@ -404,7 +404,7 @@
                                         delegate:nil];
     }
 }
-
+*/
 #pragma mark - Facebook Invite
 - (void)addObserversForFacebookInvite{
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didInitLeftMenuRows:) name:[NSString stringWithFormat:@"%@%@",SCLeftMenuViewController_RootEventName,SimiTableViewController_SubKey_InitCells_End] object:nil];
