@@ -34,7 +34,7 @@
         BOOL useTrialMixpanelToken = NO;
         NSString *customerStatus = [NSString stringWithFormat:@"%@",[globalVar.appConfigure valueForKey:@"status"]];
         if ([customerStatus isEqualToString:@"0"] || [customerStatus isEqualToString:@"2"]) {
-            if (DEMO_MODE) {
+            if ([DEMO_MODE boolValue]) {
                 useTrialMixpanelToken = YES;
             }
         }
@@ -58,7 +58,7 @@
             }
         }
         
-        if(DEMO_MODE && [token isEqualToString:SIMI_MIXPANEL_TOKEN]) {
+        if([DEMO_MODE boolValue] && [token isEqualToString:SIMI_MIXPANEL_TOKEN]) {
             if([globalVar.appConfigure objectForKey:@"email"]) {
                 ownerEmail = [NSString stringWithFormat:@"%@", [globalVar.appConfigure objectForKey:@"email"]];
             }else {
