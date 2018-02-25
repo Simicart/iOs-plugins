@@ -36,7 +36,7 @@
         }
         [lblTagName setFrame:frame];
         lblTagName.textColor = COLOR_WITH_HEX(@"#393939");
-        [lblTagName setFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE - 4]];
+        [lblTagName setFont:[UIFont fontWithName:THEME_FONT_NAME size:FONT_SIZE_SMALL]];
         [self addSubview:lblTagName];
     }
 }

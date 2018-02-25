@@ -41,13 +41,13 @@
         float wishlistItemWidth = CGRectGetWidth(wishlistItemInfoView.frame);
         [self addSubview:wishlistItemInfoView];
         itemNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, wishlistItemY, wishlistItemWidth, labelHeight)];
-        itemNameLabel.font = [UIFont fontWithName:THEME_FONT_NAME_REGULAR size:THEME_FONT_SIZE];
+        itemNameLabel.font = [UIFont fontWithName:THEME_FONT_NAME_REGULAR size:FONT_SIZE_LARGE];
         [wishlistItemInfoView addSubview:itemNameLabel];
         wishlistItemY += itemNameLabel.frame.size.height;
         priceView = [[SCPriceView alloc] initWithFrame:CGRectMake(0, wishlistItemY, wishlistItemWidth, 0)];
         [wishlistItemInfoView addSubview:priceView];
         addToCartButton = [[SimiButton alloc] init];
-        [addToCartButton.titleLabel setFont:[UIFont fontWithName:THEME_FONT_NAME_REGULAR size:THEME_FONT_SIZE - 2]];
+        [addToCartButton.titleLabel setFont:[UIFont fontWithName:THEME_FONT_NAME_REGULAR size:FONT_SIZE_MEDIUM]];
         [addToCartButton addTarget:self action:@selector(addToCartButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
         [wishlistItemInfoView addSubview:addToCartButton];
         if(wishlistItem.stockStatus)

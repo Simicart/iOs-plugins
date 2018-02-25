@@ -39,7 +39,7 @@
     wishlistShareView.backgroundColor = COLOR_WITH_HEX(@"#e8e8e8");
     UILabel* wishlistShareLabel = [[UILabel alloc] init];
     wishlistShareLabel.text = SCLocalizedString(@"Share Wishlist");
-    wishlistShareLabel.font = [UIFont fontWithName:THEME_FONT_NAME_REGULAR size:THEME_FONT_SIZE - 2];
+    wishlistShareLabel.font = [UIFont fontWithName:THEME_FONT_NAME_REGULAR size:FONT_SIZE_MEDIUM];
     [wishlistShareView addSubview:wishlistShareLabel];
     UIImageView* wishlistShareImageView = [[UIImageView alloc] init];
     wishlistShareImageView.image = [UIImage imageNamed:@"wishlist_share_icon"];
@@ -74,7 +74,7 @@
     emptyLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, paddingY, SCREEN_WIDTH, 30)];
     emptyLabel.text = SCLocalizedString(@"Your wishlist is empty");
     emptyLabel.textAlignment = NSTextAlignmentCenter;
-    emptyLabel.font = [UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE];
+    emptyLabel.font = [UIFont fontWithName:THEME_FONT_NAME size:FONT_SIZE_LARGE];
     [self.view addSubview:emptyLabel];
     [SimiGlobalFunction sortViewForRTL:self.view andWidth:SCREEN_WIDTH];
 }

@@ -122,7 +122,7 @@ NSInteger const heightButtonSearch = 50;
             [btnSearch setFrame:CGRectMake(0, 0, widthListView, heightButtonSearch)];
             [btnSearch setTitle:@"Search By Area" forState:UIControlStateNormal];
             [btnSearch setTitleColor:[self colorWithStringHex:@"adadb1"] forState:UIControlStateNormal];
-            [btnSearch.titleLabel setFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE]];
+            [btnSearch.titleLabel setFont:[UIFont fontWithName:THEME_FONT_NAME size:FONT_SIZE_LARGE]];
             btnSearch.backgroundColor = [UIColor colorWithRed:227.0/255.0 green:228.0/255.0 blue:230.0/255.0 alpha:1.0];
             break;
         case ButtonSearchOptionPortrait:

@@ -96,7 +96,7 @@
         }
         
         for (int f = 0; f< 5; f++) {
-            SimiLabel *lbViewColection = [[SimiLabel alloc]initWithFrame:SCALEFRAME(CGRectMake(0, 0, 50, 20)) andFontSize:THEME_FONT_SIZE_REGULAR];
+            SimiLabel *lbViewColection = [[SimiLabel alloc]initWithFrame:SCALEFRAME(CGRectMake(0, 0, 50, 20)) andFontSize:FONT_SIZE_MEDIUM];
             lbViewColection.text = [NSString stringWithFormat:@"( %i )",(int)reviewNumber ];
             CGRect frameLbViewColection = [lbViewColection frame];
             frameLbViewColection.origin.x =SCALEVALUE( originXlableViewCollection);

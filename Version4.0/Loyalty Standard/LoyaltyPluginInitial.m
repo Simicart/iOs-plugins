@@ -91,7 +91,7 @@ static NSString *CHERRY_REWARDS_ROW = @"CHERRY_REWARDS_ROW";
             UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(paddingX, paddingY, 18, 18)];
             [imageView sd_setImageWithURL:[NSURL URLWithString:[cherryVC.product objectForKey:@"loyalty_image"]] placeholderImage:nil options:SDWebImageRetryFailed];
             imageView.contentMode = UIViewContentModeScaleAspectFit;
-            SimiLabel *label = [[SimiLabel alloc] initWithFrame:CGRectMake(paddingX + imageView.frame.size.width + paddingX, paddingY, contentWidth - CGRectGetWidth(imageView.frame) - 2*paddingX, 20) andFontName:THEME_FONT_NAME_REGULAR andFontSize:THEME_FONT_SIZE - 2 andTextColor:THEME_CONTENT_COLOR];
+            SimiLabel *label = [[SimiLabel alloc] initWithFrame:CGRectMake(paddingX + imageView.frame.size.width + paddingX, paddingY, contentWidth - CGRectGetWidth(imageView.frame) - 2*paddingX, 20) andFontName:THEME_FONT_NAME_REGULAR andFontSize:FONT_SIZE_MEDIUM andTextColor:THEME_CONTENT_COLOR];
             label.text = [cherryVC.product objectForKey:@"loyalty_label"];
             [label resizLabelToFit];
             float cellHeight = 2*paddingY + label.labelHeight;
@@ -148,7 +148,7 @@ static NSString *CHERRY_REWARDS_ROW = @"CHERRY_REWARDS_ROW";
             [loyalty addSubview:imageView];
             
             UILabel *label = [UILabel new];
-            label.font = [UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE];
+            label.font = [UIFont fontWithName:THEME_FONT_NAME size:FONT_SIZE_LARGE];
             label.numberOfLines = 2;
             label.adjustsFontSizeToFitWidth = YES;
             label.minimumScaleFactor = 0.7f;
@@ -229,7 +229,7 @@ static NSString *CHERRY_REWARDS_ROW = @"CHERRY_REWARDS_ROW";
         UITableViewCell *cell = [noti.userInfo objectForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.cell];
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         if (![globalVar isLogin]) {
-            cell.textLabel.font = [UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE];
+            cell.textLabel.font = [UIFont fontWithName:THEME_FONT_NAME size:FONT_SIZE_LARGE];
             cell.textLabel.numberOfLines = 2;
             cell.textLabel.text = SCLocalizedString(@"Please login before using points to spend");
             return;
@@ -243,7 +243,7 @@ static NSString *CHERRY_REWARDS_ROW = @"CHERRY_REWARDS_ROW";
                 UITableView *tableView = orderViewController.contentTableView;
                 CGFloat width = tableView.frame.size.width - 30;
                 UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(15, 11, width, 22)];
-                label.font = [UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE];
+                label.font = [UIFont fontWithName:THEME_FONT_NAME size:FONT_SIZE_LARGE];
                 label.adjustsFontSizeToFitWidth = YES;
                 label.minimumScaleFactor = 0.7;
                 label.text = [NSString stringWithFormat:SCLocalizedString(@"Each of %@ gets %@ discount"), [rule objectForKey:@"pointStepLabel"], [rule objectForKey:@"pointStepDiscount"]];
@@ -261,7 +261,7 @@ static NSString *CHERRY_REWARDS_ROW = @"CHERRY_REWARDS_ROW";
                 [cell addSubview:slider];
                 
                 UILabel *points = [label clone];
-                points.font = [UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE];
+                points.font = [UIFont fontWithName:THEME_FONT_NAME size:FONT_SIZE_LARGE];
                 points.textAlignment = NSTextAlignmentCenter;
                 points.frame = CGRectMake(15, 72, width, 22);
                 if ([[order.modelData valueForKey:@"loyalty"] objectForKey:@"loyalty_spend"]) {
@@ -285,7 +285,7 @@ static NSString *CHERRY_REWARDS_ROW = @"CHERRY_REWARDS_ROW";
                 [cell addSubview:maxLabel];
             } else {
                 // Need Points
-                cell.textLabel.font = [UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE];
+                cell.textLabel.font = [UIFont fontWithName:THEME_FONT_NAME size:FONT_SIZE_LARGE];
                 cell.textLabel.numberOfLines = 2;
                 cell.textLabel.text = [NSString stringWithFormat:SCLocalizedString(@"You need to earn more %@ to use this rule"), [rule objectForKey:@"needPointLabel"]];
             }
@@ -437,7 +437,7 @@ static NSString *CHERRY_REWARDS_ROW = @"CHERRY_REWARDS_ROW";
         [loyalty addSubview:imageView];
         
         UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(24, 0, loyalty.frame.size.width - 24, 44)];
-        label.font = [UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE_REGULAR];
+        label.font = [UIFont fontWithName:THEME_FONT_NAME size:FONT_SIZE_MEDIUM];
         label.text = [productInfoView.product objectForKey:@"loyalty_label"];
         label.numberOfLines = 2;
         [loyalty addSubview:label];

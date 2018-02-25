@@ -237,21 +237,21 @@
     SimiSection *section = [productVC.cells objectAtIndex:[sectionNumber intValue]];
     UITableViewHeaderFooterView *headerView = [noti.userInfo objectForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.header];
     UITableView *tableView = productVC.contentTableView;
-    float paddingEdge = 15;
+    float paddingEdge = SCALEVALUE(15);
     float heightHeader = 44;
     float tableWidth = tableView.frame.size.width;
     if([section.identifier isEqualToString:product_reviews_section]) {
         productVC.isDiscontinue = YES;
         [headerView.contentView setBackgroundColor:THEME_SECTION_COLOR];
         if (!hadReviews) {
-            SimiLabel *titleLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(paddingEdge, 10, tableWidth - paddingEdge*3, 30) andFontName:THEME_FONT_NAME_REGULAR andFontSize:THEME_FONT_SIZE + 2];
+            SimiLabel *titleLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(paddingEdge, 10, tableWidth - paddingEdge*3, 30) andFontName:THEME_FONT_NAME_REGULAR andFontSize:FONT_SIZE_HEADER];
             [titleLabel setText:section.header.title];
             [headerView addSubview:titleLabel];
         }else
         {
             NSString *title = [NSString stringWithFormat:@"%@ (%@)",section.header.title, [appReviews valueForKey:@"number"]];
-            float titleWidth = [title sizeWithAttributes:@{NSFontAttributeName:[UIFont fontWithName:THEME_FONT_NAME_REGULAR size:THEME_FONT_SIZE + 2]}].width;
-            SimiLabel *titleLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(paddingEdge, 6, titleWidth, 30) andFontName:THEME_FONT_NAME_REGULAR andFontSize:THEME_FONT_SIZE + 2];
+            float titleWidth = [title sizeWithAttributes:@{NSFontAttributeName:[UIFont fontWithName:THEME_FONT_NAME_REGULAR size:FONT_SIZE_HEADER]}].width;
+            SimiLabel *titleLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(paddingEdge, 6, titleWidth, 30) andFontName:THEME_FONT_NAME_REGULAR andFontSize:FONT_SIZE_HEADER];
             [titleLabel setText:title];
             [headerView addSubview:titleLabel];
             
@@ -290,7 +290,7 @@
             }
             
             NSString *rateNumberString = [NSString stringWithFormat:@"(%0.2f)",[[appReviews valueForKey:@"rate"]floatValue]];
-            SimiLabel *rateNumberLabel = [[SimiLabel alloc]initWithFrame:CGRectMake((tableWidth - paddingEdge - 5*sizeStar) - 40, 6, 40, 30) andFontSize:THEME_FONT_SIZE_REGULAR];
+            SimiLabel *rateNumberLabel = [[SimiLabel alloc]initWithFrame:CGRectMake((tableWidth - paddingEdge - 5*sizeStar) - 40, 6, 40, 30) andFontSize:FONT_SIZE_MEDIUM];
             [rateNumberLabel setText:rateNumberString];
             [headerView addSubview:rateNumberLabel];
         }

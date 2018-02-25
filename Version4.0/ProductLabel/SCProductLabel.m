@@ -40,7 +40,7 @@
                 NSURL *url = [NSURL URLWithString:[productLabel valueForKey:@"image"]];
                 [labelView sd_setBackgroundImageWithURL:url forState:UIControlStateNormal];
                 [labelView setTitle:[productLabel valueForKey:@"text"] forState:UIControlStateNormal];
-                [labelView.titleLabel setFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE - 6]];
+                [labelView.titleLabel setFont:[UIFont fontWithName:THEME_FONT_NAME size:FONT_SIZE_SMALL]];
                 [labelView.titleLabel setTextAlignment:NSTextAlignmentCenter];
                 [labelView setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
                 labelView.userInteractionEnabled = NO;

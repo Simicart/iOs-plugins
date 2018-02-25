@@ -97,7 +97,7 @@
 {
     lblStoreName = [[UILabel alloc]initWithFrame:CGRectMake(edgeSpace, heightScrViewContentSize, widthContent - 2*edgeSpace, heightLabel)];
     [lblStoreName setTextColor:[UIColor colorWithRed:243.0/255.0 green:53.0/255.0 blue:53.0/255.0 alpha:1.0]];
-    [lblStoreName setFont:[UIFont fontWithName:THEME_FONT_NAME_REGULAR size:THEME_FONT_SIZE + 4]];
+    [lblStoreName setFont:[UIFont fontWithName:THEME_FONT_NAME_REGULAR size:FONT_SIZE_HEADER]];
     [lblStoreName setLineBreakMode:NSLineBreakByWordWrapping];
     if (sLModel.name) {
         [lblStoreName setText:sLModel.name];
@@ -144,7 +144,7 @@
     
     lblStoreAddress = [[UILabel alloc]initWithFrame:CGRectMake(edgeSpace + sizeIcon*3/2, heightScrViewContentSize, widthContent - sizeStoreImage - edgeSpace*2 - sizeIcon*3/2, heightLabel)];
     [lblStoreAddress setLineBreakMode:NSLineBreakByWordWrapping];
-    [lblStoreAddress setFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE]];
+    [lblStoreAddress setFont:[UIFont fontWithName:THEME_FONT_NAME size:FONT_SIZE_LARGE]];
     NSString *stringAddress = @"";
     if (sLModel.address) {
         stringAddress = [NSString stringWithFormat:@"%@",sLModel.address];
@@ -176,7 +176,7 @@
         
         lblStorePhone = [[UILabel alloc]initWithFrame:CGRectMake(sizeIcon +10, 5, CGRectGetWidth(btnStorePhone.frame) - sizeIcon - 10, heightLabel)];
         lblStorePhone.text = sLModel.phone;
-        [lblStorePhone setFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE]];
+        [lblStorePhone setFont:[UIFont fontWithName:THEME_FONT_NAME size:FONT_SIZE_LARGE]];
         lblStorePhone.textColor = COLOR_WITH_HEX(@"#009edb");
         [btnStorePhone addSubview:lblStorePhone];
         
@@ -198,7 +198,7 @@
         
         lblStoreEmail = [[UILabel alloc]initWithFrame:CGRectMake(sizeIcon +10, 5, CGRectGetWidth(_btnStoreEmail.frame) - sizeIcon - 10, heightLabel)];
         lblStoreEmail.text = sLModel.email;
-        [lblStoreEmail setFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE]];
+        [lblStoreEmail setFont:[UIFont fontWithName:THEME_FONT_NAME size:FONT_SIZE_LARGE]];
         lblStoreEmail.textColor = COLOR_WITH_HEX(@"#009edb");
         [_btnStoreEmail addSubview:lblStoreEmail];
         
@@ -226,7 +226,7 @@
         
         lblStoreWebSite = [[UILabel alloc]initWithFrame:CGRectMake(sizeIcon +10, 5, CGRectGetWidth(_btnStoreWebsite.frame) - sizeIcon - 10, heightLabel)];
         lblStoreWebSite.text = sLModel.link;
-        [lblStoreWebSite setFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE]];
+        [lblStoreWebSite setFont:[UIFont fontWithName:THEME_FONT_NAME size:FONT_SIZE_LARGE]];
         lblStoreWebSite.textColor = COLOR_WITH_HEX(@"#009edb");
         [_btnStoreWebsite addSubview:lblStoreWebSite];
         
@@ -250,7 +250,7 @@
         [viewInfomation addSubview:_imgInformation];
         
         lblInfomationContents = [[UILabel alloc]initWithFrame:CGRectMake(sizeIcon +10, 5, CGRectGetWidth(viewInfomation.frame) - sizeIcon - 10, heightLabel*2)];
-        [lblInfomationContents setFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE]];
+        [lblInfomationContents setFont:[UIFont fontWithName:THEME_FONT_NAME size:FONT_SIZE_LARGE]];
         [lblInfomationContents setText:[self flattenHTML:sLModel.storeDescription]];
         [lblInfomationContents setLineBreakMode:NSLineBreakByWordWrapping];
         [viewInfomation addSubview:lblInfomationContents];
@@ -258,7 +258,7 @@
             btnShowMoreLess = [[UIButton alloc]initWithFrame:CGRectMake(CGRectGetWidth(viewInfomation.frame) - 100, heightLabel*2, 100, 20)];
             [btnShowMoreLess addTarget:self action:@selector(btnShowMoreLess_Click:) forControlEvents:UIControlEventTouchUpInside];
             [btnShowMoreLess setTitle:SCLocalizedString(@"Show more") forState:UIControlStateNormal];
-            [btnShowMoreLess.titleLabel setFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE]];
+            [btnShowMoreLess.titleLabel setFont:[UIFont fontWithName:THEME_FONT_NAME size:FONT_SIZE_LARGE]];
             isShowMore = YES;
             [btnShowMoreLess setTitleColor:[UIColor darkGrayColor] forState:UIControlStateNormal];
             heightLableInformationRaise = lblInfomationContents.labelHeight - heightLabel*2;
@@ -289,7 +289,7 @@
     heightOpenHourView = 5;
     NSString *openHours = @"Open Hours";
     lblOpenHours = [[UILabel alloc]initWithFrame:CGRectMake(labelTitleX, 0, CGRectGetWidth(viewOpenHours.frame) - sizeIcon - 10, heightButton)];
-    [lblOpenHours setFont:[UIFont fontWithName:THEME_FONT_NAME_REGULAR size:THEME_FONT_SIZE + 3]];
+    [lblOpenHours setFont:[UIFont fontWithName:THEME_FONT_NAME_REGULAR size:FONT_SIZE_HEADER]];
     [lblOpenHours setTextColor:COLOR_WITH_HEX(@"#4d535e")];
     [lblOpenHours setText:SCLocalizedString(@"Opening Hours")];
     [viewOpenHours addSubview:lblOpenHours];
@@ -399,7 +399,7 @@
         if ([view isKindOfClass:[UILabel class]]) {
             UILabel *label = (UILabel*)view;
             if (![(NSString*)label.simiObjectIdentifier isEqualToString:openHours] ) {
-                [label setFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE]];
+                [label setFont:[UIFont fontWithName:THEME_FONT_NAME size:FONT_SIZE_LARGE]];
                 [label setTextColor: COLOR_WITH_HEX(@"#4d535e")];
             }
         }
@@ -422,7 +422,7 @@
         
         lblSpecialsDay = [[UILabel alloc]initWithFrame:CGRectMake(labelTitleX, 0, CGRectGetWidth(viewSpecialsDay.frame) - labelTitleX, heightButton)];
         lblSpecialsDay.text = SCLocalizedString(@"Specials Day");
-        [lblSpecialsDay setFont:[UIFont fontWithName:THEME_FONT_NAME_REGULAR size:THEME_FONT_SIZE + 3]];
+        [lblSpecialsDay setFont:[UIFont fontWithName:THEME_FONT_NAME_REGULAR size:FONT_SIZE_HEADER]];
         [lblSpecialsDay setTextColor:COLOR_WITH_HEX(@"#4d535e")];
         [viewSpecialsDay addSubview:lblSpecialsDay];
         
@@ -433,7 +433,7 @@
         }
         lblSpecialsDayContent = [[UILabel alloc]initWithFrame:CGRectMake(labelTitleX, heightButton, widthContent - labelTitleX, heightLabel)];
         lblSpecialsDayContent.text = stringSpecialDaysContent;
-        [lblSpecialsDayContent setFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE - 3]];
+        [lblSpecialsDayContent setFont:[UIFont fontWithName:THEME_FONT_NAME size:FONT_SIZE_MEDIUM]];
         lblSpecialsDayContent.textColor = COLOR_WITH_HEX(@"#4d535e");
         [viewSpecialsDay addSubview:lblSpecialsDayContent];
         
@@ -460,7 +460,7 @@
         
         lblHolidays = [[UILabel alloc]initWithFrame:CGRectMake(labelTitleX, 0, CGRectGetWidth(viewHolidays.frame) - labelTitleX, heightButton)];
         lblHolidays.text = SCLocalizedString(@"Holidays");
-        [lblHolidays setFont:[UIFont fontWithName:THEME_FONT_NAME_REGULAR size:THEME_FONT_SIZE + 3]];
+        [lblHolidays setFont:[UIFont fontWithName:THEME_FONT_NAME_REGULAR size:FONT_SIZE_HEADER]];
         [lblHolidays setTextColor:COLOR_WITH_HEX(@"#4d535e")];
         [viewHolidays addSubview:lblHolidays];
         
@@ -471,7 +471,7 @@
         }
         lblHolidaysContent = [[UILabel alloc]initWithFrame:CGRectMake(labelTitleX, heightButton, widthContent - labelTitleX, heightLabel)];
         lblHolidaysContent.text = stringHolidaysContent;
-        [lblHolidaysContent setFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE - 3]];
+        [lblHolidaysContent setFont:[UIFont fontWithName:THEME_FONT_NAME size:FONT_SIZE_MEDIUM]];
         [lblHolidaysContent setTextColor:COLOR_WITH_HEX(@"#4d535e")];
         [viewHolidays addSubview:lblHolidaysContent];
         

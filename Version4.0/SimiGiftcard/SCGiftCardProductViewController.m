@@ -317,7 +317,7 @@
         float heightCell = 5;
         cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:row.identifier];
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
-        self.labelProductName = [[SimiLabel alloc]initWithFrame:CGRectMake(paddingEdge, heightCell, tableWidth - paddingEdge*2, 20) andFontName:THEME_FONT_NAME_REGULAR andFontSize:THEME_FONT_SIZE + 2];
+        self.labelProductName = [[SimiLabel alloc]initWithFrame:CGRectMake(paddingEdge, heightCell, tableWidth - paddingEdge*2, 20) andFontName:THEME_FONT_NAME_REGULAR andFontSize:FONT_SIZE_HEADER];
         [self.labelProductName setText:[NSString stringWithFormat:@"%@",[self.product valueForKey:@"name"]]];
         [cell.contentView addSubview:self.labelProductName];
         heightCell = [self.labelProductName resizLabelToFit];

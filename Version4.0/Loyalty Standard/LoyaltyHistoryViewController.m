@@ -122,7 +122,7 @@
         CGFloat width = tableView.frame.size.width - 61;
         UILabel *title = [[UILabel alloc] initWithFrame:CGRectMake(46, 10, width, 44)];
         title.tag = 1;
-        title.font = [UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE];
+        title.font = [UIFont fontWithName:THEME_FONT_NAME size:FONT_SIZE_LARGE];
         title.numberOfLines = 2;
         title.adjustsFontSizeToFitWidth = YES;
         title.minimumScaleFactor = 0.5;
@@ -134,7 +134,7 @@
         
         UILabel *pointAmount = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, width, 22)];
         pointAmount.tag = 2;
-        pointAmount.font = [UIFont fontWithName:[THEME_FONT_NAME stringByAppendingString:@"-Bold"] size:THEME_FONT_SIZE + 2];
+        pointAmount.font = [UIFont fontWithName:THEME_FONT_NAME_REGULAR size:FONT_SIZE_HEADER];
         [view addSubview:pointAmount];
         
         UILabel *created = [[UILabel alloc] initWithFrame:CGRectMake(0, 22, width, 22)];

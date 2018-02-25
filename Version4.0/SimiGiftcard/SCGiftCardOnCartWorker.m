@@ -178,7 +178,7 @@
                 existingCodeTextField.frame = CGRectMake(paddingX, cellY, viewWidth, 40);
                 cellY += 40 + paddingY;
             }
-            SimiButton *applyGiftCodeButton = [[SimiButton alloc] initWithFrame:CGRectMake(paddingX + 10, cellY, viewWidth - 20, 40) title:@"Apply Gift Code" titleFont:[UIFont fontWithName:THEME_FONT_NAME_REGULAR size:THEME_FONT_SIZE]];
+            SimiButton *applyGiftCodeButton = [[SimiButton alloc] initWithFrame:CGRectMake(paddingX + 10, cellY, viewWidth - 20, 40) title:@"Apply Gift Code" titleFont:[UIFont fontWithName:THEME_FONT_NAME_REGULAR size:FONT_SIZE_LARGE]];
             [applyGiftCodeButton addTarget:self action:@selector(applyGiftCode:) forControlEvents:UIControlEventTouchUpInside];
             [cell.contentView addSubview:applyGiftCodeButton];
             cellY += applyGiftCodeButton.frame.size.height + paddingY;
@@ -218,7 +218,7 @@
             [cell.contentView addSubview:giftCardCreditLabel];
             cellY += giftCardCreditLabel.frame.size.height + paddingY;
             if(!giftCardCreditTextField) {
-                giftCardCreditTextField = [[SimiTextField alloc] initWithFrame:CGRectMake(paddingX, cellY, viewWidth, 40) placeHolder:@"" font:[UIFont fontWithName:THEME_FONT_NAME_REGULAR size:THEME_FONT_SIZE] textColor:THEME_CONTENT_COLOR];
+                giftCardCreditTextField = [[SimiTextField alloc] initWithFrame:CGRectMake(paddingX, cellY, viewWidth, 40) placeHolder:@"" font:[UIFont fontWithName:THEME_FONT_NAME_REGULAR size:FONT_SIZE_LARGE] textColor:THEME_CONTENT_COLOR];
                 giftCardCreditTextField.keyboardType = UIKeyboardTypeDecimalPad;
                 UIToolbar *giftCardCreditToolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 140, SCREEN_WIDTH, 40)];
                 giftCardCreditToolbar.items = @[[[UIBarButtonItem alloc] initWithTitle:SCLocalizedString(@"Cancel") style:UIBarButtonItemStylePlain target:self action:@selector(cancelGiftCardCreditSelection:)],[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil],[[UIBarButtonItem alloc] initWithTitle:SCLocalizedString(@"Done") style:UIBarButtonItemStyleDone target:self action:@selector(doneGiftCardCreditSelection:)]];
@@ -231,7 +231,7 @@
             }
             [cell.contentView addSubview:giftCardCreditTextField];
             cellY += giftCardCreditTextField.frame.size.height + paddingY;
-            SimiButton *applyGiftCardCreditButton = [[SimiButton alloc] initWithFrame:CGRectMake(paddingX + 10, cellY, viewWidth - 20, 40) title:@"Apply Credit" titleFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE]];
+            SimiButton *applyGiftCardCreditButton = [[SimiButton alloc] initWithFrame:CGRectMake(paddingX + 10, cellY, viewWidth - 20, 40) title:@"Apply Credit" titleFont:[UIFont fontWithName:THEME_FONT_NAME size:FONT_SIZE_LARGE]];
             [applyGiftCardCreditButton addTarget:self action:@selector(applyGiftCardCredit:) forControlEvents:UIControlEventTouchUpInside];
             [cell.contentView addSubview:applyGiftCardCreditButton];
             cellY += applyGiftCardCreditButton.frame.size.height + paddingY;
@@ -248,7 +248,7 @@
         float cellY = paddingY;
         SimiLabel *giftCardTitleLabel = [[SimiLabel alloc] initWithFrame:CGRectMake(paddingX, cellY, viewWidth, 30)];
         giftCardTitleLabel.text = @"GIFT CARD";
-        giftCardTitleLabel.font = [UIFont fontWithName:THEME_FONT_NAME_REGULAR size:THEME_FONT_SIZE];
+        giftCardTitleLabel.font = [UIFont fontWithName:THEME_FONT_NAME_REGULAR size:FONT_SIZE_LARGE];
         [cell.contentView addSubview:giftCardTitleLabel];
         cellY += 30 + paddingY;
         if([giftCardData objectForKey:@"label"] && ![[giftCardData objectForKey:@"label"] isEqualToString:@""]){

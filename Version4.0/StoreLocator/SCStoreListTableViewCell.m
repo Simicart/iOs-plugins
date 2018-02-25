@@ -44,13 +44,13 @@
         self.storeLocatorModel = storeLocatorModel_;
         
         lblStoreName = [[UILabel alloc]initWithFrame:CGRectMake(labelPaddingLeft , 5, labelWidth - labelDistanceWidth, labelHeight)];
-        [lblStoreName setFont:[UIFont fontWithName:THEME_FONT_NAME_REGULAR size:THEME_FONT_SIZE - 2]];
+        [lblStoreName setFont:[UIFont fontWithName:THEME_FONT_NAME_REGULAR size:FONT_SIZE_MEDIUM]];
         [lblStoreName setText:storeLocatorModel.name];
         [lblStoreName setTextColor:COLOR_WITH_HEX(@"#393939")];
         [self addSubview:lblStoreName];
         
         lblStoreAddress = [[UILabel alloc]initWithFrame:CGRectMake(labelPaddingLeft, 25, labelWidth, 35)];
-        [lblStoreAddress setFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE - 3]];
+        [lblStoreAddress setFont:[UIFont fontWithName:THEME_FONT_NAME size:FONT_SIZE_MEDIUM]];
         [lblStoreAddress setTextColor:COLOR_WITH_HEX(@"#393939")];
         NSString *stringAddress = @"";
         if (storeLocatorModel.address) {
@@ -74,7 +74,7 @@
         
         lblStoreDistance = [[UILabel alloc]initWithFrame:CGRectMake(cellWidth - labelDistanceWidth, 5, labelDistanceWidth, labelHeight)];
         [lblStoreDistance setTextColor:COLOR_WITH_HEX(@"#393939")];
-        [lblStoreDistance setFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE - 3]];
+        [lblStoreDistance setFont:[UIFont fontWithName:THEME_FONT_NAME size:FONT_SIZE_MEDIUM]];
         float distance = storeLocatorModel.distance/1000;
         NSString *stringlblStoreDistance = [NSString stringWithFormat:@"%0.2f %@",distance, SCLocalizedString(@"km")];
         [lblStoreDistance setText:stringlblStoreDistance];

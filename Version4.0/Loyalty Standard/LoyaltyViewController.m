@@ -276,7 +276,7 @@
         if (cell == nil) {
             cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:LOYALTY_LOGIN];
             UILabel *loginLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 2, tableView.frame.size.width - 20, 40)];
-            loginLabel.font = [UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE];
+            loginLabel.font = [UIFont fontWithName:THEME_FONT_NAME size:FONT_SIZE_LARGE];
             [cell addSubview:loginLabel];
             loginLabel.backgroundColor = [UIColor clearColor];
             loginLabel.text = SCLocalizedString(@"Login or Signup");
@@ -289,7 +289,7 @@
         if (cell == nil) {
             cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:LOYALTY_EARN];
             cell.textLabel.numberOfLines = 0;
-            cell.textLabel.font = [UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE];
+            cell.textLabel.font = [UIFont fontWithName:THEME_FONT_NAME size:FONT_SIZE_LARGE];
             cell.textLabel.adjustsFontSizeToFitWidth = YES;
             cell.textLabel.minimumScaleFactor = 0.5f;
         }

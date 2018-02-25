@@ -36,11 +36,11 @@
         
         lblStoreName = [UILabel new];
         lblStoreName.textColor = [UIColor redColor];
-        [lblStoreName setFont:[UIFont fontWithName:[NSString stringWithFormat:@"%@-%@",THEME_FONT_NAME,@"Bold"] size:THEME_FONT_SIZE]];
+        [lblStoreName setFont:[UIFont fontWithName:[NSString stringWithFormat:@"%@-%@",THEME_FONT_NAME,@"Bold"] size:FONT_SIZE_LARGE]];
         
         lblStoreAddress = [UILabel new];
         lblStoreAddress.textColor = COLOR_WITH_HEX(@"#393939");
-        [lblStoreAddress setFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE - 2]];
+        [lblStoreAddress setFont:[UIFont fontWithName:THEME_FONT_NAME size:FONT_SIZE_MEDIUM]];
         if (PHONEDEVICE) {
             [lblStoreName setFrame:CGRectMake(80, 5, 175, 20)];
             [lblStoreAddress setFrame:CGRectMake(85, 30, 170, 20)];

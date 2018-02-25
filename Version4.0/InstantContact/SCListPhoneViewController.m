@@ -33,7 +33,7 @@
         cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"PhoneCell"];
     }
     cell.textLabel.text = [NSString stringWithFormat:@"%@",[_arrayPhone objectAtIndex:indexPath.row]];
-    [cell.textLabel setFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE]];
+    [cell.textLabel setFont:[UIFont fontWithName:THEME_FONT_NAME size:FONT_SIZE_LARGE]];
     return cell;
 }
 

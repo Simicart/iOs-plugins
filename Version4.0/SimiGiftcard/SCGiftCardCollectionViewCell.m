@@ -19,7 +19,7 @@
         [productImageView.layer setBorderColor:THEME_IMAGE_BORDER_COLOR.CGColor];
         [self.contentView addSubview:productImageView];
         
-        nameLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(0, imageSize, imageSize, 20) andFontSize:15];
+        nameLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(0, imageSize, imageSize, 20) andFontName:THEME_FONT_NAME_REGULAR andFontSize:FONT_SIZE_LARGE];
         [nameLabel setBackgroundColor:[UIColor clearColor]];
         [self.contentView addSubview:nameLabel];
         

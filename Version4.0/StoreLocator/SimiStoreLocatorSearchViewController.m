@@ -122,7 +122,7 @@
     
     lblSearchByArea = [[UILabel alloc]initWithFrame:CGRectMake(labelMainTitleX, heightContent, widthContent - 100, heightLabel)];
     [lblSearchByArea setTextColor:COLOR_WITH_HEX(@"#393939")];
-    [lblSearchByArea setFont:[UIFont fontWithName:[NSString stringWithFormat:@"%@-%@",THEME_FONT_NAME,@"Bold"] size:THEME_FONT_SIZE + 3]];
+    [lblSearchByArea setFont:[UIFont fontWithName:THEME_FONT_NAME_REGULAR size:FONT_SIZE_HEADER]];
     [lblSearchByArea setText: SCLocalizedString(@"Search By Area")];
     [scrView addSubview:lblSearchByArea];
     
@@ -130,7 +130,7 @@
     [btnClearAll addTarget:self action:@selector(btnClear:) forControlEvents:UIControlEventTouchUpInside];
     [btnClearAll setTitle:SCLocalizedString(@"Clear") forState:UIControlStateNormal];
     [btnClearAll setTitleColor:COLOR_WITH_HEX(@"#ff9900") forState:UIControlStateNormal];
-    [btnClearAll.titleLabel setFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE - 2]];
+    [btnClearAll.titleLabel setFont:[UIFont fontWithName:THEME_FONT_NAME size:FONT_SIZE_MEDIUM]];
     
     [btnClearAll setImage:[UIImage imageNamed:@"storelocator__search_iphone"] forState:UIControlStateNormal];
     [btnClearAll setTitleEdgeInsets:UIEdgeInsetsMake(0, 5, 0, 0)];
@@ -144,7 +144,7 @@
     
     lblCountry = [[UILabel  alloc]initWithFrame:CGRectMake(labelTitleX, topDistance, widthTitle, heightLabel)];
     [lblCountry setTextColor:COLOR_WITH_HEX(@"#393939")];
-    [lblCountry setFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE - 2]];
+    [lblCountry setFont:[UIFont fontWithName:THEME_FONT_NAME size:FONT_SIZE_MEDIUM]];
     [lblCountry setText:[NSString stringWithFormat:@"%@:", SCLocalizedString(@"Country")]];
     [viewSearchByCountry addSubview:lblCountry];
     
@@ -154,7 +154,7 @@
     
     lblContentCountry = [[UILabel alloc]initWithFrame:CGRectMake(textFieldX + leftDistance, 8.5, widthTextField - leftDistance, heightLabel)];
     [lblContentCountry setTextColor:COLOR_WITH_HEX(@"#393939")];
-    [lblContentCountry setFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE - 2]];
+    [lblContentCountry setFont:[UIFont fontWithName:THEME_FONT_NAME size:FONT_SIZE_MEDIUM]];
     if (stringCountrySearchName == nil|| [stringCountrySearchName isEqualToString:@""]) {
         stringCountrySearchName = @"None";
     }
@@ -174,7 +174,7 @@
     
     lblCity = [[UILabel alloc]initWithFrame:CGRectMake(labelTitleX, topDistance, widthTitle, heightLabel)];
     [lblCity setTextColor:COLOR_WITH_HEX(@"#393939")];
-    [lblCity setFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE - 2]];
+    [lblCity setFont:[UIFont fontWithName:THEME_FONT_NAME size:FONT_SIZE_MEDIUM]];
     [lblCity setText:[NSString stringWithFormat:@"%@:", SCLocalizedString(@"City")]];
     [viewSearchByCity addSubview:lblCity];
     
@@ -184,7 +184,7 @@
     
     txtCitySearch = [[UITextField alloc]initWithFrame:CGRectMake(textFieldX + leftDistance, topDistance, widthTextField - leftDistance, heightLabel)];
     txtCitySearch.textColor = COLOR_WITH_HEX(@"#393939");
-    [txtCitySearch setFont: [UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE]];
+    [txtCitySearch setFont: [UIFont fontWithName:THEME_FONT_NAME size:FONT_SIZE_LARGE]];
     txtCitySearch.text = stringCitySearch;
     [viewSearchByCity addSubview:txtCitySearch];
     
@@ -197,7 +197,7 @@
     
     lblState = [[UILabel alloc]initWithFrame:CGRectMake(labelTitleX, topDistance, widthTitle, heightLabel)];
     [lblState setTextColor:COLOR_WITH_HEX(@"#393939")];
-    [lblState setFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE - 2]];
+    [lblState setFont:[UIFont fontWithName:THEME_FONT_NAME size:FONT_SIZE_MEDIUM]];
     [lblState setText:[NSString stringWithFormat:@"%@:", SCLocalizedString(@"State")]];
     [viewSearchByState addSubview:lblState];
     
@@ -207,7 +207,7 @@
     
     txtStateSearch = [[UITextField alloc]initWithFrame:CGRectMake(textFieldX + leftDistance, topDistance, widthTextField - leftDistance, heightLabel)];
     txtStateSearch.textColor = COLOR_WITH_HEX(@"#393939");
-    [txtStateSearch setFont: [UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE]];
+    [txtStateSearch setFont: [UIFont fontWithName:THEME_FONT_NAME size:FONT_SIZE_LARGE]];
     txtStateSearch.text = stringStateSearch;
     [viewSearchByState addSubview:txtStateSearch];
     
@@ -220,7 +220,7 @@
     
     lblZipcode = [[UILabel alloc]initWithFrame:CGRectMake(labelTitleX, topDistance, widthTitle, heightLabel)];
     [lblZipcode setTextColor:COLOR_WITH_HEX(@"#393939")];
-    [lblZipcode setFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE - 2]];
+    [lblZipcode setFont:[UIFont fontWithName:THEME_FONT_NAME size:FONT_SIZE_MEDIUM]];
     [lblZipcode setText:[NSString stringWithFormat:@"%@:", SCLocalizedString(@"Zip Code")]];
     [viewSearchByZipcode addSubview:lblZipcode];
     
@@ -230,7 +230,7 @@
     
     txtZipCode = [[UITextField alloc]initWithFrame:CGRectMake(textFieldX + leftDistance, topDistance, widthTextField - leftDistance, heightLabel)];
     txtZipCode.textColor = COLOR_WITH_HEX(@"#393939");
-    [txtZipCode setFont: [UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE]];
+    [txtZipCode setFont: [UIFont fontWithName:THEME_FONT_NAME size:FONT_SIZE_LARGE]];
     txtZipCode.text = stringZipCodeSearch;
     [viewSearchByZipcode addSubview:txtZipCode];
     
@@ -263,7 +263,7 @@
         lblSearchByTag = [[UILabel alloc]initWithFrame:CGRectMake(labelMainTitleX, heightContent, widthContent - labelMainTitleX *2, heightLabel)];
         [lblSearchByTag setText:SCLocalizedString(@"Search By Tag")];
         [lblSearchByTag setTextColor:COLOR_WITH_HEX(@"#393939")];
-        [lblSearchByTag setFont:[UIFont fontWithName:[NSString stringWithFormat:@"%@-%@",THEME_FONT_NAME,@"Bold"] size:THEME_FONT_SIZE + 3]];
+        [lblSearchByTag setFont:[UIFont fontWithName:[NSString stringWithFormat:@"%@-%@",THEME_FONT_NAME,@"Bold"] size:FONT_SIZE_HEADER]];
         if ([SimiGlobalVar sharedInstance].isReverseLanguage) {
             [lblSearchByTag setTextAlignment:NSTextAlignmentRight];
         }
@@ -317,7 +317,7 @@
     [cell setData];
     cell.imgTag.image = [UIImage imageNamed:@"storelocator_search_iphone_dai_05"];
     cell.lblTagName.textColor = [self colorWithStringHex:@"393939"];
-    [cell.lblTagName setFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE - 4]];
+    [cell.lblTagName setFont:[UIFont fontWithName:THEME_FONT_NAME size:FONT_SIZE_SMALL]];
     if (indexPath.row == 0) {
         cell.lblTagName.text = SCLocalizedString(@"All");
     }else

@@ -56,7 +56,7 @@
     [cLController.locationManager startUpdatingLocation];
     isFirstRun = YES;
     offset = 0;
-    emptyLabel = [[SimiLabel alloc] initWithFrame:CGRectZero andFontName:THEME_FONT_NAME andFontSize:THEME_FONT_SIZE];
+    emptyLabel = [[SimiLabel alloc] initWithFrame:CGRectZero andFontName:THEME_FONT_NAME andFontSize:FONT_SIZE_LARGE];
     emptyLabel.textAlignment = NSTextAlignmentCenter;
     emptyLabel.text = @"List of store are empty";
     [self.tableView addSubview:emptyLabel];
@@ -139,7 +139,7 @@
         cellWidth = 320;
     }
     float labelWidth = cellWidth - 100;
-    float heightLabelAddress = [stringAddress boundingRectWithSize:CGSizeMake(labelWidth, 999) options:NSStringDrawingUsesFontLeading|NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE - 3]} context:nil].size.height;
+    float heightLabelAddress = [stringAddress boundingRectWithSize:CGSizeMake(labelWidth, 999) options:NSStringDrawingUsesFontLeading|NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName:[UIFont fontWithName:THEME_FONT_NAME size:FONT_SIZE_MEDIUM]} context:nil].size.height;
     float heightCell = heightLabelAddress + 70;
     if (heightCell < 120) {
         heightCell = 120;
