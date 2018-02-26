@@ -29,14 +29,14 @@
         
         //Dynamic Links
         [FIROptions defaultOptions].deepLinkURLScheme = [[NSBundle mainBundle] bundleIdentifier];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationOpenURL:) name:@"ApplicationOpenURL" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationOpenURL:) name:ApplicationOpenURL object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(continueUserActivity:) name:ContinueUserActivity object:nil];
         
 //        Searchable iOS
         if(SIMI_SYSTEM_IOS >= 9){
             [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didGetProduct:) name:Simi_DidGetProductModel object:nil];
         }
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didInit:) name:@"DidInit" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didInit:) name:DidInit object:nil];
     }
     return self;
 }
@@ -87,6 +87,7 @@
 }
 
 #pragma mark Dynamic Links
+//These methods are called when your app receives a link on iOS 8 and older, and when your app is opened for the first time after installation on any version of iOS
 - (void)applicationOpenURL:(NSNotification*) noti{
     NSURL* url = [noti.userInfo objectForKey:@"url"];
     NSNumber* number = noti.object;
@@ -99,6 +100,7 @@
     }
 }
 
+//Handle links received as Universal Links when the app is already installed (on iOS 9 and newer)
 - (void)continueUserActivity:(NSNotification*) noti{
     NSUserActivity* userActivity = [noti.userInfo objectForKey:@"userActivity"];
     NSNumber* handledNumber = [noti.userInfo objectForKey:@"handled"];
