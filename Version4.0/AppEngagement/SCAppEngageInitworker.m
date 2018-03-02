@@ -154,8 +154,8 @@
                 NSString *productID = [deepLinkValues objectForKey:@"simi_product_id"];
                 [[[SimiGlobalVar sharedInstance] currentlyNavigationController] popToRootViewControllerAnimated:NO];
                 [[SCAppController sharedInstance]openProductWithNavigationController:[[SimiGlobalVar sharedInstance] currentlyNavigationController]  productId:productID moreParams:nil];
-            } else if([deepLinkValues objectForKey:@"simi_cate_name"] && [deepLinkValues objectForKey:@"simi_has_child"] && [deepLinkValues objectForKey:@"simi_cate_name"]) {
-                NSString *categoryID = [deepLinkValues objectForKey:@"simi_cate_name"];
+            } else if([deepLinkValues objectForKey:@"simi_cate_id"] && [deepLinkValues objectForKey:@"simi_has_child"] && [deepLinkValues objectForKey:@"simi_cate_name"]) {
+                NSString *categoryID = [deepLinkValues objectForKey:@"simi_cate_id"];
                 BOOL hasChild = [[deepLinkValues objectForKey:@"simi_has_child"] boolValue];
                 NSString *categoryName = [deepLinkValues objectForKey:@"simi_cate_name"];
                 if(PHONEDEVICE) {
