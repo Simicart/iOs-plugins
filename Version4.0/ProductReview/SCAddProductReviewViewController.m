@@ -121,7 +121,7 @@
     NSMutableDictionary* ratingParams = [[NSMutableDictionary alloc] initWithCapacity:0];
     for(ASStarRatingView* ratingView in ratingViews){
         NSArray* rateOptions = ratingView.simiRateData;
-        NSString* ratingKey = [[rateOptions objectAtIndex:ratingView.rating - 1] objectForKey:@"key"];
+        NSString* ratingKey = [NSString stringWithFormat:@"%@",[[rateOptions objectAtIndex:ratingView.rating - 1] objectForKey:@"key"]];
         NSString* ratingValue = [[rateOptions objectAtIndex:ratingView.rating - 1] objectForKey:@"value"];
         [ratingParams addEntriesFromDictionary:@{ratingKey:ratingValue}];
     }
@@ -132,7 +132,8 @@
             return;
         }
         NSDictionary *reviewKey = (NSDictionary *)reviewTextView.simiObjectIdentifier;
-        [params addEntriesFromDictionary:@{[reviewKey objectForKey:@"key"]:reviewTextView.text}];
+        NSString *key = [NSString stringWithFormat:@"%@",[reviewKey objectForKey:@"key"]];
+        [params addEntriesFromDictionary:@{key:reviewTextView.text}];
     }
     [reviewModel submitReviewForProductWithParams:params];
     [self startLoadingData];
