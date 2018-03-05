@@ -32,14 +32,14 @@
 {
     self.navigationItem.title  = SCLocalizedString(@"Add Review");
     if(PHONEDEVICE) {
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidShow:) name:UIKeyboardDidShowNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidHide:) name:UIKeyboardDidHideNotification object:nil];
     }
 }
 - (void)viewWillDisappearBefore:(BOOL)animated{
     [self.view endEditing:YES];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardDidShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardDidHideNotification object:nil];
 }
 - (void)viewDidAppearBefore:(BOOL)animated
 {
@@ -158,13 +158,13 @@
 }
 
 #pragma mark - keyboard movements
-- (void)keyboardWillShow:(NSNotification *)notification
+- (void)keyboardDidShow:(NSNotification *)notification
 {
     CGSize keyboardSize = [[[notification userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue].size;
     reviewScrollView.contentInset = UIEdgeInsetsMake(0, 0, keyboardSize.height, 0);
 }
 
-- (void)keyboardWillHide:(NSNotification *)notification
+- (void)keyboardDidHide:(NSNotification *)notification
 {
     reviewScrollView.contentInset = UIEdgeInsetsMake(0, 0, 0, 0);
 }
