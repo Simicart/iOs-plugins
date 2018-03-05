@@ -25,7 +25,7 @@
 - (void)didReceiveNotification:(NSNotification *)noti{
     SimiProductModel *product = [noti.userInfo valueForKey:@"product"];
     UIImageView *imageView = [noti.userInfo valueForKey:@"imageView"];
-    if([product objectForKey:@"product_labels"]){
+    if([[product objectForKey:@"product_labels"] isKindOfClass:[NSArray class]]){
         NSArray *productLabels = [product objectForKey:@"product_labels"];
         if(productLabels.count){
             for(NSDictionary *productLabel in productLabels){
@@ -106,7 +106,7 @@
                 }
             }
         }
-    }else if([product objectForKey:@"product_label"]){
+    }else if([[product objectForKey:@"product_label"] isKindOfClass:[NSDictionary class]]){
         NSDictionary *productLabel = [product objectForKey:@"product_label"];
         if(productLabel.count){
             CGRect frame = imageView.frame;
