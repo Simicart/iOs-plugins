@@ -146,6 +146,7 @@
         if(wishlistItemID)
             [product setObject:wishlistItemID forKey:@"wishlist_item_id"];
         [self updateWishlistIcon];
+        [((SimiViewController *)GLOBALVAR.currentViewController) showToastMessage:@"Added to WishList"];
     }
     else {
         [currentlyViewController showAlertWithTitle:@"" message:responder.message];
@@ -168,6 +169,7 @@
     if (responder.status == SUCCESS) {
         [product setObject:PRODUCT_IS_NOT_IN_WISHLIST forKey:@"wishlist_item_id"];
         [self updateWishlistIcon];
+        [((SimiViewController *)GLOBALVAR.currentViewController) showToastMessage:@"Removed from Wishlist"];
     }
     else {
         [currentlyViewController showAlertWithTitle:@"" message:responder.message];
