@@ -43,7 +43,7 @@
         [self addObserversForFacebookLogin];
         [self addObserversForFacebookConnect];
         [self addObserversForFacebookAnalytics];
-        [self addObserversForFacebookInvite];
+        /*[self addObserversForFacebookInvite];*/
         [self addObserversForFacebookDeeplink];
     }
     return self;
@@ -405,6 +405,7 @@
     }
 }
 */
+/*
 #pragma mark - Facebook Invite
 - (void)addObserversForFacebookInvite{
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didInitLeftMenuRows:) name:[NSString stringWithFormat:@"%@%@",SCLeftMenuViewController_RootEventName,SimiTableViewController_SubKey_InitCells_End] object:nil];
@@ -441,7 +442,7 @@
             NSString* inviteImageURL = [NSString stringWithFormat:@"%@",[fbConnect objectForKey:@"image_description_link"]];
             content.appLinkURL = [NSURL URLWithString:inviteLink];
             content.appInvitePreviewImageURL = [NSURL URLWithString:inviteImageURL];
-            [FBSDKAppInviteDialog showFromViewController:[SimiGlobalVar sharedInstance].currentlyNavigationController.viewControllers.lastObject withContent:content delegate:self];
+            [FBSDKAppInviteDialog showFromViewController:GLOBALVAR.currentViewController withContent:content delegate:self];
         }
     }
 }
@@ -454,7 +455,7 @@
 - (void)appInviteDialog:(FBSDKAppInviteDialog *)appInviteDialog didFailWithError:(NSError *)error{
     
 }
-
+*/
 #pragma mark - Facebook Analytics
 - (void)addObserversForFacebookAnalytics{
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(trackingEvent:) name:TRACKINGEVENT object:nil];
