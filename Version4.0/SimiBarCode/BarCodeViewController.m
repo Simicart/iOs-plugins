@@ -133,7 +133,7 @@
 
 - (void)startScanning {
     self.uniqueCodes = [[NSMutableArray alloc] init];
-    
+    NSError *error;
     [self.scanner startScanningWithResultBlock:^(NSArray *codes) {
         if (!isWaitingDataFromServer & !isScanningFromPhoto) {
             for (AVMetadataMachineReadableCodeObject *code in codes) {
@@ -172,7 +172,7 @@
                 }
             }
         }
-    }];
+    } error:&error];
 }
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
