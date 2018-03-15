@@ -383,7 +383,9 @@ static NSString *CHERRY_REWARDS_ROW = @"CHERRY_REWARDS_ROW";
                         return;
                 }
                 
-                SimiRow *rewardsRow = [[SimiRow alloc]initWithIdentifier:LEFTMENU_REWARDS_ROW height:rowHeight sortOrder:310];
+                SimiRow *orderHistoryRow = [section getRowByIdentifier:LEFTMENU_ROW_ORDERHISTORY];
+                float rewardsRowSortOrder = orderHistoryRow.sortOrder + 10;
+                SimiRow *rewardsRow = [[SimiRow alloc]initWithIdentifier:LEFTMENU_REWARDS_ROW height:rowHeight sortOrder:rewardsRowSortOrder];
                 rewardsRow.title = SCLocalizedString(@"My Rewards");
                 rewardsRow.image = [UIImage imageNamed:@"loyalty_reward_invert"];
                 [section addRow:rewardsRow];
