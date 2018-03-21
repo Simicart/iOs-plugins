@@ -36,9 +36,10 @@
                 UIButton *labelView = [UIButton buttonWithType:UIButtonTypeCustom];
                 labelView.frame = frame;
                 labelView.simiObjectIdentifier = PRODUCT_LABEL_IDENTIFIER;
-                labelView.contentMode = UIViewContentModeScaleAspectFit;
                 NSURL *url = [NSURL URLWithString:[productLabel valueForKey:@"image"]];
                 [labelView sd_setBackgroundImageWithURL:url forState:UIControlStateNormal];
+                labelView.contentMode = UIViewContentModeScaleAspectFit;
+                labelView.imageView.contentMode = UIViewContentModeScaleAspectFit;
                 [labelView setTitle:[productLabel valueForKey:@"text"] forState:UIControlStateNormal];
                 [labelView.titleLabel setFont:[UIFont fontWithName:THEME_FONT_NAME size:FONT_SIZE_SMALL]];
                 [labelView.titleLabel setTextAlignment:NSTextAlignmentCenter];
@@ -117,6 +118,7 @@
             labelView.frame = frame;
             labelView.simiObjectIdentifier = PRODUCT_LABEL_IDENTIFIER;
             labelView.contentMode = UIViewContentModeScaleAspectFit;
+            labelView.imageView.contentMode = UIViewContentModeScaleAspectFit;
             NSURL *url = [NSURL URLWithString:[productLabel valueForKey:@"image"]];
             [labelView sd_setBackgroundImageWithURL:url forState:UIControlStateNormal];
             [labelView setTitle:[productLabel valueForKey:@"text"] forState:UIControlStateNormal];
