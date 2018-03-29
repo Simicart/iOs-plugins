@@ -37,4 +37,5 @@
 @property (strong, nonatomic) BarCodeModel *barCodeModel;
 @property (strong, nonatomic) UIPopoverController *popoverShowProduct;
 @property (nonatomic) BOOL isAvailable;
+@property (nonatomic, strong) SimiZBarWrapper *zbarObj;
 @end
