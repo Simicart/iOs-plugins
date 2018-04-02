@@ -132,6 +132,8 @@
 #pragma mark - Scanning
 
 - (void)startScanning {
+    
+    /* Liam remove use Native Scanner. Change to use Zbar Scanner
     self.uniqueCodes = [[NSMutableArray alloc] init];
     NSError *error;
     [self.scanner startScanningWithResultBlock:^(NSArray *codes) {
@@ -173,20 +175,33 @@
             }
         }
     } error:&error];
-}
-
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
-{
-    if (buttonIndex == 0) {
-        isWaitingDataFromServer = NO;
-        isScanningFromPhoto = NO;
-        [self hiddenCanvasScan:NO];
+     */
+    if(self.zbarObj == nil){
+        self.zbarObj = [[SimiZBarWrapper alloc]initWithPreView:_previewView barCodeType:ZBAR_I25|ZBAR_EAN2|ZBAR_EAN5|ZBAR_EAN8|ZBAR_EAN13|ZBAR_UPCE|ZBAR_ISBN10|ZBAR_UPCA|ZBAR_EAN13|ZBAR_COMPOSITE|ZBAR_I25|ZBAR_CODE39|ZBAR_PDF417|ZBAR_QRCODE|ZBAR_CODE93|ZBAR_CODE128 block:^(NSArray<SimiZbarResult *> *result) {
+            if (!isWaitingDataFromServer & !isScanningFromPhoto) {
+                SimiZbarResult *firstObj = result[0];
+                AudioServicesPlayAlertSound(kSystemSoundID_Vibrate);
+                [self hiddenCanvasScan:YES];
+                [_previewView setHidden:YES];
+                NSString *codeType = @"0";
+                if (firstObj.format == ZBAR_QRCODE) {
+                    codeType = @"1";
+                }
+                [_barCodeModel getProductIdWithBarCode:firstObj.strScanned type:codeType];
+                isWaitingDataFromServer = YES;
+                [self.view addSubview:_activityIndicatorView];
+                [_activityIndicatorView startAnimating];
+            }
+        }];
     }
+    [self.zbarObj start];
 }
-
 
 - (void)stopScanning {
+    /* Liam remove use Native Scanner. Change to use Zbar Scanner
     [self.scanner stopScanning];
+    */
+    [self.zbarObj stop];
 }
 
 #pragma mark - Actions
@@ -325,9 +340,14 @@
         }else
         {
             [_previewView setHidden:NO];
-            UIAlertView *alert = [[UIAlertView alloc]initWithTitle:SCLocalizedString(@"Scanning Error") message:SCLocalizedString(@"No product matching code") delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
-            alert.simiObjectName = @"AlertFindProductFail";
-            [alert show];
+            UIAlertController *alertController = [UIAlertController alertControllerWithTitle:SCLocalizedString(@"Scanning Error") message:SCLocalizedString(@"No product matching code") preferredStyle:UIAlertControllerStyleAlert];
+            [alertController addAction:[UIAlertAction actionWithTitle:SCLocalizedString(@"OK") style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+                isWaitingDataFromServer = NO;
+                isScanningFromPhoto = NO;
+                [self hiddenCanvasScan:NO];
+                [self.zbarObj start];
+            }]];
+            [self presentViewController:alertController animated:YES completion:^{}];
         }
     }
 }

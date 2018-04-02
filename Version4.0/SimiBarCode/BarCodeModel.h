@@ -8,6 +8,7 @@
 
 #import <SimiCartBundle/SimiCartBundle.h>
 #import <SimiCartBundle/SimiModel.h>
+#import "ZBarSDK.h"
 
 static NSString *const BarCodeDidGetProductID =  @"BarCode-DidGetProductID";
 
@@ -22,4 +23,21 @@ static NSString *const BarCodeDidGetProductID =  @"BarCode-DidGetProductID";
 @property (strong, nonatomic) NSString *createdDate;
 
 - (void)getProductIdWithBarCode:(NSString*)barCode type:(NSString*)type;
+@end
+
+@interface SimiZbarResult : NSObject
+@property (nonatomic, copy) NSString* strScanned;
+@property (nonatomic, strong) UIImage* imgScanned;
+@property (nonatomic, assign) zbar_symbol_type_t format;
+@end
+
+@interface SimiZBarWrapper : NSObject
+- (instancetype)initWithPreView:(UIView*)preView barCodeType:(zbar_symbol_type_t)barCodeType block:(void(^)(NSArray<SimiZbarResult*> *result))block;
+- (void)changeBarCode:(zbar_symbol_type_t)zbarFormat;
+- (void)start;
+- (void)stop;
+- (void)openOrCloseFlash;
++ (void)recognizeImage:(UIImage*)image block:(void(^)(NSArray<SimiZbarResult*> *result))block;
++ (NSString*)convertFormat2String:(zbar_symbol_type_t)format;
+
 @end
