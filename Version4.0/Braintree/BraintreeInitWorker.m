@@ -35,9 +35,11 @@
 - (void)didPlaceOrder:(NSNotification *)noti{
     order = noti.object;
     selectedPayment = [noti.userInfo objectForKey:KEYEVENT.ORDERVIEWCONTROLLER.selected_payment];
-    selectedShipping = [noti.userInfo objectForKey:KEYEVENT.ORDERVIEWCONTROLLER.selected_shipping];
-    orderViewController = [noti.userInfo valueForKey:KEYEVENT.ORDERVIEWCONTROLLER.viewcontroller];
-    [self showDropIn:[selectedPayment objectForKey:@"token"]];
+    if([[selectedPayment.code lowercaseString] isEqualToString:BRAINTREE_PAYMENT_METHOD]){
+        selectedShipping = [noti.userInfo objectForKey:KEYEVENT.ORDERVIEWCONTROLLER.selected_shipping];
+        orderViewController = [noti.userInfo valueForKey:KEYEVENT.ORDERVIEWCONTROLLER.viewcontroller];
+        [self showDropIn:[selectedPayment objectForKey:@"token"]];
+    }
 }
 
 - (void)didReceiveNotification:(NSNotification *)noti{
