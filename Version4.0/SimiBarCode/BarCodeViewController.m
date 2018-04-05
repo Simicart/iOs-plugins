@@ -187,10 +187,18 @@
                 if (firstObj.format == ZBAR_QRCODE) {
                     codeType = @"1";
                 }
-                [_barCodeModel getProductIdWithBarCode:firstObj.strScanned type:codeType];
-                isWaitingDataFromServer = YES;
-                [self.view addSubview:_activityIndicatorView];
-                [_activityIndicatorView startAnimating];
+                NSString *strScanned = firstObj.strScanned;
+                if(strScanned){
+                    if(firstObj.format == ZBAR_EAN13){
+                        if([strScanned hasPrefix:@"0"] && [strScanned length] > 1){
+                            strScanned = [strScanned substringFromIndex:1];
+                        }
+                    }
+                    [_barCodeModel getProductIdWithBarCode:strScanned type:codeType];
+                    isWaitingDataFromServer = YES;
+                    [self.view addSubview:_activityIndicatorView];
+                    [_activityIndicatorView startAnimating];
+                }
             }
         }];
     }
