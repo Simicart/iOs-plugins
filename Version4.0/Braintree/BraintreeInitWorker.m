@@ -55,7 +55,9 @@
 
 - (void)showDropIn:(NSString*) clientTokenOrTokenizationKey{
     BTDropInRequest *request = [[BTDropInRequest alloc] init];
-    request.threeDSecureVerification = YES;
+    if([[[UIDevice currentDevice] systemVersion] compare:@"11.0" options:NSNumericSearch] == NSOrderedAscending){
+        request.applePayDisabled = YES;
+    }
     NSMutableDictionary* fees = [order objectForKey:@"total"];
     NSString* grandTotal = [NSString stringWithFormat:@"%.2f",[[fees valueForKey:@"grand_total_incl_tax"] floatValue]];
     request.amount = grandTotal;

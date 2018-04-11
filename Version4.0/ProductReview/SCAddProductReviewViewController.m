@@ -87,7 +87,7 @@
                         if(formKeys.count > 0) {
                             reviewTextViews = [[NSMutableArray alloc] init];
                             for(NSDictionary *formKey in formKeys) {
-                                SimiLabel *titleLabel = [[SimiLabel alloc] initWithFrame:CGRectMake(paddingWidth, viewY, viewWidth - 2*paddingWidth, 30) andFontName:THEME_FONT_NAME_REGULAR andFontSize:FONT_SIZE_LARGE andTextColor:THEME_CONTENT_COLOR text:[NSString stringWithFormat:@"%@ (*)",[formKey objectForKey:@"value"]]];
+                                SimiLabel *titleLabel = [[SimiLabel alloc] initWithFrame:CGRectMake(paddingWidth, viewY, viewWidth - 2*paddingWidth, 30) andFontName:THEME_FONT_NAME_REGULAR andFontSize:FONT_SIZE_LARGE andTextColor:THEME_CONTENT_COLOR text:[NSString stringWithFormat:@"%@ (*)",SCLocalizedString([formKey objectForKey:@"value"])]];
                                 [reviewContentView addSubview:titleLabel];
                                 viewY += titleLabel.frame.size.height;
                                 SimiTextView *contentTextView = [[SimiTextView alloc] initWithFrame:CGRectMake(paddingWidth, viewY, viewWidth - 2*paddingWidth, 40) font:[UIFont fontWithName:THEME_FONT_NAME size:FONT_SIZE_LARGE] borderWidth:1 borderColor:COLOR_WITH_HEX(@"#cacaca") paddingLeft:5];
