@@ -23,7 +23,7 @@
 @end
 
 
-@interface SimiStoreLocatorSearchViewController : SimiViewController<UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIScrollViewDelegate>
+@interface SimiStoreLocatorSearchViewController : SimiViewController<UITextFieldDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIScrollViewDelegate>
 
 @property (nonatomic, strong) NSArray *simiAddressStoreLocatorModelCollection;
 @property (nonatomic, strong) SimiStoreLocatorModelCollection *sLModelCollection;

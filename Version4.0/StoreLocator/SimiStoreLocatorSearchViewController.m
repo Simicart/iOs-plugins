@@ -65,11 +65,6 @@
     if (tagModelCollection.count > 0) {
         [self setInterfaceSearchByTag];
     }
-    //  Get data for search tag
-    __block __weak id weakSelf = self;
-    [self.scrView addInfiniteScrollingWithActionHandler:^{
-        [weakSelf getTagList];
-    }];
     if (tagModelCollection == nil) {
         [self getTagList];
     }
@@ -259,6 +254,11 @@
 {
     int numberRowCollection = (int)(tagModelCollection.count+1)/3 + 1;
     if (isFirtsGetTagList) {
+        //  Get data for search tag
+        __block __weak id weakSelf = self;
+        [self.scrView addInfiniteScrollingWithActionHandler:^{
+            [weakSelf getTagList];
+        }];
         isFirtsGetTagList =  NO;
         lblSearchByTag = [[UILabel alloc]initWithFrame:CGRectMake(labelMainTitleX, heightContent, widthContent - labelMainTitleX *2, heightLabel)];
         [lblSearchByTag setText:SCLocalizedString(@"Search By Tag")];
