@@ -504,7 +504,8 @@
 - (void)btnStorePhone_Click:(id)sender
 {
     [[NSNotificationCenter defaultCenter]postNotificationName:TRACKINGEVENT object:@"store_locator_action" userInfo:@{@"action":@"call_to_store",@"store_name":sLModel.name}];
-    NSURL *phoneURL = [NSURL URLWithString:[sLModel.phone stringByReplacingOccurrencesOfString:@" " withString:@""]];
+    NSString *phNo = [NSString  stringWithFormat:@"telprompt:%@",sLModel.phone];
+    NSURL *phoneURL = [NSURL URLWithString:[phNo stringByReplacingOccurrencesOfString:@" " withString:@""]];
     if ([[UIApplication sharedApplication] canOpenURL:phoneURL]) {
         [[UIApplication sharedApplication] openURL:phoneURL];
     } else
