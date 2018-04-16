@@ -39,25 +39,23 @@
     return self;
 }
 - (void)initViewMoreAction: (NSNotification *)noti {
-    if ([SimiGlobalVar sharedInstance].isLogin || (![SimiGlobalVar sharedInstance].isLogin && [SimiGlobalVar sharedInstance].isReviewAllowGuest)) {
-        moreActionView = noti.object;
-        float sizeButton = 50;
-        reviewButton = [UIButton new];
-        [reviewButton setImage:[[UIImage imageNamed:@"ic_review"] imageWithColor:[UIColor blackColor]] forState:UIControlStateNormal];
-        [reviewButton setImageEdgeInsets:UIEdgeInsetsMake(9, 9, 9, 9)];
-        [reviewButton.layer setCornerRadius:sizeButton/2.0f];
-        [reviewButton.layer setShadowOffset:CGSizeMake(1, 1)];
-        [reviewButton.layer setShadowRadius:2];
-        reviewButton.layer.shadowOpacity = 0.5;
-        [reviewButton setBackgroundColor:[UIColor whiteColor]];
-        [reviewButton addTarget:self action:@selector(didTouchReviewButton:) forControlEvents:UIControlEventTouchUpInside];
-        reviewButton.tag = 1000;
-        moreActionView.numberIcon += 1;
-        [moreActionView.arrayIcon addObject:reviewButton];
-        
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(afterInitViewMoreOnProductMoreViewController:) name:SCProductMoreViewControllerAfterInitViewMore object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(afterInitViewMoreOnProductViewController:) name:SCProductViewControllerAfterInitViewMore object:nil];
-     }
+    moreActionView = noti.object;
+    float sizeButton = 50;
+    reviewButton = [UIButton new];
+    [reviewButton setImage:[[UIImage imageNamed:@"ic_review"] imageWithColor:[UIColor blackColor]] forState:UIControlStateNormal];
+    [reviewButton setImageEdgeInsets:UIEdgeInsetsMake(9, 9, 9, 9)];
+    [reviewButton.layer setCornerRadius:sizeButton/2.0f];
+    [reviewButton.layer setShadowOffset:CGSizeMake(1, 1)];
+    [reviewButton.layer setShadowRadius:2];
+    reviewButton.layer.shadowOpacity = 0.5;
+    [reviewButton setBackgroundColor:[UIColor whiteColor]];
+    [reviewButton addTarget:self action:@selector(didTouchReviewButton:) forControlEvents:UIControlEventTouchUpInside];
+    reviewButton.tag = 1000;
+    moreActionView.numberIcon += 1;
+    [moreActionView.arrayIcon addObject:reviewButton];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(afterInitViewMoreOnProductMoreViewController:) name:SCProductMoreViewControllerAfterInitViewMore object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(afterInitViewMoreOnProductViewController:) name:SCProductViewControllerAfterInitViewMore object:nil];
 }
 
 - (void)productMoreViewControllerInitTab: (NSNotification *)noti {
@@ -91,24 +89,28 @@
 }
 
 - (void)didTouchReviewButton: (id)sender {
-    if(PHONEDEVICE) {
-        if([[product valueForKey:@"app_reviews"] isKindOfClass:[NSDictionary class]]){
+    if ([SimiGlobalVar sharedInstance].isLogin || (![SimiGlobalVar sharedInstance].isLogin && [SimiGlobalVar sharedInstance].isReviewAllowGuest)) {
+        if(PHONEDEVICE) {
+            if([[product valueForKey:@"app_reviews"] isKindOfClass:[NSDictionary class]]){
+                SCAddProductReviewViewController* reviewController = [SCAddProductReviewViewController new];
+                reviewController.productModel = product;
+                if(productVC)
+                    [productVC.navigationController pushViewController:reviewController animated:YES];
+                else if(productMoreVC) {
+                    [productMoreVC.navigationController pushViewController:reviewController animated:YES];
+                }
+            }
+        }else if(PADDEVICE) {
             SCAddProductReviewViewController* reviewController = [SCAddProductReviewViewController new];
             reviewController.productModel = product;
-            if(productVC)
-                [productVC.navigationController pushViewController:reviewController animated:YES];
-            else if(productMoreVC) {
+            if(productMoreVC) {
                 [productMoreVC.navigationController pushViewController:reviewController animated:YES];
+            }else if(productVC) {
+                [productVC presentWithRootViewController:reviewController];
             }
         }
-    }else if(PADDEVICE) {
-        SCAddProductReviewViewController* reviewController = [SCAddProductReviewViewController new];
-        reviewController.productModel = product;
-        if(productMoreVC) {
-            [productMoreVC.navigationController pushViewController:reviewController animated:YES];
-        }else if(productVC) {
-            [productVC presentWithRootViewController:reviewController];
-        }
+    }else{
+        [((SimiViewController *)GLOBALVAR.currentViewController) showAlertWithTitle:@"" message:@"Please login first"];
     }
 }
 
@@ -140,9 +142,7 @@
                 row.model = [reviewCollection objectAtIndex:i];
                 [reviewSection addRow:row];
             }
-            if ([SimiGlobalVar sharedInstance].isLogin || [SimiGlobalVar sharedInstance].isReviewAllowGuest) {
-                [reviewSection addRowWithIdentifier:product_reviews_add_row height:50];
-            }
+            [reviewSection addRowWithIdentifier:product_reviews_add_row height:50];
         }
         [productTableView reloadData];
     }
@@ -160,10 +160,8 @@
         hadReviews = YES;
     }
     if(!hadReviews){
-        if ([SimiGlobalVar sharedInstance].isLogin || (![SimiGlobalVar sharedInstance].isLogin && [SimiGlobalVar sharedInstance].isReviewAllowGuest)) {
-            SimiSection *reviewSection = [cells addSectionWithIdentifier:product_reviews_section headerTitle:SCLocalizedString(@"Review")];
-            [reviewSection addRowWithIdentifier:product_reviews_firstpeople_row height:50];
-        }
+        SimiSection *reviewSection = [cells addSectionWithIdentifier:product_reviews_section headerTitle:SCLocalizedString(@"Review")];
+        [reviewSection addRowWithIdentifier:product_reviews_firstpeople_row height:50];
     }
     if(hadReviews) {
         [self getReviews];
@@ -325,12 +323,16 @@
                 [productVC presentWithRootViewController:nextController];
             }
         }else if([row.identifier isEqualToString:product_reviews_add_row] || [row.identifier isEqualToString:product_reviews_firstpeople_row]) {
-            SCAddProductReviewViewController* reviewController = [SCAddProductReviewViewController new];
-            reviewController.productModel = product;
-            if(PHONEDEVICE)
-                [productVC.navigationController pushViewController:reviewController animated:YES];
-            else
-                [productVC presentWithRootViewController:reviewController];
+            if ([SimiGlobalVar sharedInstance].isLogin || (![SimiGlobalVar sharedInstance].isLogin && [SimiGlobalVar sharedInstance].isReviewAllowGuest)) {
+                SCAddProductReviewViewController* reviewController = [SCAddProductReviewViewController new];
+                reviewController.productModel = product;
+                if(PHONEDEVICE)
+                    [productVC.navigationController pushViewController:reviewController animated:YES];
+                else
+                    [productVC presentWithRootViewController:reviewController];
+            }else{
+                [productVC showAlertWithTitle:@"" message:@"Please login first"];
+            }
         }else if([row.identifier isEqualToString:product_reviews_viewall_row])
         {
             SCProductReviewController *reviewDetailController = [SCProductReviewController new];
