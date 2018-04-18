@@ -7,7 +7,10 @@
 //
 
 #import "SCPInitWorker.h"
+#import "SCPGlobalVars.h"
 #import <SimiCartBundle/InitWorker.h>
+#import "SCPNavigationBarPhone.h"
+#import "SCPHomeViewController.h"
 
 @implementation SCPInitWorker
 - (id)init{
@@ -17,10 +20,19 @@
     return self;
 }
 - (void)initializedRootController:(NSNotification *)noti{
-    if([GLOBALVAR.appConfigModel objectForKey:@"‘perry_theme’"]){
+    if([[GLOBALVAR.appConfigModel objectForKey:@"perry_theme"] isKindOfClass:[NSDictionary class]]){
+        [self setupThemeColors];
         InitWorker *initWorker = noti.object;
+        initWorker.rootController.tabBar.hidden = YES;
         initWorker.isDiscontinue = YES;
+        [SCAppController sharedInstance].navigationBarPhone = [SCPNavigationBarPhone new];
         //Init the root view
+        UINavigationController *homeNavi = [[UINavigationController alloc] init];
+        homeNavi.viewControllers = @[[SCPHomeViewController new]];
+        initWorker.rootController.viewControllers = @[homeNavi];
     }
+}
+- (void)setupThemeColors{
+    SCP_GLOBALVARS.themeConfig = [[SCPThemeConfigModel alloc] initWithModelData:[GLOBALVAR.appConfigModel objectForKey:@"perry_theme"]];
 }
 @end
