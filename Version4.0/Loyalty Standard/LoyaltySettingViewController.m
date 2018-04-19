@@ -42,6 +42,7 @@
     _settings = [LoyaltyModel new];
     [_settings setObject:_model.isNotification?@"1":@"0" forKey:@"is_notification"];
     [_settings setValue:_model.expireNotification?@"1":@"0" forKey:@"expire_notification"];
+    [self initCells];
 }
 
 - (void)viewWillAppearBefore:(BOOL)animated{
@@ -72,11 +73,12 @@
 }
 
 - (void)createCells{
-    SimiSection *section = [self.cells addSectionWithIdentifier:LOYALTY_EMAIL_NOTI headerTitle:SCLocalizedString(@"Email Subscriptions") footerTitle:SCLocalizedString(@"Subscribe to receive updates on your point balance")];
-    [[section addRowWithIdentifier:LOYALTY_EMAIL_NOTI height:44 sortOrder:0] setTitle:SCLocalizedString(@"Point Balance Update")];
+    [self.cells addSectionWithIdentifier:LOYALTY_EMAIL_SETTING headerTitle:SCLocalizedString(@"Email Subscriptions")];
+    SimiSection *balanceUpdate = [self.cells addSectionWithIdentifier:LOYALTY_EMAIL_NOTI headerTitle:nil footerTitle:@"Subscribe to receive updates on your point balance"];
+    [[balanceUpdate addRowWithIdentifier:LOYALTY_EMAIL_NOTI height:44 sortOrder:0] setTitle:SCLocalizedString(@"Point Balance Update")];
     
-    section = [self.cells addSectionWithIdentifier:LOYALTY_EMAIL_EXP headerTitle:nil footerTitle:SCLocalizedString(@"Subscribe to receive notifications of expiring points in advance")];
-    [[section addRowWithIdentifier:LOYALTY_EMAIL_EXP height:44 sortOrder:0] setTitle:SCLocalizedString(@"Expired Point Transaction")];
+    SimiSection *expiringPoints = [self.cells addSectionWithIdentifier:LOYALTY_EMAIL_EXP headerTitle:nil footerTitle:SCLocalizedString(@"Subscribe to receive notifications of expiring points in advance")];
+    [[expiringPoints addRowWithIdentifier:LOYALTY_EMAIL_EXP height:44 sortOrder:0] setTitle:SCLocalizedString(@"Expired Point Transaction")];
 }
 
 #pragma mark - Table view datasource
