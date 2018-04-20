@@ -460,6 +460,7 @@
 - (void)addObserversForFacebookAnalytics{
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(trackingEvent:) name:TRACKINGEVENT object:nil];
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(trackingViewedScreen:) name:@"SimiViewControllerViewDidAppear" object:nil];
+    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(didPlaceOrder:) name:Simi_DidPlaceOrder object:nil];
 }
 
 - (void)trackingEvent:(NSNotification*) noti{
@@ -484,14 +485,24 @@
             }
         }
         if([noti.object isEqualToString:@"product_action"] && [[NSString stringWithFormat:@"%@",[noti.userInfo objectForKey:@"action"]] isEqualToString:@"added_to_cart"]){
-            [trackingProperties addEntriesFromDictionary:@{FBSDKAppEventParameterNameCurrency:[SimiGlobalVar sharedInstance].currencyCode, FBSDKAppEventParameterNameContentType : @"product", FBSDKAppEventParameterNameContentID : [noti.userInfo objectForKey:@"product_id"],FBSDKAppEventParameterNameDescription:[noti.userInfo objectForKey:@"product_name"]}];
-            [FBSDKAppEvents logEvent:FBSDKAppEventNameAddedToCart parameters:params];
+            [trackingProperties addEntriesFromDictionary:@{FBSDKAppEventParameterNameCurrency:[SimiGlobalVar sharedInstance].currencyCode, FBSDKAppEventParameterNameContentType : @"product", FBSDKAppEventParameterNameContentID : [params objectForKey:@"product_id"],FBSDKAppEventParameterNameDescription:[params objectForKey:@"product_name"]}];
+            [FBSDKAppEvents logEvent:FBSDKAppEventNameAddedToCart parameters:trackingProperties];
+            
+            trackingProperties = [[NSMutableDictionary alloc]initWithDictionary:params];
+            [trackingProperties setValue:@"product" forKey:@"fb_content_type"];
+            [trackingProperties setValue:[trackingProperties valueForKey:@"product_id"] forKey:@"fb_content_id"];
+            [FBSDKAppEvents logEvent:@"fb_mobile_add_to_cart" parameters:trackingProperties];
             return;
         }else if([noti.object isEqualToString:@"checkout_action"] && [[NSString stringWithFormat:@"%@",[noti.userInfo objectForKey:@"action"]] isEqualToString:@"place_order_successful"]){
             [FBSDKAppEvents logPurchase:[[NSString stringWithFormat:@"%@",[noti.userInfo objectForKey:@"grand_total"]] doubleValue] currency:[SimiGlobalVar sharedInstance].currencyCode];
             return;
         }else{
             [FBSDKAppEvents logEvent:trackingName parameters:trackingProperties];
+        }
+        if ([trackingName isEqualToString:@"viewed_product_screen"]) {
+            [trackingProperties setValue:@"product" forKey:@"fb_content_type"];
+            [trackingProperties setValue:[trackingProperties valueForKey:@"product_id"] forKey:@"fb_content_id"];
+            [FBSDKAppEvents logEvent:@"fb_mobile_content_view" parameters:trackingProperties];
         }
     }
     [self updateUserProperties];
@@ -534,6 +545,18 @@
         }];
     }else{
         [FBSDKAppEvents setUserID:nil];
+    }
+}
+
+- (void)didPlaceOrder:(NSNotification*)noti{
+    SimiResponder *responder = [noti.userInfo valueForKey:responderKey];
+    if (responder.status == SUCCESS) {
+        for (SimiQuoteItemModel *itemModel in GLOBALVAR.cart.collectionData) {
+            NSMutableDictionary *trackingProperties = [NSMutableDictionary new];
+            [trackingProperties setValue:@"product" forKey:@"fb_content_type"];
+            [trackingProperties setValue:itemModel.product.entityId forKey:@"fb_content_id"];
+            [FBSDKAppEvents logEvent:@"fb_mobile_purchase" parameters:trackingProperties];
+        }
     }
 }
 
