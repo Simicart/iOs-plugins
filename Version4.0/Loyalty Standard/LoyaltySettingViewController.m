@@ -30,6 +30,7 @@
     
     // Init Table View Data
     self.contentTableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStyleGrouped];
+    self.contentTableView.backgroundColor = [UIColor clearColor];
     self.contentTableView.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
     if (SIMI_SYSTEM_IOS >= 9) {
         self.contentTableView.cellLayoutMarginsFollowReadableWidth = NO;
@@ -86,23 +87,28 @@
 {
     SimiSection *section = [self.cells objectAtIndex:indexPath.section];
     SimiRow *row = [section objectAtIndex:indexPath.row];
-    UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];
-    if ([section.identifier isEqualToString:LOYALTY_EMAIL_NOTI]) {
+    UITableViewCell *cell = [self.contentTableView dequeueReusableCellWithIdentifier:row.identifier];
+    if(!cell){
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:row.identifier];
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
-        UISwitch *switcher = [UISwitch new];
-        switcher.tag = (NSInteger)LOYALTY_EMAIL_NOTI;
-        switcher.on = _settings.isNotification;
-        [switcher addTarget:self action:@selector(toggleSwitcher:) forControlEvents:UIControlEventValueChanged];
-        cell.accessoryView = switcher;
-    } else if ([section.identifier isEqualToString:LOYALTY_EMAIL_EXP]) {
-        cell.selectionStyle = UITableViewCellSelectionStyleNone;
-        UISwitch *switcher = [UISwitch new];
-        switcher.tag = (NSInteger)LOYALTY_EMAIL_EXP;
-        switcher.on = _settings.expireNotification;
-        [switcher addTarget:self action:@selector(toggleSwitcher:) forControlEvents:UIControlEventValueChanged];
-        cell.accessoryView = switcher;
+        cell.backgroundColor = [UIColor clearColor];
+        cell.textLabel.text = row.title;
+        cell.textLabel.font = [UIFont fontWithName:THEME_FONT_NAME size:FONT_SIZE_LARGE];
+        cell.textLabel.textColor = THEME_CONTENT_COLOR;
+        if ([section.identifier isEqualToString:LOYALTY_EMAIL_NOTI]) {
+            UISwitch *switcher = [UISwitch new];
+            switcher.tag = (NSInteger)LOYALTY_EMAIL_NOTI;
+            switcher.on = _settings.isNotification;
+            [switcher addTarget:self action:@selector(toggleSwitcher:) forControlEvents:UIControlEventValueChanged];
+            cell.accessoryView = switcher;
+        } else if ([section.identifier isEqualToString:LOYALTY_EMAIL_EXP]) {
+            UISwitch *switcher = [UISwitch new];
+            switcher.tag = (NSInteger)LOYALTY_EMAIL_EXP;
+            switcher.on = _settings.expireNotification;
+            [switcher addTarget:self action:@selector(toggleSwitcher:) forControlEvents:UIControlEventValueChanged];
+            cell.accessoryView = switcher;
+        }
     }
-    cell.textLabel.text = row.title;
     return cell;
 }
 #pragma mark - Update settings

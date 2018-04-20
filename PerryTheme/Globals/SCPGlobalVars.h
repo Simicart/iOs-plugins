@@ -18,7 +18,7 @@
 #define SCP_BUTTON_BACKGROUND_COLOR COLOR_WITH_HEX([SCP_GLOBALVARS.themeConfig buttonBackgroundColor])
 
 @interface SCPGlobalVars : NSObject
-//Colors
+
 @property (strong, nonatomic) SCPThemeConfigModel *themeConfig;
 
 + (instancetype)sharedInstance;

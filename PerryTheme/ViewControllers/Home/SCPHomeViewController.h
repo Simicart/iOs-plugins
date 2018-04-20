@@ -7,7 +7,10 @@
 //
 
 #import "SCPViewController.h"
+#import <SimiCartBundle/SCHomeViewController.h>
+#import <SimiCartBundle/MatrixBannerScrollView.h>
+#import <SimiCartBundle/MatrixBannerScrollViewPad.h>
 
-@interface SCPHomeViewController : SCPViewController
+@interface SCPHomeViewController : SCHomeViewController<MatrixBannerScrollViewDelegate>
 
 @end

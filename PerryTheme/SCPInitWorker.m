@@ -20,7 +20,7 @@
     return self;
 }
 - (void)initializedRootController:(NSNotification *)noti{
-    if([[GLOBALVAR.appConfigModel objectForKey:@"perry_theme"] isKindOfClass:[NSDictionary class]]){
+//    if([[GLOBALVAR.appConfigModel objectForKey:@"perry_theme"] isKindOfClass:[NSDictionary class]]){
         [self setupThemeColors];
         InitWorker *initWorker = noti.object;
         initWorker.rootController.tabBar.hidden = YES;
@@ -30,9 +30,9 @@
         UINavigationController *homeNavi = [[UINavigationController alloc] init];
         homeNavi.viewControllers = @[[SCPHomeViewController new]];
         initWorker.rootController.viewControllers = @[homeNavi];
-    }
+//    }
 }
 - (void)setupThemeColors{
-    SCP_GLOBALVARS.themeConfig = [[SCPThemeConfigModel alloc] initWithModelData:[GLOBALVAR.appConfigModel objectForKey:@"perry_theme"]];
+    SCP_GLOBALVARS.themeConfig = [[SCPThemeConfigModel alloc] initWithModelData:@{}];
 }
 @end
