@@ -137,8 +137,8 @@
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:row.identifier];
         MatrixBannerScrollView* bannerScrollView = [[MatrixBannerScrollView alloc] initWithFrame:CGRectMake(0, 0 , SCREEN_WIDTH, row.height)];
         bannerScrollView.isShowedItemsView = YES;
-        bannerScrollView.selectedImage = [[UIImage imageNamed:@"ic_banner_selected"] imageWithColor:SCP_ICON_COLOR];
-        bannerScrollView.unselectedImage = [[UIImage imageNamed:@"ic_banner_unselected"] imageWithColor:SCP_ICON_COLOR];
+        bannerScrollView.selectedItemImage = [[UIImage imageNamed:@"ic_banner_selected"] imageWithColor:SCP_ICON_COLOR];
+        bannerScrollView.unselectedItemImage = [[UIImage imageNamed:@"ic_banner_unselected"] imageWithColor:SCP_ICON_COLOR];
         bannerScrollView.banners = phoneBanners;
         if(PADDEVICE){
             if(padBanners.count >= 2){
