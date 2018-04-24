@@ -113,7 +113,11 @@
 - (void)didTouchWishlistButton
 {
     if (![[SimiGlobalVar sharedInstance] isLogin]) {
-        [currentlyViewController.navigationController pushViewController:[SCLoginViewController new] animated:YES];
+        if(PADDEVICE){
+            [[SCAppController sharedInstance]openLoginScreenWithNavigationController:currentlyViewController.navigationController moreParams:@{KEYEVENT.APPCONTROLLER.is_showpopover:[NSNumber numberWithBool:YES]}];
+        }else{
+            [[SCAppController sharedInstance]openLoginScreenWithNavigationController:currentlyViewController.navigationController moreParams:@{}];
+        }
         return;
     }
     [wishlistButton setEnabled:NO];
