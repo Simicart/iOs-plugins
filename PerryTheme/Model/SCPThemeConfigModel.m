@@ -29,7 +29,7 @@
     if([[self.modelData objectForKey:@"icon_highlight_color"] isKindOfClass:[NSString class]]){
         self.iconHighlightColor = [self.modelData objectForKey:@"icon_highlight_color"];
     }else{
-        self.iconHighlightColor = @"#fff";
+        self.iconHighlightColor = @"#FF9800";
     }
     if([[self.modelData objectForKey:@"button_text_color"] isKindOfClass:[NSString class]]){
         self.buttonTextColor = [self.modelData objectForKey:@"button_text_color"];
@@ -39,7 +39,7 @@
     if([[self.modelData objectForKey:@"button_background_color"] isKindOfClass:[NSString class]]){
         self.buttonBackgroundColor = [self.modelData objectForKey:@"button_background_color"];
     }else{
-        self.buttonBackgroundColor = @"#fff";
+        self.buttonBackgroundColor = @"#00C853";
     }
 }
 
