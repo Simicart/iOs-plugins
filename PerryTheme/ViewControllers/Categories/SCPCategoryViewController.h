@@ -2,12 +2,12 @@
 //  SCPCategoryViewController.h
 //  SimiCartPluginFW
 //
-//  Created by Liam on 4/23/18.
+//  Created by Axe on 4/24/18.
 //  Copyright © 2018 Trueplus. All rights reserved.
 //
+#import "SCPCategoryModel.h"
+#import <SimiCartBundle/SimiCategoryModelCollection.h>
 
-#import <SimiCartBundle/SCCategoryViewController.h>
-
-@interface SCPCategoryViewController : SCCategoryViewController
-
+@interface SCPCategoryViewController : SimiTableViewController
+@property (nonatomic, strong) SimiCategoryModelCollection *categoryCollection;
 @end

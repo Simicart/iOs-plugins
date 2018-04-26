@@ -19,7 +19,7 @@
     if([[self.modelData objectForKey:@"title_color"] isKindOfClass:[NSString class]]){
         self.titleColor = [self.modelData objectForKey:@"title_color"];
     }else{
-        self.titleColor = @"#fff";
+        self.titleColor = @"#000";
     }
     if([[self.modelData objectForKey:@"icon_color"] isKindOfClass:[NSString class]]){
         self.iconColor = [self.modelData objectForKey:@"icon_color"];
