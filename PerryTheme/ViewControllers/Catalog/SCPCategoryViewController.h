@@ -10,4 +10,6 @@
 
 @interface SCPCategoryViewController : SimiTableViewController
 @property (nonatomic, strong) SimiCategoryModelCollection *categoryCollection;
+@property (nonatomic, strong) SCPCategoryModel *categoryModel;
+@property (nonatomic) BOOL isSubCategory;
 @end

@@ -9,8 +9,8 @@
 #import "SCPCategoryViewController.h"
 #import "SCPGlobalVars.h"
 
-#define SCP_ROOT_CATEGORY @"ROOT_CATEGORY"
-#define SCP_ROOT_CATEGORY_VIEW_ALL @"ROOT_CATEGORY_VIEW_ALL"
+#define SCP_CATEGORY @"ROOT_CATEGORY"
+#define SCP_CATEGORY_VIEW_ALL @"ROOT_CATEGORY_VIEW_ALL"
 
 @interface SCPCategoryViewController ()
 
@@ -36,7 +36,11 @@
     if(!self.categoryCollection){
         self.categoryCollection = [[SimiCategoryModelCollection alloc] init];
     }
-    [self.categoryCollection getSubCategoriesWithParentId:@""];
+    NSString *categoryId = @"";
+    if(self.categoryModel){
+        categoryId = self.categoryModel.entityId;
+    }
+    [self.categoryCollection getSubCategoriesWithParentId:categoryId];
     [self startLoadingData];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didGetRootCategories:) name:Simi_DidGetCategoryCollection object:nil];
 }
@@ -45,23 +49,40 @@
     [self removeObserverForNotification:noti];
     SimiResponder *responder = [noti.userInfo objectForKey:responderKey];
     if(responder.status == SUCCESS){
-        for(SimiCategoryModel *model in self.categoryCollection.collectionData){
-            SCPCategoryModel *category1 = [[SCPCategoryModel alloc] initWithModelData:model.modelData];
-            [categories addObject:category1];
-            category1.level = LevelOne;
-            category1.isSelected = NO;
-            category1.parentCategory = nil;
-            if(category1.hasChildren){
-                for(SCPCategoryModel *category2 in category1.subCategories){
-                    category2.level = LevelTwo;
-                    category2.isSelected = NO;
-                    category2.parentCategory = category1;
-                    if(category2.hasChildren){
-                        for(SCPCategoryModel *category3 in category2.subCategories){
-                            category3.level = LevelThree;
-                            category3.isSelected = NO;
-                            category3.parentCategory = category2;
+        if(!self.isSubCategory){
+            for(SimiCategoryModel *model in self.categoryCollection.collectionData){
+                SCPCategoryModel *category1 = [[SCPCategoryModel alloc] initWithModelData:model.modelData];
+                [categories addObject:category1];
+                category1.level = LevelOne;
+                category1.isSelected = NO;
+                category1.parentCategory = nil;
+                if(category1.hasChildren){
+                    for(SCPCategoryModel *category2 in category1.subCategories){
+                        category2.level = LevelTwo;
+                        category2.isSelected = NO;
+                        category2.parentCategory = category1;
+                        if(category2.hasChildren){
+                            for(SCPCategoryModel *category3 in category2.subCategories){
+                                category3.level = LevelThree;
+                                category3.isSelected = NO;
+                                category3.parentCategory = category2;
+                            }
                         }
+                    }
+                }
+            }
+        }else{
+            for(SimiCategoryModel *model in self.categoryCollection.collectionData){
+                SCPCategoryModel *category2 = [[SCPCategoryModel alloc] initWithModelData:model.modelData];
+                [categories addObject:category2];
+                category2.level = LevelTwo;
+                category2.isSelected = NO;
+                category2.parentCategory = nil;
+                if(category2.hasChildren){
+                    for(SCPCategoryModel *category3 in category2.subCategories){
+                        category3.level = LevelThree;
+                        category3.isSelected = NO;
+                        category3.parentCategory = category2;
                     }
                 }
             }
@@ -73,24 +94,41 @@
     }
 }
 - (void)createCells{
-    SimiSection *section = [self.cells addSectionWithIdentifier:SCP_ROOT_CATEGORY];
-    for(SCPCategoryModel *category1 in categories){
-        SimiRow *row1 = [section addRowWithIdentifier:SCP_ROOT_CATEGORY];
-        row1.model = category1;
-        if(category1.hasChildren && category1.isSelected){
-            SimiRow *row = [section addRowWithIdentifier:SCP_ROOT_CATEGORY_VIEW_ALL];
-            row.model = category1;
-            for(SCPCategoryModel *category2 in category1.subCategories){
-                SimiRow *row2 = [section addRowWithIdentifier:SCP_ROOT_CATEGORY];
-                row2.model = category2;
-                if(category2.hasChildren && category2.isSelected){
-                    for(SCPCategoryModel *category3 in category2.subCategories){
-                        SimiRow *row3 = [section addRowWithIdentifier:SCP_ROOT_CATEGORY];
-                        row3.model = category3;
+    SimiSection *section = [self.cells addSectionWithIdentifier:SCP_CATEGORY];
+    if(!self.isSubCategory){
+        for(SCPCategoryModel *category1 in categories){
+            SimiRow *row1 = [section addRowWithIdentifier:SCP_CATEGORY];
+            row1.model = category1;
+            if(category1.hasChildren && category1.isSelected){
+                SimiRow *row = [section addRowWithIdentifier:SCP_CATEGORY_VIEW_ALL];
+                row.model = category1;
+                for(SCPCategoryModel *category2 in category1.subCategories){
+                    SimiRow *row2 = [section addRowWithIdentifier:SCP_CATEGORY];
+                    row2.model = category2;
+                    if(category2.hasChildren && category2.isSelected){
+                        for(SCPCategoryModel *category3 in category2.subCategories){
+                            SimiRow *row3 = [section addRowWithIdentifier:SCP_CATEGORY];
+                            row3.model = category3;
+                        }
+                        SimiRow *row = [section addRowWithIdentifier:SCP_CATEGORY_VIEW_ALL];
+                        row.model = category2;
                     }
-                    SimiRow *row = [section addRowWithIdentifier:SCP_ROOT_CATEGORY_VIEW_ALL];
-                    row.model = category2;
                 }
+            }
+        }
+    }else{
+        SimiRow *row = [section addRowWithIdentifier:SCP_CATEGORY_VIEW_ALL];
+        row.model = self.categoryModel;
+        for(SCPCategoryModel *category2 in categories){
+            SimiRow *row2 = [section addRowWithIdentifier:SCP_CATEGORY];
+            row2.model = category2;
+            if(category2.hasChildren && category2.isSelected){
+                for(SCPCategoryModel *category3 in category2.subCategories){
+                    SimiRow *row3 = [section addRowWithIdentifier:SCP_CATEGORY];
+                    row3.model = category3;
+                }
+                SimiRow *row = [section addRowWithIdentifier:SCP_CATEGORY_VIEW_ALL];
+                row.model = category2;
             }
         }
     }
@@ -98,9 +136,9 @@
 - (UITableViewCell *)contentTableViewCellForRowAtIndexPath:(NSIndexPath *)indexPath{
     SimiSection *section = [self.cells objectAtIndex:indexPath.section];
     SimiRow *row = [section objectAtIndex:indexPath.row];
-    if([row.identifier isEqualToString:SCP_ROOT_CATEGORY]){
+    if([row.identifier isEqualToString:SCP_CATEGORY]){
         return [self createCategoryCellForRow:row];
-    }else if([row.identifier isEqualToString:SCP_ROOT_CATEGORY_VIEW_ALL]){
+    }else if([row.identifier isEqualToString:SCP_CATEGORY_VIEW_ALL]){
         return [self addCategoryViewAllCellForRow:row];
     }
     return nil;
@@ -108,7 +146,7 @@
 
 - (UITableViewCell *)addCategoryViewAllCellForRow:(SimiRow *)row{
     SCPCategoryModel *category = (SCPCategoryModel *)row.model;
-    NSString *identifier = [NSString stringWithFormat:@"%@%@",SCP_ROOT_CATEGORY_VIEW_ALL,category.entityId];
+    NSString *identifier = [NSString stringWithFormat:@"%@%@",SCP_CATEGORY_VIEW_ALL,category.entityId];
     SimiTableViewCell *cell = [self.contentTableView dequeueReusableCellWithIdentifier:identifier];
     if(!cell){
         cell = [[SimiTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier];
@@ -146,7 +184,7 @@
 }
 - (UITableViewCell *)createCategoryCellForRow:(SimiRow *)row{
     SCPCategoryModel *category = (SCPCategoryModel *)row.model;
-    NSString *identifier = [NSString stringWithFormat:@"%@%@",SCP_ROOT_CATEGORY,category.entityId];
+    NSString *identifier = [NSString stringWithFormat:@"%@%@",SCP_CATEGORY,category.entityId];
     SimiTableViewCell *cell = [self.contentTableView dequeueReusableCellWithIdentifier:identifier];
     if(!cell){
         cell = [[SimiTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier];
@@ -220,7 +258,7 @@
 - (void)contentTableViewDidSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     SimiSection *section = [self.cells objectAtIndex:indexPath.section];
     SimiRow *row = [section objectAtIndex:indexPath.row];
-    if([row.identifier isEqualToString:SCP_ROOT_CATEGORY]){
+    if([row.identifier isEqualToString:SCP_CATEGORY]){
         SCPCategoryModel *category = (SCPCategoryModel *)row.model;
         if(category.hasChildren){
             switch (category.level) {
@@ -257,7 +295,9 @@
                 }
                     break;
                 case LevelThree:{
-                    
+                    SCPCategoryViewController *subCateVC = [SCPCategoryViewController new];
+                    subCateVC.categoryModel = category;
+                    [self.navigationController pushViewController:subCateVC animated:YES];
                 }
                     break;
                 default:

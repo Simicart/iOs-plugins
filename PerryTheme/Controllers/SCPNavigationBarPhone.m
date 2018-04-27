@@ -16,7 +16,7 @@
         _leftButtonItems = [[NSMutableArray alloc] init];
         
         UIButton *leftButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 32, 32)];
-        [leftButton setImage:[[UIImage imageNamed:@"ic_menu_perry"]imageWithColor:SCP_ICON_COLOR] forState:UIControlStateNormal];
+        [leftButton setImage:[[UIImage imageNamed:@"scp_ic_menu"]imageWithColor:SCP_ICON_COLOR] forState:UIControlStateNormal];
         [leftButton addTarget:self action:@selector(openLeftMenu:) forControlEvents:UIControlEventTouchUpInside];
         [leftButton setAdjustsImageWhenHighlighted:YES];
         [leftButton setAdjustsImageWhenDisabled:YES];
@@ -43,7 +43,7 @@
         _rightButtonItems = [[NSMutableArray alloc] init];
         
         UIButton *cartButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 32, 32)];
-        [cartButton setImage:[[UIImage imageNamed:@"ic_cart_perry"] imageWithColor:SCP_ICON_COLOR] forState:UIControlStateNormal];
+        [cartButton setImage:[[UIImage imageNamed:@"scp_ic_cart"] imageWithColor:SCP_ICON_COLOR] forState:UIControlStateNormal];
         [cartButton addTarget:self action:@selector(didSelectCartBarItem:) forControlEvents:UIControlEventTouchUpInside];
         
         self.cartItem = [[UIBarButtonItem alloc] initWithCustomView:cartButton];

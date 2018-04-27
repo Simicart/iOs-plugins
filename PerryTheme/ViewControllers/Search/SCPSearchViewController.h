@@ -2,12 +2,15 @@
 //  SCPSearchViewController.h
 //  SimiCartPluginFW
 //
-//  Created by Liam on 4/23/18.
+//  Created by Axe on 4/27/18.
 //  Copyright © 2018 Trueplus. All rights reserved.
 //
 
 #import "SCPViewController.h"
+#import "SCPSearchData.h"
 
-@interface SCPSearchViewController : SCPViewController
+#define SCP_SEARCH_DATA [SCPSearchData sharedInstance]
+
+@interface SCPSearchViewController : SCPViewController<UITextFieldDelegate>
 
 @end
