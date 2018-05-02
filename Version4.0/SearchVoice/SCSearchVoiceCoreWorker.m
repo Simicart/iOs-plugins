@@ -12,7 +12,9 @@
 #import <SimiCartBundle/SCProductListViewController.h>
 #import "SCSearchVoiceViewController.h"
 #import "SCSearchVoicePadViewController.h"
-
+#if __has_include("SCPSearchViewController.h")
+#import "SCPSearchViewController.h"
+#endif
 @implementation SCSearchVoiceCoreWorker {
     SimiViewController *viewController;
     SCNavigationBarPad *controller;
@@ -27,9 +29,26 @@
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(showSearchVoiceBtn:) name:@"SCHomeViewControllerViewWillAppear" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(showSearchVoiceBtn:) name:@"SCProductListViewControllerViewWillAppear" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initLeftItemsEnd:) name:@"SCNavigationBarPad-InitLeftItems-End" object:nil];
+        
+        #if __has_include("SCPSearchViewController.h")
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(perrySearchViewDidLoad:) name:@"SCPSearchViewControllerViewDidLoad" object:nil];
+        #endif
     }
     return self;
 }
+
+#if __has_include("SCPSearchViewController.h")
+- (void)perrySearchViewDidLoad:(NSNotification *)noti{
+    SCPSearchViewController *searchVC = noti.object;
+    viewController = searchVC;
+    UIButton *searchVoiceButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 40, 40)];
+    [searchVoiceButton setImage:[UIImage imageNamed:@"scp_ic_voice-search"] forState:UIControlStateNormal];
+    [searchVoiceButton setImageEdgeInsets:UIEdgeInsetsMake(10, 10, 10, 10)];
+    [searchVoiceButton addTarget:self action:@selector(searchVoiceStart:) forControlEvents:UIControlEventTouchUpInside];
+    searchVC.searchTextField.rightView = searchVoiceButton;
+    searchVC.searchTextField.rightViewMode = UITextFieldViewModeAlways;
+}
+#endif
 
 #pragma mark Notification Action
 - (void)initLeftItemsEnd:(NSNotification*)noti{

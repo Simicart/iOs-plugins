@@ -18,6 +18,9 @@
 #import <SimiCartBundle/SCNavigationBarPhone.h>
 #import <SimiCartBundle/SCNavigationBarPad.h>
 #import "BarCodeWorker.h"
+#if __has_include("SCPSearchViewController.h")
+#import "SCPSearchViewController.h"
+#endif
 @implementation BarCodeWorker{
     UISearchBar *searchBar;
     UITableViewCell *cell;
@@ -30,9 +33,33 @@
     if (self) {
         [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(didInitCellsAfter:) name:[NSString stringWithFormat:@"%@%@",SCLeftMenuViewController_RootEventName,SimiTableViewController_SubKey_InitCells_End] object:nil];
         [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(didSelectRow:) name:[NSString stringWithFormat:@"%@%@",SCLeftMenuViewController_RootEventName,SimiTableViewController_SubKey_DidSelectCell] object:nil];
+        #if __has_include("SCPSearchViewController.h")
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(perrySearchViewDidLoad:) name:@"SCPSearchViewControllerViewDidLoad" object:nil];
+        #endif
     }
     return self;
 }
+
+#if __has_include("SCPSearchViewController.h")
+- (void)perrySearchViewDidLoad:(NSNotification *)noti{
+    SCPSearchViewController *searchVC = noti.object;
+    UIScrollView *mainScrollView = searchVC.mainScrollView;
+    float paddingX = 15;
+    float contentWidth = CGRectGetWidth(searchVC.mainScrollView.frame) - 2*paddingX;
+    UIView *scanView = [[UIView alloc] initWithFrame:CGRectMake(paddingX + contentWidth - 100, 15, 100, 30)];
+    UITextField *scanTextField = [[UITextField alloc] initWithFrame:scanView.bounds];
+    [scanView addSubview:scanTextField];
+    UIButton *scanButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 35, 30)];
+    [scanButton setImage:[UIImage imageNamed:@"scp_ic_scan"] forState:UIControlStateNormal];
+    [scanButton setImageEdgeInsets:UIEdgeInsetsMake(5, 5, 5, 10)];
+    scanTextField.leftView = scanButton;
+    scanTextField.leftViewMode = UITextFieldViewModeAlways;
+    scanTextField.text = SCLocalizedString(@"Scan");
+    scanTextField.userInteractionEnabled = NO;
+    [mainScrollView addSubview:scanView];
+    [scanView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapButtonScan)]];
+}
+#endif
 
 - (void)didInitCellsAfter:(NSNotification*)noti{
     SimiTable *cells = noti.object;

@@ -29,9 +29,14 @@
     NSMutableArray *searchHistory = [NSMutableArray new];
     NSArray *searchValues = [[NSUserDefaults standardUserDefaults] objectForKey:@"searchValues"];
     if(searchValues){
+        for(NSString *searchValue in searchValues){
+            if([searchValue isEqualToString:value]){
+                return;
+            }
+        }
         [searchHistory addObjectsFromArray:searchValues];
+        [searchHistory insertObject:value atIndex:0];
     }
-    [searchHistory insertObject:value atIndex:0];
     [[NSUserDefaults standardUserDefaults] setObject:searchHistory forKey:@"searchValues"];
 }
 @end

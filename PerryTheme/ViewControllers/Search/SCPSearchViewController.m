@@ -7,20 +7,16 @@
 //
 
 #import "SCPSearchViewController.h"
-#import "SCPGlobalVars.h"
-#import "SCPLabel.h"
-#import "SCPTextField.h"
-#import "SCPProductListViewController.h"
 
 @interface SCPSearchViewController ()
 
 @end
 
 @implementation SCPSearchViewController{
-    UIScrollView *mainScrollView;
     UIView *popularSearchView;
     float paddingX, contentWidth, contentY;
 }
+@synthesize mainScrollView,searchTextField;
 - (void)viewDidLoadBefore{
     mainScrollView = [[UIScrollView alloc] initWithFrame:self.view.bounds];
     mainScrollView.backgroundColor = COLOR_WITH_HEX(@"#F2F2F2");
@@ -32,7 +28,7 @@
     titleLabel.text = @"Search";
     [mainScrollView addSubview:titleLabel];
     contentY += CGRectGetHeight(titleLabel.frame) + 15;
-    SCPTextField *searchTextField = [[SCPTextField alloc] initWithFrame:CGRectMake(paddingX, contentY, contentWidth, 40)];
+    searchTextField = [[SCPTextField alloc] initWithFrame:CGRectMake(paddingX, contentY, contentWidth, 40)];
     searchTextField.backgroundColor = [UIColor whiteColor];
     searchTextField.placeholder = SCLocalizedString(@"Search our products");
     searchTextField.returnKeyType = UIReturnKeySearch;
@@ -55,6 +51,7 @@
 }
 - (void)viewDidAppearBefore:(BOOL)animated{
     mainScrollView.frame = self.view.bounds;
+    mainScrollView.contentSize = CGSizeMake(CGRectGetWidth(self.view.bounds), contentY);
     [self loadSearchHistory];
 }
 - (void)loadSearchHistory{
