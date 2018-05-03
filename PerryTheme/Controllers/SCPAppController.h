@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "SCPNavigationBar.h"
 
-@interface SCPAppController : NSObject
-- (void)setupThemeColor;
+@interface SCPAppController : SCAppController
 @end

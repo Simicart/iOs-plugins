@@ -18,6 +18,7 @@
 }
 @synthesize mainScrollView,searchTextField;
 - (void)viewDidLoadBefore{
+    [super viewDidLoadBefore];
     mainScrollView = [[UIScrollView alloc] initWithFrame:self.view.bounds];
     mainScrollView.backgroundColor = COLOR_WITH_HEX(@"#F2F2F2");
     [self.view addSubview:mainScrollView];
@@ -42,13 +43,14 @@
     [mainScrollView addSubview:searchTextField];
     contentY += CGRectGetHeight(searchTextField.frame) + 15;
     SCPLabel *popularlabel = [[SCPLabel alloc] initWithFrame:CGRectMake(paddingX, contentY, contentWidth, 30) andFontName:THEME_FONT_NAME_REGULAR andFontSize:FONT_SIZE_LARGE];
-    popularlabel.text = @"Popular Searches";
+    popularlabel.text = @"Recent Searches";
     [mainScrollView addSubview:popularlabel];
     contentY += CGRectGetHeight(popularlabel.frame);
     popularSearchView = [[UIView alloc] initWithFrame:CGRectMake(paddingX, contentY, contentWidth, 75)];
     [mainScrollView addSubview:popularSearchView];
     contentY += CGRectGetHeight(popularSearchView.frame);
 }
+
 - (void)viewDidAppearBefore:(BOOL)animated{
     mainScrollView.frame = self.view.bounds;
     mainScrollView.contentSize = CGSizeMake(CGRectGetWidth(self.view.bounds), contentY);
@@ -63,7 +65,14 @@
                 break;
             }
             NSString *value = [SCP_SEARCH_DATA.searchHistory objectAtIndex:i];
-            SimiLabel *valueLabel = [[SimiLabel alloc] initWithFrame:CGRectMake(0, popularY, contentWidth, 25) andFontName:THEME_FONT_NAME_REGULAR andFontSize:FONT_SIZE_SMALL andTextColor:COLOR_WITH_HEX(@"#747474") text:value];
+            UIFont *font = [UIFont fontWithName:THEME_FONT_NAME_REGULAR size:FONT_SIZE_SMALL];
+            float width = [SimiGlobalFunction widthOfText:value font:font];
+            if(width > contentWidth){
+                width = contentWidth;
+            }
+            SimiLabel *valueLabel = [[SimiLabel alloc] initWithFrame:CGRectMake(0, popularY, width, 25) andFont:font];
+            valueLabel.textColor = COLOR_WITH_HEX(@"#747474");
+            valueLabel.text = value;
             [valueLabel addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapSearchHistory:)]];
              valueLabel.userInteractionEnabled = YES;
             [popularSearchView addSubview:valueLabel];
@@ -74,7 +83,8 @@
 - (void)tapSearchHistory:(UITapGestureRecognizer *)sender{
     SCPLabel *historyLabel = (SCPLabel *)sender.view;
      [SCP_SEARCH_DATA addValueToSearchHistory:historyLabel.text];
-    [[SCAppController sharedInstance]openProductListWithNavigationController:self.navigationController productsId:@"" productsName:@"" getProductsFrom:ProductListGetProductTypeFromSearch moreParams:@{KEYEVENT.PRODUCTLISTVIEWCONTROLLER.search_text:historyLabel.text}];
+    SCPProductListViewController *productListVC = [SCPProductListViewController new];
+    [self.navigationController pushViewController:productListVC animated:YES];
 }
 #pragma mark UITextFieldDelegate
 - (BOOL)textFieldShouldReturn:(UITextField *)textField{
@@ -82,7 +92,9 @@
         [SCP_SEARCH_DATA addValueToSearchHistory:textField.text];
         textField.text = @"";
         [textField resignFirstResponder];
-        [[SCAppController sharedInstance]openProductListWithNavigationController:self.navigationController productsId:@"" productsName:@"" getProductsFrom:ProductListGetProductTypeFromSearch moreParams:@{KEYEVENT.PRODUCTLISTVIEWCONTROLLER.search_text:textField.text}];
+        SCPProductListViewController *productListVC = [SCPProductListViewController new];
+        [self.navigationController pushViewController:productListVC animated:YES];
+//        [[SCAppController sharedInstance]openProductListWithNavigationController:self.navigationController productsId:@"" productsName:@"" getProductsFrom:ProductListGetProductTypeFromSearch moreParams:@{KEYEVENT.PRODUCTLISTVIEWCONTROLLER.search_text:textField.text}];
     }
     return YES;
 }

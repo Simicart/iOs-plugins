@@ -8,14 +8,9 @@
 
 #import "SCPAppController.h"
 
+@interface SCPAppController()
+@end
+
 @implementation SCPAppController
-- (id)init{
-    if(self == [super init]){
-        
-    }
-    return self;
-}
-- (void)setupThemeColor{
-    
-}
+
 @end

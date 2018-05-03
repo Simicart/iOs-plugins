@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "SCPThemeConfigModel.h"
+#import "SCPNavigationBar.h"
 
 #define SCP_GLOBALVARS [SCPGlobalVars sharedInstance]
 #define SCP_MENU_BACKGROUND_COLOR COLOR_WITH_HEX([SCP_GLOBALVARS.themeConfig menuBackgroudColor])
@@ -20,6 +21,7 @@
 @interface SCPGlobalVars : NSObject
 
 @property (strong, nonatomic) SCPThemeConfigModel *themeConfig;
+@property (strong, nonatomic) SCPNavigationBar *naviBar;
 
 + (instancetype)sharedInstance;
 @end

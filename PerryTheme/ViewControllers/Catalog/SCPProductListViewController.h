@@ -8,7 +8,8 @@
 
 #import <SimiCartBundle/SimiCartBundle.h>
 #import <SimiCartBundle/SCProductListViewController.h>
+#import "SCPViewController.h"
 
-@interface SCPProductListViewController : SCProductListViewController
+@interface SCPProductListViewController : SCPViewController
 
 @end

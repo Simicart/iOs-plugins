@@ -9,7 +9,7 @@
 #import <SimiCartBundle/InitWorker.h>
 #import "SCPInitWorker.h"
 #import "SCPGlobalVars.h"
-#import "SCPNavigationBarPhone.h"
+#import "SCPNavigationBar.h"
 #import "SCPHomeViewController.h"
 #import "SCPCategoryViewController.h"
 #import "SCPSearchViewController.h"
@@ -27,7 +27,6 @@
         [self setupThemeColors];
         InitWorker *initWorker = noti.object;
         initWorker.isDiscontinue = YES;
-        [SCAppController sharedInstance].navigationBarPhone = [SCPNavigationBarPhone new];
         //Init the root view
         NSMutableArray *navigationControllers = [NSMutableArray new];
         UINavigationController *homeNavi = [[UINavigationController alloc] init];
