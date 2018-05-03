@@ -56,7 +56,7 @@ static NSString *CHERRY_REWARDS_ROW = @"CHERRY_REWARDS_ROW";
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(productInforViewSetInterfacecellAfter:) name:@"SCProductInforViewSetInterfacecell_After" object:nil];
         //Cherry Theme
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(cherryInitCellsEnd:) name:[NSString stringWithFormat:@"%@%@",SCProductSecondDesignViewController_RootEventName,SimiTableViewController_SubKey_InitCells_End] object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(cherryCellForRowEnd:) name:[NSString stringWithFormat:@"%@%@",SCProductSecondDesignViewController_RootEventName,SimiTableViewController_SubKey_InitializedCell_End] object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(cherryCellForRowBegin:) name:[NSString stringWithFormat:@"%@%@",SCProductSecondDesignViewController_RootEventName,SimiTableViewController_SubKey_InitializedCell_Begin] object:nil];
         // Order Review
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orderViewControllerViewDidLoad:) name:@"SCOrderViewControllerViewDidLoad" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initLoyaltyCell:) name:[NSString stringWithFormat:@"%@%@",SCOrderViewController_RootEventName,SimiTableViewController_SubKey_InitCells_End] object:nil];
@@ -76,35 +76,36 @@ static NSString *CHERRY_REWARDS_ROW = @"CHERRY_REWARDS_ROW";
     }
 }
 
-- (void)cherryCellForRowEnd:(NSNotification *)noti{
+- (void)cherryCellForRowBegin:(NSNotification *)noti{
     SimiTable *cells = noti.object;
     SCProductSecondDesignViewController *cherryVC = [noti.userInfo objectForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.viewcontroller];
     NSIndexPath *indexPath = [noti.userInfo objectForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.indexpath];
     SimiSection *section = [cells objectAtIndex:indexPath.section];
     SimiRow *row = [section objectAtIndex:indexPath.row];
     if([row.identifier isEqualToString:CHERRY_REWARDS_ROW]){
-        UITableViewCell *cell = [cherryVC.contentTableView dequeueReusableCellWithIdentifier:CHERRY_REWARDS_ROW];
+        cherryVC.isDiscontinue = YES;
+        SimiTableViewCell *cell = [cherryVC.contentTableView dequeueReusableCellWithIdentifier:CHERRY_REWARDS_ROW];
         if(!cell){
-            cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CHERRY_REWARDS_ROW];
+            cell = [[SimiTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CHERRY_REWARDS_ROW];
             float cellWidth = CGRectGetWidth(cherryVC.contentTableView.frame);
-            float paddingX = 15, paddingY = 5, contentWidth = cellWidth - 2*paddingX;
-            UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(paddingX, paddingY, 18, 18)];
+            cell.heightCell = 5;
+            float paddingX = 15, contentWidth = cellWidth - 2*paddingX;
+            UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(paddingX, cell.heightCell, 18, 18)];
             [imageView sd_setImageWithURL:[NSURL URLWithString:[cherryVC.product objectForKey:@"loyalty_image"]] placeholderImage:nil options:SDWebImageRetryFailed];
             imageView.contentMode = UIViewContentModeScaleAspectFit;
-            SimiLabel *label = [[SimiLabel alloc] initWithFrame:CGRectMake(paddingX + imageView.frame.size.width + paddingX, paddingY, contentWidth - CGRectGetWidth(imageView.frame) - 2*paddingX, 20) andFontName:THEME_FONT_NAME_REGULAR andFontSize:FONT_SIZE_MEDIUM andTextColor:THEME_CONTENT_COLOR];
+            SimiLabel *label = [[SimiLabel alloc] initWithFrame:CGRectMake(paddingX + imageView.frame.size.width + paddingX, cell.heightCell, contentWidth - CGRectGetWidth(imageView.frame) - 2*paddingX, 20) andFontName:THEME_FONT_NAME_REGULAR andFontSize:FONT_SIZE_MEDIUM andTextColor:THEME_CONTENT_COLOR];
             label.text = [cherryVC.product objectForKey:@"loyalty_label"];
             [label resizLabelToFit];
-            float cellHeight = 2*paddingY + label.labelHeight;
-            if(cellHeight < 44){
-                cellHeight = 44;
+            cell.heightCell = label.labelHeight + 5;
+            if(cell.heightCell < 44){
+                cell.heightCell = 44;
             }
-            imageView.frame = CGRectMake(paddingX, (cellHeight - 18)/2, 18, 18);
-            label.frame = CGRectMake(paddingX + imageView.frame.size.width + paddingX, (cellHeight - label.labelHeight)/2, contentWidth - CGRectGetWidth(imageView.frame) - 2*paddingX, label.labelHeight);
+            imageView.frame = CGRectMake(paddingX, (cell.heightCell - 18)/2, 18, 18);
             [cell.contentView addSubview:imageView];
             [cell.contentView addSubview:label];
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
         }
-        cherryVC.isDiscontinue = YES;
+        row.height = cell.heightCell;
         row.tableCell = cell;
     }
 }
