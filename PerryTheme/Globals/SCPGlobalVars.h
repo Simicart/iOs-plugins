@@ -20,6 +20,10 @@
 @interface SCPGlobalVars : NSObject
 
 @property (strong, nonatomic) SCPThemeConfigModel *themeConfig;
-
+@property (nonatomic) float padding;
+@property (nonatomic) float lineSpacing;
+@property (nonatomic) float interitemSpacing;
+@property (nonatomic) float textPadding;
+@property (nonatomic) BOOL wishlistPluginAllow;
 + (instancetype)sharedInstance;
 @end

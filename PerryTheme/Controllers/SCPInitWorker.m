@@ -60,6 +60,8 @@
             [tabbarItem setTitleTextAttributes:@{NSForegroundColorAttributeName:SCP_ICON_COLOR} forState:UIControlStateNormal];
             [tabbarItem setTitleTextAttributes:@{NSForegroundColorAttributeName:SCP_ICON_HIGHLIGHT_COLOR} forState:UIControlStateHighlighted];
         }
+    GLOBALVAR.usePriceInLine = YES;
+    [self checkPluginsWishlistAllow];
 //    }
 }
 
@@ -70,5 +72,17 @@
 - (void)beginConfigureNavigationBar:(NSNotification*)noti{
     SimiViewController *viewController = noti.object;
     viewController.isDiscontinue = YES;
+}
+
+- (void)checkPluginsWishlistAllow{
+    NSObject *obj = [NSClassFromString(@"SCWishlistInitWorker") new];
+    if (obj != nil) {
+        for (NSDictionary *pluginInfo in GLOBALVAR.activePlugins) {
+            if ([[pluginInfo valueForKey:@"sku"] isEqualToString:@"simi_appwishlist_40"]) {
+                SCP_GLOBALVARS.wishlistPluginAllow = YES;
+                break;
+            }
+        }
+    }
 }
 @end
