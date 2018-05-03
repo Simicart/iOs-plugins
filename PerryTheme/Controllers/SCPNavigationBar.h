@@ -9,5 +9,5 @@
 #import <Foundation/Foundation.h>
 #import <SimiCartBundle/SCNavigationBarPhone.h>
 
-@interface SCPNavigationBarPhone : SCNavigationBarPhone
+@interface SCPNavigationBar : SCNavigationBarPhone
 @end

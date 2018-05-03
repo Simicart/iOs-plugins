@@ -7,8 +7,9 @@
 //
 #import "SCPCategoryModel.h"
 #import <SimiCartBundle/SimiCategoryModelCollection.h>
+#import "SCPTableViewController.h"
 
-@interface SCPCategoryViewController : SimiTableViewController
+@interface SCPCategoryViewController : SCPTableViewController
 @property (nonatomic, strong) SimiCategoryModelCollection *categoryCollection;
 @property (nonatomic, strong) SCPCategoryModel *categoryModel;
 @property (nonatomic) BOOL isSubCategory;

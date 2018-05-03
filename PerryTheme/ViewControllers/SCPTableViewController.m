@@ -1,15 +1,20 @@
 //
-//  SCPViewController.m
+//  SCPTableViewController.m
 //  SimiCartPluginFW
 //
-//  Created by Hoang Van Trung on 4/18/18.
+//  Created by Hoang Van Trung on 5/2/18.
 //  Copyright © 2018 Trueplus. All rights reserved.
 //
 
-#import "SCPViewController.h"
+#import "SCPTableViewController.h"
 #import "SCPGlobalVars.h"
 
-@implementation SCPViewController
+@interface SCPTableViewController ()
+
+@end
+
+@implementation SCPTableViewController
+
 - (void)configureNavigationBarOnViewWillAppear{
     if (PHONEDEVICE) {
         if (_leftButtonItems == nil) {
@@ -52,14 +57,32 @@
 
 - (void)addBackButton{
     if (![self.navigationController.viewControllers.firstObject isEqual:self]) {
-        UIButton *backButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 30, 44)];
-        backButton.imageView.contentMode = UIViewContentModeScaleAspectFit;
-        [backButton setImage:[[UIImage imageNamed:@"scp_ic_back"] imageWithColor:SCP_ICON_COLOR] forState:UIControlStateNormal];
-        [backButton setImageEdgeInsets:UIEdgeInsetsMake(5, 5, 5, 5)];
-        [backButton addTarget:self action:@selector(didSelectBackBarItem:) forControlEvents:UIControlEventTouchUpInside];
-        UIBarButtonItem *backItem = [[UIBarButtonItem alloc] initWithCustomView:backButton];
-        backItem.simiObjectName = @"back_button";
-        [_leftButtonItems insertObject:backItem atIndex:1];
+        UIBarButtonItem *firstItem = [_leftButtonItems objectAtIndex:1];
+        if (![firstItem.simiObjectName isEqualToString:@"back_button"]) {
+            UIButton *backButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 30, 44)];
+            backButton.imageView.contentMode = UIViewContentModeScaleAspectFit;
+            [backButton setImage:[[UIImage imageNamed:@"scp_ic_back"] imageWithColor:SCP_ICON_COLOR] forState:UIControlStateNormal];
+            [backButton setImageEdgeInsets:UIEdgeInsetsMake(5, 5, 5, 5)];
+            [backButton addTarget:self action:@selector(didSelectBackBarItem:) forControlEvents:UIControlEventTouchUpInside];
+            UIBarButtonItem *backItem = [[UIBarButtonItem alloc] initWithCustomView:backButton];
+            backItem.simiObjectName = @"back_button";
+            [_leftButtonItems insertObject:backItem atIndex:1];
+        }else
+        {
+            [_leftButtonItems removeObjectAtIndex:1];
+            UIButton *backButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 30, 44)];
+            [backButton setImage:[[UIImage imageNamed:@"scp_ic_back"] imageWithColor:SCP_ICON_COLOR] forState:UIControlStateNormal];
+            [backButton addTarget:self action:@selector(didSelectBackBarItem:) forControlEvents:UIControlEventTouchUpInside];
+            UIBarButtonItem *backItem = [[UIBarButtonItem alloc] initWithCustomView:backButton];
+            backItem.simiObjectName = @"back_button";
+            [_leftButtonItems insertObject:backItem atIndex:1];
+        }
+    }else
+    {
+        UIBarButtonItem *firstItem = [_leftButtonItems objectAtIndex:1];
+        if ([firstItem.simiObjectName isEqualToString:@"back_button"]) {
+            [_leftButtonItems removeObjectAtIndex:1];
+        }
     }
 }
 - (void)addCartButton{

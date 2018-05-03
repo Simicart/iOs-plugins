@@ -10,6 +10,10 @@
 #import "SCPHomeCategoryModel.h"
 #import <SimiCartBundle/UIButton+WebCache.h>
 #import "SCPGlobalVars.h"
+#import <SimiCartBundle/SimiHomeModel.h>
+#import <SimiCartBundle/SimiHomeProductListModel.h>
+#import <SimiCartBundle/SimiHomeCategoryModel.h>
+
 
 #define SCP_HOME_BANNER @"SCP_HOME_BANNER"
 #define SCP_HOME_CATEGORY @"SCP_HOME_CATEGORY"
@@ -18,10 +22,15 @@
 
 @interface SCPHomeViewController ()
 @property (strong, nonatomic) NSMutableArray *categories;
+@property (strong, nonatomic) SimiHomeModel *homeModel;
 @end
 
-@implementation SCPHomeViewController
+@implementation SCPHomeViewController{
+    SimiHomeBannerModelCollection *phoneBanners;
+    SimiHomeBannerModelCollection *padBanners;
+}
 - (void)viewDidLoadBefore{
+    [super viewDidLoadBefore];
     self.contentTableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStylePlain];
     self.contentTableView.delegate = self;
     self.contentTableView.dataSource = self;
@@ -31,9 +40,14 @@
     [self.view addSubview:self.contentTableView];
     self.contentTableView.hidden = YES;
     [self getHomeDataLiteWithChildCat];
-    [self startLoadingData];
 }
 
+- (void)getHomeDataLiteWithChildCat{
+    self.homeModel = [[SimiHomeModel alloc]init];
+    [self.homeModel getHomeLiteDataWithParams:@{@"get_child_cat":@"1"}];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didGetHomeData:) name:Simi_DidGetHomeData object:self.homeModel];
+    [self startLoadingData];
+}
 - (void)didGetHomeData:(NSNotification *)noti{
     if ([noti.name isEqualToString:Simi_DidGetHomeData]){
         [self removeObserverForNotification:noti];
@@ -44,6 +58,22 @@
             [self initCells];
         }else {
             [self showToastMessage:responder.message duration:2];
+        }
+    }
+}
+- (void)initShowableBanners{
+    phoneBanners = [SimiHomeBannerModelCollection new];
+    padBanners = [SimiHomeBannerModelCollection new];
+    if(self.homeModel.bannerCollection.count > 0){
+        for(SimiHomeBannerModel *banner in self.homeModel.bannerCollection.collectionData){
+            if(![banner.imageURL isEqualToString:@""]){
+                [phoneBanners.collectionData addObject:banner];
+            }
+        }
+        for(SimiHomeBannerModel *banner in self.homeModel.bannerCollection.collectionData){
+            if(![banner.imageURLPad isEqualToString:@""]){
+                [padBanners.collectionData addObject:banner];
+            }
         }
     }
 }
@@ -147,6 +177,7 @@
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:row.identifier];
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         MatrixBannerScrollView* bannerScrollView = [[MatrixBannerScrollView alloc] initWithFrame:CGRectMake(0, 0 , SCREEN_WIDTH, row.height)];
+        bannerScrollView.bannerItemPosition = Middle;
         bannerScrollView.isShowedItemsView = YES;
         bannerScrollView.selectedItemImage = [[UIImage imageNamed:@"scp_ic_banner_selected"] imageWithColor:SCP_ICON_COLOR];
         bannerScrollView.unselectedItemImage = [[UIImage imageNamed:@"scp_ic_banner_unselected"] imageWithColor:SCP_ICON_COLOR];
