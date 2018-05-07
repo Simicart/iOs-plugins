@@ -13,7 +13,7 @@
 #import <SimiCartBundle/SimiHomeModel.h>
 #import <SimiCartBundle/SimiHomeProductListModel.h>
 #import <SimiCartBundle/SimiHomeCategoryModel.h>
-
+#import "SCPProductsViewController.h"
 
 #define SCP_HOME_BANNER @"SCP_HOME_BANNER"
 #define SCP_HOME_CATEGORY @"SCP_HOME_CATEGORY"
@@ -177,7 +177,7 @@
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:row.identifier];
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         MatrixBannerScrollView* bannerScrollView = [[MatrixBannerScrollView alloc] initWithFrame:CGRectMake(0, 0 , SCREEN_WIDTH, row.height)];
-        bannerScrollView.bannerItemPosition = Middle;
+//        bannerScrollView.bannerItemPosition = Middle;
         bannerScrollView.isShowedItemsView = YES;
         bannerScrollView.selectedItemImage = [[UIImage imageNamed:@"scp_ic_banner_selected"] imageWithColor:SCP_ICON_COLOR];
         bannerScrollView.unselectedItemImage = [[UIImage imageNamed:@"scp_ic_banner_unselected"] imageWithColor:SCP_ICON_COLOR];
@@ -383,6 +383,10 @@
                 [self initCells];
             }else{
                 //Open list product
+                SCPProductsViewController *productsViewController = [SCPProductsViewController new];
+                productsViewController.productListGetProductType = ProductListGetProductTypeFromCategory;
+                productsViewController.categoryID = category.categoryId;
+                [self.navigationController pushViewController:productsViewController animated:YES];
             }
         }else if([row.identifier isEqualToString:SCP_HOME_CATEGORY_VIEW_ALL]){
             //Open list product
@@ -391,6 +395,10 @@
     }
     else if([section.identifier isEqualToString:SCP_HOME_PRODUCT_LIST]){
         //Open list product
+        SCPProductsViewController *productsViewController = [SCPProductsViewController new];
+        productsViewController.productListGetProductType = ProductListGetProductTypeFromSpot;
+        productsViewController.spotID = row.model.entityId ;
+        [self.navigationController pushViewController:productsViewController animated:YES];
     }
 }
 

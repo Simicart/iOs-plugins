@@ -19,6 +19,9 @@
     if(self == [super init]){
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializedRootController:) name:Simi_InitializedRootController object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(beginConfigureNavigationBar:) name:Simi_BeginConfigureNavigationBar object:nil];
+#if __has_include("SCWishlistModel.h")
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateWishlist:) name:SCCartController_CompletedChangeCustomerState object:nil];
+#endif
     }
     return self;
 }
@@ -28,6 +31,7 @@
         InitWorker *initWorker = noti.object;
         initWorker.isDiscontinue = YES;
         //Init the root view
+    [SCAppController sharedInstance].navigationBarPhone = [SCNavigationBarPhone new];
         NSMutableArray *navigationControllers = [NSMutableArray new];
         UINavigationController *homeNavi = [[UINavigationController alloc] init];
         homeNavi.viewControllers = @[[SCPHomeViewController new]];
@@ -84,4 +88,26 @@
         }
     }
 }
+
+#if __has_include("SCWishlistModel.h")
+- (void)updateWishlist:(NSNotification*)noti{
+    if (GLOBALVAR.isLogin) {
+        SCWishlistModelCollection *wishlistModelCollection = [SCWishlistModelCollection new];
+        [wishlistModelCollection getWishlistItemsWithParams:@{@"offset":@"0",@"limit":@"1000"}];
+        [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(didGetWishlistItems:) name:DidGetWishlistItems object:wishlistModelCollection];
+    }else{
+        [SCP_GLOBALVARS.wishListModelCollection removeAllObjects];
+    }
+}
+
+- (void)didGetWishlistItems:(NSNotification*)noti{
+    [self removeObserverForNotification:noti];
+    SimiResponder *responder = [noti.userInfo valueForKey:responderKey];
+    if (responder.status == SUCCESS) {
+        SCP_GLOBALVARS.wishListModelCollection = noti.object;
+    }else{
+        [SCP_GLOBALVARS.wishListModelCollection removeAllObjects];
+    }
+}
+#endif
 @end

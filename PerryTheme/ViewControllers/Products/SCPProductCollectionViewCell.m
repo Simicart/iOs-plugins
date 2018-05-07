@@ -77,6 +77,7 @@
         [self.addWishlistButton setImage:[UIImage imageNamed:@"wishlist_color_icon"] forState:UIControlStateNormal];
         [self.addWishlistButton addTarget:self action:@selector(updateWishlist:) forControlEvents:UIControlEventTouchUpInside];
         [self.contentView addSubview:self.addWishlistButton];
+        [self updateWishlistIcon];
     }
     if (wishlistIconSize > 0) {
         wishlistIconSize += padding;
@@ -118,21 +119,44 @@
 #if __has_include("SCWishlistModel.h")
 - (void)updateWishlist:(UIButton*)sender{
     sender.enabled = NO;
-    if ([self checkWishListState:self.productModel]) {
+    SCWishlistModel *wishlistModel = [self getWishListModel:self.productModel];
+    if (wishlistModel != nil) {
         
     }else{
-         SCWishlistModel *wishlistModel = [SCWishlistModel new];
+        SCWishlistModel *wishlistModel = [SCWishlistModel new];
+        [wishlistModel addProductWithParams:@{@"product":self.productModel.entityId}];
+        [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(didAddProductToWishlist:) name:DidAddProductToWishList object:wishlistModel];
+    }
+}
+
+- (SCWishlistModel*)getWishListModel:(SimiProductModel*)productModel{
+    for (SCWishlistModel *wishListModel in SCP_GLOBALVARS.wishListModelCollection.collectionData) {
+        if ([wishListModel.productId isEqualToString:productModel.entityId]) {
+            return wishListModel;
+        }
+    }
+    return nil;
+}
+
+- (void)didAddProductToWishlist:(NSNotification*)noti{
+    [self removeObserverForNotification:noti];
+    SimiResponder *responder = [noti.userInfo valueForKey:responderKey];
+    if (responder.status == SUCCESS) {
+        SCWishlistModel *wishListModel = noti.object;
+        [SCP_GLOBALVARS.wishListModelCollection addObject:wishListModel];
+    }
+    [self updateWishlistIcon];
+    [self.addWishlistButton setEnabled:YES];
+}
+
+- (void)updateWishlistIcon{
+    SCWishlistModel *wishlistModel = [self getWishListModel:self.productModel];
+    if (wishlistModel != nil) {
+        [self.addWishlistButton setImage:[UIImage imageNamed:@"wishlist_color_icon"] forState:UIControlStateNormal];
+    }else{
+        [self.addWishlistButton setImage:[UIImage imageNamed:@"wishlist_empty_icon"] forState:UIControlStateNormal];
     }
 }
 #endif
 
-- (BOOL)checkWishListState:(SimiProductModel*)productModel{
-    if ([productModel objectForKey:@"wishlist_item_id"] && ![[productModel objectForKey:@"wishlist_item_id"] isKindOfClass:[NSNull class]]) {
-        NSString *wishlistItemId = [NSString stringWithFormat:@"%@",[productModel objectForKey:@"wishlist_item_id"]];
-        if (![wishlistItemId isEqualToString:PRODUCT_IS_NOT_IN_WISHLIST]) {
-            return YES;
-        }
-    }
-    return NO;
-}
 @end

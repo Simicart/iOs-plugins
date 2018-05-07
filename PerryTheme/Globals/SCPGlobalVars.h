@@ -9,6 +9,10 @@
 #import <Foundation/Foundation.h>
 #import "SCPThemeConfigModel.h"
 #import "SCPNavigationBar.h"
+#if __has_include("SCWishlistModel.h")
+#import "SCWishlistModel.h"
+#import "SCWishlistModelCollection.h"
+#endif
 
 #define SCP_GLOBALVARS [SCPGlobalVars sharedInstance]
 #define SCP_MENU_BACKGROUND_COLOR COLOR_WITH_HEX([SCP_GLOBALVARS.themeConfig menuBackgroudColor])
@@ -27,5 +31,8 @@
 @property (nonatomic) float textPadding;
 @property (nonatomic) BOOL wishlistPluginAllow;
 @property (strong, nonatomic) SCPNavigationBar *naviBar;
+#if __has_include("SCWishlistModel.h")
+@property (strong, nonatomic) SCWishlistModelCollection *wishListModelCollection;
+#endif
 + (instancetype)sharedInstance;
 @end
