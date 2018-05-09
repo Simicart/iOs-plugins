@@ -11,7 +11,7 @@
 #import "SCPGlobalVars.h"
 #import "SCPLabel.h"
 #import "SCPTextField.h"
-#import "SCPProductListViewController.h"
+#import "SCPProductsViewController.h"
 
 #define SCP_SEARCH_DATA [SCPSearchData sharedInstance]
 

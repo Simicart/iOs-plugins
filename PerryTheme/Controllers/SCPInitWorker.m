@@ -13,7 +13,9 @@
 #import "SCPHomeViewController.h"
 #import "SCPCategoryViewController.h"
 #import "SCPSearchViewController.h"
-
+#if __has_include("SCWishlistModelCollection.h")
+#import "SCWishlistModelCollection.h"
+#endif
 @implementation SCPInitWorker
 - (id)init{
     if(self == [super init]){

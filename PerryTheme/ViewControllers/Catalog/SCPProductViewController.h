@@ -8,7 +8,6 @@
 
 #import "SCPTableViewController.h"
 
-@interface SCPProductViewController : SCPTableViewController
-@property (strong, nonatomic) NSString *productID;
+@interface SCPProductViewController : SCProductSecondDesignViewController
 
 @end

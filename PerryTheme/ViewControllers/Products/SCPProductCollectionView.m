@@ -8,6 +8,7 @@
 
 #import "SCPProductCollectionView.h"
 #import "SCPProductCollectionViewCell.h"
+#import "SCPProductViewController.h"
 
 @implementation SCPProductCollectionView
 - (void)setLayout{
@@ -46,5 +47,11 @@
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView{
     // Do nothing
+}
+- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath{
+    if(self.productModelCollection.count > indexPath.row){
+        SimiProductModel *product = [self.productModelCollection objectAtIndex:indexPath.row];
+        [self.actionDelegate selectedProduct:product];
+    }
 }
 @end

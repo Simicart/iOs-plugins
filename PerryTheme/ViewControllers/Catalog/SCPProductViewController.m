@@ -16,12 +16,22 @@
 
 - (void)viewDidLoadBefore {
     [super viewDidLoadBefore];
-    self.contentTableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStylePlain];
-    
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
+- (UITableViewCell *)createProductImageCell:(SimiRow *)row{
+    return [super createProductImageCell:row];
+}
+
+- (UITableViewCell *)createNameCell:(SimiRow *)row{
+    return [super createNameCell:row];
+}
+
+- (UITableViewCell *)createRelatedCell:(SimiRow *)row{
+    return [super createRelatedCell:row];
+}
+
+- (UITableViewCell *)createDescriptionCell:(SimiRow *)row{
+    return [super createDescriptionCell:row];
 }
 
 @end

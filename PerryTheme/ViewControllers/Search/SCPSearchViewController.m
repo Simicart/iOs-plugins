@@ -83,7 +83,7 @@
 - (void)tapSearchHistory:(UITapGestureRecognizer *)sender{
     SCPLabel *historyLabel = (SCPLabel *)sender.view;
      [SCP_SEARCH_DATA addValueToSearchHistory:historyLabel.text];
-    SCPProductListViewController *productListVC = [SCPProductListViewController new];
+    SCPProductsViewController *productListVC = [SCPProductsViewController new];
     [self.navigationController pushViewController:productListVC animated:YES];
 }
 #pragma mark UITextFieldDelegate
@@ -92,7 +92,7 @@
         [SCP_SEARCH_DATA addValueToSearchHistory:textField.text];
         textField.text = @"";
         [textField resignFirstResponder];
-        SCPProductListViewController *productListVC = [SCPProductListViewController new];
+        SCPProductsViewController *productListVC = [SCPProductsViewController new];
         [self.navigationController pushViewController:productListVC animated:YES];
 //        [[SCAppController sharedInstance]openProductListWithNavigationController:self.navigationController productsId:@"" productsName:@"" getProductsFrom:ProductListGetProductTypeFromSearch moreParams:@{KEYEVENT.PRODUCTLISTVIEWCONTROLLER.search_text:textField.text}];
     }

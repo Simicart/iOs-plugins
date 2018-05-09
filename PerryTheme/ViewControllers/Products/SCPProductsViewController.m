@@ -8,6 +8,7 @@
 
 #import "SCPProductsViewController.h"
 #import "SCPProductCollectionView.h"
+#import "SCPProductViewController.h"
 
 @interface SCPProductsViewController ()
 
@@ -162,5 +163,12 @@
     }else
         [properties setValue:@"list" forKey:@"product_list_style"];
     [[NSNotificationCenter defaultCenter]postNotificationName:TRACKINGEVENT object:@"products_action" userInfo:properties];
+}
+
+- (void)selectedProduct:(SimiProductModel *)productModel{
+    SCPProductViewController *productVC = [SCPProductViewController new];
+    productVC.product = productModel;
+    productVC.productId = productModel.entityId;
+    [self.navigationController pushViewController:productVC animated:nil];
 }
 @end
