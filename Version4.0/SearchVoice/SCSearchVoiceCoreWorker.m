@@ -17,6 +17,7 @@
     SimiViewController *viewController;
     SCNavigationBarPad *controller;
     BOOL *showOnPad;
+    UIBarButtonItem *voiceSearchItem;
 }
 
 
@@ -34,17 +35,19 @@
 #pragma mark Notification Action
 - (void)initLeftItemsEnd:(NSNotification*)noti{
     controller = [noti.userInfo valueForKey:@"controller"];
-    UIButton *voiceSearchButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 44, 44)];
-    [voiceSearchButton setImage:[[UIImage imageNamed:@"ic_small_micro"] imageWithColor:THEME_NAVIGATION_ICON_COLOR] forState:UIControlStateNormal];
-    [voiceSearchButton setImageEdgeInsets:UIEdgeInsetsMake(3, 3, 3, 3)];
-    [voiceSearchButton addTarget:self action:@selector(searchVoiceStart:) forControlEvents:UIControlEventTouchUpInside];
-    UIBarButtonItem *voiceSearchItem = [[UIBarButtonItem alloc] initWithCustomView:voiceSearchButton];
-    voiceSearchItem.sortOrder = navigationbar_pad_search_voice_sort_order;
-    UIBarButtonItem *itemSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
-    itemSpace.sortOrder = navigationbar_pad_search_voice_sort_order - 1;
-    itemSpace.width = 20;
     NSMutableArray *rightButtonItems = noti.object;
-    [rightButtonItems addObjectsFromArray:@[itemSpace,voiceSearchItem]];
+    if(![rightButtonItems containsObject:voiceSearchItem]){
+        UIButton *voiceSearchButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 44, 44)];
+        [voiceSearchButton setImage:[[UIImage imageNamed:@"ic_small_micro"] imageWithColor:THEME_NAVIGATION_ICON_COLOR] forState:UIControlStateNormal];
+        [voiceSearchButton setImageEdgeInsets:UIEdgeInsetsMake(3, 3, 3, 3)];
+        [voiceSearchButton addTarget:self action:@selector(searchVoiceStart:) forControlEvents:UIControlEventTouchUpInside];
+        voiceSearchItem = [[UIBarButtonItem alloc] initWithCustomView:voiceSearchButton];
+        voiceSearchItem.sortOrder = navigationbar_pad_search_voice_sort_order;
+        UIBarButtonItem *itemSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
+        itemSpace.sortOrder = navigationbar_pad_search_voice_sort_order - 1;
+        itemSpace.width = 20;
+        [rightButtonItems addObjectsFromArray:@[itemSpace,voiceSearchItem]];
+    }
 }
 
 - (void)showSearchVoiceBtn:(NSNotification *)noti{
