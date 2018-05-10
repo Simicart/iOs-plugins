@@ -51,9 +51,9 @@
         [addToCartButton addTarget:self action:@selector(addToCartButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
         [wishlistItemInfoView addSubview:addToCartButton];
         if(wishlistItem.stockStatus)
-            [addToCartButton setTitle:SCLocalizedString(@"Add to Cart") forState:UIControlStateNormal];
+            [addToCartButton setTitle:SCLocalizedString(@"Add To Cart") forState:UIControlStateNormal];
         else{
-            [addToCartButton setTitle:SCLocalizedString(@"Out of Stock") forState:UIControlStateNormal];
+            [addToCartButton setTitle:SCLocalizedString(@"Out of stock") forState:UIControlStateNormal];
             addToCartButton.enabled = NO;
             addToCartButton.alpha = 0.5f;
         }
