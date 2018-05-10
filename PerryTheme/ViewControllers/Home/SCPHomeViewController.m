@@ -14,6 +14,10 @@
 #import <SimiCartBundle/SimiHomeProductListModel.h>
 #import <SimiCartBundle/SimiHomeCategoryModel.h>
 #import "SCPProductsViewController.h"
+#import "SCPCategoryViewController.h"
+#import "SCPCategoryModel.h"
+#import "SCPProductViewController.h"
+#import "SimiHomeModel+SCP.h"
 
 #define SCP_HOME_BANNER @"SCP_HOME_BANNER"
 #define SCP_HOME_CATEGORY @"SCP_HOME_CATEGORY"
@@ -44,7 +48,7 @@
 
 - (void)getHomeDataLiteWithChildCat{
     self.homeModel = [[SimiHomeModel alloc]init];
-    [self.homeModel getHomeLiteDataWithParams:@{@"get_child_cat":@"1"}];
+    [self.homeModel getHomeDataWithParams:@{@"get_child_cat":@"2"}];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didGetHomeData:) name:Simi_DidGetHomeData object:self.homeModel];
     [self startLoadingData];
 }
@@ -82,17 +86,17 @@
     for(SimiHomeCategoryModel *category in self.homeModel.categoryCollection.collectionData){
         SCPHomeCategoryModel *category1 = [[SCPHomeCategoryModel alloc] initWithModelData:category.modelData];
         [self.categories addObject:category1];
-        category1.level = LevelOne;
+        category1.level = HomeCategoryLevelOne;
         category1.isSelected = NO;
         category1.parentCategory = nil;
         if(category1.hasChildren){
             for(SCPHomeCategoryModel *category2 in category1.subCategories){
-                category2.level = LevelTwo;
+                category2.level = HomeCategoryLevelTwo;
                 category2.isSelected = NO;
                 category2.parentCategory = category1;
                 if(category2.hasChildren){
                     for(SCPHomeCategoryModel *category3 in category2.subCategories){
-                        category3.level = LevelThree;
+                        category3.level = HomeCategoryLevelThree;
                         category3.isSelected = NO;
                         category3.parentCategory = category2;
                     }
@@ -207,7 +211,7 @@
         float contentWidth;
         cell.heightCell = 0;
         switch (category.level) {
-            case LevelOne:{
+            case HomeCategoryLevelOne:{
                 contentWidth = CGRectGetWidth(self.contentTableView.frame) - paddingX1;
                 float imageWidth = category.width;
                 if(PADDEVICE){
@@ -216,7 +220,10 @@
                 if(imageWidth == 0){
                     imageWidth = contentWidth;
                 }
-                float scale = contentWidth/imageWidth;
+                float scale = 0;
+                if(imageWidth > 0){
+                    scale = contentWidth/imageWidth;
+                }
                 float imageHeight = category.height;
                 if(PADDEVICE){
                     imageHeight = category.heightTablet;
@@ -229,7 +236,7 @@
                 cell.heightCell += CGRectGetHeight(imageView.frame);
             }
                 break;
-            case LevelTwo:{
+            case HomeCategoryLevelTwo:{
                 contentWidth = CGRectGetWidth(self.contentTableView.frame) - paddingX2;
                 SimiLabel *label = [[SimiLabel alloc] initWithFrame:CGRectMake(paddingX2, cell.heightCell, contentWidth, 44)];
                 label.text = category.name;
@@ -241,7 +248,7 @@
                 cell.heightCell += CGRectGetHeight(label.frame);
             }
                 break;
-            case LevelThree:{
+            case HomeCategoryLevelThree:{
                 contentWidth = CGRectGetWidth(self.contentTableView.frame) - paddingX3;
                 SimiLabel *label = [[SimiLabel alloc] initWithFrame:CGRectMake(paddingX3, cell.heightCell, contentWidth, 44)];
                 label.text = category.name;
@@ -254,7 +261,7 @@
         }
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
     }
-    if(category.level == LevelTwo){
+    if(category.level == HomeCategoryLevelTwo){
         if([cell.contentView.subviews.firstObject isKindOfClass:[SimiLabel class]]){
             SimiLabel *label = (SimiLabel *)cell.contentView.subviews.firstObject;
             label.textColor = SCP_ICON_COLOR;
@@ -278,7 +285,7 @@
         float contentWidth;
         cell.heightCell = 0;
         switch (category.level) {
-            case LevelOne:
+            case HomeCategoryLevelOne:
             {
                 contentWidth = CGRectGetWidth(self.contentTableView.frame) - paddingX1;
                 SimiLabel *label = [[SimiLabel alloc] initWithFrame:CGRectMake(paddingX1, cell.heightCell, contentWidth, 44) andFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE]];
@@ -287,7 +294,7 @@
                 cell.heightCell += CGRectGetHeight(label.frame);
             }
                 break;
-            case LevelTwo:
+            case HomeCategoryLevelTwo:
             {
                 contentWidth = CGRectGetWidth(self.contentTableView.frame) - paddingX2;
                 SimiLabel *label = [[SimiLabel alloc] initWithFrame:CGRectMake(paddingX2, cell.heightCell, contentWidth, 44) andFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE]];
@@ -314,7 +321,10 @@
         if(PADDEVICE){
             imageWidth = productList.widthTablet;
         }
-        float scale = contentWidth/imageWidth;
+        float scale = 0;
+        if(imageWidth > 0){
+            scale = contentWidth/imageWidth;
+        }
         float imageHeight = productList.height;
         imageWidth = contentWidth;
         if(PADDEVICE){
@@ -341,7 +351,7 @@
             SCPHomeCategoryModel *category = (SCPHomeCategoryModel *)row.model;
             if(category.hasChildren){
                 switch (category.level) {
-                    case LevelOne:{
+                    case HomeCategoryLevelOne:{
                         if(category.isSelected){
                             category.isSelected = NO;
                         }else{
@@ -359,7 +369,7 @@
                         }
                     }
                         break;
-                    case LevelTwo:{
+                    case HomeCategoryLevelTwo:{
                         if(category.isSelected){
                             category.isSelected = NO;
                         }else{
@@ -373,8 +383,10 @@
                         }
                     }
                         break;
-                    case LevelThree:{
-                        
+                    case HomeCategoryLevelThree:{
+                        SCPCategoryViewController *categoryVC = [SCPCategoryViewController new];
+                        categoryVC.categoryModel = [[SCPCategoryModel alloc] initWithModelData:category.modelData];
+                        [self.navigationController pushViewController:categoryVC animated:YES];
                     }
                         break;
                     default:
@@ -389,6 +401,11 @@
                 [self.navigationController pushViewController:productsViewController animated:YES];
             }
         }else if([row.identifier isEqualToString:SCP_HOME_CATEGORY_VIEW_ALL]){
+            SCPHomeCategoryModel *category = (SCPHomeCategoryModel *)row.model;
+            SCPProductsViewController *productsViewController = [SCPProductsViewController new];
+            productsViewController.productListGetProductType = ProductListGetProductTypeFromCategory;
+            productsViewController.categoryID = category.categoryId;
+            [self.navigationController pushViewController:productsViewController animated:YES];
             //Open list product
         }
         
@@ -404,6 +421,17 @@
 
 #pragma mark MatrixBannerScrollViewDelegate
 - (void)didTapInBanner:(SimiHomeBannerModel *)banner{
-    
+    if (banner.type == BannerCategoryInApp) {
+        SCPProductsViewController *productsVC = [SCPProductsViewController new];
+        productsVC.categoryID = banner.categoryId;
+        productsVC.nameOfProductList = banner.categoryName;
+        [self.navigationController pushViewController:productsVC animated:YES];
+    }else if(banner.type == BannerProductInApp){
+        SCProductViewController *productVC = [SCPProductViewController new];
+        productVC.productId = banner.productId;
+        [self.navigationController pushViewController:productVC animated:YES];
+    }else if(banner.type == BannerWebsitePage) {
+        [[SCAppController sharedInstance] openURL:banner.bannerURL withNavigationController:self.navigationController];
+    }
 }
 @end

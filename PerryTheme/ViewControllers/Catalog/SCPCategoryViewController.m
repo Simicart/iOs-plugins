@@ -8,6 +8,7 @@
 
 #import "SCPCategoryViewController.h"
 #import "SCPGlobalVars.h"
+#import "SCPProductsViewController.h"
 
 #define SCP_CATEGORY @"ROOT_CATEGORY"
 #define SCP_CATEGORY_VIEW_ALL @"ROOT_CATEGORY_VIEW_ALL"
@@ -34,13 +35,13 @@
 }
 - (void)getRootCategories{
     if(!self.categoryCollection){
-        self.categoryCollection = [[SimiCategoryModelCollection alloc] init];
+        self.categoryCollection = [[SCPCategoryModelCollection alloc] init];
     }
     NSString *categoryId = @"";
     if(self.categoryModel){
         categoryId = self.categoryModel.entityId;
     }
-    [self.categoryCollection getSubCategoriesWithParentId:categoryId];
+    [((SCPCategoryModelCollection *)self.categoryCollection) getRootCategories];
     [self startLoadingData];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didGetRootCategories:) name:Simi_DidGetCategoryCollection object:nil];
 }
@@ -53,17 +54,17 @@
             for(SimiCategoryModel *model in self.categoryCollection.collectionData){
                 SCPCategoryModel *category1 = [[SCPCategoryModel alloc] initWithModelData:model.modelData];
                 [categories addObject:category1];
-                category1.level = LevelOne;
+                category1.level = CategoryLevelOne;
                 category1.isSelected = NO;
                 category1.parentCategory = nil;
                 if(category1.hasChildren){
                     for(SCPCategoryModel *category2 in category1.subCategories){
-                        category2.level = LevelTwo;
+                        category2.level = CategoryLevelTwo;
                         category2.isSelected = NO;
                         category2.parentCategory = category1;
                         if(category2.hasChildren){
                             for(SCPCategoryModel *category3 in category2.subCategories){
-                                category3.level = LevelThree;
+                                category3.level = CategoryLevelThree;
                                 category3.isSelected = NO;
                                 category3.parentCategory = category2;
                             }
@@ -75,12 +76,13 @@
             for(SimiCategoryModel *model in self.categoryCollection.collectionData){
                 SCPCategoryModel *category2 = [[SCPCategoryModel alloc] initWithModelData:model.modelData];
                 [categories addObject:category2];
-                category2.level = LevelTwo;
+                category2.level = CategoryLevelTwo;
                 category2.isSelected = NO;
                 category2.parentCategory = nil;
                 if(category2.hasChildren){
-                    for(SCPCategoryModel *category3 in category2.subCategories){
-                        category3.level = LevelThree;
+                    for(NSDictionary *cate3 in category2.subCategories){
+                        SCPCategoryModel *category3 = [[SCPCategoryModel alloc] initWithModelData:cate3];
+                        category3.level = CategoryLevelThree;
                         category3.isSelected = NO;
                         category3.parentCategory = category2;
                     }
@@ -156,7 +158,7 @@
         float contentWidth;
         cell.heightCell = 0;
         switch (category.level) {
-            case LevelOne:
+            case CategoryLevelOne:
             {
                 contentWidth = CGRectGetWidth(self.contentTableView.frame) - paddingX1;
                 SimiLabel *label = [[SimiLabel alloc] initWithFrame:CGRectMake(paddingX1, cell.heightCell, contentWidth, 44) andFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE]];
@@ -165,7 +167,7 @@
                 cell.heightCell += CGRectGetHeight(label.frame);
             }
                 break;
-            case LevelTwo:
+            case CategoryLevelTwo:
             {
                 contentWidth = CGRectGetWidth(self.contentTableView.frame) - paddingX2;
                 SimiLabel *label = [[SimiLabel alloc] initWithFrame:CGRectMake(paddingX2, cell.heightCell, contentWidth, 44) andFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE]];
@@ -195,7 +197,7 @@
         cell.heightCell = 0;
         float contentWidth;
         switch (category.level) {
-            case LevelOne:{
+            case CategoryLevelOne:{
                 contentWidth = CGRectGetWidth(self.contentTableView.frame) - 2*paddingX1;
                 float imageWidth = category.width;
                 if(PADDEVICE){
@@ -204,7 +206,10 @@
                 if(imageWidth == 0){
                     imageWidth = contentWidth;
                 }
-                float scale = contentWidth/imageWidth;
+                float scale = 0;
+                if(imageWidth > 0){
+                    scale = contentWidth/imageWidth;
+                }
                 float imageHeight = category.height;
                 if(PADDEVICE){
                     imageHeight = category.heightTablet;
@@ -219,7 +224,7 @@
                 cell.heightCell += imageHeight;
             }
                 break;
-            case LevelTwo:{
+            case CategoryLevelTwo:{
                 contentWidth = CGRectGetWidth(self.contentTableView.frame) - paddingX2;
                 SimiLabel *label = [[SimiLabel alloc] initWithFrame:CGRectMake(paddingX2, cell.heightCell, contentWidth, 44) andFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE]];
                 label.text = category.name;
@@ -231,7 +236,7 @@
                 cell.heightCell += CGRectGetHeight(label.frame);
             }
                 break;
-            case LevelThree:{
+            case CategoryLevelThree:{
                 contentWidth = CGRectGetWidth(self.contentTableView.frame) - paddingX3;
                 SimiLabel *label = [[SimiLabel alloc] initWithFrame:CGRectMake(paddingX3, cell.heightCell, contentWidth, 44) andFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE]];
                 label.text = category.name;
@@ -243,7 +248,7 @@
                 break;
         }
     }
-    if(category.level == LevelTwo){
+    if(category.level == CategoryLevelTwo){
         if([cell.contentView.subviews.firstObject isKindOfClass:[SimiLabel class]]){
             SimiLabel *label = (SimiLabel *)cell.contentView.subviews.firstObject;
             label.textColor = SCP_ICON_COLOR;
@@ -258,11 +263,11 @@
 - (void)contentTableViewDidSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     SimiSection *section = [self.cells objectAtIndex:indexPath.section];
     SimiRow *row = [section objectAtIndex:indexPath.row];
+    SCPCategoryModel *category = (SCPCategoryModel *)row.model;
     if([row.identifier isEqualToString:SCP_CATEGORY]){
-        SCPCategoryModel *category = (SCPCategoryModel *)row.model;
         if(category.hasChildren){
             switch (category.level) {
-                case LevelOne:{
+                case CategoryLevelOne:{
                     if(category.isSelected){
                         category.isSelected = NO;
                     }else{
@@ -280,7 +285,7 @@
                     }
                 }
                     break;
-                case LevelTwo:{
+                case CategoryLevelTwo:{
                     if(category.isSelected){
                         category.isSelected = NO;
                     }else{
@@ -294,8 +299,9 @@
                     }
                 }
                     break;
-                case LevelThree:{
+                case CategoryLevelThree:{
                     SCPCategoryViewController *subCateVC = [SCPCategoryViewController new];
+                    subCateVC.isSubCategory = YES;
                     subCateVC.categoryModel = category;
                     [self.navigationController pushViewController:subCateVC animated:YES];
                 }
@@ -305,8 +311,14 @@
             }
             [self initCells];
         }else{
-            //Open list product
+            SCPProductsViewController *productsVC = [SCPProductsViewController new];
+            productsVC.categoryID = category.entityId;
+            [self.navigationController pushViewController:productsVC animated:YES];
         }
+    }else if([row.identifier isEqualToString:SCP_CATEGORY_VIEW_ALL]){
+        SCPProductsViewController *productsVC = [SCPProductsViewController new];
+        productsVC.categoryID = category.entityId;
+        [self.navigationController pushViewController:productsVC animated:YES];
     }
 }
 @end

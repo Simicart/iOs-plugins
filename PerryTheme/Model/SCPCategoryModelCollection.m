@@ -9,5 +9,14 @@
 #import "SCPCategoryModelCollection.h"
 
 @implementation SCPCategoryModelCollection
-
+- (void)getRootCategories{
+    notificationName = Simi_DidGetCategoryCollection;
+    self.parseKey = @"categories";
+    self.resource = @"categories";
+    [self addOffsetToParams:@"0"];
+    [self addLimitToParams:@"100"];
+    [self.params addEntriesFromDictionary:@{@"get_child_cat":@"2"}];
+    self.method = MethodGet;
+    [self request];
+}
 @end

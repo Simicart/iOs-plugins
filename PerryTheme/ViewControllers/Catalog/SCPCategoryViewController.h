@@ -8,6 +8,7 @@
 #import "SCPCategoryModel.h"
 #import <SimiCartBundle/SimiCategoryModelCollection.h>
 #import "SCPTableViewController.h"
+#import "SCPCategoryModelCollection.h"
 
 @interface SCPCategoryViewController : SCPTableViewController
 @property (nonatomic, strong) SimiCategoryModelCollection *categoryCollection;
