@@ -18,7 +18,6 @@
 @implementation SimizopimWorker
 {
     NSMutableArray *cells;
-    UIBarButtonItem *chatItem;
 }
 
 - (instancetype)init{
@@ -63,30 +62,26 @@
 }
 
 - (void)initRightItemsEnd:(NSNotification*)noti{
+    UIButton *chatButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 32, 32)];
+    [chatButton setImage:[[UIImage imageNamed:@"ic_livechat"] imageWithColor:THEME_NAVIGATION_ICON_COLOR] forState:UIControlStateNormal];
+    [chatButton addTarget:self action:@selector(didSelectChatBarItem:) forControlEvents:UIControlEventTouchUpInside];
+    UIBarButtonItem *chatItem = [[UIBarButtonItem alloc] initWithCustomView:chatButton];
+    chatItem.sortOrder = navigationbar_phone_chat_sort_order;
     NSMutableArray *rightButtonItems = noti.object;
-    if(![rightButtonItems containsObject:chatItem]){
-        UIButton *chatButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 32, 32)];
-        [chatButton setImage:[[UIImage imageNamed:@"ic_livechat"] imageWithColor:THEME_NAVIGATION_ICON_COLOR] forState:UIControlStateNormal];
-        [chatButton addTarget:self action:@selector(didSelectChatBarItem:) forControlEvents:UIControlEventTouchUpInside];
-        chatItem = [[UIBarButtonItem alloc] initWithCustomView:chatButton];
-        chatItem.sortOrder = navigationbar_phone_chat_sort_order;
-        [rightButtonItems addObject:chatItem];
-    }
+    [rightButtonItems addObject:chatItem];
 }
 
 - (void)initLeftItemsEnd:(NSNotification*)noti{
-    NSMutableArray *leftButtonItems = noti.object;
-    if(![leftButtonItems containsObject:chatItem]){
-        UIBarButtonItem *itemSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
-        itemSpace.width = 20;
-        UIButton *chatButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 32, 32)];
-        [chatButton setImage:[[UIImage imageNamed:@"ic_livechat"] imageWithColor:THEME_NAVIGATION_ICON_COLOR] forState:UIControlStateNormal];
-        [chatButton addTarget:self action:@selector(didSelectChatBarItem:) forControlEvents:UIControlEventTouchUpInside];
-        chatItem = [[UIBarButtonItem alloc] initWithCustomView:chatButton];
-        chatItem.sortOrder = navigationbar_pad_chat_sort_order;
-        itemSpace.sortOrder = navigationbar_pad_chat_sort_order - 1;
-        [leftButtonItems addObjectsFromArray:@[itemSpace,chatItem]];
-    }
+    UIBarButtonItem *itemSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
+    itemSpace.width = 20;
+    UIButton *chatButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 32, 32)];
+    [chatButton setImage:[[UIImage imageNamed:@"ic_livechat"] imageWithColor:THEME_NAVIGATION_ICON_COLOR] forState:UIControlStateNormal];
+    [chatButton addTarget:self action:@selector(didSelectChatBarItem:) forControlEvents:UIControlEventTouchUpInside];
+    UIBarButtonItem *chatItem = [[UIBarButtonItem alloc] initWithCustomView:chatButton];
+    chatItem.sortOrder = navigationbar_pad_chat_sort_order;
+    itemSpace.sortOrder = navigationbar_pad_chat_sort_order - 1;
+    NSMutableArray *rightButtonItems = noti.object;
+    [rightButtonItems addObjectsFromArray:@[itemSpace,chatItem]];
 }
 
 - (void)didSelectChatBarItem:(UIButton*)sender{
