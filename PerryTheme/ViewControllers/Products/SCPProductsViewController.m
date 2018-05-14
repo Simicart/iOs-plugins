@@ -8,6 +8,7 @@
 
 #import "SCPProductsViewController.h"
 #import "SCPProductCollectionView.h"
+#import "SCPProductViewController.h"
 
 @interface SCPProductsViewController ()
 
@@ -180,5 +181,12 @@
     [self.gridModeCollectionView.infiniteScrollingView stopAnimating];
     [self.listModeCollectionView.infiniteScrollingView stopAnimating];
     [super didGetProducts:noti];
+}
+
+- (void)selectedProduct:(SimiProductModel *)productModel{
+    SCPProductViewController *productVC = [SCPProductViewController new];
+    productVC.product = productModel;
+    productVC.productId = productModel.entityId;
+    [self.navigationController pushViewController:productVC animated:nil];
 }
 @end

@@ -10,5 +10,5 @@
 #import <SimiCartBundle/SimiCategoryModelCollection.h>
 
 @interface SCPCategoryModelCollection : SimiCategoryModelCollection
-
+- (void)getRootCategories;
 @end

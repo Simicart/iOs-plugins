@@ -10,6 +10,7 @@
 
 @implementation SCPHomeCategoryModel
 - (void)parseData{
+    [super parseData];
     self.categoryId = [NSString stringWithFormat:@"%@",[self.modelData objectForKey:@"category_id"]?[self.modelData objectForKey:@"category_id"]:[self.modelData objectForKey:@"entity_id"]];
     self.name = [NSString stringWithFormat:@"%@",[self.modelData objectForKey:@"cat_name"]?[self.modelData objectForKey:@"cat_name"]:[self.modelData objectForKey:@"name"]];
     if([self.modelData objectForKey:@"simicategory_filename"]){

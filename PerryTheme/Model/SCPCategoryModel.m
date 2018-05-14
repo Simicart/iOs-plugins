@@ -10,6 +10,7 @@
 
 @implementation SCPCategoryModel
 - (void)parseData{
+    [super parseData];
     if([self.modelData objectForKey:@"width"]){
         self.width = [[self.modelData objectForKey:@"width"] floatValue];
     }
@@ -23,7 +24,12 @@
         self.heightTablet = [[self.modelData objectForKey:@"height_tablet"] floatValue];
     }
     if([[self.modelData objectForKey:@"children"] isKindOfClass:[NSArray class]]){
-        self.subCategories = [self.modelData objectForKey:@"children"];
+        NSArray *subCates = [self.modelData objectForKey:@"children"];
+        self.subCategories = [NSMutableArray new];
+        for(NSDictionary *subCate in subCates){
+            SCPCategoryModel *cate = [[SCPCategoryModel alloc] initWithModelData:subCate];
+            [self.subCategories addObject:cate];
+        }
     }
     if([self.modelData objectForKey:@"image_url"]){
         self.imageURL = [self.modelData objectForKey:@"image_url"];

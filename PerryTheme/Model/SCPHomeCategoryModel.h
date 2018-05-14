@@ -9,9 +9,9 @@
 #import <SimiCartBundle/SimiCartBundle.h>
 
 typedef enum : NSUInteger {
-    LevelOne,
-    LevelTwo,
-    LevelThree,
+    HomeCategoryLevelOne,
+    HomeCategoryLevelTwo,
+    HomeCategoryLevelThree,
 } SCPHomeCategoryLevel;
 
 @interface SCPHomeCategoryModel : SimiModel
