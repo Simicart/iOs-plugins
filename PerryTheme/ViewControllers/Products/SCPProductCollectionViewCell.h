@@ -6,7 +6,7 @@
 //  Copyright © 2018 Trueplus. All rights reserved.
 //
 
-#import <SimiCartBundle/SimiCartBundle.h>
+#import <SimiCartBundle/SCProductCollectionViewCell.h>
 
 @interface SCPProductCollectionViewCell : SCProductCollectionViewCell
 @property (nonatomic) BOOL onListMode;

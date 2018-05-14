@@ -79,7 +79,8 @@
 
 - (void)addProductTableView{
     self.listModeCollectionView = [[SCPProductCollectionView alloc]initWithFrame:self.view.bounds collectionViewLayout:[UICollectionViewFlowLayout new]];
-    [self.listModeCollectionView setContentInset:UIEdgeInsetsMake(SCP_GLOBALVARS.lineSpacing + 44, SCP_GLOBALVARS.padding, SCP_GLOBALVARS.lineSpacing, SCP_GLOBALVARS.padding)];
+    float bottomMenuHeight = CGRectGetHeight(self.tabBarController.tabBar.frame);
+    [self.listModeCollectionView setContentInset:UIEdgeInsetsMake(SCP_GLOBALVARS.lineSpacing + 44, SCP_GLOBALVARS.padding, SCP_GLOBALVARS.lineSpacing + bottomMenuHeight, SCP_GLOBALVARS.padding)];
     self.listModeCollectionView.productModelCollection = productModelCollection;
     self.listModeCollectionView.gridMode = NO;
     self.listModeCollectionView.actionDelegate = self;
@@ -92,7 +93,7 @@
 
 - (void)addProductCollectionView{
     self.gridModeCollectionView = [[SCPProductCollectionView alloc]initWithFrame:self.view.bounds collectionViewLayout:[UICollectionViewFlowLayout new]];
-    [self.gridModeCollectionView setContentInset:UIEdgeInsetsMake(SCP_GLOBALVARS.lineSpacing + 44, SCP_GLOBALVARS.padding, SCP_GLOBALVARS.lineSpacing, SCP_GLOBALVARS.padding)];
+    [self.gridModeCollectionView setContentInset:UIEdgeInsetsMake(SCP_GLOBALVARS.lineSpacing + 44, SCP_GLOBALVARS.padding, SCP_GLOBALVARS.lineSpacing + CGRectGetHeight(self.tabBarController.tabBar.frame), SCP_GLOBALVARS.padding)];
     self.gridModeCollectionView.productModelCollection = productModelCollection;
     self.gridModeCollectionView.gridMode = YES;
     self.gridModeCollectionView.actionDelegate = self;
@@ -162,5 +163,22 @@
     }else
         [properties setValue:@"list" forKey:@"product_list_style"];
     [[NSNotificationCenter defaultCenter]postNotificationName:TRACKINGEVENT object:@"products_action" userInfo:properties];
+}
+
+- (void)getProducts{
+    if (productModelCollection.total > 0 && productModelCollection.count >= productModelCollection.total) {
+        [self.gridModeCollectionView.infiniteScrollingView stopAnimating];
+        [self.listModeCollectionView.infiniteScrollingView stopAnimating];
+        return;
+    }
+    [super getProducts];
+    [self.gridModeCollectionView.infiniteScrollingView startAnimating];
+    [self.listModeCollectionView.infiniteScrollingView startAnimating];
+}
+
+- (void)didGetProducts:(NSNotification *)noti{
+    [self.gridModeCollectionView.infiniteScrollingView stopAnimating];
+    [self.listModeCollectionView.infiniteScrollingView stopAnimating];
+    [super didGetProducts:noti];
 }
 @end

@@ -19,9 +19,9 @@
     if(self == [super init]){
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializedRootController:) name:Simi_InitializedRootController object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(beginConfigureNavigationBar:) name:Simi_BeginConfigureNavigationBar object:nil];
-#if __has_include("SCWishlistModel.h")
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateWishlist:) name:SCCartController_CompletedChangeCustomerState object:nil];
-#endif
+        if (SCP_GLOBALVARS.wishlistPluginAllow) {
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateWishlist:) name:SCCartController_CompletedChangeCustomerState object:nil];
+        }
     }
     return self;
 }
@@ -65,6 +65,9 @@
         }
     GLOBALVAR.usePriceInLine = YES;
     [self checkPluginsWishlistAllow];
+    if (GLOBALVAR.isLogin && SCP_GLOBALVARS.wishlistPluginAllow) {
+        [self updateWishlist:nil];
+    }
 //    }
 }
 
@@ -78,8 +81,7 @@
 }
 
 - (void)checkPluginsWishlistAllow{
-    NSObject *obj = [NSClassFromString(@"SCWishlistInitWorker") new];
-    if (obj != nil) {
+    if (NSClassFromString(@"SCWishlistInitWorker")) {
         for (NSDictionary *pluginInfo in GLOBALVAR.activePlugins) {
             if ([[pluginInfo valueForKey:@"sku"] isEqualToString:@"simi_appwishlist_40"]) {
                 SCP_GLOBALVARS.wishlistPluginAllow = YES;
@@ -89,10 +91,9 @@
     }
 }
 
-#if __has_include("SCWishlistModel.h")
 - (void)updateWishlist:(NSNotification*)noti{
     if (GLOBALVAR.isLogin) {
-        SCWishlistModelCollection *wishlistModelCollection = [SCWishlistModelCollection new];
+        SCPWishlistModelCollection *wishlistModelCollection = [SCPWishlistModelCollection new];
         [wishlistModelCollection getWishlistItemsWithParams:@{@"offset":@"0",@"limit":@"1000"}];
         [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(didGetWishlistItems:) name:DidGetWishlistItems object:wishlistModelCollection];
     }else{
@@ -109,5 +110,4 @@
         [SCP_GLOBALVARS.wishListModelCollection removeAllObjects];
     }
 }
-#endif
 @end
