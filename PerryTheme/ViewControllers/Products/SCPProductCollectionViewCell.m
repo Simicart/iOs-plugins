@@ -9,11 +9,8 @@
 #import "SCPProductCollectionViewCell.h"
 #import "SCPGlobalVars.h"
 #import "SCPPriceView.h"
-#if __has_include("SCWishlistModel.h")
-#import "SCWishlistModel.h"
-#import "SCWishlistModelCollection.h"
-#endif
-#define PRODUCT_IS_NOT_IN_WISHLIST @"PRODUCT_IS_NOT_IN_WISHLIST"
+#import "SCPWishlistModel.h"
+#import "SCPWishlistModelCollection.h"
 
 @implementation SCPProductCollectionViewCell
 - (void)createCellViewWithFrame:(CGRect)frame{
@@ -49,6 +46,8 @@
     [self.imageStockStatus setHidden:YES];
     [self.lblStockStatus setHidden:YES];
     heightCell += imageSize + 5;
+    
+    
 }
 
 - (void)createProductNameLabel{
@@ -77,7 +76,6 @@
         [self.addWishlistButton setImage:[UIImage imageNamed:@"wishlist_color_icon"] forState:UIControlStateNormal];
         [self.addWishlistButton addTarget:self action:@selector(updateWishlist:) forControlEvents:UIControlEventTouchUpInside];
         [self.contentView addSubview:self.addWishlistButton];
-        [self updateWishlistIcon];
     }
     if (wishlistIconSize > 0) {
         wishlistIconSize += padding;
@@ -113,24 +111,30 @@
         [(SCPPriceView*)self.priceView showPriceWithProduct:self.productModel widthView:CGRectGetWidth(self.priceView.frame) fontSize:priceFontSize];
         
         [[NSNotificationCenter defaultCenter] postNotificationName:@"DidDrawProductImageView" object:self.imageProduct userInfo:@{@"imageView": self.imageProduct, @"product": self.productModel}];
+        if (SCP_GLOBALVARS.wishlistPluginAllow) {
+            [self updateWishlistIcon];
+        }
     }
 }
 
-#if __has_include("SCWishlistModel.h")
 - (void)updateWishlist:(UIButton*)sender{
+    if (!GLOBALVAR.isLogin) {
+        [SimiGlobalFunction showAlertWithTitle:@"" message:@"Please login before use this feature"];
+        return;
+    }
     sender.enabled = NO;
-    SCWishlistModel *wishlistModel = [self getWishListModel:self.productModel];
+    SCPWishlistModel *wishlistModel = [self getWishListModel:self.productModel];
     if (wishlistModel != nil) {
         
     }else{
-        SCWishlistModel *wishlistModel = [SCWishlistModel new];
+        SCPWishlistModel *wishlistModel = [SCPWishlistModel new];
         [wishlistModel addProductWithParams:@{@"product":self.productModel.entityId}];
         [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(didAddProductToWishlist:) name:DidAddProductToWishList object:wishlistModel];
     }
 }
 
-- (SCWishlistModel*)getWishListModel:(SimiProductModel*)productModel{
-    for (SCWishlistModel *wishListModel in SCP_GLOBALVARS.wishListModelCollection.collectionData) {
+- (SCPWishlistModel*)getWishListModel:(SimiProductModel*)productModel{
+    for (SCPWishlistModel *wishListModel in SCP_GLOBALVARS.wishListModelCollection.collectionData) {
         if ([wishListModel.productId isEqualToString:productModel.entityId]) {
             return wishListModel;
         }
@@ -142,7 +146,7 @@
     [self removeObserverForNotification:noti];
     SimiResponder *responder = [noti.userInfo valueForKey:responderKey];
     if (responder.status == SUCCESS) {
-        SCWishlistModel *wishListModel = noti.object;
+        SCPWishlistModel *wishListModel = noti.object;
         [SCP_GLOBALVARS.wishListModelCollection addObject:wishListModel];
     }
     [self updateWishlistIcon];
@@ -150,13 +154,12 @@
 }
 
 - (void)updateWishlistIcon{
-    SCWishlistModel *wishlistModel = [self getWishListModel:self.productModel];
+    SCPWishlistModel *wishlistModel = [self getWishListModel:self.productModel];
     if (wishlistModel != nil) {
         [self.addWishlistButton setImage:[UIImage imageNamed:@"wishlist_color_icon"] forState:UIControlStateNormal];
     }else{
         [self.addWishlistButton setImage:[UIImage imageNamed:@"wishlist_empty_icon"] forState:UIControlStateNormal];
     }
 }
-#endif
 
 @end

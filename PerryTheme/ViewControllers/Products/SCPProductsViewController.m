@@ -53,24 +53,24 @@
         changeLayoutButton = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, buttonWidth, buttonHeight)];
         [changeLayoutButton setImageEdgeInsets:UIEdgeInsetsMake((buttonHeight - iconSize)/2, (buttonWidth - iconSize)/2, (buttonHeight - iconSize)/2, (buttonWidth - iconSize)/2)];
         if ([[[GLOBALVAR.storeView.catalog valueForKey:@"frontend"] valueForKey:@"view_products_default"] boolValue]) {
-            [changeLayoutButton setImage:[UIImage imageNamed:@"ic_list"] forState:UIControlStateNormal];
+            [changeLayoutButton setImage:[UIImage imageNamed:@"scp_ic_list"] forState:UIControlStateNormal];
             isProductShowGrid = YES;
         }else
-            [changeLayoutButton setImage:[UIImage imageNamed:@"ic_grib"] forState:UIControlStateNormal];
+            [changeLayoutButton setImage:[UIImage imageNamed:@"scp_ic_grib"] forState:UIControlStateNormal];
         [changeLayoutButton addTarget:self action:@selector(changeLayoutListView) forControlEvents:UIControlEventTouchUpInside];
         if(SIMI_SYSTEM_IOS >= 8)
             [viewToolBar addSubview:changeLayoutButton];
         
         sortButton = [[UIButton alloc]initWithFrame:CGRectMake(SCREEN_WIDTH - buttonWidth, 0, buttonWidth, buttonHeight)];
         [sortButton setImageEdgeInsets:UIEdgeInsetsMake((buttonHeight - iconSize)/2, (buttonWidth - iconSize)/2, (buttonHeight - iconSize)/2, (buttonWidth - iconSize)/2)];
-        [sortButton setImage:[UIImage imageNamed:@"ic_sort"] forState:UIControlStateNormal];
+        [sortButton setImage:[UIImage imageNamed:@"scp_ic_sort"] forState:UIControlStateNormal];
         [sortButton addTarget:self action:@selector(sortAction:)forControlEvents:UIControlEventTouchUpInside];
         [sortButton setHidden:YES];
         [viewToolBar addSubview:sortButton];
         
         filterButton = [[UIButton alloc]initWithFrame:CGRectMake((SCREEN_WIDTH - buttonWidth)/2, 0, buttonWidth, buttonHeight)];
         [filterButton setImageEdgeInsets:UIEdgeInsetsMake((buttonHeight - iconSize)/2, (buttonWidth - iconSize)/2, (buttonHeight - iconSize)/2, (buttonWidth - iconSize)/2)];
-        [filterButton setImage:[UIImage imageNamed:@"ic_filter"] forState:UIControlStateNormal];
+        [filterButton setImage:[UIImage imageNamed:@"scp_ic_filter"] forState:UIControlStateNormal];
         [filterButton addTarget:self action:@selector(filterAction:)forControlEvents:UIControlEventTouchUpInside];
         [filterButton setHidden:YES];
         [viewToolBar addSubview:filterButton];
@@ -80,7 +80,8 @@
 
 - (void)addProductTableView{
     self.listModeCollectionView = [[SCPProductCollectionView alloc]initWithFrame:self.view.bounds collectionViewLayout:[UICollectionViewFlowLayout new]];
-    [self.listModeCollectionView setContentInset:UIEdgeInsetsMake(SCP_GLOBALVARS.lineSpacing + 44, SCP_GLOBALVARS.padding, SCP_GLOBALVARS.lineSpacing, SCP_GLOBALVARS.padding)];
+    float bottomMenuHeight = CGRectGetHeight(self.tabBarController.tabBar.frame);
+    [self.listModeCollectionView setContentInset:UIEdgeInsetsMake(SCP_GLOBALVARS.lineSpacing + 44, SCP_GLOBALVARS.padding, SCP_GLOBALVARS.lineSpacing + bottomMenuHeight, SCP_GLOBALVARS.padding)];
     self.listModeCollectionView.productModelCollection = productModelCollection;
     self.listModeCollectionView.gridMode = NO;
     self.listModeCollectionView.actionDelegate = self;
@@ -93,7 +94,7 @@
 
 - (void)addProductCollectionView{
     self.gridModeCollectionView = [[SCPProductCollectionView alloc]initWithFrame:self.view.bounds collectionViewLayout:[UICollectionViewFlowLayout new]];
-    [self.gridModeCollectionView setContentInset:UIEdgeInsetsMake(SCP_GLOBALVARS.lineSpacing + 44, SCP_GLOBALVARS.padding, SCP_GLOBALVARS.lineSpacing, SCP_GLOBALVARS.padding)];
+    [self.gridModeCollectionView setContentInset:UIEdgeInsetsMake(SCP_GLOBALVARS.lineSpacing + 44, SCP_GLOBALVARS.padding, SCP_GLOBALVARS.lineSpacing + CGRectGetHeight(self.tabBarController.tabBar.frame), SCP_GLOBALVARS.padding)];
     self.gridModeCollectionView.productModelCollection = productModelCollection;
     self.gridModeCollectionView.gridMode = YES;
     self.gridModeCollectionView.actionDelegate = self;
@@ -130,7 +131,7 @@
                 [changeLayoutButton setEnabled:YES];
             }];
         }];
-        [changeLayoutButton setImage:[UIImage imageNamed:@"ic_list"] forState:UIControlStateNormal];
+        [changeLayoutButton setImage:[UIImage imageNamed:@"scp_ic_list"] forState:UIControlStateNormal];
         NSArray *invisibleCells = [self.listModeCollectionView indexPathsForVisibleItems];
         if (invisibleCells.count > 2) {
             [self.gridModeCollectionView scrollToItemAtIndexPath:[invisibleCells objectAtIndex:0] atScrollPosition:UICollectionViewScrollPositionTop animated:NO];
@@ -149,7 +150,7 @@
                 [changeLayoutButton setEnabled:YES];
             }];
         }];
-        [changeLayoutButton setImage:[UIImage imageNamed:@"ic_grib"] forState:UIControlStateNormal];
+        [changeLayoutButton setImage:[UIImage imageNamed:@"scp_ic_grib"] forState:UIControlStateNormal];
         NSArray *invisibleCells = [self.gridModeCollectionView indexPathsForVisibleItems];
         if (invisibleCells.count > 0) {
             [self.listModeCollectionView scrollToItemAtIndexPath:[invisibleCells objectAtIndex:0] atScrollPosition:UICollectionViewScrollPositionTop animated:NO];
@@ -163,6 +164,23 @@
     }else
         [properties setValue:@"list" forKey:@"product_list_style"];
     [[NSNotificationCenter defaultCenter]postNotificationName:TRACKINGEVENT object:@"products_action" userInfo:properties];
+}
+
+- (void)getProducts{
+    if (productModelCollection.total > 0 && productModelCollection.count >= productModelCollection.total) {
+        [self.gridModeCollectionView.infiniteScrollingView stopAnimating];
+        [self.listModeCollectionView.infiniteScrollingView stopAnimating];
+        return;
+    }
+    [super getProducts];
+    [self.gridModeCollectionView.infiniteScrollingView startAnimating];
+    [self.listModeCollectionView.infiniteScrollingView startAnimating];
+}
+
+- (void)didGetProducts:(NSNotification *)noti{
+    [self.gridModeCollectionView.infiniteScrollingView stopAnimating];
+    [self.listModeCollectionView.infiniteScrollingView stopAnimating];
+    [super didGetProducts:noti];
 }
 
 - (void)selectedProduct:(SimiProductModel *)productModel{
