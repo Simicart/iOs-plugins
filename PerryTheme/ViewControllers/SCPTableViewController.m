@@ -16,7 +16,7 @@
 @implementation SCPTableViewController
 
 - (void)configureNavigationBarOnViewWillAppear{
-    if (PHONEDEVICE) {
+//    if (PHONEDEVICE) {
         if (_leftButtonItems == nil) {
             _leftButtonItems = [[NSMutableArray alloc] init];
             [self addMenuButton];
@@ -32,11 +32,11 @@
             _rightButtonItems = [[NSMutableArray alloc] initWithArray:[SimiGlobalFunction sortListItems:_rightButtonItems]];
         }
         self.navigationItem.rightBarButtonItems = _rightButtonItems;
-    }else
-    {
-        [self.navigationItem setLeftBarButtonItems:[[[SCAppController sharedInstance]navigationBarPad]leftButtonItems]];
-        self.navigationItem.rightBarButtonItems = [[[SCAppController sharedInstance]navigationBarPad]rightButtonItems];
-    }
+//    }else
+//    {
+//        [self.navigationItem setLeftBarButtonItems:[[[SCAppController sharedInstance]navigationBarPad]leftButtonItems]];
+//        self.navigationItem.rightBarButtonItems = [[[SCAppController sharedInstance]navigationBarPad]rightButtonItems];
+//    }
 }
 - (void)addMenuButton{
     UIButton *leftButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 32, 32)];

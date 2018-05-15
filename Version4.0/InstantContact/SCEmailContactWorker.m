@@ -26,10 +26,22 @@
     if (self) {
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initCellsEnd:) name:[NSString stringWithFormat:@"%@%@",SCLeftMenuViewController_RootEventName,SimiTableViewController_SubKey_InitCells_End] object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didSelectCell:) name:[NSString stringWithFormat:@"%@%@",SCLeftMenuViewController_RootEventName,SimiTableViewController_SubKey_DidSelectCell] object:nil];
+#if __has_include("SCPInitWorker.h")
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(perryLeftMenuInitCellsEnd:) name:[NSString stringWithFormat:@"SCPLeftMenuViewController%@",SimiTableViewController_SubKey_InitCells_End] object:nil];
+#endif
     }
     return self;
 }
-
+#if __has_include("SCPInitWorker.h")
+- (void)perryLeftMenuInitCellsEnd:(NSNotification *)noti{
+    SimiTable *cells = noti.object;
+    SimiSection *mainSection = [cells getSectionByIdentifier:LEFTMENU_SECTION_MAIN];
+    SimiRow *notiRow = [mainSection getRowByIdentifier:LEFTMENU_ROW_NOTIFICATION];
+    SimiRow *contactRow = [mainSection addRowWithIdentifier:LEFTMENU_ROW_CONTACTUS height:50 sortOrder:notiRow.sortOrder + 2];
+    contactRow.image = [UIImage imageNamed:@"scp_ic_phone"];
+    contactRow.title = SCLocalizedString(@"Contact us");
+}
+#endif
 - (void)initCellsEnd:(NSNotification*)noti{
     cells = noti.object;
     for (int i = 0; i < cells.count; i++) {
@@ -41,7 +53,7 @@
         if ([section.identifier isEqualToString:LEFTMENU_SECTION_MORE] && instantContact.count > 0) {
             SimiRow *row = [[SimiRow alloc]initWithIdentifier:LEFTMENU_ROW_CONTACTUS height:50 sortOrder:70];
             row.image = [UIImage imageNamed:@"ic_contact"];
-            row.title = SCLocalizedString(@"Contact Us");
+            row.title = SCLocalizedString(@"Contact us");
             [section addObject:row];
             [section sortItems];
         }

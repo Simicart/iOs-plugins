@@ -153,8 +153,8 @@
     if(!cell){
         cell = [[SimiTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier];
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
-        float paddingX1 = 50;
-        float paddingX2 = 100;
+        float paddingX1 = CGRectGetWidth(self.contentTableView.frame) / 6;
+        float paddingX2 = paddingX1 + 50;
         float contentWidth;
         cell.heightCell = 0;
         switch (category.level) {
@@ -192,8 +192,8 @@
         cell = [[SimiTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier];
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         float paddingX1 = 0;
-        float paddingX2 = 50;
-        float paddingX3 = 100;
+        float paddingX2 = CGRectGetWidth(self.contentTableView.frame) / 6;
+        float paddingX3 = paddingX2 + 50;
         cell.heightCell = 0;
         float contentWidth;
         switch (category.level) {

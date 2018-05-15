@@ -18,7 +18,7 @@
 #import <SimiCartBundle/SCNavigationBarPhone.h>
 #import <SimiCartBundle/SCNavigationBarPad.h>
 #import "BarCodeWorker.h"
-#if __has_include("SCPSearchViewController.h")
+#if __has_include("SCPInitWorker.h")
 #import "SCPSearchViewController.h"
 #endif
 @implementation BarCodeWorker{
@@ -33,14 +33,15 @@
     if (self) {
         [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(didInitCellsAfter:) name:[NSString stringWithFormat:@"%@%@",SCLeftMenuViewController_RootEventName,SimiTableViewController_SubKey_InitCells_End] object:nil];
         [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(didSelectRow:) name:[NSString stringWithFormat:@"%@%@",SCLeftMenuViewController_RootEventName,SimiTableViewController_SubKey_DidSelectCell] object:nil];
-        #if __has_include("SCPSearchViewController.h")
+        #if __has_include("SCPInitWorker.h")
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(perrySearchViewDidLoad:) name:@"SCPSearchViewControllerViewDidLoad" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(perryLeftMenuInitCellsEnd:) name:[NSString stringWithFormat:@"SCPLeftMenuViewController%@",SimiTableViewController_SubKey_InitCells_End] object:nil];
         #endif
     }
     return self;
 }
 
-#if __has_include("SCPSearchViewController.h")
+#if __has_include("SCPInitWorker.h")
 - (void)perrySearchViewDidLoad:(NSNotification *)noti{
     SCPSearchViewController *searchVC = noti.object;
     UIScrollView *mainScrollView = searchVC.mainScrollView;
@@ -62,6 +63,14 @@
     scanTextField.userInteractionEnabled = NO;
     [mainScrollView addSubview:scanView];
     [scanView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapButtonScan)]];
+}
+- (void)perryLeftMenuInitCellsEnd:(NSNotification *)noti{
+    SimiTable *cells = noti.object;
+    SimiSection *mainSection = [cells getSectionByIdentifier:LEFTMENU_SECTION_MAIN];
+    SimiRow *notiRow = [mainSection getRowByIdentifier:LEFTMENU_ROW_NOTIFICATION];
+    SimiRow *barCodeRow = [mainSection addRowWithIdentifier:LEFTMENU_ROW_BARCODE height:50 sortOrder:notiRow.sortOrder + 1];
+    barCodeRow.image = [UIImage imageNamed:@"scp_ic_scan"];
+    barCodeRow.title = SCLocalizedString(@"Scan now");
 }
 #endif
 

@@ -13,20 +13,48 @@
 #import "SCPHomeViewController.h"
 #import "SCPCategoryViewController.h"
 #import "SCPSearchViewController.h"
+#import "SCPLeftMenuViewController.h"
 #if __has_include("SCWishlistModelCollection.h")
 #import "SCWishlistModelCollection.h"
 #endif
-@implementation SCPInitWorker
+@implementation SCPInitWorker{
+    SCPLeftMenuViewController *leftMenuViewController;
+}
 - (id)init{
     if(self == [super init]){
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializedRootController:) name:Simi_InitializedRootController object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(beginConfigureNavigationBar:) name:Simi_BeginConfigureNavigationBar object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializedMenu:) name:Simi_MainViewController_InitializedMenu object:nil];
+        [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(initializedMenuSize:) name:Simi_MainViewController_InitializedMenuSize object:nil];
+        
 #if __has_include("SCWishlistModel.h")
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateWishlist:) name:SCCartController_CompletedChangeCustomerState object:nil];
 #endif
     }
     return self;
 }
+
+- (void)initializedMenu:(NSNotification *)noti{
+    SCMainViewController *mainVC = noti.object;
+    mainVC.isDiscontinue = YES;
+    leftMenuViewController = [SCPLeftMenuViewController new];
+    float width = 3*SCREEN_WIDTH/4;
+    if(PADDEVICE){
+        width = 328;
+    }
+    [mainVC setLeftViewEnabledWithWidth:width
+                    presentationStyle:LGSideMenuPresentationStyleSlideAbove
+                 alwaysVisibleOptions:LGSideMenuAlwaysVisibleOnNone];
+    mainVC.leftViewStatusBarVisibleOptions = LGSideMenuStatusBarVisibleOnAll;
+    [mainVC.leftView addSubview:leftMenuViewController.view];
+}
+
+- (void)initializedMenuSize:(NSNotification*)noti{
+    NSValue *sizeValue = [noti.userInfo valueForKey:@"size"];
+    CGSize size = sizeValue.CGSizeValue;
+    leftMenuViewController.view.frame = CGRectMake(0.f , 0.f, size.width, size.height);
+}
+
 - (void)initializedRootController:(NSNotification *)noti{
 //    if([GLOBALVAR.storeView.data objectForKey:@"perry_theme"]){
         [self setupThemeColors];
