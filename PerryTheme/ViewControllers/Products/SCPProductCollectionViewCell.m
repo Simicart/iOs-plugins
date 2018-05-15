@@ -46,6 +46,8 @@
     [self.imageStockStatus setHidden:YES];
     [self.lblStockStatus setHidden:YES];
     heightCell += imageSize + 5;
+    
+    
 }
 
 - (void)createProductNameLabel{

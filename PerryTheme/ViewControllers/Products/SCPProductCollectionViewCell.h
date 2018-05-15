@@ -11,4 +11,6 @@
 @interface SCPProductCollectionViewCell : SCProductCollectionViewCell
 @property (nonatomic) BOOL onListMode;
 @property (nonatomic, strong) UIButton *addWishlistButton;
+@property (strong, nonatomic) UIImageView *saleImageView;
+@property (strong, nonatomic) UIImageView *playImageView;
 @end

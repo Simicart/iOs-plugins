@@ -13,7 +13,7 @@
 #import <SimiCartBundle/SimiHomeModel.h>
 #import <SimiCartBundle/SimiHomeProductListModel.h>
 #import <SimiCartBundle/SimiHomeCategoryModel.h>
-#import "SCPProductsViewController.h"
+#import "SCPPadProductsViewController.h"
 #import "SCPCategoryViewController.h"
 #import "SCPCategoryModel.h"
 #import "SCPProductViewController.h"
@@ -396,6 +396,9 @@
             }else{
                 //Open list product
                 SCPProductsViewController *productsViewController = [SCPProductsViewController new];
+                if (PADDEVICE) {
+                    productsViewController = [SCPPadProductsViewController new];
+                }
                 productsViewController.productListGetProductType = ProductListGetProductTypeFromCategory;
                 productsViewController.categoryID = category.categoryId;
                 [self.navigationController pushViewController:productsViewController animated:YES];
@@ -403,6 +406,9 @@
         }else if([row.identifier isEqualToString:SCP_HOME_CATEGORY_VIEW_ALL]){
             SCPHomeCategoryModel *category = (SCPHomeCategoryModel *)row.model;
             SCPProductsViewController *productsViewController = [SCPProductsViewController new];
+            if (PADDEVICE) {
+                productsViewController = [SCPPadProductsViewController new];
+            }
             productsViewController.productListGetProductType = ProductListGetProductTypeFromCategory;
             productsViewController.categoryID = category.categoryId;
             [self.navigationController pushViewController:productsViewController animated:YES];
@@ -413,6 +419,9 @@
     else if([section.identifier isEqualToString:SCP_HOME_PRODUCT_LIST]){
         //Open list product
         SCPProductsViewController *productsViewController = [SCPProductsViewController new];
+        if (PADDEVICE) {
+            productsViewController = [SCPPadProductsViewController new];
+        }
         productsViewController.productListGetProductType = ProductListGetProductTypeFromSpot;
         productsViewController.spotID = row.model.entityId ;
         [self.navigationController pushViewController:productsViewController animated:YES];
