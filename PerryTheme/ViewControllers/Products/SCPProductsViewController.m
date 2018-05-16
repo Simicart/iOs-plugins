@@ -9,6 +9,7 @@
 #import "SCPProductsViewController.h"
 #import "SCPProductCollectionView.h"
 #import "SCPProductViewController.h"
+#import "SCPSortViewController.h"
 
 @interface SCPProductsViewController ()
 
@@ -56,7 +57,7 @@
             [changeLayoutButton setImage:[UIImage imageNamed:@"scp_ic_list"] forState:UIControlStateNormal];
             isProductShowGrid = YES;
         }else
-            [changeLayoutButton setImage:[UIImage imageNamed:@"scp_ic_grib"] forState:UIControlStateNormal];
+            [changeLayoutButton setImage:[UIImage imageNamed:@"scp_ic_grid"] forState:UIControlStateNormal];
         [changeLayoutButton addTarget:self action:@selector(changeLayoutListView) forControlEvents:UIControlEventTouchUpInside];
         if(SIMI_SYSTEM_IOS >= 8)
             [viewToolBar addSubview:changeLayoutButton];
@@ -150,7 +151,7 @@
                 [changeLayoutButton setEnabled:YES];
             }];
         }];
-        [changeLayoutButton setImage:[UIImage imageNamed:@"scp_ic_grib"] forState:UIControlStateNormal];
+        [changeLayoutButton setImage:[UIImage imageNamed:@"scp_ic_grid"] forState:UIControlStateNormal];
         NSArray *invisibleCells = [self.gridModeCollectionView indexPathsForVisibleItems];
         if (invisibleCells.count > 0) {
             [self.listModeCollectionView scrollToItemAtIndexPath:[invisibleCells objectAtIndex:0] atScrollPosition:UICollectionViewScrollPositionTop animated:NO];
@@ -188,5 +189,15 @@
     productVC.product = productModel;
     productVC.productId = productModel.entityId;
     [self.navigationController pushViewController:productVC animated:nil];
+}
+
+#pragma mark Sort
+- (void)sortAction:(UIButton*)sender{
+    SCPSortViewController *sortViewController = [[SCPSortViewController alloc]init];
+    sortViewController.delegate = self;
+    sortViewController.sortArray = self.sortArray;
+    sortViewController.selectedIndex = self.sortIndex;
+    UINavigationController *navigationController = [[UINavigationController alloc]initWithRootViewController:sortViewController];
+    [self presentViewController:navigationController animated:YES completion:nil];
 }
 @end
