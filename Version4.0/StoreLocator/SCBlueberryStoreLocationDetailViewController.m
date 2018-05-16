@@ -45,6 +45,7 @@
     [storeDetailTableView addSubview:storeImageView];
     
     [self initCells];
+    [[NSNotificationCenter defaultCenter]postNotificationName:TRACKINGEVENT object:@"page_view_action" userInfo:@{@"action":@"viewed_store_detail_screen",@"store_name":[self.storeLocation valueForKey:@"name"]}];
 }
 
 - (void)viewWillAppearBefore:(BOOL)animated{
@@ -75,6 +76,7 @@
     SimiSection* storeLocationSection = [cells objectAtIndex:indexPath.section];
     SimiRow* storeLocationRow = [storeLocationSection objectAtIndex:indexPath.row];
     if([storeLocationRow.identifier isEqualToString:STORELOCATION_DETAIL_DIRECTIONS]){
+        [[NSNotificationCenter defaultCenter]postNotificationName:TRACKINGEVENT object:@"store_locator_action" userInfo:@{@"action":@"view_store_map",@"store_name":[self.storeLocation valueForKey:@"name"]}];
         if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"comgooglemaps://"]]) {
             [[UIApplication sharedApplication] openURL:
              [NSURL URLWithString: [NSString stringWithFormat: @"comgooglemaps://?saddr=%f,%f&daddr=%@,%@&center=%f,%f&zoom=15&views=traffic",_currentLatitude , _currentLongitude,[_storeLocation valueForKey:@"latitude"],[_storeLocation valueForKey:@"longtitude"],_currentLatitude, _currentLongitude]]];
@@ -82,6 +84,7 @@
             [self showAlertWithTitle:@"" message:@"Please install Google Map for getting directions"];
         }
     }else if([storeLocationRow.identifier isEqualToString:STORELOCATION_DETAIL_PHONE]){
+        [[NSNotificationCenter defaultCenter]postNotificationName:TRACKINGEVENT object:@"store_locator_action" userInfo:@{@"action":@"call_to_store",@"store_name":[self.storeLocation valueForKey:@"name"]}];
         NSString *phoneNumber = [[NSString stringWithFormat:@"%@",[_storeLocation objectForKey:@"phone"]] stringByReplacingOccurrencesOfString:@" " withString:@""];
         NSURL *phoneUrl = [NSURL URLWithString:[NSString  stringWithFormat:@"telprompt:%@",phoneNumber]];
         if ([[UIApplication sharedApplication] canOpenURL:phoneUrl]) {
@@ -285,6 +288,7 @@
 #pragma mark Email Delegate
 - (void)sendEmailToStoreWithEmail:(NSString *)email andEmailContent:(NSString *)emailContent
 {
+    [[NSNotificationCenter defaultCenter]postNotificationName:TRACKINGEVENT object:@"store_locator_action" userInfo:@{@"action":@"email_to_store",@"store_name":[self.storeLocation valueForKey:@"name"]}];
     if([MFMailComposeViewController canSendMail])
     {
         MFMailComposeViewController *controller = [[MFMailComposeViewController alloc] init];

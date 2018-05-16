@@ -27,6 +27,7 @@
 }
 
 - (void)viewDidLoadBefore {
+    [[NSNotificationCenter defaultCenter]postNotificationName:TRACKINGEVENT object:@"page_view_action" userInfo:@{@"action":@"viewed_store_locator_screen"}];
     self.navigationItem.title = SCLocalizedString(@"Stores Near You");
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:SCLocalizedString(@"Done") style:UIBarButtonItemStyleDone target:self action:@selector(done:)];
     cLController = [[SimiCLController alloc]init];
@@ -279,6 +280,7 @@
 }
 
 - (void)callStore:(id)sender {
+    [[NSNotificationCenter defaultCenter]postNotificationName:TRACKINGEVENT object:@"store_locator_action" userInfo:@{@"action":@"call_to_store",@"store_name":[self.storeLocation valueForKey:@"name"]}];
     NSString *phoneNumber = [[NSString stringWithFormat:@"%@",[_storeLocation objectForKey:@"phone"]] stringByReplacingOccurrencesOfString:@" " withString:@""];
     NSURL *phoneUrl = [NSURL URLWithString:[NSString  stringWithFormat:@"telprompt:%@",phoneNumber]];
     if ([[UIApplication sharedApplication] canOpenURL:phoneUrl]) {
