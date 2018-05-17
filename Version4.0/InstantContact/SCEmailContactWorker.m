@@ -14,6 +14,9 @@
 #import <SimiCartBundle/SCLeftMenuViewController.h>
 #import <SimiCartBundle/SCNavigationBarPhone.h>
 #import <SimiCartBundle/SCNavigationBarPad.h>
+#if __has_include("SCPLeftMenuViewController.h")
+#import "SCPLeftMenuViewController.h"
+#endif
 
 @implementation SCEmailContactWorker
 {
@@ -26,7 +29,7 @@
     if (self) {
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initCellsEnd:) name:[NSString stringWithFormat:@"%@%@",SCLeftMenuViewController_RootEventName,SimiTableViewController_SubKey_InitCells_End] object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didSelectCell:) name:[NSString stringWithFormat:@"%@%@",SCLeftMenuViewController_RootEventName,SimiTableViewController_SubKey_DidSelectCell] object:nil];
-#if __has_include("SCPInitWorker.h")
+#if __has_include("SCPLeftMenuViewController.h")
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(perryLeftMenuInitCellsEnd:) name:[NSString stringWithFormat:@"SCPLeftMenuViewController%@",SimiTableViewController_SubKey_InitCells_End] object:nil];
 #endif
     }
@@ -41,6 +44,7 @@
     contactRow.image = [UIImage imageNamed:@"scp_ic_phone"];
     contactRow.title = SCLocalizedString(@"Contact us");
 }
+
 #endif
 - (void)initCellsEnd:(NSNotification*)noti{
     cells = noti.object;

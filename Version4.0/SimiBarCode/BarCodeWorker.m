@@ -18,8 +18,11 @@
 #import <SimiCartBundle/SCNavigationBarPhone.h>
 #import <SimiCartBundle/SCNavigationBarPad.h>
 #import "BarCodeWorker.h"
-#if __has_include("SCPInitWorker.h")
+#if __has_include("SCPSearchViewController.h")
 #import "SCPSearchViewController.h"
+#endif
+#if __has_include("SCPLeftMenuViewController.h")
+#import "SCPLeftMenuViewController.h"
 #endif
 @implementation BarCodeWorker{
     UISearchBar *searchBar;
@@ -73,7 +76,6 @@
     barCodeRow.title = SCLocalizedString(@"Scan now");
 }
 #endif
-
 - (void)didInitCellsAfter:(NSNotification*)noti{
     SimiTable *cells = noti.object;
     for (int i = 0; i < cells.count; i++) {

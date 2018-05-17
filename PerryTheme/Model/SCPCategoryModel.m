@@ -31,11 +31,11 @@
             [self.subCategories addObject:cate];
         }
     }
-    if([self.modelData objectForKey:@"image_url"]){
-        self.imageURL = [self.modelData objectForKey:@"image_url"];
+    if([self.modelData objectForKey:@"thumbnail"]){
+        self.imageURL = [self.modelData objectForKey:@"thumbnail"];
     }
-    if([self.modelData objectForKey:@"image_url_tablet"]){
-        self.imageURLPad = [self.modelData objectForKey:@"image_url_pad"];
+    if([self.modelData objectForKey:@"thumbnail"]){
+        self.imageURLPad = [self.modelData objectForKey:@"thumbnail"];
     }
 }
 @end
