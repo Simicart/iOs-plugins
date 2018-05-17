@@ -9,8 +9,6 @@
 #import "SCPProductsViewController.h"
 #import "SCPProductCollectionView.h"
 #import "SCPProductViewController.h"
-#import "SCPSortViewController.h"
-#import "SCPFilterViewController.h"
 
 @interface SCPProductsViewController ()
 

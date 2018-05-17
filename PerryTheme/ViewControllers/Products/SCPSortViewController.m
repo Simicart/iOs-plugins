@@ -58,4 +58,13 @@
     [SimiGlobalFunction sortViewForRTL:cell.contentView andWidth:CGRectGetWidth(self.contentTableView.frame)];
     return cell;
 }
+
+#pragma mark Table View Delegate
+- (void)contentTableViewDidSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    [self.contentTableView deselectRowAtIndexPath:indexPath animated:YES];
+    self.selectedIndex = (int)indexPath.row;
+    [self dismissViewControllerAnimated:YES completion:^{
+        [self.delegate didSortWithIndex:self.selectedIndex];
+    }];
+}
 @end

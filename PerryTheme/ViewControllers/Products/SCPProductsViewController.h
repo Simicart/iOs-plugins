@@ -8,6 +8,8 @@
 
 #import <SimiCartBundle/SCProductListViewController.h>
 #import "SCPProductCollectionView.h"
+#import "SCPSortViewController.h"
+#import "SCPFilterViewController.h"
 
 @interface SCPProductsViewController : SCProductListViewController
 @property (strong, nonatomic) SCPProductCollectionView *gridModeCollectionView;

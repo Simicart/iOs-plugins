@@ -70,4 +70,38 @@
     }];
     [self.view addSubview:self.gridModeCollectionView];
 }
+
+#pragma mark Action
+- (void)sortAction:(id)sender{
+    UIButton* senderButton = (UIButton*)sender;
+    SCPSortViewController *refineViewController = [[SCPSortViewController alloc]init];
+    refineViewController.delegate = self;
+    refineViewController.sortArray = self.sortArray;
+    refineViewController.selectedIndex = self.sortIndex;
+    UINavigationController *navigationController = [[UINavigationController alloc]initWithRootViewController:refineViewController];
+    navigationController.modalPresentationStyle = UIModalPresentationPopover;
+    UIPopoverPresentationController *popover = navigationController.popoverPresentationController;
+    popover.sourceRect = senderButton.bounds;
+    popover.sourceView = senderButton;
+    popover.permittedArrowDirections = UIPopoverArrowDirectionUp;
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [self presentViewController:navigationController animated:YES completion:nil];
+    });
+}
+
+- (void)filterAction:(UIButton*)sender{
+    SCPFilterViewController *filterViewController = [SCPFilterViewController new];
+    filterViewController.delegate = self;
+    filterViewController.modalPresentationStyle = UIModalPresentationPopover;
+    filterViewController.filterContent = self.layersDict;
+    UINavigationController *navigationController = [[UINavigationController alloc]initWithRootViewController:filterViewController];
+    navigationController.modalPresentationStyle = UIModalPresentationPopover;
+    UIPopoverPresentationController *popover = navigationController.popoverPresentationController;
+    popover.sourceRect = sender.bounds;
+    popover.sourceView = sender;
+    popover.permittedArrowDirections = UIPopoverArrowDirectionUp;
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [self presentViewController:navigationController animated:YES completion:nil];
+    });
+}
 @end
