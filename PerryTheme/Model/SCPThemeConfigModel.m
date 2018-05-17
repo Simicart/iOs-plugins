@@ -14,17 +14,17 @@
     if([[self.modelData objectForKey:@"menu_background_color"] isKindOfClass:[NSString class]]){
         self.menuBackgroudColor = [self.modelData objectForKey:@"menu_background_color"];
     }else{
-        self.menuBackgroudColor = @"#fff";
+        self.menuBackgroudColor = @"#ffffff";
     }
     if([[self.modelData objectForKey:@"title_color"] isKindOfClass:[NSString class]]){
         self.titleColor = [self.modelData objectForKey:@"title_color"];
     }else{
-        self.titleColor = @"#000";
+        self.titleColor = @"#000000";
     }
     if([[self.modelData objectForKey:@"icon_color"] isKindOfClass:[NSString class]]){
         self.iconColor = [self.modelData objectForKey:@"icon_color"];
     }else{
-        self.iconColor = @"#000";
+        self.iconColor = @"#000000";
     }
     if([[self.modelData objectForKey:@"icon_highlight_color"] isKindOfClass:[NSString class]]){
         self.iconHighlightColor = [self.modelData objectForKey:@"icon_highlight_color"];
@@ -34,7 +34,7 @@
     if([[self.modelData objectForKey:@"button_text_color"] isKindOfClass:[NSString class]]){
         self.buttonTextColor = [self.modelData objectForKey:@"button_text_color"];
     }else{
-        self.buttonTextColor = @"#fff";
+        self.buttonTextColor = @"#ffffff";
     }
     if([[self.modelData objectForKey:@"button_background_color"] isKindOfClass:[NSString class]]){
         self.buttonBackgroundColor = [self.modelData objectForKey:@"button_background_color"];

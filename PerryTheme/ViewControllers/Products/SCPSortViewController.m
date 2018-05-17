@@ -18,7 +18,7 @@
     self.preferredContentSize = CGSizeMake(SCREEN_WIDTH/3, self.sortArray.count *44 + 60);
     self.navigationItem.title = SCLocalizedString(@"Refine");
     UIButton *closeButton = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, 44, 44)];
-    [closeButton setImage:[[UIImage imageNamed:@"scp_ic_close"]imageWithColor:SCP_GLOBALVARS.themeConfig.titleColor] forState:UIControlStateNormal];
+    [closeButton setImage:[[UIImage imageNamed:@"scp_ic_close"]imageWithColor:SCP_TITLE_COLOR] forState:UIControlStateNormal];
     [closeButton setImageEdgeInsets:UIEdgeInsetsMake(10, 0, 10, 20)];
     [closeButton addTarget:self action:@selector(cancelButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
     UIBarButtonItem *closeButtonItem = [[UIBarButtonItem alloc] initWithCustomView:closeButton];
@@ -41,7 +41,7 @@
     UITableViewCell *cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:row.identifier];
     UIImageView *iconImageView = [[UIImageView alloc]initWithFrame:CGRectMake(50, 10, 22, 22)];
     if (self.selectedIndex == indexPath.row) {
-        [iconImageView setImage:[[UIImage imageNamed:@"scp_ic_tick"]imageWithColor:SCP_GLOBALVARS.themeConfig.iconHighlightColor]];
+        [iconImageView setImage:[[UIImage imageNamed:@"scp_ic_tick"]imageWithColor:SCP_BUTTON_BACKGROUND_COLOR]];
     }else{
         [iconImageView setImage:[UIImage imageNamed:@"scp_ic_untick"]];
     }

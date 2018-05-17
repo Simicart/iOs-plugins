@@ -10,6 +10,7 @@
 #import "SCPProductCollectionView.h"
 #import "SCPProductViewController.h"
 #import "SCPSortViewController.h"
+#import "SCPFilterViewController.h"
 
 @interface SCPProductsViewController ()
 
@@ -199,5 +200,106 @@
     sortViewController.selectedIndex = self.sortIndex;
     UINavigationController *navigationController = [[UINavigationController alloc]initWithRootViewController:sortViewController];
     [self presentViewController:navigationController animated:YES completion:nil];
+}
+
+- (void)filterAction:(UIButton*)sender{
+    SCPFilterViewController *filterViewController = [SCPFilterViewController new];
+    filterViewController.delegate = self;
+    filterViewController.filterContent = self.layersDict;
+    UINavigationController *navigationController = [[UINavigationController alloc]initWithRootViewController:filterViewController];
+    [self presentViewController:navigationController animated:YES completion:nil];
+}
+
+// Update for Demo
+- (void)configureNavigationBarOnViewWillAppear{
+    if (PHONEDEVICE) {
+        if (_leftButtonItems == nil) {
+            _leftButtonItems = [[NSMutableArray alloc] init];
+            [self addMenuButton];
+            [[NSNotificationCenter defaultCenter]postNotificationName:SCNavigationBarPhoneInitLeftItemsEnd object:_leftButtonItems];
+            _leftButtonItems = [[NSMutableArray alloc] initWithArray:[SimiGlobalFunction sortListItems:_leftButtonItems]];
+        }
+        [self addBackButton];
+        [self.navigationItem setLeftBarButtonItems:_leftButtonItems];
+        if (_rightButtonItems == nil) {
+            _rightButtonItems = [[NSMutableArray alloc] init];
+            [self addCartButton];
+            [[NSNotificationCenter defaultCenter]postNotificationName:SCNavigationBarPhoneInitRightItemsEnd object:self.rightButtonItems userInfo:@{@"controller":self}];
+            _rightButtonItems = [[NSMutableArray alloc] initWithArray:[SimiGlobalFunction sortListItems:_rightButtonItems]];
+        }
+        self.navigationItem.rightBarButtonItems = _rightButtonItems;
+    }else
+    {
+        [self.navigationItem setLeftBarButtonItems:[[[SCAppController sharedInstance]navigationBarPad]leftButtonItems]];
+        self.navigationItem.rightBarButtonItems = [[[SCAppController sharedInstance]navigationBarPad]rightButtonItems];
+    }
+}
+- (void)addMenuButton{
+    UIButton *leftButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 44, 44)];
+    [leftButton setImage:[[UIImage imageNamed:@"scp_ic_menu"]imageWithColor:SCP_ICON_COLOR] forState:UIControlStateNormal];
+    [leftButton setImageEdgeInsets:UIEdgeInsetsMake(7.5, 0, 7.5, 15)];
+    [leftButton addTarget:self action:@selector(openLeftMenu:) forControlEvents:UIControlEventTouchUpInside];
+    [leftButton setAdjustsImageWhenHighlighted:YES];
+    [leftButton setAdjustsImageWhenDisabled:YES];
+    self.leftMenuItem = [[UIBarButtonItem alloc] initWithCustomView:leftButton];
+    self.leftMenuItem.sortOrder = navigationbar_phone_menu_sort_order;
+    UIBarButtonItem *negativeSpacer = [[UIBarButtonItem alloc]
+                                       initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
+                                       target:nil action:nil];
+    negativeSpacer.width = -10;
+    negativeSpacer.sortOrder = self.leftMenuItem.sortOrder - 10;
+    [_leftButtonItems addObjectsFromArray:@[negativeSpacer, self.leftMenuItem]];
+}
+
+- (void)addBackButton{
+    if (![self.navigationController.viewControllers.firstObject isEqual:self]) {
+        UIButton *backButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 44, 44)];
+        backButton.imageView.contentMode = UIViewContentModeScaleAspectFit;
+        [backButton setImage:[[UIImage imageNamed:@"scp_ic_back"] imageWithColor:SCP_ICON_COLOR] forState:UIControlStateNormal];
+        [backButton setImageEdgeInsets:UIEdgeInsetsMake(10, 0, 10, 20)];
+        [backButton addTarget:self action:@selector(didSelectBackBarItem:) forControlEvents:UIControlEventTouchUpInside];
+        UIBarButtonItem *backItem = [[UIBarButtonItem alloc] initWithCustomView:backButton];
+        backItem.simiObjectName = @"back_button";
+        [_leftButtonItems insertObject:backItem atIndex:1];
+    }
+}
+- (void)addCartButton{
+    UIBarButtonItem *negativeSpacer = [[UIBarButtonItem alloc]
+                                       initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
+                                       target:nil action:nil];
+    negativeSpacer.width = -5;
+    
+    UIButton *cartButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 44, 44)];
+    [cartButton setImage:[[UIImage imageNamed:@"scp_ic_cart"] imageWithColor:SCP_ICON_COLOR] forState:UIControlStateNormal];
+    cartButton.imageEdgeInsets = UIEdgeInsetsMake(7.5, 15, 7.5, 0);
+    [cartButton addTarget:self action:@selector(didSelectCartBarItem:) forControlEvents:UIControlEventTouchUpInside];
+    
+    self.cartItem = [[UIBarButtonItem alloc] initWithCustomView:cartButton];
+    if (self.cartBadge == nil) {
+        self.cartBadge = [[BBBadgeBarButtonItem alloc] initWithCustomUIButton:cartButton];
+        self.cartBadge.shouldHideBadgeAtZero = YES;
+        self.cartBadge.badgeValue = [NSString stringWithFormat:@"%ld",(long)GLOBALVAR.cart.total];
+        self.cartBadge.badgeMinSize = 4;
+        self.cartBadge.badgePadding = 4;
+        self.cartBadge.badgeOriginX = cartButton.frame.size.width - 10;
+        self.cartBadge.badgeOriginY = cartButton.frame.origin.y - 3;
+        self.cartBadge.badgeFont = [UIFont fontWithName:THEME_FONT_NAME_REGULAR size:FONT_SIZE_SMALL];
+        [self.cartBadge setTintColor:THEME_COLOR];
+        self.cartBadge.badgeBGColor = SCP_ICON_COLOR;
+        self.cartBadge.badgeTextColor = THEME_COLOR;
+    }
+    [self.rightButtonItems addObjectsFromArray:@[negativeSpacer, self.cartItem]];
+    self.cartItem.sortOrder = navigationbar_phone_cart_sort_order;
+    negativeSpacer.sortOrder = self.cartItem.sortOrder - 10;
+}
+
+- (void)didSelectBackBarItem:(UIButton*)sender
+{
+    [self.navigationController popViewControllerAnimated:YES];
+}
+
+#pragma mark Action
+- (void)openLeftMenu:(id)sender{
+    [kMainViewController showLeftViewAnimated:YES completionHandler:nil];
 }
 @end
