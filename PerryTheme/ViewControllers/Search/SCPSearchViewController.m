@@ -82,8 +82,11 @@
 }
 - (void)tapSearchHistory:(UITapGestureRecognizer *)sender{
     SCPLabel *historyLabel = (SCPLabel *)sender.view;
-     [SCP_SEARCH_DATA addValueToSearchHistory:historyLabel.text];
+    [SCP_SEARCH_DATA addValueToSearchHistory:historyLabel.text];
     SCPProductsViewController *productListVC = [SCPProductsViewController new];
+    if (PADDEVICE) {
+        productListVC = [SCPPadProductsViewController new];
+    }
     productListVC.keySearchProduct = historyLabel.text;
     productListVC.title = historyLabel.text;
     productListVC.productListGetProductType = ProductListGetProductTypeFromSearch;
@@ -94,13 +97,15 @@
     if(![[textField.text stringByReplacingOccurrencesOfString:@" " withString:@""] isEqualToString:@""]){
         [SCP_SEARCH_DATA addValueToSearchHistory:textField.text];
         SCPProductsViewController *productListVC = [SCPProductsViewController new];
+        if (PADDEVICE) {
+            productListVC = [SCPPadProductsViewController new];
+        }
         productListVC.title = textField.text;
         productListVC.keySearchProduct = textField.text;
         productListVC.productListGetProductType = ProductListGetProductTypeFromSearch;
         [self.navigationController pushViewController:productListVC animated:YES];
         textField.text = @"";
         [textField resignFirstResponder];
-//        [[SCAppController sharedInstance]openProductListWithNavigationController:self.navigationController productsId:@"" productsName:@"" getProductsFrom:ProductListGetProductTypeFromSearch moreParams:@{KEYEVENT.PRODUCTLISTVIEWCONTROLLER.search_text:textField.text}];
     }
     return YES;
 }

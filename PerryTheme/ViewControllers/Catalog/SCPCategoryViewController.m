@@ -8,7 +8,6 @@
 
 #import "SCPCategoryViewController.h"
 #import "SCPGlobalVars.h"
-#import "SCPProductsViewController.h"
 #import "SCPPadProductsViewController.h"
 
 #define SCP_CATEGORY @"ROOT_CATEGORY"
@@ -323,10 +322,11 @@
             [self initCells];
         }else{
             SCPProductsViewController *productsVC = [SCPProductsViewController new];
-            if(PADDEVICE){
+            if (PADDEVICE) {
                 productsVC = [SCPPadProductsViewController new];
             }
             productsVC.categoryID = category.entityId;
+            productsVC.nameOfProductList = category.name;
             [self.navigationController pushViewController:productsVC animated:YES];
         }
     }else if([row.identifier isEqualToString:SCP_CATEGORY_VIEW_ALL]){
@@ -335,6 +335,7 @@
             productsVC = [SCPPadProductsViewController new];
         }
         productsVC.categoryID = category.entityId;
+        productsVC.nameOfProductList = category.name;
         [self.navigationController pushViewController:productsVC animated:YES];
     }
 }

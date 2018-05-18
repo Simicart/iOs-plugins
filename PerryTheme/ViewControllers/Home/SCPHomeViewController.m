@@ -401,6 +401,7 @@
                 }
                 productsViewController.productListGetProductType = ProductListGetProductTypeFromCategory;
                 productsViewController.categoryID = category.categoryId;
+                productsViewController.nameOfProductList = category.name;
                 [self.navigationController pushViewController:productsViewController animated:YES];
             }
         }else if([row.identifier isEqualToString:SCP_HOME_CATEGORY_VIEW_ALL]){
@@ -411,6 +412,7 @@
             }
             productsViewController.productListGetProductType = ProductListGetProductTypeFromCategory;
             productsViewController.categoryID = category.categoryId;
+            productsViewController.nameOfProductList = category.name;
             [self.navigationController pushViewController:productsViewController animated:YES];
             //Open list product
         }
@@ -418,12 +420,14 @@
     }
     else if([section.identifier isEqualToString:SCP_HOME_PRODUCT_LIST]){
         //Open list product
+        SimiHomeProductListModel *productListModel = (SimiHomeProductListModel*)row.model;
         SCPProductsViewController *productsViewController = [SCPProductsViewController new];
         if (PADDEVICE) {
             productsViewController = [SCPPadProductsViewController new];
         }
         productsViewController.productListGetProductType = ProductListGetProductTypeFromSpot;
-        productsViewController.spotID = row.model.entityId ;
+        productsViewController.spotID = productListModel.entityId ;
+        productsViewController.nameOfProductList = productListModel.title;
         [self.navigationController pushViewController:productsViewController animated:YES];
     }
 }
@@ -432,6 +436,9 @@
 - (void)didTapInBanner:(SimiHomeBannerModel *)banner{
     if (banner.type == BannerCategoryInApp) {
         SCPProductsViewController *productsVC = [SCPProductsViewController new];
+        if (PADDEVICE) {
+            productsVC = [SCPPadProductsViewController new];
+        }
         productsVC.categoryID = banner.categoryId;
         productsVC.nameOfProductList = banner.categoryName;
         [self.navigationController pushViewController:productsVC animated:YES];

@@ -16,6 +16,7 @@
 
 @implementation SCPProductsViewController
 - (void)viewDidLoadBefore{
+    [self configureLogo];
     if ([self openCategoryCmsPage]) {
         return;
     }
@@ -38,6 +39,12 @@
     }else{
         [self.gridModeCollectionView setAlpha:0];
         [self.gridModeCollectionView setHidden:YES];
+    }
+}
+
+- (void)configureLogo{
+    if(!self.title){
+        self.navigationItem.title = self.nameOfProductList;
     }
 }
 

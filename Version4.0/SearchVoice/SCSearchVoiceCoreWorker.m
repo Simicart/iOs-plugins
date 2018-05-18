@@ -114,6 +114,9 @@
     [self.searchVoiceViewController dismissViewControllerAnimated:YES completion:nil];
     if([viewController isKindOfClass:[SCPSearchViewController class]]){
         SCPProductsViewController *productsVC = [SCPProductsViewController new];
+        if(PADDEVICE){
+            productsVC = [SCPPadProductsViewController new];
+        }
         productsVC.keySearchProduct = result;
         productsVC.title = result;
         productsVC.productListGetProductType = ProductListGetProductTypeFromSearch;
