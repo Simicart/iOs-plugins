@@ -90,10 +90,12 @@
 - (BOOL)textFieldShouldReturn:(UITextField *)textField{
     if(![[textField.text stringByReplacingOccurrencesOfString:@" " withString:@""] isEqualToString:@""]){
         [SCP_SEARCH_DATA addValueToSearchHistory:textField.text];
+        SCPProductsViewController *productListVC = [SCPProductsViewController new];
+        productListVC.keySearchProduct = textField.text;
+        productListVC.productListGetProductType = ProductListGetProductTypeFromSearch;
+        [self.navigationController pushViewController:productListVC animated:YES];
         textField.text = @"";
         [textField resignFirstResponder];
-        SCPProductsViewController *productListVC = [SCPProductsViewController new];
-        [self.navigationController pushViewController:productListVC animated:YES];
 //        [[SCAppController sharedInstance]openProductListWithNavigationController:self.navigationController productsId:@"" productsName:@"" getProductsFrom:ProductListGetProductTypeFromSearch moreParams:@{KEYEVENT.PRODUCTLISTVIEWCONTROLLER.search_text:textField.text}];
     }
     return YES;

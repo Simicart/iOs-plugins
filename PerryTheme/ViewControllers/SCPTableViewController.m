@@ -59,10 +59,10 @@
     if (![self.navigationController.viewControllers.firstObject isEqual:self]) {
         UIBarButtonItem *firstItem = [_leftButtonItems objectAtIndex:1];
         if (![firstItem.simiObjectName isEqualToString:@"back_button"]) {
-            UIButton *backButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 30, 44)];
+            UIButton *backButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 44, 44)];
             backButton.imageView.contentMode = UIViewContentModeScaleAspectFit;
             [backButton setImage:[[UIImage imageNamed:@"scp_ic_back"] imageWithColor:SCP_ICON_COLOR] forState:UIControlStateNormal];
-            [backButton setImageEdgeInsets:UIEdgeInsetsMake(5, 5, 5, 5)];
+            [backButton setImageEdgeInsets:UIEdgeInsetsMake(10, 0, 10, 20)];
             [backButton addTarget:self action:@selector(didSelectBackBarItem:) forControlEvents:UIControlEventTouchUpInside];
             UIBarButtonItem *backItem = [[UIBarButtonItem alloc] initWithCustomView:backButton];
             backItem.simiObjectName = @"back_button";
@@ -70,15 +70,14 @@
         }else
         {
             [_leftButtonItems removeObjectAtIndex:1];
-            UIButton *backButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 30, 44)];
-            [backButton setImage:[[UIImage imageNamed:@"scp_ic_back"] imageWithColor:SCP_ICON_COLOR] forState:UIControlStateNormal];
+            UIButton *backButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 44, 44)];
+            [backButton setImage:[[UIImage imageNamed:@"ic_back"] imageWithColor:THEME_NAVIGATION_ICON_COLOR] forState:UIControlStateNormal];
             [backButton addTarget:self action:@selector(didSelectBackBarItem:) forControlEvents:UIControlEventTouchUpInside];
             UIBarButtonItem *backItem = [[UIBarButtonItem alloc] initWithCustomView:backButton];
             backItem.simiObjectName = @"back_button";
             [_leftButtonItems insertObject:backItem atIndex:1];
         }
-    }else
-    {
+    }else{
         UIBarButtonItem *firstItem = [_leftButtonItems objectAtIndex:1];
         if ([firstItem.simiObjectName isEqualToString:@"back_button"]) {
             [_leftButtonItems removeObjectAtIndex:1];

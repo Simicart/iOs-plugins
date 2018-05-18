@@ -36,15 +36,17 @@
     if (self) {
         [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(didInitCellsAfter:) name:[NSString stringWithFormat:@"%@%@",SCLeftMenuViewController_RootEventName,SimiTableViewController_SubKey_InitCells_End] object:nil];
         [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(didSelectRow:) name:[NSString stringWithFormat:@"%@%@",SCLeftMenuViewController_RootEventName,SimiTableViewController_SubKey_DidSelectCell] object:nil];
-        #if __has_include("SCPInitWorker.h")
+#if __has_include("SCPSearchViewController.h")
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(perrySearchViewDidLoad:) name:@"SCPSearchViewControllerViewDidLoad" object:nil];
+#endif
+#if __has_include("SCPLeftMenuViewController.h")
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(perryLeftMenuInitCellsEnd:) name:[NSString stringWithFormat:@"SCPLeftMenuViewController%@",SimiTableViewController_SubKey_InitCells_End] object:nil];
-        #endif
+#endif
     }
     return self;
 }
 
-#if __has_include("SCPInitWorker.h")
+#if __has_include("SCPSearchViewController.h")
 - (void)perrySearchViewDidLoad:(NSNotification *)noti{
     SCPSearchViewController *searchVC = noti.object;
     UIScrollView *mainScrollView = searchVC.mainScrollView;
@@ -67,6 +69,8 @@
     [mainScrollView addSubview:scanView];
     [scanView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapButtonScan)]];
 }
+#endif
+#if __has_include("SCPLeftMenuViewController.h")
 - (void)perryLeftMenuInitCellsEnd:(NSNotification *)noti{
     SimiTable *cells = noti.object;
     SimiSection *mainSection = [cells getSectionByIdentifier:LEFTMENU_SECTION_MAIN];

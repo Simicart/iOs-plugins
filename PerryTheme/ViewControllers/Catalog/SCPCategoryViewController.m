@@ -33,6 +33,13 @@
     categories = [NSMutableArray new];
     [self getRootCategories];
 }
+- (void)configureLogo{
+    if(self.isSubCategory){
+        self.title = self.categoryModel.name;
+    }else{
+        self.title = SCLocalizedString(@"Category");
+    }
+}
 - (void)getRootCategories{
     if(!self.categoryCollection){
         self.categoryCollection = [[SCPCategoryModelCollection alloc] init];
@@ -50,49 +57,52 @@
     [self removeObserverForNotification:noti];
     SimiResponder *responder = [noti.userInfo objectForKey:responderKey];
     if(responder.status == SUCCESS){
-        if(!self.isSubCategory){
-            for(SimiCategoryModel *model in self.categoryCollection.collectionData){
-                SCPCategoryModel *category1 = [[SCPCategoryModel alloc] initWithModelData:model.modelData];
-                [categories addObject:category1];
-                category1.level = CategoryLevelOne;
-                category1.isSelected = NO;
-                category1.parentCategory = nil;
-                if(category1.hasChildren){
-                    for(SCPCategoryModel *category2 in category1.subCategories){
-                        category2.level = CategoryLevelTwo;
-                        category2.isSelected = NO;
-                        category2.parentCategory = category1;
-                        if(category2.hasChildren){
-                            for(SCPCategoryModel *category3 in category2.subCategories){
-                                category3.level = CategoryLevelThree;
-                                category3.isSelected = NO;
-                                category3.parentCategory = category2;
-                            }
-                        }
-                    }
-                }
-            }
-        }else{
-            for(SimiCategoryModel *model in self.categoryCollection.collectionData){
-                SCPCategoryModel *category2 = [[SCPCategoryModel alloc] initWithModelData:model.modelData];
-                [categories addObject:category2];
-                category2.level = CategoryLevelTwo;
-                category2.isSelected = NO;
-                category2.parentCategory = nil;
-                if(category2.hasChildren){
-                    for(NSDictionary *cate3 in category2.subCategories){
-                        SCPCategoryModel *category3 = [[SCPCategoryModel alloc] initWithModelData:cate3];
-                        category3.level = CategoryLevelThree;
-                        category3.isSelected = NO;
-                        category3.parentCategory = category2;
-                    }
-                }
-            }
-        }
+        [self initCategories];
         [self initCells];
         self.contentTableView.hidden = NO;
     }else{
         [self showAlertWithTitle:@"" message:responder.message];
+    }
+}
+- (void)initCategories{
+    if(!self.isSubCategory){
+        for(SimiCategoryModel *model in self.categoryCollection.collectionData){
+            SCPCategoryModel *category1 = [[SCPCategoryModel alloc] initWithModelData:model.modelData];
+            [categories addObject:category1];
+            category1.level = CategoryLevelOne;
+            category1.isSelected = NO;
+            category1.parentCategory = nil;
+            if(category1.hasChildren){
+                for(SCPCategoryModel *category2 in category1.subCategories){
+                    category2.level = CategoryLevelTwo;
+                    category2.isSelected = NO;
+                    category2.parentCategory = category1;
+                    if(category2.hasChildren){
+                        for(SCPCategoryModel *category3 in category2.subCategories){
+                            category3.level = CategoryLevelThree;
+                            category3.isSelected = NO;
+                            category3.parentCategory = category2;
+                        }
+                    }
+                }
+            }
+        }
+    }else{
+        for(SimiCategoryModel *model in self.categoryCollection.collectionData){
+            SCPCategoryModel *category2 = [[SCPCategoryModel alloc] initWithModelData:model.modelData];
+            [categories addObject:category2];
+            category2.level = CategoryLevelTwo;
+            category2.isSelected = NO;
+            category2.parentCategory = nil;
+            if(category2.hasChildren){
+                for(NSDictionary *cate3 in category2.subCategories){
+                    SCPCategoryModel *category3 = [[SCPCategoryModel alloc] initWithModelData:cate3];
+                    category3.level = CategoryLevelThree;
+                    category3.isSelected = NO;
+                    category3.parentCategory = category2;
+                }
+            }
+        }
     }
 }
 - (void)createCells{
