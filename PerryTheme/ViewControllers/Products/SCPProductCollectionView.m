@@ -40,9 +40,21 @@
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath{
     if (self.gridMode) {
-        return CGSizeMake(minimumImageSize, minimumImageSize + 60);
-    }else
-        return CGSizeMake(maximumImageSize, maximumImageSize + 80);
+        float height = 0;
+        int numberCollectionRow = (int)indexPath.row/2;
+        for (int i = numberCollectionRow*2; i <= numberCollectionRow*2+1; i++) {
+            if (i < self.productModelCollection.count) {
+                SimiProductModel *product = [self.productModelCollection objectAtIndex:i];
+                if ([product heightPriceOnGrid] > height) {
+                    height = [product heightPriceOnGrid];
+                }
+            }
+        }
+        return CGSizeMake(minimumImageSize, minimumImageSize + 40 + height);
+    }else{
+        SimiProductModel *product = [self.productModelCollection objectAtIndex:indexPath.row];
+        return CGSizeMake(maximumImageSize, maximumImageSize + 45 + [product heightPriceOnGrid]);
+    }
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView{

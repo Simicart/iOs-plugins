@@ -122,8 +122,10 @@ static NSString* FILTER_ATTRIBUTE_VALUE_ROW = @"FILTER_ATTRIBUTE_VALUE_ROW";
 
 - (void)removeAllActiveAttribute:(UIButton*)sender{
     [self.activedFilterOptions removeAllObjects];
-    [self.cells removeSectionsByIdentifier:FILTER_SECTION_ACTIVED];
-    [self.contentTableView reloadData];
+    self.paramFilter = [NSMutableDictionary new];
+    [self dismissViewControllerAnimated:YES completion:^{
+        [self.delegate filterWithParam:self.paramFilter];
+    }];
 }
 
 - (UIView *)contentTableViewViewForHeaderInSection:(NSInteger)section{
@@ -145,7 +147,7 @@ static NSString* FILTER_ATTRIBUTE_VALUE_ROW = @"FILTER_ATTRIBUTE_VALUE_ROW";
         NSString *title = SCLocalizedString(@"Clear all");
         UIFont *titleFont = [UIFont fontWithName:THEME_FONT_NAME_REGULAR size:FONT_SIZE_LARGE];
         float buttonWidth = [title sizeWithAttributes:@{NSFontAttributeName:titleFont}].width + 4;
-        SimiButton *clearAllButton = [[SimiButton alloc]initWithFrame:CGRectMake(CGRectGetWidth(self.contentTableView.frame) - SCP_GLOBALVARS.padding - buttonWidth, 10, buttonWidth, 40) title:title titleFont:titleFont];
+        SimiButton *clearAllButton = [[SimiButton alloc]initWithFrame:CGRectMake(CGRectGetWidth(self.contentTableView.frame) - SCP_GLOBALVARS.padding - buttonWidth, 10, buttonWidth, 40) title:title titleFont:titleFont cornerRadius:0 borderWidth:0 borderColor:nil];
         [clearAllButton setTitleColor:SCP_BUTTON_BACKGROUND_COLOR forState:UIControlStateNormal];
         [clearAllButton setBackgroundColor:[UIColor clearColor]];
         [clearAllButton addTarget:self action:@selector(removeAllActiveAttribute:) forControlEvents:UIControlEventTouchUpInside];
@@ -256,11 +258,20 @@ static NSString* FILTER_ATTRIBUTE_VALUE_ROW = @"FILTER_ATTRIBUTE_VALUE_ROW";
 - (void)contentTableViewDidSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     SimiSection *simiSection = [self.cells objectAtIndex:indexPath.section];
     if ([simiSection.identifier isEqualToString:FILTER_ATTRIBUTE_SECTION]) {
-        for (SimiRow *row in simiSection.rows) {
+        for (int i = 0; i < simiSection.rows.count; i++) {
+            if (i == indexPath.row) {
+                continue;
+            }
+            SimiRow *row = [simiSection.rows objectAtIndex:i];
             row.simiObjectIdentifier = [NSNumber numberWithBool:NO];
         }
         SimiRow *row = [simiSection objectAtIndex:indexPath.row];
-        row.simiObjectIdentifier = [NSNumber numberWithBool:YES];
+        NSNumber *isSelected = (NSNumber*)row.simiObjectIdentifier;
+        if ([isSelected boolValue]) {
+            row.simiObjectIdentifier = [NSNumber numberWithBool:NO];
+        }else{
+            row.simiObjectIdentifier = [NSNumber numberWithBool:YES];
+        }
     }
     [self.contentTableView reloadData];
 }

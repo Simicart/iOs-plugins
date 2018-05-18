@@ -68,7 +68,7 @@
         }
     }
     UIFont *boldFont = [UIFont fontWithName:THEME_FONT_NAME_REGULAR size:fontSize];
-    UIFont *lightFont = [UIFont fontWithName:THEME_FONT_NAME size:fontSize - 1];
+    UIFont *lightFont = [UIFont fontWithName:THEME_FONT_NAME size:fontSize - 2];
     if (![specialPrice isEqualToString:@""]) {
         specialPrice = [[SimiFormatter sharedInstance] priceWithPrice:specialPrice];
     }
@@ -77,23 +77,29 @@
         float specialPriceWidth = [specialPrice sizeWithAttributes:@{NSFontAttributeName:boldFont}].width;
         float regularPriceWidth = [regularPrice sizeWithAttributes:@{NSFontAttributeName:lightFont}].width;
         SimiLabel *specialPriceLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(0, heightContent, specialPriceWidth, heightLabel) andFont:boldFont];
+        [specialPriceLabel setTextColor:COLOR_WITH_HEX(@"#2d2d2d")];
         [specialPriceLabel setText:specialPrice];
         [self addSubview:specialPriceLabel];
         
         SimiLabel *regularPriceLabel = [SimiLabel new];
         [regularPriceLabel setFont:lightFont];
         [regularPriceLabel setText:regularPrice];
+        [regularPriceLabel setTextColor:COLOR_WITH_HEX(@"#757575")];
         [self addSubview:regularPriceLabel];
         if ((specialPriceWidth + regularPriceWidth + SCP_GLOBALVARS.interitemSpacing) > self.widthView) {
             heightContent += heightLabel;
-            regularPriceLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(0, heightContent, regularPriceWidth, heightLabel)];
+            [regularPriceLabel setFrame:CGRectMake(0, heightContent, regularPriceWidth, heightLabel)];
         }else{
-            regularPriceLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(specialPriceWidth + SCP_GLOBALVARS.interitemSpacing, heightContent, regularPriceWidth, heightLabel)];
+            [regularPriceLabel setFrame:CGRectMake(specialPriceWidth + SCP_GLOBALVARS.interitemSpacing, heightContent, regularPriceWidth, heightLabel)];
         }
         heightContent += heightLabel;
+        UIImageView *throughLineView = [[UIImageView alloc]initWithFrame:CGRectMake(0, heightLabel/2, regularPriceWidth, 1)];
+        [throughLineView setBackgroundColor:COLOR_WITH_HEX(@"#757575")];
+        [regularPriceLabel addSubview:throughLineView];
     }else{
         float regularPriceWidth = [regularPrice sizeWithAttributes:@{NSFontAttributeName:boldFont}].width;
         SimiLabel *regularPriceLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(0, heightContent, regularPriceWidth, heightLabel) andFont:boldFont];
+        [regularPriceLabel setTextColor:COLOR_WITH_HEX(@"#2d2d2d")];
         [regularPriceLabel setText:regularPrice];
         [self addSubview:regularPriceLabel];
         heightContent += heightLabel;
