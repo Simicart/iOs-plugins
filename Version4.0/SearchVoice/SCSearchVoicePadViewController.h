@@ -10,4 +10,5 @@
 #import "SCSearchVoiceViewController.h"
 
 @interface SCSearchVoicePadViewController : SCSearchVoiceViewController
+
 @end

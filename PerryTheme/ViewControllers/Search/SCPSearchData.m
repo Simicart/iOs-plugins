@@ -36,6 +36,8 @@
         }
         [searchHistory addObjectsFromArray:searchValues];
         [searchHistory insertObject:value atIndex:0];
+    }else{
+        [searchHistory insertObject:value atIndex:0];
     }
     [[NSUserDefaults standardUserDefaults] setObject:searchHistory forKey:@"searchValues"];
 }

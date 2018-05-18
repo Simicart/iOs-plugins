@@ -14,6 +14,7 @@
 #import "SCSearchVoicePadViewController.h"
 #if __has_include("SCPSearchViewController.h")
 #import "SCPSearchViewController.h"
+#import "SCPProductsViewController.h"
 #endif
 @implementation SCSearchVoiceCoreWorker {
     SimiViewController *viewController;
@@ -109,6 +110,16 @@
 
 #pragma mark SearchVoiceViewController Delegate
 - (void)finishAction:(NSString *)result {
+#if __has_include("SCPSearchViewController.h")
+    [self.searchVoiceViewController dismissViewControllerAnimated:YES completion:nil];
+    if([viewController isKindOfClass:[SCPSearchViewController class]]){
+        SCPProductsViewController *productsVC = [SCPProductsViewController new];
+        productsVC.keySearchProduct = result;
+        productsVC.title = result;
+        productsVC.productListGetProductType = ProductListGetProductTypeFromSearch;
+        [viewController.navigationController pushViewController:productsVC animated:YES];
+    }
+#endif
     if (PADDEVICE) {
         [self.searchVoicePadViewController dismissViewControllerAnimated:YES completion:nil];
         if (controller.searchBar ==nil) {

@@ -43,7 +43,7 @@
     [mainScrollView addSubview:searchTextField];
     contentY += CGRectGetHeight(searchTextField.frame) + 15;
     SCPLabel *popularlabel = [[SCPLabel alloc] initWithFrame:CGRectMake(paddingX, contentY, contentWidth, 30) andFontName:THEME_FONT_NAME_REGULAR andFontSize:FONT_SIZE_LARGE];
-    popularlabel.text = @"Recent Searches";
+    popularlabel.text = @"History Searches";
     [mainScrollView addSubview:popularlabel];
     contentY += CGRectGetHeight(popularlabel.frame);
     popularSearchView = [[UIView alloc] initWithFrame:CGRectMake(paddingX, contentY, contentWidth, 75)];
@@ -84,6 +84,9 @@
     SCPLabel *historyLabel = (SCPLabel *)sender.view;
      [SCP_SEARCH_DATA addValueToSearchHistory:historyLabel.text];
     SCPProductsViewController *productListVC = [SCPProductsViewController new];
+    productListVC.keySearchProduct = historyLabel.text;
+    productListVC.title = historyLabel.text;
+    productListVC.productListGetProductType = ProductListGetProductTypeFromSearch;
     [self.navigationController pushViewController:productListVC animated:YES];
 }
 #pragma mark UITextFieldDelegate
@@ -91,6 +94,7 @@
     if(![[textField.text stringByReplacingOccurrencesOfString:@" " withString:@""] isEqualToString:@""]){
         [SCP_SEARCH_DATA addValueToSearchHistory:textField.text];
         SCPProductsViewController *productListVC = [SCPProductsViewController new];
+        productListVC.title = textField.text;
         productListVC.keySearchProduct = textField.text;
         productListVC.productListGetProductType = ProductListGetProductTypeFromSearch;
         [self.navigationController pushViewController:productListVC animated:YES];
