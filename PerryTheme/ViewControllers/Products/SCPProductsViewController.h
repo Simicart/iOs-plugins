@@ -15,8 +15,4 @@
 @property (strong, nonatomic) SCPProductCollectionView *gridModeCollectionView;
 @property (strong, nonatomic) SCPProductCollectionView *listModeCollectionView;
 
-//Update for Demo
-@property (nonatomic, strong) NSMutableArray *leftButtonItems, *rightButtonItems;
-@property (nonatomic, strong) UIBarButtonItem *leftMenuItem, *cartItem;
-@property (nonatomic, strong) BBBadgeBarButtonItem *cartBadge;
 @end

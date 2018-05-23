@@ -9,7 +9,4 @@
 #import <SimiCartBundle/SimiCartBundle.h>
 
 @interface SCPTableViewController : SimiTableViewController
-@property (nonatomic, strong) NSMutableArray *leftButtonItems, *rightButtonItems;
-@property (nonatomic, strong) UIBarButtonItem *leftMenuItem, *cartItem;
-@property (nonatomic, strong) BBBadgeBarButtonItem *cartBadge;
 @end

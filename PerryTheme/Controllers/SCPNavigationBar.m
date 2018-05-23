@@ -15,7 +15,7 @@
     if (_leftButtonItems == nil) {
         _leftButtonItems = [[NSMutableArray alloc] init];
         [self addMenuButton];
-        [[NSNotificationCenter defaultCenter]postNotificationName:SCNavigationBarPhoneInitLeftItemsEnd object:_leftButtonItems];
+        [[NSNotificationCenter defaultCenter]postNotificationName:SCNavigationBarPhoneInitLeftItemsEnd object:self.leftButtonItems];
         _leftButtonItems = [[NSMutableArray alloc] initWithArray:[SimiGlobalFunction sortListItems:_leftButtonItems]];
     }
     [self addBackButton];
@@ -48,32 +48,41 @@
 }
 
 - (void)addBackButton{
-    if (![GLOBALVAR.currentlyNavigationController.viewControllers.firstObject isEqual:GLOBALVAR.currentViewController]) {
-        UIBarButtonItem *firstItem = [_leftButtonItems objectAtIndex:1];
-        if (![firstItem.simiObjectName isEqualToString:@"back_button"]) {
-            UIButton *backButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 30, 44)];
-            backButton.imageView.contentMode = UIViewContentModeScaleAspectFit;
-            [backButton setImage:[[UIImage imageNamed:@"scp_ic_back"] imageWithColor:SCP_ICON_COLOR] forState:UIControlStateNormal];
-            [backButton setImageEdgeInsets:UIEdgeInsetsMake(5, 5, 5, 5)];
-            [backButton addTarget:self action:@selector(didSelectBackBarItem:) forControlEvents:UIControlEventTouchUpInside];
-            UIBarButtonItem *backItem = [[UIBarButtonItem alloc] initWithCustomView:backButton];
-            backItem.simiObjectName = @"back_button";
-            [_leftButtonItems insertObject:backItem atIndex:1];
-        }else
-        {
-            [_leftButtonItems removeObjectAtIndex:1];
-            UIButton *backButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 30, 44)];
-            [backButton setImage:[[UIImage imageNamed:@"scp_ic_back"] imageWithColor:SCP_ICON_COLOR] forState:UIControlStateNormal];
-            [backButton addTarget:self action:@selector(didSelectBackBarItem:) forControlEvents:UIControlEventTouchUpInside];
-            UIBarButtonItem *backItem = [[UIBarButtonItem alloc] initWithCustomView:backButton];
-            backItem.simiObjectName = @"back_button";
-            [_leftButtonItems insertObject:backItem atIndex:1];
-        }
-    }else
-    {
-        UIBarButtonItem *firstItem = [_leftButtonItems objectAtIndex:1];
-        if ([firstItem.simiObjectName isEqualToString:@"back_button"]) {
-            [_leftButtonItems removeObjectAtIndex:1];
+    if([GLOBALVAR.currentViewController isKindOfClass:[SimiViewController class]]){
+        SimiViewController *viewController = (SimiViewController *)GLOBALVAR.currentViewController;
+        if(viewController.isPresented || viewController.isInPopover){
+            return;
+        }else{
+            if (![viewController.navigationController.viewControllers.firstObject isEqual:viewController]) {
+                UIBarButtonItem *firstItem = [_leftButtonItems objectAtIndex:1];
+                if (![firstItem.simiObjectName isEqualToString:@"back_button"]) {
+                    UIButton *backButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 32, 32)];
+                    [backButton setImageEdgeInsets:UIEdgeInsetsMake(5, 5, 5, 5)];
+                    [backButton setImage:[[UIImage imageNamed:@"scp_ic_back"] imageWithColor:THEME_NAVIGATION_ICON_COLOR] forState:UIControlStateNormal];
+                    [backButton addTarget:self action:@selector(didSelectBackBarItem:) forControlEvents:UIControlEventTouchUpInside];
+                    UIBarButtonItem *backItem = [[UIBarButtonItem alloc] initWithCustomView:backButton];
+                    backItem.simiObjectName = @"back_button";
+                    [_leftButtonItems insertObject:backItem atIndex:1];
+                }else
+                {
+                    [_leftButtonItems removeObjectAtIndex:1];
+                    UIButton *backButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 32, 32)];
+                    [backButton setImage:[[UIImage imageNamed:@"scp_ic_back"] imageWithColor:THEME_NAVIGATION_ICON_COLOR] forState:UIControlStateNormal];
+                    [backButton setImageEdgeInsets:UIEdgeInsetsMake(5, 5, 5, 5)];
+                    [backButton addTarget:self action:@selector(didSelectBackBarItem:) forControlEvents:UIControlEventTouchUpInside];
+                    UIBarButtonItem *backItem = [[UIBarButtonItem alloc] initWithCustomView:backButton];
+                    backItem.simiObjectName = @"back_button";
+                    [_leftButtonItems insertObject:backItem atIndex:1];
+                }
+            }else
+            {
+                UIBarButtonItem *firstItem = [_leftButtonItems objectAtIndex:1];
+                if ([firstItem.simiObjectName isEqualToString:@"back_button"]) {
+                    [_leftButtonItems removeObjectAtIndex:1];
+                }
+            }
+            [viewController.navigationItem setLeftBarButtonItems:_leftButtonItems];
+            viewController.navigationItem.rightBarButtonItems = [[[SCAppController sharedInstance]navigationBarPhone]rightButtonItems];
         }
     }
 }
@@ -110,7 +119,10 @@
 
 - (void)didSelectBackBarItem:(UIButton*)sender
 {
-    [GLOBALVAR.currentlyNavigationController popViewControllerAnimated:YES];
+    if([GLOBALVAR.currentViewController isKindOfClass:[SimiViewController class]]){
+        SimiViewController *viewController = (SimiViewController *)GLOBALVAR.currentViewController;
+        [viewController.navigationController popViewControllerAnimated:YES];
+    }
 }
 
 #pragma mark Action

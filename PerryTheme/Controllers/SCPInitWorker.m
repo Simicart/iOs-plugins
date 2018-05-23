@@ -60,7 +60,7 @@
         InitWorker *initWorker = noti.object;
         initWorker.isDiscontinue = YES;
         //Init the root view
-    [SCAppController sharedInstance].navigationBarPhone = [SCNavigationBarPhone new];
+    [SCAppController sharedInstance].navigationBarPhone = [SCPNavigationBar new];
         NSMutableArray *navigationControllers = [NSMutableArray new];
         UINavigationController *homeNavi = [[UINavigationController alloc] init];
         homeNavi.viewControllers = @[[SCPHomeViewController new]];

@@ -393,6 +393,16 @@
                         break;
                 }
                 [self initCells];
+                SimiSection *cateSection = [self.cells getSectionByIdentifier:SCP_HOME_CATEGORY];
+                for(SimiRow *row in cateSection.rows){
+                    SCPHomeCategoryModel *category = (SCPHomeCategoryModel *)row.model;
+                    if(category.isSelected){
+                        NSInteger rowIndex = [self.categories indexOfObject:category] + category.subCategories.count;
+                        NSInteger sectionIndex = [self.cells getSectionIndexByIdentifier:SCP_HOME_CATEGORY];
+                        [self.contentTableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:rowIndex inSection:sectionIndex] atScrollPosition:UITableViewScrollPositionBottom animated:YES];
+                        break;
+                    }
+                }
             }else{
                 //Open list product
                 SCPProductsViewController *productsViewController = [SCPProductsViewController new];
