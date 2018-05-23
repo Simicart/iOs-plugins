@@ -12,5 +12,4 @@
 #import <SimiCartBundle/MatrixBannerScrollViewPad.h>
 
 @interface SCPHomeViewController : SCPTableViewController<MatrixBannerScrollViewDelegate>
-
 @end

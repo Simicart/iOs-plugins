@@ -41,7 +41,7 @@
     if(self.isSubCategory){
         self.title = self.categoryModel.name;
     }else{
-        self.title = SCLocalizedString(@"Category");
+        self.title = SCLocalizedString(@"Categories");
     }
 }
 - (void)getRootCategories{
@@ -276,9 +276,9 @@
                 [expandedRows addObject:[NSIndexPath indexPathForRow:0 inSection:sectionIndex]];
             }
             [self initCells];
-            [self.contentTableView beginUpdates];
-            [self.contentTableView insertRowsAtIndexPaths:expandedRows withRowAnimation:UITableViewRowAnimationFade];
-            [self.contentTableView endUpdates];
+//            [self.contentTableView beginUpdates];
+//            [self.contentTableView insertRowsAtIndexPaths:expandedRows withRowAnimation:UITableViewRowAnimationFade];
+//            [self.contentTableView endUpdates];
             [self.contentTableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:sectionIndex] atScrollPosition:UITableViewScrollPositionTop animated:YES];
         }
     }

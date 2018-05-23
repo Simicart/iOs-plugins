@@ -35,7 +35,7 @@
 }
 - (void)viewDidLoadBefore{
     [super viewDidLoadBefore];
-    self.contentTableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStylePlain];
+    self.contentTableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStyleGrouped];
     self.contentTableView.delegate = self;
     self.contentTableView.dataSource = self;
     self.contentTableView.tableFooterView = [UIView new];
@@ -128,10 +128,28 @@
         }
     }
     if(self.categories.count > 0){
-        SimiSection *categorySection = [self.cells addSectionWithIdentifier:SCP_HOME_CATEGORY];
         for(SCPHomeCategoryModel *category1 in self.categories){
-            SimiRow *row1 = [categorySection addRowWithIdentifier:SCP_HOME_CATEGORY];
-            row1.model = category1;
+            float paddingX1 = 0;
+            float contentWidth = CGRectGetWidth(self.contentTableView.frame) - paddingX1;
+            float imageWidth = category1.width;
+            if(PADDEVICE){
+                imageWidth = category1.widthTablet;
+            }
+            if(imageWidth == 0){
+                imageWidth = contentWidth;
+            }
+            float scale = 0;
+            if(imageWidth > 0){
+                scale = contentWidth/imageWidth;
+            }
+            float imageHeight = category1.height;
+            if(PADDEVICE){
+                imageHeight = category1.heightTablet;
+            }
+            imageHeight *= scale;
+            SimiSection *categorySection = [self.cells addSectionWithIdentifier:SCP_HOME_CATEGORY];
+            categorySection.header = [[SimiSectionHeader alloc] initWithTitle:@"" height:imageHeight];
+            categorySection.simiObjectIdentifier = category1;
             if(category1.isSelected && category1.hasChildren){
                 SimiRow *row = [categorySection addRowWithIdentifier:SCP_HOME_CATEGORY_VIEW_ALL];
                 row.model = category1;
@@ -175,6 +193,51 @@
     }
     return nil;
 }
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
+    SimiSection *sec = [self.cells objectAtIndex:section];
+    SCPHomeCategoryModel *category = (SCPHomeCategoryModel *)sec.simiObjectIdentifier;
+    NSString *identifier = [NSString stringWithFormat:@"%@%@",SCP_HOME_CATEGORY,category.entityId];
+    UITableViewHeaderFooterView *headerView = [self.contentTableView dequeueReusableHeaderFooterViewWithIdentifier:identifier];
+    if (!headerView) {
+        headerView = [UITableViewHeaderFooterView new];
+        float paddingX1 = 0;
+        float contentWidth = CGRectGetWidth(self.contentTableView.frame) - 2*paddingX1;
+        UIButton *button = [[UIButton alloc] initWithFrame:CGRectMake(paddingX1, 0, contentWidth, sec.header.height)];
+        button.simiObjectIdentifier = sec;
+        [button addTarget:self action:@selector(didTapToCategoryImage:) forControlEvents:UIControlEventTouchUpInside];
+        [button sd_setImageWithURL:[NSURL URLWithString:category.imageURL] forState:UIControlStateNormal placeholderImage:[UIImage imageNamed:@"logo"]];
+        [button.imageView setContentMode:UIViewContentModeScaleAspectFill];
+        [headerView addSubview:button];
+    }
+    return headerView;
+}
+- (void)didTapToCategoryImage:(UIButton *)sender{
+    SimiSection *section = (SimiSection *)sender.simiObjectIdentifier;
+    SCPHomeCategoryModel *category = (SCPHomeCategoryModel *)section.simiObjectIdentifier;
+    if(category.hasChildren){
+        if(category.isSelected){
+            category.isSelected = NO;
+            [self initCells];
+        }else{
+            for(SCPHomeCategoryModel *cate in self.categories){
+                if(![category isEqual:cate]){
+                    if(cate.isSelected){
+                        cate.isSelected = NO;
+                    }
+                }
+                if(cate.hasChildren){
+                    for(SCPHomeCategoryModel *cate2 in cate.subCategories){
+                        cate2.isSelected = NO;
+                    }
+                }
+            }
+            category.isSelected = YES;
+            NSUInteger sectionIndex = [self.cells indexOfObject:section];
+            [self initCells];
+            [self.contentTableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:sectionIndex] atScrollPosition:UITableViewScrollPositionTop animated:YES];
+        }
+    }
+}
 - (UITableViewCell *)addBannerCellForRow:(SimiRow *)row{
     UITableViewCell *cell = [self.contentTableView dequeueReusableCellWithIdentifier:row.identifier];
     if(!cell){
@@ -205,37 +268,11 @@
     if(!cell){
         cell = [[SimiTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier];
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
-        float paddingX1 = 0;
         float paddingX2 = CGRectGetWidth(self.contentTableView.frame) / 6;
         float paddingX3 = paddingX2 + 50;
         float contentWidth;
         cell.heightCell = 0;
         switch (category.level) {
-            case HomeCategoryLevelOne:{
-                contentWidth = CGRectGetWidth(self.contentTableView.frame) - paddingX1;
-                float imageWidth = category.width;
-                if(PADDEVICE){
-                    imageWidth = category.widthTablet;
-                }
-                if(imageWidth == 0){
-                    imageWidth = contentWidth;
-                }
-                float scale = 0;
-                if(imageWidth > 0){
-                    scale = contentWidth/imageWidth;
-                }
-                float imageHeight = category.height;
-                if(PADDEVICE){
-                    imageHeight = category.heightTablet;
-                }
-                imageHeight *= scale;
-                UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(paddingX1, cell.heightCell, contentWidth, imageHeight)];
-                [imageView sd_setImageWithURL:[NSURL URLWithString:PHONEDEVICE?category.imageURL:category.imageURLPad] placeholderImage:[UIImage imageNamed:@"logo"]];
-                imageView.contentMode = UIViewContentModeScaleToFill;
-                [cell.contentView addSubview:imageView];
-                cell.heightCell += CGRectGetHeight(imageView.frame);
-            }
-                break;
             case HomeCategoryLevelTwo:{
                 contentWidth = CGRectGetWidth(self.contentTableView.frame) - paddingX2;
                 SimiLabel *label = [[SimiLabel alloc] initWithFrame:CGRectMake(paddingX2, cell.heightCell, contentWidth, 44)];
@@ -346,32 +383,15 @@
 - (void)contentTableViewDidSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     SimiSection *section = [self.cells objectAtIndex:indexPath.section];
     SimiRow *row = [section objectAtIndex:indexPath.row];
+    SCPHomeCategoryModel *category = (SCPHomeCategoryModel *)row.model;
     if([section.identifier isEqualToString:SCP_HOME_CATEGORY]){
         if([row.identifier isEqualToString:SCP_HOME_CATEGORY]){
-            SCPHomeCategoryModel *category = (SCPHomeCategoryModel *)row.model;
             if(category.hasChildren){
                 switch (category.level) {
-                    case HomeCategoryLevelOne:{
-                        if(category.isSelected){
-                            category.isSelected = NO;
-                        }else{
-                            category.isSelected = YES;
-                            for(SCPHomeCategoryModel *cate in self.categories){
-                                if(![category isEqual:cate]){
-                                    cate.isSelected = NO;
-                                }
-                                if(cate.hasChildren){
-                                    for(SCPHomeCategoryModel *cate2 in cate.subCategories){
-                                        cate2.isSelected = NO;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                        break;
                     case HomeCategoryLevelTwo:{
                         if(category.isSelected){
                             category.isSelected = NO;
+                            [self initCells];
                         }else{
                             category.isSelected = YES;
                             SCPHomeCategoryModel *parent = category.parentCategory;
@@ -380,6 +400,10 @@
                                     cate.isSelected = NO;
                                 }
                             }
+                            [self initCells];
+//                            NSInteger firstSectionIndex = [self.cells getSectionIndexByIdentifier:SCP_HOME_CATEGORY];
+//                            NSInteger sectionIndex = firstSectionIndex + [self.categories indexOfObject:category];
+                            [self.contentTableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:indexPath.section] atScrollPosition:UITableViewScrollPositionBottom animated:YES];
                         }
                     }
                         break;
@@ -391,17 +415,6 @@
                         break;
                     default:
                         break;
-                }
-                [self initCells];
-                SimiSection *cateSection = [self.cells getSectionByIdentifier:SCP_HOME_CATEGORY];
-                for(SimiRow *row in cateSection.rows){
-                    SCPHomeCategoryModel *category = (SCPHomeCategoryModel *)row.model;
-                    if(category.isSelected){
-                        NSInteger rowIndex = [self.categories indexOfObject:category] + category.subCategories.count;
-                        NSInteger sectionIndex = [self.cells getSectionIndexByIdentifier:SCP_HOME_CATEGORY];
-                        [self.contentTableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:rowIndex inSection:sectionIndex] atScrollPosition:UITableViewScrollPositionBottom animated:YES];
-                        break;
-                    }
                 }
             }else{
                 //Open list product
