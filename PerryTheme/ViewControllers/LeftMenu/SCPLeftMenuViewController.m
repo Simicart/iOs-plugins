@@ -189,7 +189,7 @@
 - (void)setCustomer:(SimiCustomerModel *)customer{
     _customer = customer;
     if(customer){
-        [avatarView sd_setImageWithURL:[NSURL URLWithString:customer.url] placeholderImage:[UIImage imageNamed:@"scp_ic_user"]];
+        [avatarView sd_setImageWithURL:[NSURL URLWithString:customer.url] placeholderImage:[[UIImage imageNamed:@"scp_ic_user"] imageWithColor:[UIColor whiteColor]]];
         nameLabel.text = [NSString stringWithFormat:@"%@ %@",customer.firstName, customer.lastName];
         nameLabel.textColor = SCP_BUTTON_TEXT_COLOR;
         nameLabel.hidden = NO;
