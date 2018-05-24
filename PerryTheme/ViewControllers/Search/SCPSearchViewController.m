@@ -43,7 +43,7 @@
     [mainScrollView addSubview:searchTextField];
     contentY += CGRectGetHeight(searchTextField.frame) + 15;
     SCPLabel *popularlabel = [[SCPLabel alloc] initWithFrame:CGRectMake(paddingX, contentY, contentWidth, 30) andFontName:THEME_FONT_NAME_REGULAR andFontSize:FONT_SIZE_LARGE];
-    popularlabel.text = @"History Searches";
+    popularlabel.text = @"Search History";
     [mainScrollView addSubview:popularlabel];
     contentY += CGRectGetHeight(popularlabel.frame);
     popularSearchView = [[UIView alloc] initWithFrame:CGRectMake(paddingX, contentY, contentWidth, 75)];
