@@ -14,6 +14,7 @@
 #import "SCPCategoryViewController.h"
 #import "SCPSearchViewController.h"
 #import "SCPLeftMenuViewController.h"
+
 @implementation SCPInitWorker{
     SCPLeftMenuViewController *leftMenuViewController;
 }
@@ -61,6 +62,9 @@
         initWorker.isDiscontinue = YES;
         //Init the root view
     [SCAppController sharedInstance].navigationBarPhone = [SCPNavigationBar new];
+    [[UINavigationBar appearance] setBarTintColor:SCP_MENU_BACKGROUND_COLOR];
+        [[UINavigationBar appearance] setTintColor:SCP_TITLE_COLOR];
+        [[UINavigationBar appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:SCP_TITLE_COLOR, NSForegroundColorAttributeName, nil]];
         NSMutableArray *navigationControllers = [NSMutableArray new];
         UINavigationController *homeNavi = [[UINavigationController alloc] init];
         homeNavi.viewControllers = @[[SCPHomeViewController new]];

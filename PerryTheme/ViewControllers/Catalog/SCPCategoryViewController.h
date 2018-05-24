@@ -9,8 +9,9 @@
 #import <SimiCartBundle/SimiCategoryModelCollection.h>
 #import "SCPTableViewController.h"
 #import "SCPCategoryModelCollection.h"
+#import "SCPHomeViewController.h"
 
-@interface SCPCategoryViewController : SCPTableViewController
+@interface SCPCategoryViewController : SCPHomeViewController
 @property (nonatomic, strong) SimiCategoryModelCollection *categoryCollection;
 @property (nonatomic, strong) SCPCategoryModel *categoryModel;
 @property (nonatomic) BOOL isSubCategory;

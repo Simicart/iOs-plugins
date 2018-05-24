@@ -7,21 +7,7 @@
 //
 
 #import <SimiCartBundle/SimiCartBundle.h>
+#import "SCPCategoryModel.h"
 
-typedef enum : NSUInteger {
-    HomeCategoryLevelOne,
-    HomeCategoryLevelTwo,
-    HomeCategoryLevelThree,
-} SCPHomeCategoryLevel;
-
-@interface SCPHomeCategoryModel : SimiModel
-@property (strong,nonatomic) NSString *categoryId;
-@property (strong, nonatomic) NSString *imageURL,*imageURLPad;
-@property (nonatomic) BOOL hasChildren;
-@property (strong, nonatomic) NSString *name;
-@property (nonatomic) float width, height, widthTablet, heightTablet;
-@property (nonatomic) BOOL isSelected;
-@property (nonatomic) SCPHomeCategoryLevel level;
-@property (nonatomic) NSMutableArray<SCPHomeCategoryModel *> *subCategories;
-@property (nonatomic, strong) SCPHomeCategoryModel *parentCategory;
+@interface SCPHomeCategoryModel : SCPCategoryModel
 @end

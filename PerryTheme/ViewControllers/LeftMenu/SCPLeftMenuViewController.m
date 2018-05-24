@@ -38,20 +38,19 @@
     [self initCells];
 }
 - (void)createCells{
-    float rowHeight = 50;
     SimiSection *section1 = [self.cells addSectionWithIdentifier:LEFTMENU_SECTION_MAIN];
     [section1 addRowWithIdentifier:SCP_LEFTMENU_ROW_ACCOUNT height:64 + tableWidth/3 + 30];
-    SimiRow *loginRow = [[SimiRow alloc] initWithIdentifier:LEFTMENU_ROW_LOGIN height:rowHeight];
+    SimiRow *loginRow = [[SimiRow alloc] initWithIdentifier:LEFTMENU_ROW_LOGIN height:SCP_LEFT_MENU_CELL_HEIGHT];
     loginRow.image = [UIImage imageNamed:@"scp_ic_account"];
     [section1 addRow:loginRow];
-    SimiRow *rowNotification = [[SimiRow alloc]initWithIdentifier:LEFTMENU_ROW_NOTIFICATION height:rowHeight];
+    SimiRow *rowNotification = [[SimiRow alloc]initWithIdentifier:LEFTMENU_ROW_NOTIFICATION height:SCP_LEFT_MENU_CELL_HEIGHT];
     rowNotification.image = [UIImage imageNamed:@"scp_ic_noti"];
     rowNotification.title = SCLocalizedString(@"Notifications");
     [section1 addObject:rowNotification];
     
     if (self.cmsPages.collectionData.count > 0) {
         for (int i = 0; i < self.cmsPages.collectionData.count; i++) {
-            SimiRow *row20 = [[SimiRow alloc]initWithIdentifier:LEFTMENU_ROW_CMS height:rowHeight];
+            SimiRow *row20 = [[SimiRow alloc]initWithIdentifier:LEFTMENU_ROW_CMS height:SCP_LEFT_MENU_CELL_HEIGHT];
             SimiModel *cmsPage = [self.cmsPages objectAtIndex:i];
             row20.data = cmsPage.modelData;
             row20.title = [row20.data valueForKey:@"cms_title"];
@@ -59,7 +58,7 @@
         }
     }
     
-    SimiRow *settingRow = [[SimiRow alloc]initWithIdentifier:LEFTMENU_ROW_SETTING height:rowHeight sortOrder:10000];
+    SimiRow *settingRow = [[SimiRow alloc]initWithIdentifier:LEFTMENU_ROW_SETTING height:SCP_LEFT_MENU_CELL_HEIGHT sortOrder:10000];
     settingRow.image = [UIImage imageNamed:@"scp_ic_settings"];
     settingRow.title = SCLocalizedString(@"Setting");
     [section1 addRow:settingRow];
@@ -235,7 +234,7 @@
     rowNameFrame.size.width = cellWidth - rowNameFrame.origin.x - 30;
     rowNameFrame.size.height = iconSize;
     
-    self.rowName = [[SimiLabel alloc]initWithFrame:rowNameFrame andFontName:THEME_FONT_NAME andFontSize:FONT_SIZE_LARGE andTextColor:SCP_ICON_COLOR];
+    self.rowName = [[SimiLabel alloc]initWithFrame:rowNameFrame andFontName:THEME_FONT_NAME_REGULAR andFontSize:FONT_SIZE_LARGE andTextColor:SCP_ICON_COLOR];
     [self.rowName setText:row.title];
     [self.contentView addSubview:self.rowName];
     [SimiGlobalFunction sortViewForRTL:self.contentView andWidth:cellWidth];

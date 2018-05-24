@@ -11,6 +11,8 @@
 
 #define SCP_LEFTMENU_ROW_ACCOUNT @"SCP_LEFTMENU_ROW_ACCOUNT"
 
+#define SCP_LEFT_MENU_CELL_HEIGHT 35
+
 @interface SCPLeftMenuViewController : SCLeftMenuViewController
 
 @end
