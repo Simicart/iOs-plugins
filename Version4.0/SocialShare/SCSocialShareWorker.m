@@ -53,18 +53,20 @@
 
 - (void)didTouchShareButton: (id)sender {
     [[NSNotificationCenter defaultCenter]postNotificationName:TRACKINGEVENT object:@"product_action" userInfo:@{@"action":@"clicked_share_button",@"product_name":product.name,@"product_id":product.entityId,@"sku":product.sku,@"qty":@"1",@"theme":[viewController isKindOfClass:[SCProductSecondDesignViewController class]]?@"cherry":@"default"}];
-    NSURL *productURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@",kBaseURL, [product valueForKey:@"url_path"]]];
-    
-    UIActivityViewController *activityViewController =
-    [[UIActivityViewController alloc] initWithActivityItems:@[productURL]
-                                      applicationActivities:nil];
-    activityViewController.popoverPresentationController.sourceView = shareButton;
-    [viewController.navigationController presentViewController:activityViewController
-                                            animated:YES
-                                          completion:^{
-                                              // ...
-                                          }];
-}
+    if ([product valueForKey:@"url_path"]) {
+        NSURL *productURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@",kBaseURL, [product valueForKey:@"url_path"]]];
+        
+        UIActivityViewController *activityViewController =
+        [[UIActivityViewController alloc] initWithActivityItems:@[productURL]
+                                          applicationActivities:nil];
+        activityViewController.popoverPresentationController.sourceView = shareButton;
+        [viewController.navigationController presentViewController:activityViewController
+                                                          animated:YES
+                                                        completion:^{
+                                                            // ...
+                                                        }];
+    }
+    }
 
 - (void)beforeTouchMoreAction: (NSNotification *)noti {
     

@@ -220,7 +220,12 @@
                 holding.adjustsFontSizeToFitWidth = YES;
                 holding.minimumScaleFactor = 0.5;
                 holding.textColor = [UIColor grayColor];
-                holding.text = [NSString stringWithFormat:SCLocalizedString(@"You have %@ that are pending for approval"), _loyaltyPolicy.loyaltyHold];
+                NSString *holdingText = SCLocalizedString(@"You have %@ that are pending for approval");
+                if ([holdingText containsString:@"%@"]) {
+                    holding.text = [NSString stringWithFormat:holdingText, _loyaltyPolicy.loyaltyHold];
+                }else{
+                    holding.text = holdingText;
+                }
                 [view addSubview:holding];
                 y += 24;
             }
