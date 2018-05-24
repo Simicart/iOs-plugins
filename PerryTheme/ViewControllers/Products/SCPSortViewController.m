@@ -15,8 +15,9 @@
 
 @implementation SCPSortViewController
 - (void)viewDidLoadBefore{
+    [[UINavigationBar appearance] setBarTintColor:SCP_BUTTON_BACKGROUND_COLOR];
     self.preferredContentSize = CGSizeMake(SCREEN_WIDTH/3, self.sortArray.count *44 + 60);
-    self.navigationItem.title = SCLocalizedString(@"Refine");
+    self.navigationItem.title = SCLocalizedString(@"Sort by");
     UIButton *closeButton = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, 44, 44)];
     [closeButton setImage:[[UIImage imageNamed:@"scp_ic_close"]imageWithColor:SCP_TITLE_COLOR] forState:UIControlStateNormal];
     [closeButton setImageEdgeInsets:UIEdgeInsetsMake(10, 0, 10, 20)];
@@ -39,7 +40,7 @@
     SimiSection *section = [self.cells objectAtIndex:indexPath.section];
     SimiRow *row = [section objectAtIndex:indexPath.row];
     UITableViewCell *cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:row.identifier];
-    UIImageView *iconImageView = [[UIImageView alloc]initWithFrame:CGRectMake(50, 10, 22, 22)];
+    UIImageView *iconImageView = [[UIImageView alloc]initWithFrame:CGRectMake(50, 16, 12, 12)];
     if (self.selectedIndex == indexPath.row) {
         [iconImageView setImage:[[UIImage imageNamed:@"scp_ic_tick"]imageWithColor:SCP_BUTTON_BACKGROUND_COLOR]];
     }else{
@@ -47,7 +48,7 @@
     }
     [cell.contentView addSubview:iconImageView];
     
-    SimiLabel *titleLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(80, 10, CGRectGetWidth(self.contentTableView.frame) - 100, 22) andFontName:THEME_FONT_NAME_REGULAR andFontSize:FONT_SIZE_LARGE];
+    SimiLabel *titleLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(70, 10, CGRectGetWidth(self.contentTableView.frame) - 100, 22) andFontName:THEME_FONT_NAME_REGULAR andFontSize:FONT_SIZE_LARGE];
     NSString *stringDirection = @"↓";
     if ([[row.data valueForKey:@"direction"] isEqualToString:@"asc"]) {
         stringDirection = @"↑";

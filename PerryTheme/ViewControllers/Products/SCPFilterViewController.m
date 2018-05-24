@@ -20,7 +20,8 @@ static NSString* FILTER_ATTRIBUTE_VALUE_ROW = @"FILTER_ATTRIBUTE_VALUE_ROW";
 @implementation SCPFilterViewController
 - (void)viewDidLoadBefore{
     [self configureNavigationBarOnViewDidLoad];
-    self.navigationItem.title = SCLocalizedString(@"Filter");
+    [[UINavigationBar appearance] setBarTintColor:SCP_BUTTON_BACKGROUND_COLOR];
+    self.navigationItem.title = SCLocalizedString(@"Filters");
     UIButton *closeButton = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, 44, 44)];
     [closeButton setImage:[[UIImage imageNamed:@"scp_ic_close"]imageWithColor:SCP_TITLE_COLOR] forState:UIControlStateNormal];
     [closeButton addTarget:self action:@selector(cancelFilter:) forControlEvents:UIControlEventTouchUpInside];
@@ -204,10 +205,17 @@ static NSString* FILTER_ATTRIBUTE_VALUE_ROW = @"FILTER_ATTRIBUTE_VALUE_ROW";
         activeFilterCollectionView.autoresizingMask = UIViewAutoresizingNone;
         [activeFilterCollectionView setScrollEnabled:NO];
         [cell.contentView addSubview:activeFilterCollectionView];
+        
+        UIImageView *crossLineView = [[UIImageView alloc]initWithFrame:CGRectMake(0, row.height - 1, CGRectGetWidth(self.contentTableView.frame), 1)];
+        crossLineView.tag = 123123;
+        [crossLineView setBackgroundColor:[UIColor darkGrayColor]];
+        [cell.contentView addSubview:crossLineView];
     }
     row.height = [self activeHeightCalculate];
     CGRect frame = activeFilterCollectionView.frame;
     frame.size.height = row.height;
+    UIImageView *crossLineView = [cell.contentView viewWithTag:123123];
+    [crossLineView setFrame:CGRectMake(0, row.height - 1, CGRectGetWidth(self.contentTableView.frame), 1)];
     [activeFilterCollectionView setFrame:frame];
     [activeFilterCollectionView reloadData];
     return cell;
@@ -317,7 +325,7 @@ static NSString* FILTER_ATTRIBUTE_VALUE_ROW = @"FILTER_ATTRIBUTE_VALUE_ROW";
     
     deleteButton = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, 40, 40)];
     [deleteButton setImage:[UIImage imageNamed:@"scp_ic_close"] forState:UIControlStateNormal];
-    [deleteButton setImageEdgeInsets:UIEdgeInsetsMake(10, 10, 10, 10)];
+    [deleteButton setImageEdgeInsets:UIEdgeInsetsMake(12, 12, 12, 12)];
     [deleteButton addTarget:self action:@selector(removeFilterValue:) forControlEvents:UIControlEventTouchUpInside];
     [self.contentView addSubview:deleteButton];
     [self.contentView setBackgroundColor:COLOR_WITH_HEX(@"#f2f1f3")];
@@ -346,11 +354,11 @@ static NSString* FILTER_ATTRIBUTE_VALUE_ROW = @"FILTER_ATTRIBUTE_VALUE_ROW";
 @implementation SelectFilterTableViewCell
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier row:(SimiRow *)row{
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
-    iconImageView = [[UIImageView alloc]initWithFrame:CGRectMake(SCP_GLOBALVARS.padding*3, 10, 22, 22)];
+    iconImageView = [[UIImageView alloc]initWithFrame:CGRectMake(SCP_GLOBALVARS.padding*3, 16, 12, 12)];
     [iconImageView setImage:[UIImage imageNamed:@"scp_ic_untick"]];
     [self.contentView addSubview:iconImageView];
     
-    titleLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(SCP_GLOBALVARS.padding*3 + 25, 10, 150, 22) andFontName:THEME_FONT_NAME_REGULAR andFontSize:FONT_SIZE_MEDIUM];
+    titleLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(SCP_GLOBALVARS.padding*3 + 16, 10, 150, 22) andFontName:THEME_FONT_NAME_REGULAR andFontSize:FONT_SIZE_MEDIUM];
     [titleLabel setText:[NSString stringWithFormat:@"%@",[row.data valueForKey:@"label"]]];
     [self.contentView addSubview:titleLabel];
     return self;
@@ -359,7 +367,7 @@ static NSString* FILTER_ATTRIBUTE_VALUE_ROW = @"FILTER_ATTRIBUTE_VALUE_ROW";
 - (void)updateCellStateWithRow:(SimiRow*)row{
     NSNumber *isSelected = (NSNumber*)row.simiObjectIdentifier;
     if([isSelected boolValue]){
-        [iconImageView setImage:[[UIImage imageNamed:@"scp_ic_tick"]imageWithColor:SCP_ICON_HIGHLIGHT_COLOR]];
+        [iconImageView setImage:[[UIImage imageNamed:@"scp_ic_tick"]imageWithColor:SCP_BUTTON_BACKGROUND_COLOR]];
         [titleLabel setTextColor:SCP_BUTTON_BACKGROUND_COLOR];
     }else{
         [iconImageView setImage:[UIImage imageNamed:@"scp_ic_untick"]];
