@@ -48,6 +48,11 @@
     }
 }
 
+- (void)viewWillAppearBefore:(BOOL)animated{
+    [super viewWillAppearBefore:animated];
+    [[UINavigationBar appearance] setBarTintColor:SCP_MENU_BACKGROUND_COLOR];
+}
+
 - (void)createViewToolBar{
     if (viewToolBar == nil) {
         CGRect frame = CGRectMake(0, 0, SCREEN_WIDTH, 44);
