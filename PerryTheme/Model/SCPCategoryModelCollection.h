@@ -11,4 +11,5 @@
 
 @interface SCPCategoryModelCollection : SimiCategoryModelCollection
 - (void)getRootCategories;
+- (void)getSubCategoriesWithId:(NSString *)categoryID level:(NSString *)level;
 @end

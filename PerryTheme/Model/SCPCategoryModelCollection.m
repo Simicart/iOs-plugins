@@ -15,7 +15,22 @@
     self.resource = @"categories";
     [self addOffsetToParams:@"0"];
     [self addLimitToParams:@"100"];
-    [self.params addEntriesFromDictionary:@{@"get_child_cat":@"2"}];
+    [self.params addEntriesFromDictionary:@{@"get_child_cat":@"1"}];
+    self.method = MethodGet;
+    [self request];
+}
+- (void)getSubCategoriesWithId:(NSString *)categoryID level:(NSString *)level{
+    notificationName = Simi_DidGetCategoryCollection;
+    self.parseKey = @"categories";
+    self.resource = @"categories";
+    [self addOffsetToParams:@"0"];
+    [self addLimitToParams:@"100"];
+    if(level){
+        [self.params addEntriesFromDictionary:@{@"get_child_cat":level}];
+    }
+    if(categoryID){
+        [self.extendsUrl addObject:categoryID];
+    }
     self.method = MethodGet;
     [self request];
 }

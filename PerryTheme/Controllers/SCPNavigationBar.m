@@ -57,8 +57,8 @@
                 UIBarButtonItem *firstItem = [_leftButtonItems objectAtIndex:1];
                 if (![firstItem.simiObjectName isEqualToString:@"back_button"]) {
                     UIButton *backButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 32, 32)];
-                    [backButton setImageEdgeInsets:UIEdgeInsetsMake(5, 5, 5, 5)];
-                    [backButton setImage:[[UIImage imageNamed:@"scp_ic_back"] imageWithColor:THEME_NAVIGATION_ICON_COLOR] forState:UIControlStateNormal];
+                    [backButton setImageEdgeInsets:UIEdgeInsetsMake(7, 5, 7, 9)];
+                    [backButton setImage:[[UIImage imageNamed:@"scp_ic_back"] imageWithColor:SCP_ICON_COLOR] forState:UIControlStateNormal];
                     [backButton addTarget:self action:@selector(didSelectBackBarItem:) forControlEvents:UIControlEventTouchUpInside];
                     UIBarButtonItem *backItem = [[UIBarButtonItem alloc] initWithCustomView:backButton];
                     backItem.simiObjectName = @"back_button";
@@ -67,8 +67,8 @@
                 {
                     [_leftButtonItems removeObjectAtIndex:1];
                     UIButton *backButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 32, 32)];
-                    [backButton setImage:[[UIImage imageNamed:@"scp_ic_back"] imageWithColor:THEME_NAVIGATION_ICON_COLOR] forState:UIControlStateNormal];
-                    [backButton setImageEdgeInsets:UIEdgeInsetsMake(5, 5, 5, 5)];
+                    [backButton setImage:[[UIImage imageNamed:@"scp_ic_back"] imageWithColor:SCP_ICON_COLOR] forState:UIControlStateNormal];
+                    [backButton setImageEdgeInsets:UIEdgeInsetsMake(7, 5, 7, 9)];
                     [backButton addTarget:self action:@selector(didSelectBackBarItem:) forControlEvents:UIControlEventTouchUpInside];
                     UIBarButtonItem *backItem = [[UIBarButtonItem alloc] initWithCustomView:backButton];
                     backItem.simiObjectName = @"back_button";

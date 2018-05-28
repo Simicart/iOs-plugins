@@ -40,7 +40,11 @@
 - (void)createCells{
     SimiSection *section1 = [self.cells addSectionWithIdentifier:LEFTMENU_SECTION_MAIN];
     [section1 addRowWithIdentifier:SCP_LEFTMENU_ROW_ACCOUNT height:64 + tableWidth/3 + 30];
-    SimiRow *loginRow = [[SimiRow alloc] initWithIdentifier:LEFTMENU_ROW_LOGIN height:SCP_LEFT_MENU_CELL_HEIGHT];
+    SimiRow *loginRow = [[SimiRow alloc] initWithIdentifier:LEFTMENU_ROW_LOGIN];
+    loginRow.height = SCP_LEFT_MENU_CELL_HEIGHT;
+    if(GLOBALVAR.isLogin){
+        loginRow.height = SCP_LEFT_MENU_CELL_HEIGHT + 10;
+    }
     loginRow.image = [UIImage imageNamed:@"scp_ic_account"];
     [section1 addRow:loginRow];
     SimiRow *rowNotification = [[SimiRow alloc]initWithIdentifier:LEFTMENU_ROW_NOTIFICATION height:SCP_LEFT_MENU_CELL_HEIGHT];
