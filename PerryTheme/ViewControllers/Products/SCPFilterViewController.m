@@ -208,7 +208,7 @@ static NSString* FILTER_ATTRIBUTE_VALUE_ROW = @"FILTER_ATTRIBUTE_VALUE_ROW";
         
         UIImageView *crossLineView = [[UIImageView alloc]initWithFrame:CGRectMake(0, row.height - 1, CGRectGetWidth(self.contentTableView.frame), 1)];
         crossLineView.tag = 123123;
-        [crossLineView setBackgroundColor:[UIColor darkGrayColor]];
+        [crossLineView setBackgroundColor:COLOR_WITH_HEX(@"#f2f1f3")];
         [cell.contentView addSubview:crossLineView];
     }
     row.height = [self activeHeightCalculate];
@@ -253,7 +253,7 @@ static NSString* FILTER_ATTRIBUTE_VALUE_ROW = @"FILTER_ATTRIBUTE_VALUE_ROW";
         }
     }
     numberItemRow += 1;
-    height = numberItemRow * (40 + SCP_GLOBALVARS.lineSpacing);
+    height = numberItemRow * (40 + SCP_GLOBALVARS.lineSpacing) + 10;
     return height;
 }
 

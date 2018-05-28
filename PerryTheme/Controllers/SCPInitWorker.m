@@ -91,6 +91,34 @@
             }
             return NSOrderedAscending;
         }];
+    
+    UINavigationController *wishlistNavi = [[UINavigationController alloc] init];
+    searchNavi.viewControllers = @[[SCPSearchViewController new]];
+    searchNavi.tabBarItem = [[UITabBarItem alloc]initWithTitle:SCLocalizedString(@"Search") image:[[[UIImage imageNamed:@"scp_ic_wishlist_tabbar"]imageWithColor:SCP_ICON_COLOR]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] selectedImage:[[[UIImage imageNamed:@"scp_ic_wishlist_tabbar"]imageWithColor:SCP_ICON_HIGHLIGHT_COLOR]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]];
+    searchNavi.sortOrder = 30;
+    [navigationControllers addObject:searchNavi];
+    
+    [[NSNotificationCenter defaultCenter]postNotificationName:@"SCP_EndCreateTabbarItems" object:navigationControllers];
+    [navigationControllers sortUsingComparator:^NSComparisonResult(UINavigationController *firstNavi, UINavigationController *secondNavi) {
+        if (secondNavi.sortOrder < firstNavi.sortOrder) {
+            return NSOrderedDescending;
+        }
+        return NSOrderedAscending;
+    }];
+    
+    UINavigationController *storeLocatorNavi = [[UINavigationController alloc] init];
+    searchNavi.viewControllers = @[[SCPSearchViewController new]];
+    searchNavi.tabBarItem = [[UITabBarItem alloc]initWithTitle:SCLocalizedString(@"Search") image:[[[UIImage imageNamed:@"scp_ic_storelocator_tabbar"]imageWithColor:SCP_ICON_COLOR]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] selectedImage:[[[UIImage imageNamed:@"scp_ic_storelocator_tabbar"]imageWithColor:SCP_ICON_HIGHLIGHT_COLOR]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]];
+    searchNavi.sortOrder = 30;
+    [navigationControllers addObject:searchNavi];
+    
+    [[NSNotificationCenter defaultCenter]postNotificationName:@"SCP_EndCreateTabbarItems" object:navigationControllers];
+    [navigationControllers sortUsingComparator:^NSComparisonResult(UINavigationController *firstNavi, UINavigationController *secondNavi) {
+        if (secondNavi.sortOrder < firstNavi.sortOrder) {
+            return NSOrderedDescending;
+        }
+        return NSOrderedAscending;
+    }];
         initWorker.rootController.viewControllers = navigationControllers;
         for (UITabBarItem *tabbarItem in initWorker.rootController.tabBar.items) {
             [tabbarItem setTitleTextAttributes:@{NSForegroundColorAttributeName:SCP_ICON_COLOR} forState:UIControlStateNormal];

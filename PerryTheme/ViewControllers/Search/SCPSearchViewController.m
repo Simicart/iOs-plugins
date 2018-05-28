@@ -34,6 +34,7 @@
     searchTextField.placeholder = SCLocalizedString(@"Search our products");
     searchTextField.returnKeyType = UIReturnKeySearch;
     searchTextField.delegate = self;
+    searchTextField.layer.cornerRadius = 4;
     UIButton *searchButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 40, 40)];
     searchButton.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
     [searchButton setImage:[[UIImage imageNamed:@"scp_ic_search_tabbar"] imageWithColor:SCP_ICON_COLOR] forState:UIControlStateNormal];

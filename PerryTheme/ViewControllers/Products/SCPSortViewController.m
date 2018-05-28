@@ -32,6 +32,7 @@
     self.contentTableView.separatorStyle = UITableViewCellSelectionStyleNone;
     self.contentTableView.dataSource = self;
     self.contentTableView.delegate = self;
+    [self.contentTableView setBackgroundColor:[UIColor whiteColor]];
     [self.view addSubview:self.contentTableView];
     [self initCells];
 }

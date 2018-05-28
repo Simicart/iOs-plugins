@@ -193,6 +193,9 @@
     [self.gridModeCollectionView.infiniteScrollingView stopAnimating];
     [self.listModeCollectionView.infiniteScrollingView stopAnimating];
     [super didGetProducts:noti];
+    if (productModelCollection.count == 0 && self.filterParam.count == 0) {
+        [viewToolBar setHidden:YES];
+    }
 }
 
 - (void)selectedProduct:(SimiProductModel *)productModel{
