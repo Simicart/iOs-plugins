@@ -28,7 +28,7 @@
 @property (nonatomic) float interitemSpacing;
 @property (nonatomic) float textPadding;
 @property (nonatomic) BOOL wishlistPluginAllow;
-@property (strong, nonatomic) SCPNavigationBar *naviBar;
 @property (strong, nonatomic) SCPWishlistModelCollection *wishListModelCollection;
+@property (strong, nonatomic) UINavigationController *shouldSelectNavigationController;
 + (instancetype)sharedInstance;
 @end

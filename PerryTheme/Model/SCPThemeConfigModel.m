@@ -14,7 +14,7 @@
     if([[self.modelData objectForKey:@"menu_background_color"] isKindOfClass:[NSString class]]){
         self.menuBackgroudColor = [self.modelData objectForKey:@"menu_background_color"];
     }else{
-        self.menuBackgroudColor = @"#ffffff";
+        self.menuBackgroudColor = @"#7CB342";
     }
     if([[self.modelData objectForKey:@"title_color"] isKindOfClass:[NSString class]]){
         self.titleColor = [self.modelData objectForKey:@"title_color"];
