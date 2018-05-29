@@ -20,18 +20,19 @@
 - (void)viewDidLoadBefore{
     [super viewDidLoadBefore];
     mainScrollView = [[UIScrollView alloc] initWithFrame:self.view.bounds];
-    mainScrollView.backgroundColor = COLOR_WITH_HEX(@"#F2F2F2");
+    mainScrollView.backgroundColor = COLOR_WITH_HEX(@"#f2f2f2");
     [self.view addSubview:mainScrollView];
     paddingX = 15;
     contentY = 15;
     contentWidth = CGRectGetWidth(self.view.bounds) - 2*paddingX;
-    SCPLabel *titleLabel = [[SCPLabel alloc] initWithFrame:CGRectMake(paddingX, contentY, contentWidth, 30) andFontName:THEME_FONT_NAME_REGULAR andFontSize:FONT_SIZE_HEADER];
+    SCPLabel *titleLabel = [[SCPLabel alloc] initWithFrame:CGRectMake(paddingX, contentY, contentWidth, 30) andFontName:THEME_FONT_NAME_REGULAR andFontSize:24];
     titleLabel.text = @"Search";
     [mainScrollView addSubview:titleLabel];
     contentY += CGRectGetHeight(titleLabel.frame) + 15;
-    searchTextField = [[SCPTextField alloc] initWithFrame:CGRectMake(paddingX, contentY, contentWidth, 40)];
+    searchTextField = [[SCPTextField alloc] initWithFrame:CGRectMake(paddingX, contentY, contentWidth, 30)];
     searchTextField.backgroundColor = [UIColor whiteColor];
     searchTextField.placeholder = SCLocalizedString(@"Search our products");
+    searchTextField.layer.cornerRadius = 4.0f;
     searchTextField.returnKeyType = UIReturnKeySearch;
     searchTextField.delegate = self;
     searchTextField.layer.cornerRadius = 4;
@@ -71,7 +72,7 @@
             if(width > contentWidth){
                 width = contentWidth;
             }
-            SimiLabel *valueLabel = [[SimiLabel alloc] initWithFrame:CGRectMake(0, popularY, width, 25) andFont:font];
+            SimiLabel *valueLabel = [[SimiLabel alloc] initWithFrame:CGRectMake(0, popularY, width, 30) andFont:font];
             valueLabel.textColor = COLOR_WITH_HEX(@"#747474");
             valueLabel.text = value;
             [valueLabel addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapSearchHistory:)]];
@@ -93,6 +94,7 @@
     productListVC.productListGetProductType = ProductListGetProductTypeFromSearch;
     [self.navigationController pushViewController:productListVC animated:YES];
 }
+
 #pragma mark UITextFieldDelegate
 - (BOOL)textFieldShouldReturn:(UITextField *)textField{
     if(![[textField.text stringByReplacingOccurrencesOfString:@" " withString:@""] isEqualToString:@""]){
