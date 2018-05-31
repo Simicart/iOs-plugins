@@ -15,6 +15,6 @@
 
 #import <Foundation/Foundation.h>
 
-@interface SCPInitWorker : NSObject
+@interface SCPInitWorker : NSObject<UITabBarControllerDelegate>
 
 @end

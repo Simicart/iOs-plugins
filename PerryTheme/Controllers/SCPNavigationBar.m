@@ -15,21 +15,23 @@
     if (_leftButtonItems == nil) {
         _leftButtonItems = [[NSMutableArray alloc] init];
         [self addMenuButton];
-        [[NSNotificationCenter defaultCenter]postNotificationName:SCNavigationBarPhoneInitLeftItemsEnd object:self.leftButtonItems];
+        [[NSNotificationCenter defaultCenter]postNotificationName:SCNavigationBarPhoneInitLeftItemsEnd object:_leftButtonItems];
         _leftButtonItems = [[NSMutableArray alloc] initWithArray:[SimiGlobalFunction sortListItems:_leftButtonItems]];
     }
     [self addBackButton];
     return _leftButtonItems;
 }
+
 - (NSMutableArray *)rightButtonItems{
     if (_rightButtonItems == nil) {
         _rightButtonItems = [[NSMutableArray alloc] init];
         [self addCartButton];
-        [[NSNotificationCenter defaultCenter]postNotificationName:SCNavigationBarPhoneInitRightItemsEnd object:self.rightButtonItems userInfo:@{@"controller":self}];
+        [[NSNotificationCenter defaultCenter]postNotificationName:SCNavigationBarPhoneInitRightItemsEnd object:_rightButtonItems userInfo:@{@"controller":self}];
         _rightButtonItems = [[NSMutableArray alloc] initWithArray:[SimiGlobalFunction sortListItems:_rightButtonItems]];
     }
     return _rightButtonItems;
 }
+
 - (void)addMenuButton{
     UIButton *leftButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 32, 32)];
     [leftButton setImage:[[UIImage imageNamed:@"scp_ic_menu"]imageWithColor:SCP_ICON_COLOR] forState:UIControlStateNormal];
@@ -48,8 +50,8 @@
 }
 
 - (void)addBackButton{
-    if([GLOBALVAR.currentViewController isKindOfClass:[SimiViewController class]]){
-        SimiViewController *viewController = (SimiViewController *)GLOBALVAR.currentViewController;
+    SimiViewController *viewController = SCP_GLOBALVARS.shouldSelectNavigationController.viewControllers.lastObject;
+    if([viewController isKindOfClass:[SimiViewController class]]){
         if(viewController.isPresented || viewController.isInPopover){
             return;
         }else{
@@ -81,8 +83,6 @@
                     [_leftButtonItems removeObjectAtIndex:1];
                 }
             }
-            [viewController.navigationItem setLeftBarButtonItems:_leftButtonItems];
-            viewController.navigationItem.rightBarButtonItems = [[[SCAppController sharedInstance]navigationBarPhone]rightButtonItems];
         }
     }
 }

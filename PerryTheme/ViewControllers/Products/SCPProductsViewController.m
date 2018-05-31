@@ -88,10 +88,12 @@
         [viewToolBar addSubview:filterButton];
         viewToolBar.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin;
     }
+    [viewToolBar setHidden:YES];
 }
 
 - (void)addProductTableView{
     self.listModeCollectionView = [[SCPProductCollectionView alloc]initWithFrame:self.view.bounds collectionViewLayout:[UICollectionViewFlowLayout new]];
+    self.listModeCollectionView.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
     float bottomMenuHeight = CGRectGetHeight(self.tabBarController.tabBar.frame);
     [self.listModeCollectionView setContentInset:UIEdgeInsetsMake(SCP_GLOBALVARS.lineSpacing + 44, SCP_GLOBALVARS.padding, SCP_GLOBALVARS.lineSpacing + bottomMenuHeight, SCP_GLOBALVARS.padding)];
     self.listModeCollectionView.productModelCollection = productModelCollection;
@@ -106,6 +108,7 @@
 
 - (void)addProductCollectionView{
     self.gridModeCollectionView = [[SCPProductCollectionView alloc]initWithFrame:self.view.bounds collectionViewLayout:[UICollectionViewFlowLayout new]];
+    self.gridModeCollectionView.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
     [self.gridModeCollectionView setContentInset:UIEdgeInsetsMake(SCP_GLOBALVARS.lineSpacing + 44, SCP_GLOBALVARS.padding, SCP_GLOBALVARS.lineSpacing + CGRectGetHeight(self.tabBarController.tabBar.frame), SCP_GLOBALVARS.padding)];
     self.gridModeCollectionView.productModelCollection = productModelCollection;
     self.gridModeCollectionView.gridMode = YES;
@@ -193,6 +196,11 @@
     [self.gridModeCollectionView.infiniteScrollingView stopAnimating];
     [self.listModeCollectionView.infiniteScrollingView stopAnimating];
     [super didGetProducts:noti];
+    if (productModelCollection.count == 0 && self.filterParam.count == 0) {
+        [viewToolBar setHidden:YES];
+    }else{
+        [viewToolBar setHidden:NO];
+    }
 }
 
 - (void)selectedProduct:(SimiProductModel *)productModel{

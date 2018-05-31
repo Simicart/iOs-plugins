@@ -57,20 +57,23 @@
 
 - (void)initializedRootController:(NSNotification *)noti{
 //    if([GLOBALVAR.storeView.data objectForKey:@"perry_theme"]){
+    if(YES){
         [self setupThemeColors];
         InitWorker *initWorker = noti.object;
         initWorker.isDiscontinue = YES;
         //Init the root view
-    [SCAppController sharedInstance].navigationBarPhone = [SCPNavigationBar new];
-    [[UINavigationBar appearance] setBarTintColor:SCP_MENU_BACKGROUND_COLOR];
+        [[UINavigationBar appearance] setBarTintColor:SCP_MENU_BACKGROUND_COLOR];
         [[UINavigationBar appearance] setTintColor:SCP_TITLE_COLOR];
         [[UINavigationBar appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:SCP_TITLE_COLOR, NSForegroundColorAttributeName, nil]];
+        [[UITabBar appearance] setBarTintColor:SCP_MENU_BACKGROUND_COLOR];
+        
         NSMutableArray *navigationControllers = [NSMutableArray new];
         UINavigationController *homeNavi = [[UINavigationController alloc] init];
         homeNavi.viewControllers = @[[SCPHomeViewController new]];
         homeNavi.tabBarItem = [[UITabBarItem alloc]initWithTitle:SCLocalizedString(@"Home") image:[[[UIImage imageNamed:@"scp_ic_home_tabbar"]imageWithColor:SCP_ICON_COLOR]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] selectedImage:[[[UIImage imageNamed:@"scp_ic_home_tabbar"]imageWithColor:SCP_ICON_HIGHLIGHT_COLOR]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]];
         homeNavi.sortOrder = 10;
         [navigationControllers addObject:homeNavi];
+        SCP_GLOBALVARS.shouldSelectNavigationController = homeNavi;
         
         UINavigationController *categoryNavi = [[UINavigationController alloc] init];
         categoryNavi.viewControllers = @[[SCPCategoryViewController new]];
@@ -91,17 +94,43 @@
             }
             return NSOrderedAscending;
         }];
+    
+        UINavigationController *wishlistNavi = [[UINavigationController alloc] init];
+        wishlistNavi.viewControllers = @[[SCPSearchViewController new]];
+        wishlistNavi.tabBarItem = [[UITabBarItem alloc]initWithTitle:SCLocalizedString(@"Wishlist") image:[[[UIImage imageNamed:@"scp_ic_wishlist_tabbar"]imageWithColor:SCP_ICON_COLOR]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] selectedImage:[[[UIImage imageNamed:@"scp_ic_wishlist_tabbar"]imageWithColor:SCP_ICON_HIGHLIGHT_COLOR]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]];
+        wishlistNavi.sortOrder = 40;
+        [navigationControllers addObject:wishlistNavi];
+    
+        UINavigationController *storeLocatorNavi = [[UINavigationController alloc] init];
+        storeLocatorNavi.viewControllers = @[[SCPSearchViewController new]];
+        storeLocatorNavi.tabBarItem = [[UITabBarItem alloc]initWithTitle:SCLocalizedString(@"Stores") image:[[[UIImage imageNamed:@"scp_ic_storelocator_tabbar"]imageWithColor:SCP_ICON_COLOR]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] selectedImage:[[[UIImage imageNamed:@"scp_ic_storelocator_tabbar"]imageWithColor:SCP_ICON_HIGHLIGHT_COLOR]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]];
+        storeLocatorNavi.sortOrder = 50;
+        [navigationControllers addObject:storeLocatorNavi];
+        
+        [[NSNotificationCenter defaultCenter]postNotificationName:@"SCP_EndCreateTabbarItems" object:navigationControllers];
+        [navigationControllers sortUsingComparator:^NSComparisonResult(UINavigationController *firstNavi, UINavigationController *secondNavi) {
+            if (secondNavi.sortOrder < firstNavi.sortOrder) {
+                return NSOrderedDescending;
+            }
+            return NSOrderedAscending;
+        }];
+        for (UINavigationController *navigationController in navigationControllers) {
+            SCPNavigationBar *navigationBar = [SCPNavigationBar new];
+            navigationController.simiObjectIdentifier = navigationBar;
+        }
+        [SCAppController sharedInstance].navigationBarPhone = (SCPNavigationBar*)homeNavi.simiObjectIdentifier;
         initWorker.rootController.viewControllers = navigationControllers;
+        initWorker.rootController.delegate = self;
         for (UITabBarItem *tabbarItem in initWorker.rootController.tabBar.items) {
             [tabbarItem setTitleTextAttributes:@{NSForegroundColorAttributeName:SCP_ICON_COLOR} forState:UIControlStateNormal];
             [tabbarItem setTitleTextAttributes:@{NSForegroundColorAttributeName:SCP_ICON_HIGHLIGHT_COLOR} forState:UIControlStateHighlighted];
         }
-    GLOBALVAR.usePriceInLine = YES;
-    [self checkPluginsWishlistAllow];
-    if (GLOBALVAR.isLogin && SCP_GLOBALVARS.wishlistPluginAllow) {
-        [self updateWishlist:nil];
+        GLOBALVAR.usePriceInLine = YES;
+        [self checkPluginsWishlistAllow];
+        if (GLOBALVAR.isLogin && SCP_GLOBALVARS.wishlistPluginAllow) {
+            [self updateWishlist:nil];
+        }
     }
-//    }
 }
 
 - (void)setupThemeColors{
@@ -142,5 +171,12 @@
     }else{
         [SCP_GLOBALVARS.wishListModelCollection removeAllObjects];
     }
+}
+
+#pragma mark Tabbar Controller Delegate
+- (BOOL)tabBarController:(UITabBarController *)tabBarController shouldSelectViewController:(UIViewController *)viewController{
+    SCP_GLOBALVARS.shouldSelectNavigationController = (UINavigationController*)viewController;
+    [SCAppController sharedInstance].navigationBarPhone = (SCPNavigationBar*)viewController.simiObjectIdentifier;
+    return YES;
 }
 @end
