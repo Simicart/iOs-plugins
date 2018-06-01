@@ -29,19 +29,35 @@
 - (void)createCells{
     SimiSection *mainSection = [[SimiSection alloc]initWithIdentifier:product_main_section];
     [self.cells addObject:mainSection];
-    
     [mainSection addRowWithIdentifier:product_images_row height:tableWidth];
-//    [mainSection addRowWithIdentifier:product_nameandprice_row height:200];
-//    if (optionController.hasOption) {
-//        [mainSection addRowWithIdentifier:product_option_row height:50];
-//    }
+    if (self.product.productType == ProductTypeConfigurable) {
+        for(SimiConfigurableOptionModel *configOptionModel in optionController.configureOptions){
+            if ([[configOptionModel.code uppercaseString] isEqualToString:@"COLOR"] || [[configOptionModel.code uppercaseString] isEqualToString:@"SIZE"]) {
+                SCProductOptionRow *configOptionRow = [[SCProductOptionRow alloc]initWithIdentifier:scpproduct_option_item_select_row height:100];
+                configOptionRow.model = configOptionModel;
+                [mainSection addRow:configOptionRow];
+            }
+        }
+    }
     [mainSection addRowWithIdentifier:product_description_row height:200];
-//    if (self.product.additional) {
-//        NSDictionary *additional = self.product.additional;
-//        if (additional.count > 0) {
-//            [mainSection addRowWithIdentifier:product_techspecs_row height:50];
-//        }
-//    }
+}
+
+- (UITableViewCell *)contentTableViewCellForRowAtIndexPath:(NSIndexPath *)indexPath{
+    SimiSection *section = [self.cells objectAtIndex:indexPath.section];
+    SimiRow *row = [section objectAtIndex:indexPath.row];
+    UITableViewCell *cell;
+    if ([row.identifier isEqualToString:scpproduct_option_item_select_row]) {
+        cell = [self createOptionItemSelectCell:row];
+    }else{
+        cell = [super contentTableViewCellForRowAtIndexPath:indexPath];
+    }
+    return cell;
+}
+
+- (SimiTableViewCell*)createOptionItemSelectCell:(SimiRow*)row{
+    SCPProductOptionTypeGridTableViewCell *cell = [[SCPProductOptionTypeGridTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:row.simiObjectName andRow:(SCProductOptionRow*)row];
+    cell.delegate = self;
+    return cell;
 }
 
 - (UITableViewCell *)createProductImageCell:(SimiRow *)row{

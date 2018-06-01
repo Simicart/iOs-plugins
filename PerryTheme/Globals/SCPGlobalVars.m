@@ -38,4 +38,14 @@
     }
 }
 
+- (NSString *)getRegularFontName{
+    return @"Montserrat-Regular";
+}
+- (NSString *)getLightFontName{
+    return @"Montserrat-Light";
+}
+- (NSString *)getSemiBoldFontName{
+    return @"Montserrat-SemiBold";
+}
+
 @end

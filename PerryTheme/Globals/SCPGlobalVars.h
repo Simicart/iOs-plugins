@@ -20,6 +20,10 @@
 #define SCP_BUTTON_TEXT_COLOR COLOR_WITH_HEX([SCP_GLOBALVARS.themeConfig buttonTextColor])
 #define SCP_BUTTON_BACKGROUND_COLOR COLOR_WITH_HEX([SCP_GLOBALVARS.themeConfig buttonBackgroundColor])
 
+#define SCP_FONT_REGULAR  [SCP_GLOBALVARS getRegularFontName]
+#define SCP_FONT_LIGHT  [SCP_GLOBALVARS getLightFontName]
+#define SCP_FONT_SEMIBOLD  [SCP_GLOBALVARS getSemiBoldFontName]
+
 @interface SCPGlobalVars : NSObject
 
 @property (strong, nonatomic) SCPThemeConfigModel *themeConfig;
@@ -32,4 +36,8 @@
 @property (strong, nonatomic) UINavigationController *shouldSelectNavigationController;
 @property (strong, nonatomic) UITabBarController *rootController;
 + (instancetype)sharedInstance;
+
+- (NSString *)getRegularFontName;
+- (NSString *)getLightFontName;
+- (NSString *)getSemiBoldFontName;
 @end
