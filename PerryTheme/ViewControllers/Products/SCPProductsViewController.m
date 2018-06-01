@@ -204,10 +204,10 @@
 }
 
 - (void)selectedProduct:(SimiProductModel *)productModel{
-//    SCPProductViewController *productVC = [SCPProductViewController new];
-//    productVC.product = productModel;
-//    productVC.productId = productModel.entityId;
-//    [self.navigationController pushViewController:productVC animated:nil];
+    SCPProductViewController *productVC = [SCPProductViewController new];
+    productVC.product = productModel;
+    productVC.productId = productModel.entityId;
+    [self.navigationController pushViewController:productVC animated:nil];
 }
 
 #pragma mark Sort

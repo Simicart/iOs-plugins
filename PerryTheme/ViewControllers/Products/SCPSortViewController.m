@@ -50,13 +50,18 @@
     [cell.contentView addSubview:iconImageView];
     
     SimiLabel *titleLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(70, 10, CGRectGetWidth(self.contentTableView.frame) - 100, 22) andFontName:THEME_FONT_NAME_REGULAR andFontSize:FONT_SIZE_LARGE];
-    NSString *stringDirection = @"↓";
-    if ([[row.data valueForKey:@"direction"] isEqualToString:@"asc"]) {
-        stringDirection = @"↑";
-    }
-    NSString *sortTitle = [NSString stringWithFormat:@"%@ %@",SCLocalizedString([row.data valueForKey:@"value"]),stringDirection];
+    NSString *sortTitle = [NSString stringWithFormat:@"%@",SCLocalizedString([row.data valueForKey:@"value"])];
     titleLabel.text = sortTitle;
     [cell.contentView addSubview:titleLabel];
+    
+    NSString *stringDirection = @"scp_ic_sort_down";
+    if ([[row.data valueForKey:@"direction"] isEqualToString:@"asc"]) {
+        stringDirection = @"scp_ic_sort_up";
+    }
+    float titleWidth = [sortTitle sizeWithAttributes:@{NSFontAttributeName:titleLabel.font}].width + 5;
+    UIImageView *sortDirImageView = [[UIImageView alloc]initWithFrame:CGRectMake(70 + titleWidth, 13, 8, 15)];
+    [sortDirImageView setImage:[UIImage imageNamed:stringDirection]];
+    [cell.contentView addSubview:sortDirImageView];
     [SimiGlobalFunction sortViewForRTL:cell.contentView andWidth:CGRectGetWidth(self.contentTableView.frame)];
     return cell;
 }

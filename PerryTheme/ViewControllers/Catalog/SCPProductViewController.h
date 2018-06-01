@@ -7,8 +7,11 @@
 //
 
 #import "SCPTableViewController.h"
+#import "SCPProductOptionTypeGridTableViewCell.h"
 
-
-@interface SCPProductViewController : SCProductSecondDesignViewController
+static NSString *scpproduct_option_item_select_row = @"scpproduct_otion_item_select_row";
+static NSString *scpproduct_option_single_select_row = @"scpproduct_option_single_select_row";
+static NSString *scpproduct_option_multi_select_row = @"scpproduct_option_multi_select_row";
+@interface SCPProductViewController : SCProductSecondDesignViewController<SCPProductOptionTypeGridDelegate>
 
 @end
