@@ -13,6 +13,4 @@
 
 @interface SCPCategoryViewController : SCPHomeViewController
 @property (nonatomic, strong) SCPCategoryModelCollection *categoryCollection;
-@property (nonatomic, strong) SCPCategoryModel *categoryModel;
-@property (nonatomic) BOOL isSubCategory;
 @end

@@ -39,14 +39,15 @@
 }
 - (void)createCells{
     SimiSection *section1 = [self.cells addSectionWithIdentifier:LEFTMENU_SECTION_MAIN];
-    [section1 addRowWithIdentifier:SCP_LEFTMENU_ROW_ACCOUNT height:64 + tableWidth/3 + 30];
+    [section1 addRowWithIdentifier:SCP_LEFTMENU_ROW_ACCOUNT height:44 + (tableWidth - 30)/3 + 30];
+    if(GLOBALVAR.isLogin)
+        [section1 addRowWithIdentifier:@"" height:SCP_LEFT_MENU_CELL_PADDING_TOP];
     SimiRow *loginRow = [[SimiRow alloc] initWithIdentifier:LEFTMENU_ROW_LOGIN];
     loginRow.height = SCP_LEFT_MENU_CELL_HEIGHT;
-    if(GLOBALVAR.isLogin){
-        loginRow.height = SCP_LEFT_MENU_CELL_HEIGHT + 10;
-    }
     loginRow.image = [UIImage imageNamed:@"scp_ic_account"];
     [section1 addRow:loginRow];
+    if(!GLOBALVAR.isLogin)
+        [section1 addRowWithIdentifier:@"" height:SCP_LEFT_MENU_CELL_PADDING_TOP];
     SimiRow *rowNotification = [[SimiRow alloc]initWithIdentifier:LEFTMENU_ROW_NOTIFICATION height:SCP_LEFT_MENU_CELL_HEIGHT];
     rowNotification.image = [UIImage imageNamed:@"scp_ic_noti"];
     rowNotification.title = SCLocalizedString(@"Notifications");
@@ -66,20 +67,22 @@
     settingRow.image = [UIImage imageNamed:@"scp_ic_settings"];
     settingRow.title = SCLocalizedString(@"Setting");
     [section1 addRow:settingRow];
+    [section1 addRowWithIdentifier:@"" height:SCP_LEFT_MENU_CELL_PADDING_TOP sortOrder:settingRow.sortOrder + 1];
 }
 
 
 - (UITableViewCell *)contentTableViewCellForRowAtIndexPath:(NSIndexPath *)indexPath{
     SimiSection *section = [self.cells objectAtIndex:indexPath.section];
     SimiRow *row = [section objectAtIndex:indexPath.row];
+    UITableViewCell *cell;
     if ([row.identifier isEqualToString:LEFTMENU_ROW_LOGIN]) {
-        return [self createLoginCellWithRow:row];
+        cell = [self createLoginCellWithRow:row];
     }else if([row.identifier isEqualToString:SCP_LEFTMENU_ROW_ACCOUNT]){
-        return [self createAccountCellForRow:row];
+        cell = [self createAccountCellForRow:row];
     }else{
-        SCPLeftMenuCell *cell = [self createContentCellWithRow:row];
-        return cell;
+        cell = [self createContentCellWithRow:row];
     }
+    return cell;
 }
 
 - (SCPLeftMenuCell *)createContentCellWithRow:(SimiRow*)row {
@@ -161,25 +164,28 @@
     if(self == [super initWithStyle:style reuseIdentifier:reuseIdentifier]){
         float padding = 15;
         float contentWidth = width - 2*padding;
-        topView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, width, 64)];
-        backButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 64, 64)];
+        topView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, width, 44)];
+        backButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 44, 44)];
         [backButton setImage:[[UIImage imageNamed:@"scp_ic_back"] imageWithColor:SCP_ICON_COLOR] forState:UIControlStateNormal];
-        backButton.imageEdgeInsets = UIEdgeInsetsMake(20, 20, 20, 20);
+        backButton.imageEdgeInsets = UIEdgeInsetsMake(14, 18, 14, 10);
         [backButton addTarget:self action:@selector(back:) forControlEvents:UIControlEventTouchUpInside];
         [topView addSubview:backButton];
         [self.contentView addSubview:topView];
-        accountView = [[UIView alloc] initWithFrame:CGRectMake(0, 64, width, contentWidth/3 + 2*padding)];
-        avatarView = [[UIImageView alloc] initWithFrame:CGRectMake(padding + 10, padding + 10, contentWidth/3 - 20, contentWidth/3 - 20)];
+        accountView = [[UIView alloc] initWithFrame:CGRectMake(0, 44, width, contentWidth/3 + 2*padding)];
+        avatarView = [[UIImageView alloc] initWithFrame:CGRectMake(padding + 15, padding, contentWidth/3 - 30, contentWidth/3 - 30)];
         [avatarView setImage:[[UIImage imageNamed:@"scp_ic_user"] imageWithColor:[UIColor whiteColor]]];
         [accountView addSubview:avatarView];
         signInView = [[UIView alloc] initWithFrame:CGRectMake(padding + contentWidth/3, padding, 2*contentWidth/3, contentWidth/3)];
         [accountView addSubview:signInView];
-        SCPLabel *signInLabel = [[SCPLabel alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(signInView.frame), CGRectGetHeight(signInView.frame)/2) andFontName:THEME_FONT_NAME_REGULAR andFontSize:FONT_SIZE_HEADER andTextColor:[UIColor blackColor] text:@"Not signed in"];
+        SCPLabel *signInLabel = [[SCPLabel alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(signInView.frame), 0) andFontName:THEME_FONT_NAME_REGULAR andFontSize:FONT_SIZE_HEADER andTextColor:[UIColor blackColor] text:@"Not signed in"];
+        [signInLabel sizeToFit];
         [signInView addSubview:signInLabel];
-        SCPLabel *infoLabel = [[SCPLabel alloc] initWithFrame:CGRectMake(0, CGRectGetHeight(signInView.frame)/2, CGRectGetWidth(signInView.frame), CGRectGetHeight(signInView.frame)/2) andFontName:THEME_FONT_NAME andFontSize:FONT_SIZE_SMALL andTextColor:[UIColor blackColor] text:@"Use your account to track orders and more"];
+        SCPLabel *infoLabel = [[SCPLabel alloc] initWithFrame:CGRectMake(0, CGRectGetHeight(signInLabel.frame) + 10, CGRectGetWidth(signInView.frame), 0) andFontName:THEME_FONT_NAME andFontSize:FONT_SIZE_SMALL andTextColor:[UIColor blackColor] text:@"Use your account to track orders and more"];
         infoLabel.numberOfLines = 2;
+        [infoLabel sizeToFit];
         [signInView addSubview:infoLabel];
-        nameLabel = [[SCPLabel alloc] initWithFrame:signInView.frame andFontName:THEME_FONT_NAME_REGULAR andFontSize:FONT_SIZE_HEADER andTextColor:[UIColor whiteColor]];
+        nameLabel = [[SCPLabel alloc] initWithFrame:CGRectMake(padding + contentWidth/3, padding, 2*contentWidth/3, contentWidth/3 - 30) andFontName:THEME_FONT_NAME_REGULAR andFontSize:FONT_SIZE_HEADER andTextColor:[UIColor whiteColor]];
+        nameLabel.numberOfLines = 0;
         [accountView addSubview:nameLabel];
         [self.contentView addSubview:accountView];
         self.selectionStyle = UITableViewCellSelectionStyleNone;
@@ -218,7 +224,7 @@
     }
     float iconSize = 20;
     float iconOrigionX = cellWidth/4;
-    float distanceIconandName = 25;
+    float distanceIconandName = 15;
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     self.rowIcon = [[UIImageView alloc]initWithFrame:CGRectMake(iconOrigionX, (row.height - iconSize)/2, iconSize, iconSize)];
     if (row.image) {
@@ -234,9 +240,9 @@
     [self.contentView addSubview:self.rowIcon];
     CGRect rowNameFrame = CGRectZero;
     rowNameFrame.origin.x = iconOrigionX + iconSize + distanceIconandName;
-    rowNameFrame.origin.y = (row.height - iconSize)/2;
+    rowNameFrame.origin.y = 0;
     rowNameFrame.size.width = cellWidth - rowNameFrame.origin.x - 30;
-    rowNameFrame.size.height = iconSize;
+    rowNameFrame.size.height = row.height;
     
     self.rowName = [[SimiLabel alloc]initWithFrame:rowNameFrame andFontName:THEME_FONT_NAME_REGULAR andFontSize:FONT_SIZE_LARGE andTextColor:SCP_ICON_COLOR];
     [self.rowName setText:row.title];
