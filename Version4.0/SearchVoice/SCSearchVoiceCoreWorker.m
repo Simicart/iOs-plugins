@@ -33,14 +33,14 @@
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initLeftItemsEnd:) name:@"SCNavigationBarPad-InitLeftItems-End" object:nil];
         
         #if __has_include("SCPSearchViewController.h")
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(perrySearchViewDidLoad:) name:@"SCPSearchViewControllerViewDidLoad" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(perrySearchDidInitView:) name:@"SCPSearchViewController_DidInitView" object:nil];
         #endif
     }
     return self;
 }
 
 #if __has_include("SCPSearchViewController.h")
-- (void)perrySearchViewDidLoad:(NSNotification *)noti{
+- (void)perrySearchDidInitView:(NSNotification *)noti{
     SCPSearchViewController *searchVC = noti.object;
     viewController = searchVC;
     UIButton *searchVoiceButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 40, 40)];

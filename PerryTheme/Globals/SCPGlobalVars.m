@@ -29,4 +29,13 @@
     }
     return [SCPThemeConfigModel new];
 }
+
+- (UITabBarController *)rootController{
+    if(_rootController){
+        return _rootController;
+    }else{
+        return [UITabBarController new];
+    }
+}
+
 @end

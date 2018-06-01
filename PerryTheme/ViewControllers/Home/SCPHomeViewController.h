@@ -42,7 +42,6 @@
 - (void)getPageData;
 
 - (UITableViewCell *)addCategoryLoadingCellForRow:(SimiRow *)row;
-- (UITableViewCell *)addBannerCellForRow:(SimiRow *)row;
 - (UITableViewCell *)addCategoryCellForRow:(SimiRow *)row inSection:(SimiSection *)section;
 - (UITableViewCell *)addCategoryViewAllSubCategoriesCellForRow:(SimiRow *)row inSection:(SimiSection *)section;
 - (UITableViewCell *)addCategoryViewAllProductsCellForRow:(SimiRow *)row inSection:(SimiSection *)section;

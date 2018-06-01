@@ -119,8 +119,12 @@
             navigationController.simiObjectIdentifier = navigationBar;
         }
         [SCAppController sharedInstance].navigationBarPhone = (SCPNavigationBar*)homeNavi.simiObjectIdentifier;
+        if(PADDEVICE){
+            [SCAppController sharedInstance].navigationBarPad = (SCPNavigationBar*)homeNavi.simiObjectIdentifier;
+        }
         initWorker.rootController.viewControllers = navigationControllers;
         initWorker.rootController.delegate = self;
+        [SCPGlobalVars sharedInstance].rootController = initWorker.rootController;
         for (UITabBarItem *tabbarItem in initWorker.rootController.tabBar.items) {
             [tabbarItem setTitleTextAttributes:@{NSForegroundColorAttributeName:SCP_ICON_COLOR} forState:UIControlStateNormal];
             [tabbarItem setTitleTextAttributes:@{NSForegroundColorAttributeName:SCP_ICON_HIGHLIGHT_COLOR} forState:UIControlStateHighlighted];
@@ -177,6 +181,9 @@
 - (BOOL)tabBarController:(UITabBarController *)tabBarController shouldSelectViewController:(UIViewController *)viewController{
     SCP_GLOBALVARS.shouldSelectNavigationController = (UINavigationController*)viewController;
     [SCAppController sharedInstance].navigationBarPhone = (SCPNavigationBar*)viewController.simiObjectIdentifier;
+    if(PADDEVICE){
+        [SCAppController sharedInstance].navigationBarPad = (SCPNavigationBar*)viewController.simiObjectIdentifier;
+    }
     return YES;
 }
 @end

@@ -188,23 +188,9 @@
 }
 
 - (void)createBannerCell{
-    if (phoneBanners.count > 0) {
+    if((PHONEDEVICE && phoneBanners.count) || (PADDEVICE && padBanners.count)){
         SimiSection *bannerSection = [self.cells addSectionWithIdentifier:SCP_HOME_BANNER];
-        float bannerHeight = SCREEN_WIDTH/2;
-        if(PHONEDEVICE){
-            if(phoneBanners.count > 0){
-                [bannerSection addRowWithIdentifier:SCP_HOME_BANNER height:bannerHeight];
-            }
-        }else if(PADDEVICE){
-            if(padBanners.count > 0){
-                if(padBanners.count < 2){
-                    bannerHeight = SCREEN_WIDTH/2;
-                }else{
-                    bannerHeight = SCREEN_WIDTH/4;
-                }
-                [bannerSection addRowWithIdentifier:SCP_HOME_BANNER height:bannerHeight];
-            }
-        }
+        bannerSection.header = [[SimiSectionHeader alloc] initWithTitle:@"" height:SCREEN_WIDTH/2];
     }
 }
 - (void)createCategoryCells{
@@ -226,7 +212,7 @@
             if(PADDEVICE){
                 imageHeight = category1.heightTablet;
             }
-            if(imageHeight == 0)
+            if(imageHeight <= 0)
                 imageHeight = 200;
             imageHeight *= scale;
             SimiSection *categorySection = [self.cells addSectionWithIdentifier:SCP_CATEGORY];
@@ -274,6 +260,8 @@
             if(PADDEVICE){
                 imageHeight = productList.heightTablet;
             }
+            if(imageHeight <= 0)
+                imageHeight = 200;
             imageHeight *= scale;
             productListSection.header = [[SimiSectionHeader alloc] initWithTitle:@"" height:imageHeight];
         }
@@ -283,9 +271,7 @@
     SimiSection *section = [self.cells objectAtIndex:indexPath.section];
     SimiRow *row = [section objectAtIndex:indexPath.row];
     UITableViewCell *cell;
-    if([section.identifier isEqualToString:SCP_HOME_BANNER]){
-        cell = [self addBannerCellForRow:row];
-    }else if([section.identifier isEqualToString:SCP_CATEGORY]){
+    if([section.identifier isEqualToString:SCP_CATEGORY]){
         if([row.identifier isEqualToString:SCP_CATEGORY_LOADING]){
             cell = [self addCategoryLoadingCellForRow:row];
         }else if([row.identifier isEqualToString:SCP_CATEGORY]){
@@ -295,29 +281,6 @@
         }else if([row.identifier isEqualToString:SCP_CATEGORY_VIEW_ALL_SUB_CATEGORIES]){
             cell =  [self addCategoryViewAllSubCategoriesCellForRow: row inSection:section];
         }
-    }
-    return cell;
-}
-- (UITableViewCell *)addBannerCellForRow:(SimiRow *)row{
-    UITableViewCell *cell = [self.contentTableView dequeueReusableCellWithIdentifier:row.identifier];
-    if(!cell){
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:row.identifier];
-        cell.selectionStyle = UITableViewCellSelectionStyleNone;
-        MatrixBannerScrollView* bannerScrollView = [[MatrixBannerScrollView alloc] initWithFrame:CGRectMake(0, 0 , SCREEN_WIDTH, row.height)];
-        bannerScrollView.bannerItemPosition = Middle;
-        bannerScrollView.isShowedItemsView = YES;
-        bannerScrollView.selectedItemImage = [[UIImage imageNamed:@"scp_ic_banner_selected"] imageWithColor:COLOR_WITH_HEX(@"#838383")];
-        bannerScrollView.unselectedItemImage = [[UIImage imageNamed:@"scp_ic_banner_unselected"] imageWithColor:COLOR_WITH_HEX(@"#838383")];
-        bannerScrollView.banners = phoneBanners;
-        if(PADDEVICE){
-            if(padBanners.count >= 2){
-                bannerScrollView = [[MatrixBannerScrollViewPad alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, row.height)];
-            }
-            bannerScrollView.banners = padBanners;
-        }
-        bannerScrollView.delegate = self;
-        [cell.contentView addSubview:bannerScrollView];
-        cell.selectionStyle = UITableViewCellSelectionStyleNone;
     }
     return cell;
 }
@@ -388,10 +351,29 @@
         return [self addCategoryHeaderViewInSection:sec];
     }else if([sec.identifier isEqualToString:SCP_HOME_PRODUCT_LIST]){
         return [self addProductListHeaderViewInSection:sec];
+    }else if([sec.identifier isEqualToString:SCP_HOME_BANNER]){
+        return [self addBannerHeaderViewInSection:sec];
     }
     return nil;
 }
-
+- (UITableViewHeaderFooterView *)addBannerHeaderViewInSection:(SimiSection *)section{
+    UITableViewHeaderFooterView *headerView = [self.contentTableView dequeueReusableHeaderFooterViewWithIdentifier:section.identifier];
+    if (!headerView) {
+        headerView = [UITableViewHeaderFooterView new];
+        MatrixBannerScrollView* bannerScrollView = [[MatrixBannerScrollView alloc] initWithFrame:CGRectMake(0, 0 , SCREEN_WIDTH, section.header.height)];
+        bannerScrollView.bannerItemPosition = Middle;
+        bannerScrollView.isShowedItemsView = YES;
+        bannerScrollView.selectedItemImage = [[UIImage imageNamed:@"scp_ic_banner_selected"] imageWithColor:COLOR_WITH_HEX(@"#838383")];
+        bannerScrollView.unselectedItemImage = [[UIImage imageNamed:@"scp_ic_banner_unselected"] imageWithColor:COLOR_WITH_HEX(@"#838383")];
+        if(PHONEDEVICE)
+            bannerScrollView.banners = phoneBanners;
+        else if(PADDEVICE)
+            bannerScrollView.banners = padBanners;
+        bannerScrollView.delegate = self;
+        [headerView addSubview:bannerScrollView];
+    }
+    return headerView;
+}
 - (UITableViewHeaderFooterView *)addCategoryHeaderViewInSection:(SimiSection *)section{
     SCPCategoryModel *category = (SCPCategoryModel *)section.simiObjectIdentifier;
     NSString *identifier = [NSString stringWithFormat:@"%@%@",SCP_CATEGORY,category.entityId];
@@ -399,12 +381,14 @@
     if (!headerView) {
         headerView = [UITableViewHeaderFooterView new];
         float contentWidth = CGRectGetWidth(self.contentTableView.frame) - 2*SCP_CATEGORY1_PADDING_X;
-        UIButton *button = [[UIButton alloc] initWithFrame:CGRectMake(SCP_CATEGORY1_PADDING_X, 0, contentWidth, section.header.height)];
-        button.simiObjectIdentifier = section;
-        [button addTarget:self action:@selector(didTapToCategoryImage:) forControlEvents:UIControlEventTouchUpInside];
-        [button sd_setImageWithURL:[NSURL URLWithString:PHONEDEVICE?category.imageURL:category.imageURLPad] forState:UIControlStateNormal placeholderImage:[UIImage imageNamed:@"logo"]];
-        [button.imageView setContentMode:UIViewContentModeScaleAspectFill];
-        [headerView addSubview:button];
+        UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(SCP_CATEGORY1_PADDING_X, 0, contentWidth, section.header.height)];
+        imageView.simiObjectIdentifier = section;
+        [imageView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapToCategoryImage:)]];
+        imageView.userInteractionEnabled = YES;
+        [imageView sd_setImageWithURL:[NSURL URLWithString:PHONEDEVICE?category.imageURL:category.imageURLPad] placeholderImage:[UIImage imageNamed:@"logo"]];
+        [imageView setContentMode: UIViewContentModeScaleAspectFill];
+        imageView.clipsToBounds = YES;
+        [headerView addSubview:imageView];
     }
     return headerView;
 }
@@ -415,19 +399,23 @@
     UITableViewHeaderFooterView *headerView = [self.contentTableView dequeueReusableHeaderFooterViewWithIdentifier:identifier];
     if (!headerView) {
         headerView = [UITableViewHeaderFooterView new];
+        headerView = [UITableViewHeaderFooterView new];
         float contentWidth = CGRectGetWidth(self.contentTableView.frame) - 2*SCP_CATEGORY1_PADDING_X;
-        UIButton *button = [[UIButton alloc] initWithFrame:CGRectMake(SCP_CATEGORY1_PADDING_X, 0, contentWidth, section.header.height)];
-        button.simiObjectIdentifier = section;
-        [button addTarget:self action:@selector(didTapToProductListImage:) forControlEvents:UIControlEventTouchUpInside];
-        [button sd_setImageWithURL:[NSURL URLWithString:PHONEDEVICE?productList.imageURL:productList.imageURLPad] forState:UIControlStateNormal placeholderImage:[UIImage imageNamed:@"logo"]];
-        [button.imageView setContentMode:UIViewContentModeScaleAspectFill];
-        [headerView addSubview:button];
+        UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(SCP_CATEGORY1_PADDING_X, 0, contentWidth, section.header.height)];
+        imageView.simiObjectIdentifier = section;
+        [imageView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapToProductListImage:)]];
+        imageView.userInteractionEnabled = YES;
+        [imageView sd_setImageWithURL:[NSURL URLWithString:PHONEDEVICE?productList.imageURL:productList.imageURLPad] placeholderImage:[UIImage imageNamed:@"logo"]];
+        [imageView setContentMode: UIViewContentModeScaleAspectFill];
+        imageView.clipsToBounds = YES;
+        [headerView addSubview:imageView];
     }
     return headerView;
 }
 
-- (void)didTapToCategoryImage:(UIButton *)sender{
-    SimiSection *section = (SimiSection *)sender.simiObjectIdentifier;
+- (void)didTapToCategoryImage:(UIGestureRecognizer *)sender{
+    UIImageView *imageView = (UIImageView *)sender.view;
+    SimiSection *section = (SimiSection *)imageView.simiObjectIdentifier;
     SCPCategoryModel *category = (SCPCategoryModel *)section.simiObjectIdentifier;
     if([self isOpenedCMSPageWithCategory:category]){
         return;
@@ -443,6 +431,11 @@
                 [self.contentTableView beginUpdates];
                 [self.contentTableView deleteRowsAtIndexPaths:expandedRow1s withRowAnimation:UITableViewRowAnimationFade];
                 [self.contentTableView endUpdates];
+                NSInteger sectionIndex = [self.categories indexOfObject:category];
+                if([self.cells getSectionByIdentifier:SCP_HOME_BANNER]){
+                    sectionIndex += 1;
+                }
+                [self.contentTableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:NSNotFound inSection:sectionIndex] atScrollPosition:UITableViewScrollPositionTop animated:YES];
                 [expandedRow1s removeAllObjects];
             }
         }else{
@@ -481,8 +474,9 @@
         }
     }
 }
-- (void)didTapToProductListImage:(UIButton *)sender{
-    SimiSection *section = (SimiSection *)sender.simiObjectIdentifier;
+- (void)didTapToProductListImage:(UIGestureRecognizer *)sender{
+    UIImageView *imageView = (UIImageView *)sender.view;
+    SimiSection *section = (SimiSection *)imageView.simiObjectIdentifier;
     SimiHomeProductListModel *productListModel = (SimiHomeProductListModel*)section.simiObjectIdentifier;
     [self openProductListWithProductList:productListModel];
 }

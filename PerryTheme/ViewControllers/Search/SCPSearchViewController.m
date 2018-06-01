@@ -15,7 +15,10 @@
 @implementation SCPSearchViewController{
     UIView *popularSearchView;
     float paddingX, contentWidth, contentY;
+    UIView *searchRightView;
+    UIButton *searchDeleteButton;
 }
+
 @synthesize mainScrollView,searchTextField;
 - (void)viewDidLoadBefore{
     [super viewDidLoadBefore];
@@ -35,6 +38,7 @@
     searchTextField.layer.cornerRadius = 4.0f;
     searchTextField.returnKeyType = UIReturnKeySearch;
     searchTextField.delegate = self;
+    searchTextField.clearButtonMode = UITextFieldViewModeWhileEditing;
     searchTextField.layer.cornerRadius = 4;
     UIButton *searchButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 40, 40)];
     searchButton.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
@@ -51,12 +55,45 @@
     popularSearchView = [[UIView alloc] initWithFrame:CGRectMake(paddingX, contentY, contentWidth, 75)];
     [mainScrollView addSubview:popularSearchView];
     contentY += CGRectGetHeight(popularSearchView.frame);
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"SCPSearchViewController_DidInitView" object:self];
+    searchRightView = searchTextField.rightView;
+    //Define search delete button
+    searchDeleteButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 40, 40)];
+    [searchDeleteButton setImage:[UIImage imageNamed:@"scp_ic_search_clear"] forState:UIControlStateNormal];
+    [searchDeleteButton setImageEdgeInsets:UIEdgeInsetsMake(12, 12, 12, 12)];
+    [searchDeleteButton addTarget:self action:@selector(deleteSearchText:) forControlEvents:UIControlEventTouchUpInside];
 }
 
+- (void)deleteSearchText:(id)sender{
+    searchTextField.text = @"";
+    if(searchRightView){
+        searchTextField.rightView = searchRightView;
+        searchTextField.rightViewMode = UITextFieldViewModeAlways;
+    }
+}
 - (void)viewDidAppearBefore:(BOOL)animated{
     mainScrollView.frame = self.view.bounds;
     mainScrollView.contentSize = CGSizeMake(CGRectGetWidth(self.view.bounds), contentY);
     [self loadSearchHistory];
+    [searchTextField becomeFirstResponder];
+}
+
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string{
+    if(textField == searchTextField){
+        NSString *nextString = [textField.text stringByReplacingCharactersInRange:range withString:string];
+        if([nextString isEqualToString:@""]){
+            if(searchRightView){
+                textField.rightView = searchRightView;
+                textField.rightViewMode = UITextFieldViewModeAlways;
+            }else{
+                textField.rightView = nil;
+            }
+        }else{
+            textField.rightView = searchDeleteButton;
+            textField.rightViewMode = UITextFieldViewModeAlways;
+        }
+    }
+    return YES;
 }
 - (void)loadSearchHistory{
     [popularSearchView removeAllSubViews];
@@ -67,12 +104,8 @@
                 break;
             }
             NSString *value = [SCP_SEARCH_DATA.searchHistory objectAtIndex:i];
-            UIFont *font = [UIFont fontWithName:THEME_FONT_NAME_REGULAR size:FONT_SIZE_SMALL];
-            float width = [SimiGlobalFunction widthOfText:value font:font];
-            if(width > contentWidth){
-                width = contentWidth;
-            }
-            SimiLabel *valueLabel = [[SimiLabel alloc] initWithFrame:CGRectMake(0, popularY, width, 30) andFont:font];
+            UIFont *font = [UIFont fontWithName:THEME_FONT_NAME_REGULAR size:FONT_SIZE_MEDIUM];
+            SimiLabel *valueLabel = [[SimiLabel alloc] initWithFrame:CGRectMake(0, popularY, contentWidth, 30) andFont:font];
             valueLabel.textColor = COLOR_WITH_HEX(@"#747474");
             valueLabel.text = value;
             [valueLabel addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapSearchHistory:)]];
@@ -107,8 +140,6 @@
         productListVC.keySearchProduct = textField.text;
         productListVC.productListGetProductType = ProductListGetProductTypeFromSearch;
         [self.navigationController pushViewController:productListVC animated:YES];
-        textField.text = @"";
-        [textField resignFirstResponder];
     }
     return YES;
 }

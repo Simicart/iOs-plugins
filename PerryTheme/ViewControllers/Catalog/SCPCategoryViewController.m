@@ -135,7 +135,7 @@
             if(PADDEVICE){
                 imageHeight = category1.heightTablet;
             }
-            if(imageHeight == 0)
+            if(imageHeight <= 0)
                 imageHeight = 200;
             imageHeight *= scale;
             SimiSection *categorySection = [self.cells addSectionWithIdentifier:SCP_CATEGORY];

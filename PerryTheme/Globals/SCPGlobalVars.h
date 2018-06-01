@@ -30,5 +30,6 @@
 @property (nonatomic) BOOL wishlistPluginAllow;
 @property (strong, nonatomic) SCPWishlistModelCollection *wishListModelCollection;
 @property (strong, nonatomic) UINavigationController *shouldSelectNavigationController;
+@property (strong, nonatomic) UITabBarController *rootController;
 + (instancetype)sharedInstance;
 @end

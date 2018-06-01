@@ -15,6 +15,7 @@
 @implementation SCPSubCategoryViewController
 
 - (void)getPageData{
+    self.categoryModel = [[SCPCategoryModel alloc] initWithModelData:self.categoryModel.modelData];
     [self getSubCategoriesOfCategory:self.categoryModel level:@"1"];
     [self startLoadingData];
 }

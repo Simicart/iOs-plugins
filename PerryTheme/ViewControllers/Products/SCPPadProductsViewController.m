@@ -15,6 +15,7 @@
 
 @implementation SCPPadProductsViewController
 - (void)viewDidLoadBefore{
+    [self configureLogo];
     if ([self openCategoryCmsPage]) {
         return;
     }

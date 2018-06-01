@@ -27,11 +27,12 @@
 }
 - (void)addValueToSearchHistory:(NSString *)value{
     NSMutableArray *searchHistory = [NSMutableArray new];
-    NSArray *searchValues = [[NSUserDefaults standardUserDefaults] objectForKey:@"searchValues"];
+    NSMutableArray *searchValues = [NSMutableArray arrayWithArray:[[NSUserDefaults standardUserDefaults] objectForKey:@"searchValues"]];
     if(searchValues){
         for(NSString *searchValue in searchValues){
             if([searchValue isEqualToString:value]){
-                return;
+                [searchValues removeObject:searchValue];
+                break;
             }
         }
         [searchHistory addObjectsFromArray:searchValues];
@@ -39,6 +40,13 @@
     }else{
         [searchHistory insertObject:value atIndex:0];
     }
-    [[NSUserDefaults standardUserDefaults] setObject:searchHistory forKey:@"searchValues"];
+    NSMutableArray *resultsBeSaved = [NSMutableArray new];
+    for(NSString *searchString in searchHistory){
+        if([searchHistory indexOfObject:searchString] == 3){
+            break;
+        }
+        [resultsBeSaved addObject:searchString];
+    }
+    [[NSUserDefaults standardUserDefaults] setObject:resultsBeSaved forKey:@"searchValues"];
 }
 @end
