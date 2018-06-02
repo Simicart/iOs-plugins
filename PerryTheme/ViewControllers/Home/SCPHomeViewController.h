@@ -20,8 +20,8 @@
 #define SCP_CATEGORY_VIEW_ALL_SUB_CATEGORIES @"SCP_CATEGORY_VIEW_ALL_SUB_CATEGORIES"
 #define SCP_HOME_PRODUCT_LIST @"SCP_HOME_PRODUCT_LIST"
 
-#define SCP_CATEGORY_TEXT_CELL_PADDING_TOP SCALEVALUE(12)
-#define SCP_CATEGORY_TEXT_CELL_HEIGHT SCALEVALUE(30)
+#define SCP_CATEGORY_TEXT_CELL_PADDING_TOP SCALEVALUE(15)
+#define SCP_CATEGORY_TEXT_CELL_HEIGHT SCALEVALUE(36)
 
 #define SCP_CATEGORY1_PADDING_X 0
 #define SCP_CATEGORY2_PADDING_X 50
@@ -33,6 +33,7 @@
     NSMutableArray *expandedRow1s;
     NSMutableArray *expandedRow2s;
 }
+
 @property (strong, nonatomic) NSMutableArray *categories;
 - (void)initCategories;
 - (void)initSubCategories:(SCPCategoryModelCollection *)subCategories;
