@@ -121,7 +121,6 @@
         }
         [self.contentTableView insertRowsAtIndexPaths:expandedRow2s withRowAnimation:UITableViewRowAnimationFade];
         [self.contentTableView endUpdates];
-        [self.contentTableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:sectionIndex] atScrollPosition:UITableViewScrollPositionTop animated:YES];
     }else {
         [self showToastMessage:responder.message duration:2];
     }
@@ -204,16 +203,13 @@
             if(imageWidth == 0){
                 imageWidth = contentWidth;
             }
-            float scale = 0;
-            if(imageWidth > 0){
-                scale = contentWidth/imageWidth;
-            }
+            float scale = contentWidth/imageWidth;
             float imageHeight = category1.height;
             if(PADDEVICE){
                 imageHeight = category1.heightTablet;
             }
             if(imageHeight <= 0)
-                imageHeight = 200;
+                imageHeight = contentWidth/2;
             imageHeight *= scale;
             SimiSection *categorySection = [self.cells addSectionWithIdentifier:SCP_CATEGORY];
             categorySection.header = [[SimiSectionHeader alloc] initWithTitle:@"" height:imageHeight];
@@ -251,17 +247,15 @@
             if(PADDEVICE){
                 imageWidth = productList.widthTablet;
             }
-            float scale = 0;
-            if(imageWidth > 0){
-                scale = contentWidth/imageWidth;
-            }
+            if(imageWidth <= 0)
+                imageWidth = contentWidth;
+            float scale = contentWidth/imageWidth;
             float imageHeight = productList.height;
-            imageWidth = contentWidth;
             if(PADDEVICE){
                 imageHeight = productList.heightTablet;
             }
             if(imageHeight <= 0)
-                imageHeight = 200;
+                imageHeight = contentWidth/2;
             imageHeight *= scale;
             productListSection.header = [[SimiSectionHeader alloc] initWithTitle:@"" height:imageHeight];
         }
@@ -518,7 +512,6 @@
                             [self.contentTableView deleteRowsAtIndexPaths:expandedRow2s withRowAnimation:UITableViewRowAnimationFade];
                             [self.contentTableView endUpdates];
                             [expandedRow2s removeAllObjects];
-                            [self.contentTableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:sectionIndex] atScrollPosition:UITableViewScrollPositionTop animated:YES];
                             SimiSection *sec = [self.cells objectAtIndex:sectionIndex];
                             [expandedRow1s removeAllObjects];
                             for(int i = 0;i<sec.rows.count;i++){
@@ -572,7 +565,6 @@
                         }
                         [self.contentTableView insertRowsAtIndexPaths:expandedRow2s withRowAnimation:UITableViewRowAnimationFade];
                         [self.contentTableView endUpdates];
-                        [self.contentTableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:sectionIndex] atScrollPosition:UITableViewScrollPositionTop animated:YES];
                     }
                 }
                     break;
