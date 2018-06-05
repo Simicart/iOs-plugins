@@ -30,6 +30,7 @@
         if (SCP_GLOBALVARS.wishlistPluginAllow) {
             [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateWishlist:) name:SCCartController_CompletedChangeCustomerState object:nil];
         }
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(openCart:) name:SIMI_SHOWCARTSCREEN object:nil];
     }
     return self;
 }

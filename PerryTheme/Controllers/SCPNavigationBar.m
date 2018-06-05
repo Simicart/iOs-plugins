@@ -8,6 +8,7 @@
 
 #import "SCPNavigationBar.h"
 #import "SCPGlobalVars.h"
+#import "SCPPadCartViewController.h"
 
 @implementation SCPNavigationBar
 @synthesize leftButtonItems = _leftButtonItems, rightButtonItems = _rightButtonItems;
@@ -132,7 +133,25 @@
 
 - (void)didSelectCartBarItem:(id)sender{
     UINavigationController *currentlyNavigationController = GLOBALVAR.currentlyNavigationController;
-    [[SCAppController sharedInstance]openCartScreenWithNavigationController:currentlyNavigationController moreParams:@{}];
+    if (PHONEDEVICE) {
+        for (UIViewController *viewControllerTemp in currentlyNavigationController.viewControllers) {
+            if ([viewControllerTemp isKindOfClass:[SCPCartViewController class]]) {
+                [viewControllerTemp.navigationController popToViewController:viewControllerTemp animated:YES];
+                return;
+            }
+        }
+        SCPCartViewController *cartViewController = [SCPCartViewController new];
+        [currentlyNavigationController pushViewController:cartViewController animated:YES];
+    }else{
+        for (UIViewController *viewControllerTemp in currentlyNavigationController.viewControllers) {
+            if ([viewControllerTemp isKindOfClass:[SCPPadCartViewController class]]) {
+                [viewControllerTemp.navigationController popToViewController:viewControllerTemp animated:YES];
+                return;
+            }
+        }
+        SCPPadCartViewController *cartViewController = [SCPPadCartViewController new];
+        [currentlyNavigationController pushViewController:cartViewController animated:YES];
+    }
 }
 
 @end
