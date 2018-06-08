@@ -8,6 +8,7 @@
 
 #import <SimiCartBundle/SimiCartBundle.h>
 
-@interface SCPButton : SimiButton
-
+@interface SCPButton : UIButton
+- (id)initWithFrame:(CGRect)frame title:(NSString *)title titleFont:(UIFont *)titleFont cornerRadius:(float)cornerRadius borderWidth:(int)borderWidth borderColor:(UIColor *)borderColor shadowOffset:(CGSize)shadowOffset shadowRadius:(float)shadowRadius shadowOpacity:(float)shadowOpacity;
+- (id)initWithFrame:(CGRect)frame title:(NSString *)title titleFont:(UIFont *)titleFont cornerRadius:(float)cornerRadius borderWidth:(int)borderWidth borderColor:(UIColor *)borderColor;
 @end

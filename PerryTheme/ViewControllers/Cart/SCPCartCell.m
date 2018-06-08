@@ -58,24 +58,30 @@
 
 - (void)configureInterface{
     cellWidth = SCREEN_WIDTH;
-    if (PADDEVICE) {
-        cellWidth = SCREEN_WIDTH/2;
-    }
     padding = SCALEVALUE(15);
-    contentPadding = SCALEVALUE(10);
+    contentPadding = SCALEVALUE(15);
+    if(PADDEVICE){
+        cellWidth = SCREEN_WIDTH*0.6f;
+        contentPadding = SCALEVALUE(20);
+        padding = SCALEVALUE(20);
+    }
     imageX = 0;
-    contentWidth = cellWidth - 2*padding;
     imageWidth = SCALEVALUE(128);
+    contentWidth = cellWidth - 2*padding;
     deleteButtonWidth = 44;
     deleteButtonX = contentWidth - deleteButtonWidth;
     labelX = imageWidth + imageX + padding;
     labelWidth = contentWidth - labelX - padding;
-    heightLabel = 25;
     optionWidth = labelWidth;
     optionX = labelX;
     qtyViewHeight = 30;
-    qtyViewWidth = 2 * labelWidth / 3 - padding;
-    priceWidth = labelWidth/3;
+    qtyViewWidth = SCALEVALUE(70);
+    priceWidth = labelWidth - qtyViewWidth - SCALEVALUE(15);
+    
+    if(PADDEVICE){
+        priceWidth = labelWidth - qtyViewWidth - SCALEVALUE(30);
+    }
+    
     self.heightCell = contentPadding;
     contentHeight = 0;
 }
@@ -85,12 +91,14 @@
     contentView.backgroundColor = [UIColor whiteColor];
     [self.contentView addSubview:contentView];
 }
+
 - (void)initializedProductImageView{
     productImageView = [[UIImageView alloc]initWithFrame:CGRectMake(imageX, 0, imageWidth, contentHeight)];
     productImageView.backgroundColor = COLOR_WITH_HEX(@"#f7f7f7");
     if ([self.item.modelData valueForKey:@"image"]) {
         [productImageView sd_setImageWithURL:[NSURL URLWithString:[self.item.modelData valueForKey:@"image"]] placeholderImage:[UIImage imageNamed:@"logo"]];
-        [productImageView setContentMode:UIViewContentModeScaleAspectFit];
+        [productImageView setContentMode:UIViewContentModeScaleAspectFill];
+        productImageView.clipsToBounds = YES;
     }
     UITapGestureRecognizer *singleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(productImageClick)];
     singleTap.numberOfTapsRequired = 1;
@@ -112,9 +120,9 @@
 
 - (void)initializedProductName{
     contentHeight += 2*contentPadding;
-    nameLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(labelX, contentHeight, labelWidth, 25) andFontName:SCP_FONT_SEMIBOLD andFontSize:FONT_SIZE_LARGE andTextColor:[UIColor blackColor] text:self.item.name];
+    nameLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(labelX, contentHeight, labelWidth, 20) andFontName:SCP_FONT_SEMIBOLD andFontSize:FONT_SIZE_LARGE andTextColor:[UIColor blackColor] text:self.item.name];
     [contentView addSubview:nameLabel];
-    contentHeight += CGRectGetHeight(nameLabel.frame) + contentPadding;
+    contentHeight += CGRectGetHeight(nameLabel.frame) + contentPadding - 5;
 }
 
 - (void)initializedOptions{
@@ -154,8 +162,8 @@
     qtyView = [[UIView alloc] initWithFrame:CGRectMake(labelX, contentHeight, qtyViewWidth, qtyViewHeight)];
     [contentView addSubview:qtyView];
     contentHeight += CGRectGetHeight(qtyView.frame) + contentPadding;
-    float qtyBoxWidth = 30;
-    float qtyBoxHeight = 25;
+    float qtyBoxWidth = SCALEVALUE(30);
+    float qtyBoxHeight = SCALEVALUE(25);
     float qtyButtonWidth = (qtyViewWidth - qtyBoxWidth)/2;
     if(self.item.maxQty > 10000)
         self.item.maxQty = 10000;
@@ -165,15 +173,17 @@
     [qtyButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     [[qtyButton layer] setBorderColor:COLOR_WITH_HEX(@"#ff7d00").CGColor];
     [[qtyButton layer] setBorderWidth:1];
-    [[qtyButton layer] setCornerRadius:5.0f];
+    [[qtyButton layer] setCornerRadius:qtyBoxWidth/3];
     [qtyButton addTarget:self action:@selector(qtyButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
     [qtyView addSubview:qtyButton];
     UIButton *minusButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, qtyButtonWidth, qtyViewHeight)];
+    [minusButton addTarget:self action:@selector(minusQty:) forControlEvents:UIControlEventTouchUpInside];
     [minusButton setTitle:@"-" forState:UIControlStateNormal];
     minusButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
     [minusButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     [minusButton titleLabel].font = [UIFont fontWithName:SCP_FONT_REGULAR size:30];
     UIButton *plusButton = [[UIButton alloc] initWithFrame:CGRectMake(qtyViewWidth - qtyButtonWidth, 0, qtyButtonWidth, qtyViewHeight)];
+    [plusButton addTarget:self action:@selector(plusQty:) forControlEvents:UIControlEventTouchUpInside];
     [plusButton setTitle:@"+" forState:UIControlStateNormal];
     plusButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentRight;
     [plusButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
@@ -182,10 +192,22 @@
     [qtyView addSubview:minusButton];
     [qtyView addSubview:plusButton];
 }
-
+- (void)minusQty:(id)sender{
+    if(self.item.qty - self.item.qtyIncrement >= self.item.minQty){
+        qty = self.item.qty - self.item.qtyIncrement;
+        [self.delegate editItemQtyWithItem:self.item andQty:[NSString stringWithFormat:@"%d",qty]];
+        [qtyButton setTitle:[NSString stringWithFormat:@"%ld",(long)qty] forState:UIControlStateNormal];
+    }
+}
+- (void)plusQty:(id)sender{
+    if(self.item.qty + self.item.qtyIncrement < self.item.maxQty){
+        qty = self.item.qty + self.item.qtyIncrement;
+        [self.delegate editItemQtyWithItem:self.item andQty:[NSString stringWithFormat:@"%d",qty]];
+        [qtyButton setTitle:[NSString stringWithFormat:@"%ld",(long)qty] forState:UIControlStateNormal];
+    }
+}
 - (void)initializedCartCellPrices{
     priceLabel = [[SimiLabel alloc] initWithFrame:CGRectMake(labelX + labelWidth - priceWidth, contentHeight, priceWidth, qtyViewHeight) andFontName:SCP_FONT_SEMIBOLD andFontSize:FONT_SIZE_HEADER andTextColor:COLOR_WITH_HEX(@"#ff7d00")];
-    priceLabel.textAlignment = NSTextAlignmentCenter;
     [contentView addSubview:priceLabel];
 }
 
@@ -236,15 +258,17 @@
     [qtyPicker showActionSheetPicker];
 }
 
+- (void)cancelEditQty:(id)sender{
+    [qtyTextField setText:[NSString stringWithFormat:@"%ld",(long)qty]];
+    qtyTitleLabel.text = qtyTextField.text;
+    [qtyTextField endEditing:YES];
+}
 - (void)didSelectValue:(NSNumber *)selectedIndex element:(id)element{
     if(![[qtyButton titleForState:UIControlStateNormal] isEqual: [qtyArray objectAtIndex: [selectedIndex intValue]]]){
         [self.delegate editItemQtyWithItem:self.item andQty:[qtyArray objectAtIndex: [selectedIndex intValue]]];
     }
 }
 
-- (void)cancelActionSheet:(id)sender{
-    
-}
 
 - (void)productImageClick{
     [self.delegate selectProductWithItem:self.item];

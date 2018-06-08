@@ -8,6 +8,10 @@
 
 #import <SimiCartBundle/SimiCartBundle.h>
 #import <SimiCartBundle/SCCartViewController.h>
+#import "SCPCartCell.h"
+#import "SCPOrderFeeCell.h"
+#import "SCPGlobalVars.h"
+#import "SCPButton.h"
 
 @interface SCPCartViewController : SCCartViewController
 

@@ -14,6 +14,7 @@
 #import "SCPCategoryViewController.h"
 #import "SCPSearchViewController.h"
 #import "SCPLeftMenuViewController.h"
+#import "SCPProductViewController.h"
 
 @implementation SCPInitWorker{
     SCPLeftMenuViewController *leftMenuViewController;
@@ -26,11 +27,11 @@
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializedMenu:) name:Simi_MainViewController_InitializedMenu object:nil];
         [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(initializedMenuSize:) name:Simi_MainViewController_InitializedMenuSize object:nil];
-        
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(openProduct:) name:SIMI_SHOWPRODUCTDETAIL object:nil];
         if (SCP_GLOBALVARS.wishlistPluginAllow) {
             [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateWishlist:) name:SCCartController_CompletedChangeCustomerState object:nil];
         }
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(openCart:) name:SIMI_SHOWCARTSCREEN object:nil];
+        GLOBALVAR.isUseDiscountMinus = YES;
     }
     return self;
 }
@@ -186,5 +187,14 @@
         [SCAppController sharedInstance].navigationBarPad = (SCPNavigationBar*)viewController.simiObjectIdentifier;
     }
     return YES;
+}
+- (void)openProduct:(NSNotification *)noti{
+    UINavigationController *navi = [noti.userInfo objectForKey:KEYEVENT.APPCONTROLLER.navigation_controller];
+    NSString *productId = [noti.userInfo objectForKey:KEYEVENT.PRODUCTVIEWCONTROLLER.product_id];
+    SCPProductViewController *productVC = [SCPProductViewController new];
+    productVC.productId = productId;
+    [navi pushViewController:productVC animated:YES];
+    SCAppController *appController = noti.object;
+    appController.isDiscontinue = YES;
 }
 @end

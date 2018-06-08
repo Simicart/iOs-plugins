@@ -7,7 +7,6 @@
 //
 
 #import "SCPCartViewController.h"
-#import "SCPCartCell.h"
 
 @interface SCPCartViewController ()
 
@@ -17,8 +16,39 @@
 
 - (void)viewDidLoadBefore{
     [super viewDidLoadBefore];
+    self.contentTableView.contentInset = UIEdgeInsetsMake(0, 0, SCALEVALUE(45), 0);
     self.contentTableView.backgroundColor = COLOR_WITH_HEX(@"#f2f2f2");
     self.contentTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+}
+
+- (void)viewWillAppear:(BOOL)animated{
+    [super viewWillAppear:animated];
+    [self.tabBarController.tabBar setHidden:YES];
+}
+- (void)viewWillDisappear:(BOOL)animated{
+    [super viewWillDisappear:animated];
+    [self.tabBarController.tabBar setHidden:NO];
+}
+- (void)viewDidAppearBefore:(BOOL)animated{
+    if (self.btnCheckout == nil) {
+        float btnCheckoutHeight = SCALEVALUE(45);
+        CGRect frame = self.view.bounds;
+        frame.size.height -= btnCheckoutHeight;
+        self.btnCheckout = [[SCPButton alloc] initWithFrame:CGRectMake(0, CGRectGetHeight(self.view.bounds) - btnCheckoutHeight, SCREEN_WIDTH, btnCheckoutHeight) title:@"CHECK OUT" titleFont:[UIFont fontWithName:SCP_FONT_SEMIBOLD size:FONT_SIZE_HEADER] cornerRadius:0 borderWidth:0 borderColor:[UIColor clearColor] shadowOffset:CGSizeZero shadowRadius:0 shadowOpacity:0];
+        self.btnCheckout.autoresizingMask = UIViewAutoresizingFlexibleTopMargin;
+        [self.btnCheckout addTarget:self action:@selector(checkout) forControlEvents:UIControlEventTouchUpInside];
+        [self.view addSubview:self.btnCheckout];
+        if (self.cart.canCheckOut) {
+            [self.btnCheckout setHidden:NO];
+        }else{
+            [self.btnCheckout setHidden:YES];
+        }
+    }
+    if (GLOBALVAR.isGettingCart) {
+        [self startLoadingData];
+    }else{
+        [self initCells];
+    }
 }
 - (void)createCells{
     cartPrices = [GLOBALVAR convertCartPriceData:self.cart.cartTotal];
@@ -29,7 +59,11 @@
             SimiRow *row = [[SimiRow alloc]initWithIdentifier:[NSString stringWithFormat:@"%@_%@",CART_PRODUCTS, item.itemId] height:SCALEVALUE(100)];
             row.model = item;
             [products addObject:row];
+            
         }
+        SimiSection *sectionPrice = [self.cells addSectionWithIdentifier:CART_TOTALS];
+        SimiRow *cartTotalsRow = [[SimiRow alloc]initWithIdentifier:CART_TOTALS_ROW];
+        [sectionPrice addRow:cartTotalsRow];
     } else {
         SimiSection *sectionEmpty = [self.cells addSectionWithIdentifier:CART_EMPTY];
         [sectionEmpty addRowWithIdentifier:CART_EMPTY height:125];
@@ -59,6 +93,16 @@
     if (cell.heightCell > row.height) {
         row.height = cell.heightCell;
     }
+    return cell;
+}
+- (UITableViewCell *)createTotalCellForRow:(SimiRow *)row{
+    SCPOrderFeeCell *cell = [[SCPOrderFeeCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:row.identifier];
+    if (self.cart.count <= 0) {
+        return cell;
+    }
+    [cell setData:cartPrices andWidthCell:self.contentTableView.frame.size.width];
+    cell.userInteractionEnabled = NO;
+    row.height = cell.heightCell;
     return cell;
 }
 

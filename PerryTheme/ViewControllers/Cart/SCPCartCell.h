@@ -14,6 +14,7 @@
     float contentHeight;
     float qtyViewHeight;
     float qtyViewWidth, priceWidth;
+    float paddingX, paddingY;
 }
 
 @end

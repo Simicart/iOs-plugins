@@ -8,6 +8,9 @@
 
 #import "SCPCartViewController.h"
 
-@interface SCPPadCartViewController : SCPCartViewController
+@interface SCPPadCartViewController : SCPCartViewController{
+    SimiLabel *emptyLabel;
+    SimiAddressModel *cacheAddressModel;
+}
 
 @end

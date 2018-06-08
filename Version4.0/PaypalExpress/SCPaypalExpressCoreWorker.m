@@ -140,6 +140,25 @@ static NSString *product_paypalcheckout_row = @"product_paypalcheckout_row";
         btnPaypalCart.hidden = YES;
         return;
     }
+#if __has_include("SCPInitWorker.h")
+    if(!btnPaypalCart && cartVC.btnCheckout){
+        btnPaypalCart = [[UIButton alloc] initWithFrame:CGRectMake(0, CGRectGetHeight(cartVC.view.bounds) - SCALEVALUE(45), CGRectGetWidth(cartVC.view.bounds)/2, SCALEVALUE(45))];
+        if(PADDEVICE){
+            btnPaypalCart.frame = CGRectMake(0, 0, CGRectGetWidth(cartVC.contentTableView.frame)/2, SCALEVALUE(45));
+        }
+        [btnPaypalCart setImage:[UIImage imageNamed:@"scp_ic_paypal"] forState:UIControlStateNormal];
+        [btnPaypalCart setContentMode:UIViewContentModeScaleAspectFit];
+        [btnPaypalCart.imageView setContentMode:UIViewContentModeScaleAspectFit];
+        [btnPaypalCart setImageEdgeInsets:UIEdgeInsetsMake(SCALEVALUE(5), SCALEVALUE(10), SCALEVALUE(5), SCALEVALUE(10))];
+        btnPaypalCart.backgroundColor = COLOR_WITH_HEX(@"#ffc439");
+        [btnPaypalCart addTarget:self action:@selector(startPaypalCheckout) forControlEvents:UIControlEventTouchUpInside];
+    }
+    if(PHONEDEVICE){
+        [cartVC.view addSubview:btnPaypalCart];
+        cartVC.btnCheckout.frame = CGRectMake(CGRectGetWidth(cartVC.contentTableView.frame)/2, CGRectGetHeight(cartVC.view.bounds) - SCALEVALUE(45), CGRectGetWidth(cartVC.view.bounds)/2, SCALEVALUE(45));
+    }else if(PADDEVICE)
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializedCartCellAfter:) name:[NSString stringWithFormat:@"%@%@",SCCartViewController_RootEventName,SimiTableViewController_SubKey_InitializedCell_End] object:nil];
+#else
     if (PHONEDEVICE) {
         CGFloat padding = SCALEVALUE(5);
         CGFloat buttonHeight = SCALEVALUE(40);
@@ -168,6 +187,7 @@ static NSString *product_paypalcheckout_row = @"product_paypalcheckout_row";
             [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializedCartCellAfter:) name:[NSString stringWithFormat:@"%@%@",SCCartViewController_RootEventName,SimiTableViewController_SubKey_InitializedCell_End] object:nil];
         }
     }
+#endif
     btnPaypalCart.hidden = NO;
 }
 
@@ -178,9 +198,13 @@ static NSString *product_paypalcheckout_row = @"product_paypalcheckout_row";
     SimiRow *row = [section objectAtIndex:indexPath.row];
     if (row.identifier == CART_CHECKOUT_ROW) {
         UITableViewCell *cell = [noti.userInfo objectForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.cell];
-        [cell addSubview:btnPaypalCart];
+        [cell.contentView addSubview:btnPaypalCart];
         SCCartViewController * cartVC = [noti.userInfo valueForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.viewcontroller];
+#if __has_include("SCPInitWorker.h")
+        cartVC.btnCheckout.frame = CGRectMake(CGRectGetWidth(cartVC.contentTableView.frame)/2, 0, CGRectGetWidth(cartVC.contentTableView.frame)/2, SCALEVALUE(45));
+#else
         [cartVC.btnCheckout setFrame:CGRectMake(220, 30, 180, 50)];
+#endif
     }
 }
 

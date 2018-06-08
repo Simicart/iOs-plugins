@@ -9,6 +9,13 @@
 #import "SCCouponCodeWorker.h"
 #import <SimiCartBundle/SCCartViewController.h>
 #import <SimiCartBundle/SCOrderViewControllerPad.h>
+#import "SCPInitWorker.h"
+#if __has_include("SCPGlobalVars.h")
+#import "SCPGlobalVars.h"
+#endif
+#if __has_include("SCPButton.h")
+#import "SCPButton.h"
+#endif
 
 #define CART_COUPONCODE_ROW @"CART_COUPONCODE_ROW"
 #define ORDER_COUPONCODE_ROW @"ORDER_COUPONCODE_ROW"
@@ -34,7 +41,11 @@
     SimiTable *cartCells = noti.object;
     SimiSection *priceSection = [cartCells getSectionByIdentifier:CART_TOTALS];
     SimiRow *totalRow = [priceSection getRowByIdentifier:CART_TOTALS_ROW];
-    [priceSection addRowWithIdentifier:CART_COUPONCODE_ROW height:64 sortOrder:totalRow.sortOrder - 2];
+    float height = 64;
+#if __has_include("SCPInitWorker.h")
+    height = 3*SCALEVALUE(20) + 40;
+#endif
+    [priceSection addRowWithIdentifier:CART_COUPONCODE_ROW height:height sortOrder:totalRow.sortOrder - 2];
 }
 
 - (void)initializedCartCellBefore: (NSNotification *)noti {
@@ -46,6 +57,41 @@
     UITableView *tableView = cartVC.contentTableView;
     if([section.identifier isEqualToString:CART_TOTALS]) {
         if([row.identifier isEqualToString:CART_COUPONCODE_ROW]) {
+#if __has_include("SCPInitWorker.h")
+            SimiTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:row.identifier];
+            if(!cell){
+                float paddingX = SCALEVALUE(20);
+                float paddingY = SCALEVALUE(20);
+                float cellHeight = paddingY;
+                float contentWidth = CGRectGetWidth(tableView.frame) - 2*paddingX + SCALEVALUE(5);
+                cell = [[SimiTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:row.identifier];
+                cell.contentView.backgroundColor = [UIColor clearColor];
+                cell.backgroundColor = [UIColor clearColor];
+                cell.selectionStyle = UITableViewCellSelectionStyleNone;
+                SimiLabel *titleLabel = [[SimiLabel alloc] initWithFrame:CGRectMake(paddingX, cellHeight, contentWidth, SCALEVALUE(20)) andFontName:SCP_FONT_SEMIBOLD andFontSize:FONT_SIZE_MEDIUM andTextColor:COLOR_WITH_HEX(@"#FD7D23") text:@"Enter a coupon code"];
+                [cell.contentView addSubview:titleLabel];
+                cellHeight += CGRectGetHeight(titleLabel.frame) + paddingY - 5;
+                
+                cartCouponTextField = [[SimiTextField alloc] initWithFrame:CGRectMake(paddingX, cellHeight, contentWidth - 95, 40) placeHolder:@"Enter code here" font:[UIFont fontWithName:SCP_FONT_REGULAR size:FONT_SIZE_MEDIUM] textColor:[UIColor blackColor] backgroundColor:[UIColor whiteColor] borderWidth:0 borderColor:[UIColor clearColor] cornerRadius:4 leftView:[[UIView alloc] initWithFrame:CGRectMake(0, 0, 15, 1)] rightView:nil leftBarTitle:nil rightBarTitle:@"Done"];
+                cartCouponTextField.autocorrectionType = UITextAutocorrectionTypeNo;
+                cartCouponTextField.autocapitalizationType = UITextAutocapitalizationTypeNone;
+                cartCouponTextField.delegate = self;
+                [cartCouponTextField setClearButtonMode:UITextFieldViewModeWhileEditing];
+               SCPButton *applyCouponCodeButton = [[SCPButton alloc]initWithFrame:CGRectMake(paddingX + contentWidth - 85, cellHeight, 85, 40) title:@"Apply" titleFont:[UIFont fontWithName:SCP_FONT_SEMIBOLD size:FONT_SIZE_MEDIUM] cornerRadius:4 borderWidth:0 borderColor:nil];
+               [applyCouponCodeButton addTarget:self action:@selector(applyCouponOnCartView:) forControlEvents:UIControlEventTouchUpInside];
+               
+               [cell.contentView addSubview:cartCouponTextField];
+               [cell.contentView addSubview:applyCouponCodeButton];
+                cellHeight += CGRectGetHeight(cartCouponTextField.frame);
+               [SimiGlobalFunction sortViewForRTL:cell.contentView andWidth:CGRectGetWidth(tableView.frame)];
+            }
+           if([[SimiGlobalVar sharedInstance].cart.cartTotal valueForKey:@"coupon_code"]){
+               [cartCouponTextField setText:[[SimiGlobalVar sharedInstance].cart.cartTotal valueForKey:@"coupon_code"]];
+           }else
+               [cartCouponTextField setText:@""];
+           row.tableCell = cell;
+           cartVC.isDiscontinue = YES;
+#else
             UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:row.identifier];
             if (cell == nil) {
                 cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:row.identifier];
@@ -75,6 +121,7 @@
                 [cartCouponTextField setText:@""];
             row.tableCell = cell;
             cartVC.isDiscontinue = YES;
+#endif
         }
     }
 }
