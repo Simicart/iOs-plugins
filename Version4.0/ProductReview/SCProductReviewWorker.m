@@ -128,7 +128,7 @@
         SimiSection *reviewSection = [cells addSectionWithIdentifier:product_reviews_section atIndex:mainSectionIndex+1];
         reviewSection.header = [[SimiSectionHeader alloc]initWithTitle:SCLocalizedString(@"Review") height:44]; ;
         SimiReviewModelCollection *reviewCollection = noti.object;
-        if ([[appReviews valueForKey:@"number"]floatValue] > 3) {
+        if (reviewCollection.count > 3) {
             for (int i = 0; i < 3; i++) {
                 SimiRow *row = [[SimiRow alloc]initWithIdentifier:product_reviews_normal_row height:SCALEVALUE(120)];
                 row.model = [reviewCollection objectAtIndex:i];
@@ -137,7 +137,7 @@
             [reviewSection addRowWithIdentifier:product_reviews_viewall_row height:50];
         }else
         {
-            for (int i = 0; i < [[appReviews valueForKey:@"number"]floatValue]; i++) {
+            for (int i = 0; i < reviewCollection.count; i++) {
                 SimiRow *row = [[SimiRow alloc]initWithIdentifier:product_reviews_normal_row height:SCALEVALUE(120)];
                 row.model = [reviewCollection objectAtIndex:i];
                 [reviewSection addRow:row];
