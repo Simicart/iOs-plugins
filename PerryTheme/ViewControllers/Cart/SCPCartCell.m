@@ -40,9 +40,9 @@
         [self initializedProductImageView];
         [self updatePrices];
         [self updateQuantity];
+        if(contentHeight < imageWidth)
+            contentHeight = imageWidth;
         self.heightCell += contentHeight;
-        if(self.heightCell < imageWidth)
-            self.heightCell = imageWidth;
         CGRect frame = contentView.frame;
         frame.size.height = contentHeight;
         contentView.frame = frame;
@@ -62,13 +62,14 @@
     cellWidth = SCREEN_WIDTH;
     padding = SCALEVALUE(15);
     contentPadding = SCALEVALUE(15);
+    imageX = 0;
+    imageWidth = SCALEVALUE(125);
     if(PADDEVICE){
         cellWidth = SCREEN_WIDTH*0.6f;
         contentPadding = SCALEVALUE(20);
         padding = SCALEVALUE(20);
+        imageWidth = SCALEVALUE(150);
     }
-    imageX = 0;
-    imageWidth = SCALEVALUE(128);
     contentWidth = cellWidth - 2*padding;
     deleteButtonWidth = 44;
     deleteButtonX = contentWidth - deleteButtonWidth;

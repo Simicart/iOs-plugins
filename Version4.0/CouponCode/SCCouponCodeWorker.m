@@ -61,9 +61,12 @@
             SimiTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:row.identifier];
             if(!cell){
                 float paddingX = SCALEVALUE(20);
-                float paddingY = SCALEVALUE(20);
+                float paddingY = SCALEVALUE(15);
+                if(PADDEVICE){
+                    paddingX = SCALEVALUE(5);
+                }
                 float cellHeight = paddingY;
-                float contentWidth = CGRectGetWidth(tableView.frame) - 2*paddingX + SCALEVALUE(5);
+                float contentWidth = CGRectGetWidth(tableView.frame) - 2*paddingX;
                 cell = [[SimiTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:row.identifier];
                 cell.contentView.backgroundColor = [UIColor clearColor];
                 cell.backgroundColor = [UIColor clearColor];
@@ -72,12 +75,12 @@
                 [cell.contentView addSubview:titleLabel];
                 cellHeight += CGRectGetHeight(titleLabel.frame) + paddingY - 5;
                 
-                cartCouponTextField = [[SimiTextField alloc] initWithFrame:CGRectMake(paddingX, cellHeight, contentWidth - 95, 40) placeHolder:@"Enter code here" font:[UIFont fontWithName:SCP_FONT_REGULAR size:FONT_SIZE_MEDIUM] textColor:[UIColor blackColor] backgroundColor:[UIColor whiteColor] borderWidth:0 borderColor:[UIColor clearColor] cornerRadius:4 leftView:[[UIView alloc] initWithFrame:CGRectMake(0, 0, 15, 1)] rightView:nil leftBarTitle:nil rightBarTitle:@"Done"];
+                cartCouponTextField = [[SimiTextField alloc] initWithFrame:CGRectMake(paddingX, cellHeight, contentWidth - SCALEVALUE(90), 40) placeHolder:@"Enter code here" font:[UIFont fontWithName:SCP_FONT_REGULAR size:FONT_SIZE_MEDIUM] textColor:[UIColor blackColor] backgroundColor:[UIColor whiteColor] borderWidth:0 borderColor:[UIColor clearColor] cornerRadius:4 leftView:[[UIView alloc] initWithFrame:CGRectMake(0, 0, 15, 1)] rightView:nil leftBarTitle:nil rightBarTitle:@"Done"];
                 cartCouponTextField.autocorrectionType = UITextAutocorrectionTypeNo;
                 cartCouponTextField.autocapitalizationType = UITextAutocapitalizationTypeNone;
                 cartCouponTextField.delegate = self;
                 [cartCouponTextField setClearButtonMode:UITextFieldViewModeWhileEditing];
-               SCPButton *applyCouponCodeButton = [[SCPButton alloc]initWithFrame:CGRectMake(paddingX + contentWidth - 85, cellHeight, 85, 40) title:@"Apply" titleFont:[UIFont fontWithName:SCP_FONT_SEMIBOLD size:FONT_SIZE_MEDIUM] cornerRadius:4 borderWidth:0 borderColor:nil];
+               SCPButton *applyCouponCodeButton = [[SCPButton alloc]initWithFrame:CGRectMake(paddingX + contentWidth - SCALEVALUE(85), cellHeight, 85, 40) title:@"Apply" titleFont:[UIFont fontWithName:SCP_FONT_SEMIBOLD size:FONT_SIZE_MEDIUM] cornerRadius:4 borderWidth:0 borderColor:nil];
                [applyCouponCodeButton addTarget:self action:@selector(applyCouponOnCartView:) forControlEvents:UIControlEventTouchUpInside];
                
                [cell.contentView addSubview:cartCouponTextField];

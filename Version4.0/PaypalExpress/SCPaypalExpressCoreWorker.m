@@ -149,7 +149,7 @@ static NSString *product_paypalcheckout_row = @"product_paypalcheckout_row";
         [btnPaypalCart setImage:[UIImage imageNamed:@"scp_ic_paypal"] forState:UIControlStateNormal];
         [btnPaypalCart setContentMode:UIViewContentModeScaleAspectFit];
         [btnPaypalCart.imageView setContentMode:UIViewContentModeScaleAspectFit];
-        [btnPaypalCart setImageEdgeInsets:UIEdgeInsetsMake(SCALEVALUE(5), SCALEVALUE(10), SCALEVALUE(5), SCALEVALUE(10))];
+        [btnPaypalCart setImageEdgeInsets:UIEdgeInsetsMake(CGRectGetHeight(btnPaypalCart.frame)/4, CGRectGetWidth(btnPaypalCart.frame)/4, CGRectGetHeight(btnPaypalCart.frame)/4, CGRectGetWidth(btnPaypalCart.frame)/4)];
         btnPaypalCart.backgroundColor = COLOR_WITH_HEX(@"#ffc439");
         [btnPaypalCart addTarget:self action:@selector(startPaypalCheckout) forControlEvents:UIControlEventTouchUpInside];
     }

@@ -14,13 +14,12 @@
     self.heightCell = 0;
     float paddingY = SCALEVALUE(10);
     float paddingX = SCALEVALUE(15);
+    if(PADDEVICE){
+        paddingX = SCALEVALUE(5);
+    }
     float paddingContentX = SCALEVALUE(20);
     float paddingContentY = SCALEVALUE(15);
-    float heightLabel = SCALEVALUE(25);
-    if(PADDEVICE){
-        paddingY = SCALEVALUE(15);
-        heightLabel = SCALEVALUE(30);
-    }
+    float heightLabel = SCALEVALUE(30);
     float cellWidth = widthCell - 2*paddingX;
     self.heightCell = paddingY;
     UIView *contentView = [[UIView alloc] initWithFrame:CGRectMake(paddingX, self.heightCell, cellWidth, 0)];
@@ -107,7 +106,7 @@
     CGRect frame = contentView.frame;
     frame.size.height = contentHeight;
     contentView.frame = frame;
-    self.heightCell += contentHeight + paddingY;
+    self.heightCell += contentHeight + 2*paddingY;
     [SimiGlobalFunction sortViewForRTL:contentView andWidth:cellWidth];
     for (UIView * label in contentView.subviews) {
         if ([label isKindOfClass:[UILabel class]]) {
