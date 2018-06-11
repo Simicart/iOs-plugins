@@ -27,7 +27,7 @@
         [self.optionLabel setTextAlignment:NSTextAlignmentCenter];
         [self.contentView addSubview:self.optionLabel];
         
-        self.invalidOptionImageView = [[UIImageView alloc]initWithFrame:CGRectMake(0, CGRectGetHeight(frame)/2-1, CGRectGetWidth(frame), 2)];
+        self.invalidOptionImageView = [[UIImageView alloc]initWithFrame:CGRectMake(0, CGRectGetHeight(frame)/2-1, CGRectGetWidth(frame), 1)];
         [self.invalidOptionImageView setBackgroundColor:[UIColor blackColor]];
         [self.optionLabel addSubview:self.invalidOptionImageView];
     }
@@ -39,10 +39,12 @@
     if (self.configOptionValueModel.isSelected) {
         [self.backGroudImageView setBackgroundColor:COLOR_WITH_HEX(@"#2d2d2d")];
         [self.optionLabel setTextColor:[UIColor whiteColor]];
+        [self.optionLabel setFont:[UIFont fontWithName:SCP_FONT_SEMIBOLD size:FONT_SIZE_MEDIUM]];
         [self.invalidOptionImageView setBackgroundColor:[UIColor whiteColor]];
     }else{
         [self.backGroudImageView setBackgroundColor:COLOR_WITH_HEX(@"#f2f2f2")];
         [self.optionLabel setTextColor:[UIColor blackColor]];
+        [self.optionLabel setFont:[UIFont fontWithName:SCP_FONT_REGULAR size:FONT_SIZE_MEDIUM]];
         [self.invalidOptionImageView setBackgroundColor:[UIColor blackColor]];
     }
     if (self.configOptionValueModel.hightLight) {

@@ -7,39 +7,45 @@
 //
 
 #import "SCPProductOptionTypeGridTableViewCell.h"
+#import "UICollectionViewLeftAlignedLayout.h"
 
 @implementation SCPProductOptionTypeGridTableViewCell{
     float itemWidth;
     float itemHeight;
 }
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier andRow:(SCProductOptionRow *)row{
-    float widthCell = SCREEN_WIDTH;
+    float padding = SCP_GLOBALVARS.padding;
+    float widthCell = SCREEN_WIDTH - padding *2;
     if (PADDEVICE) {
-        widthCell = SCREEN_WIDTH *2/3;
+        widthCell = SCREEN_WIDTH *2/3 - padding *2;
     }
-    float padding = 10;
-    float paddingLeft = SCALEVALUE(15);
-    float heightLabel = 25;
     itemWidth = 120;
-    itemHeight = SCALEVALUE(20);
+    itemHeight = 26;
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     self.optionModel = (SimiConfigurableOptionModel*)row.model;
     if (self) {
-        self.optionNameLabel = [[UILabel alloc]initWithFrame:CGRectMake(paddingLeft, padding, widthCell - padding - paddingLeft, heightLabel)];
-        [self.optionNameLabel setFont:[UIFont fontWithName:THEME_FONT_NAME_REGULAR size:16]];
-        [self.optionNameLabel setTextColor:THEME_CONTENT_COLOR];
-        [self.optionNameLabel setText:[NSString stringWithFormat:@"%@(*)",self.optionModel.title]];
-        [self.contentView addSubview:self.optionNameLabel];
+        [self setBackgroundColor:[UIColor clearColor]];
+        self.simiContentView = [[UIView alloc]initWithFrame:CGRectMake(padding, 0, widthCell, row.height)];
+        [self.simiContentView setBackgroundColor:[UIColor whiteColor]];
+        [self.contentView addSubview:self.simiContentView];
         
-        UICollectionViewFlowLayout *flowLayout = [UICollectionViewFlowLayout new];
-        flowLayout.minimumLineSpacing = padding;
-        flowLayout.minimumInteritemSpacing = padding;
+        self.optionNameLabel = [[UILabel alloc]initWithFrame:CGRectMake(padding, 0, 80, 44)];
+        [self.optionNameLabel setFont:[UIFont fontWithName:SCP_FONT_SEMIBOLD size:FONT_SIZE_LARGE]];
+        [self.optionNameLabel setTextColor:THEME_CONTENT_COLOR];
+        [self.optionNameLabel setNumberOfLines:0];
+        [self.optionNameLabel setText:[self.optionModel.title uppercaseString]];
+        [self.simiContentView addSubview:self.optionNameLabel];
+        
+        UICollectionViewLeftAlignedLayout *flowLayout = [UICollectionViewLeftAlignedLayout new];
+        flowLayout.minimumLineSpacing = 18;
+        flowLayout.minimumInteritemSpacing = 18;
         flowLayout.itemSize = CGSizeMake(itemWidth, itemHeight);
-        self.collectionView = [[UICollectionView alloc]initWithFrame:CGRectMake(paddingLeft, padding + heightLabel,widthCell - padding - paddingLeft, row.height - padding*2 - heightLabel) collectionViewLayout:flowLayout];
+        self.collectionView = [[UICollectionView alloc]initWithFrame:CGRectMake(padding + 80, 0, widthCell - padding*2 - 80, row.height) collectionViewLayout:flowLayout];
+        [self.collectionView setContentInset:UIEdgeInsetsMake(9, 0, 9, 0)];
         self.collectionView.delegate = self;
         self.collectionView.dataSource = self;
         [self.collectionView setBackgroundColor:[UIColor whiteColor]];
-        [self.contentView addSubview:self.collectionView];
+        [self.simiContentView addSubview:self.collectionView];
         [SimiGlobalFunction sortViewForRTL:self.contentView andWidth:widthCell];
     }
     return self;
@@ -56,7 +62,7 @@
     }
     SimiConfigurableOptionValueModel *valueModel = [self.optionModel.values objectAtIndex:indexPath.row];
     NSString *labelString = valueModel.title;
-    float width = [labelString sizeWithAttributes:@{NSFontAttributeName:[UIFont fontWithName:THEME_FONT_NAME_REGULAR size:FONT_SIZE_LARGE]}].width + 30;
+    float width = [labelString sizeWithAttributes:@{NSFontAttributeName:[UIFont fontWithName:SCP_FONT_SEMIBOLD size:FONT_SIZE_LARGE]}].width + 30;
     if (width < itemHeight) {
         width = itemHeight;
     }
@@ -74,9 +80,6 @@
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
     SimiConfigurableOptionValueModel *valueModel = [self.optionModel.values objectAtIndex:indexPath.row];
-    if (!valueModel.hightLight) {
-        return;
-    }
     valueModel.isSelected = YES;
     for (int i = 0; i < self.optionModel.values.count; i++) {
         if (i != indexPath.row) {
