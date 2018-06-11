@@ -41,6 +41,8 @@
         [self updatePrices];
         [self updateQuantity];
         self.heightCell += contentHeight;
+        if(self.heightCell < imageWidth)
+            self.heightCell = imageWidth;
         CGRect frame = contentView.frame;
         frame.size.height = contentHeight;
         contentView.frame = frame;
@@ -93,7 +95,7 @@
 }
 
 - (void)initializedProductImageView{
-    productImageView = [[UIImageView alloc]initWithFrame:CGRectMake(imageX, 0, imageWidth, contentHeight)];
+    productImageView = [[UIImageView alloc]initWithFrame:CGRectMake(imageX, 0, imageWidth, imageWidth)];
     productImageView.backgroundColor = COLOR_WITH_HEX(@"#f7f7f7");
     if ([self.item.modelData valueForKey:@"image"]) {
         [productImageView sd_setImageWithURL:[NSURL URLWithString:[self.item.modelData valueForKey:@"image"]] placeholderImage:[UIImage imageNamed:@"logo"]];
@@ -141,7 +143,7 @@
                 unitOptionHTML = [NSString stringWithFormat:@"<span style='font-family:%@;font-size:%f'>%@</span>: <span style='font-family:%@;font-size:%f'>%@</span>",SCP_FONT_LIGHT,FONT_SIZE_MEDIUM,[option valueForKeyPath:@"option_value"],SCP_FONT_REGULAR,FONT_SIZE_MEDIUM,[option valueForKeyPath:@"option_title"]];
             }
             if (i > 0) {
-                optionHTML = [NSString stringWithFormat:@"%@ %@",optionHTML,unitOptionHTML];
+                optionHTML = [NSString stringWithFormat:@"%@&emsp;%@",optionHTML,unitOptionHTML];
             }else
                 optionHTML = [NSString stringWithFormat:@"%@", unitOptionHTML];
         }
