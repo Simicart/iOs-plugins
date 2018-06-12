@@ -1,14 +1,14 @@
 //
-//  SCPProductMultiSelectTableViewCell.m
+//  SCPOptionMultiSelectTableViewCell.m
 //  SimiCartPluginFW
 //
-//  Created by Liam on 6/11/18.
+//  Created by Liam on 6/12/18.
 //  Copyright © 2018 Trueplus. All rights reserved.
 //
 
-#import "SCPProductMultiSelectTableViewCell.h"
+#import "SCPOptionMultiSelectTableViewCell.h"
 
-@implementation SCPProductMultiSelectTableViewCell
+@implementation SCPOptionMultiSelectTableViewCell
 - (void)updateCellWithRow:(SCProductOptionRow *)optionRow{
     self.optionValueModel = optionRow.optionValueModel;
     if (self.optionValueModel.isSelected) {

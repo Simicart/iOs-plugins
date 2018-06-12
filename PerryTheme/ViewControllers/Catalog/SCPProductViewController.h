@@ -7,9 +7,9 @@
 //
 
 #import "SCPTableViewController.h"
-#import "SCPProductOptionTypeGridTableViewCell.h"
-#import "SCPProductSingleSelectTableViewCell.h"
-#import "SCPProductMultiSelectTableViewCell.h"
+#import "SCPOptionGridTableViewCell.h"
+#import "SCPOptionSingleSelectTableViewCell.h"
+#import "SCPOptionMultiSelectTableViewCell.h"
 #import "SCPTableViewHeaderFooterView.h"
 
 static NSString *scpproduct_configurableoption_section = @"scpproduct_configurableoption_section";
@@ -25,6 +25,6 @@ static NSString *scpproduct_option_single_select_row = @"scpproduct_option_singl
 static NSString *scpproduct_option_multi_select_row = @"scpproduct_option_multi_select_row";
 static NSString *scpproduct_option_datetime_row = @"scpproduct_option_multi_select_row";
 static NSString *scpproduct_option_textfield_row = @"scpproduct_option_textfield_row";
-@interface SCPProductViewController : SCProductSecondDesignViewController<SCPProductOptionTypeGridDelegate>
+@interface SCPProductViewController : SCProductSecondDesignViewController<SCPOptionGridDelegate>
 
 @end

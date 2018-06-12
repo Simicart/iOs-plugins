@@ -1,15 +1,14 @@
 //
-//  SCPProductOptionCollectionViewCell.m
+//  SCPGridOptionCollectionViewCell.m
 //  SimiCartPluginFW
 //
-//  Created by Liam on 5/30/18.
+//  Created by Liam on 6/12/18.
 //  Copyright © 2018 Trueplus. All rights reserved.
 //
-
 #import <SimiCartBundle/UIView+WebCache.h>
-#import "SCPProductOptionCollectionViewCell.h"
+#import "SCPGridOptionCollectionViewCell.h"
 
-@implementation SCPProductOptionCollectionViewCell{
+@implementation SCPGridOptionCollectionViewCell{
     float itemHeight;
 }
 - (instancetype)initWithFrame:(CGRect)frame{

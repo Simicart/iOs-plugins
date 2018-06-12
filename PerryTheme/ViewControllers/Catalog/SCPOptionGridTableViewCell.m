@@ -1,15 +1,15 @@
 //
-//  SCPProductOptionTypeGridTableViewCell.m
+//  SCPOptionGridTableViewCell.m
 //  SimiCartPluginFW
 //
-//  Created by Liam on 5/30/18.
+//  Created by Liam on 6/12/18.
 //  Copyright © 2018 Trueplus. All rights reserved.
 //
 
-#import "SCPProductOptionTypeGridTableViewCell.h"
+#import "SCPOptionGridTableViewCell.h"
 #import "UICollectionViewLeftAlignedLayout.h"
 
-@implementation SCPProductOptionTypeGridTableViewCell{
+@implementation SCPOptionGridTableViewCell{
     float itemWidth;
     float itemHeight;
 }
@@ -70,8 +70,8 @@
 }
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath{
     NSString *identifier = @"CellID";
-    [collectionView registerClass:[SCPProductOptionCollectionViewCell class] forCellWithReuseIdentifier:identifier];
-    SCPProductOptionCollectionViewCell *collectionViewCell = [collectionView dequeueReusableCellWithReuseIdentifier:identifier forIndexPath:indexPath];
+    [collectionView registerClass:[SCPGridOptionCollectionViewCell class] forCellWithReuseIdentifier:identifier];
+    SCPGridOptionCollectionViewCell *collectionViewCell = [collectionView dequeueReusableCellWithReuseIdentifier:identifier forIndexPath:indexPath];
     SimiConfigurableOptionValueModel *valueModel = [self.optionModel.values objectAtIndex:indexPath.row];
     [collectionViewCell updateCellInfo:valueModel];
     return collectionViewCell;

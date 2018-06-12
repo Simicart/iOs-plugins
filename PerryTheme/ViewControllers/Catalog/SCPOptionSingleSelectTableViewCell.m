@@ -1,18 +1,19 @@
 //
-//  SCPProductSingleSelectTableViewCell.m
+//  SCPOptionSingleSelectTableViewCell.m
 //  SimiCartPluginFW
 //
-//  Created by Liam on 6/10/18.
+//  Created by Liam on 6/12/18.
 //  Copyright © 2018 Trueplus. All rights reserved.
 //
 
-#import "SCPProductSingleSelectTableViewCell.h"
+#import "SCPOptionSingleSelectTableViewCell.h"
 #import "SCPGlobalVars.h"
 
-@implementation SCPProductSingleSelectTableViewCell{
+@implementation SCPOptionSingleSelectTableViewCell{
     NSMutableAttributedString *titleAttributeString;
     NSMutableAttributedString *disableTitleAttributeString;
 }
+
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier optionRow:(SCProductOptionRow *)optionRow productModel:(SimiProductModel *)productModel{
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     self.optionValueModel = optionRow.optionValueModel;
