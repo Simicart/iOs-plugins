@@ -37,6 +37,7 @@
         [self.view addSubview:_webView];
         _webView.delegate = self;
         NSURLRequest *request = [[NSURLRequest alloc]initWithURL:[NSURL URLWithString:_urlPath]];
+        [SimiGlobalFunction clearAllCookies];
         [_webView loadRequest:request];
     }
 }
@@ -94,21 +95,25 @@
             [self showAlertWithTitle:@"" message:[_payment valueForKey:@"message_success"] completionHandler:^{
                 [self.navigationController dismissViewControllerAnimated:YES completion:nil];
             }];
+            [SimiGlobalFunction clearAllCookies];
             return NO;
         }else if([requestURL rangeOfString:[_payment valueForKey:@"url_fail"]].location != NSNotFound){
             [self showAlertWithTitle:@"" message:[_payment valueForKey:@"message_fail"] completionHandler:^{
                 [self.navigationController dismissViewControllerAnimated:YES completion:nil];
             }];
+            [SimiGlobalFunction clearAllCookies];
             return NO;
         }else if([requestURL rangeOfString:[_payment valueForKey:@"url_cancel"]].location != NSNotFound){
             [self showAlertWithTitle:@"" message:[_payment valueForKey:@"message_cancel"] completionHandler:^{
                 [self.navigationController dismissViewControllerAnimated:YES completion:nil];
             }];
+            [SimiGlobalFunction clearAllCookies];
             return NO;
         }else if([requestURL rangeOfString:[_payment valueForKey:@"url_error"]].location != NSNotFound){
             [self showAlertWithTitle:@"" message:[_payment valueForKey:@"message_error"] completionHandler:^{
                 [self.navigationController dismissViewControllerAnimated:YES completion:nil];
             }];
+            [SimiGlobalFunction clearAllCookies];
             return NO;
         }
     }

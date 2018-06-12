@@ -343,7 +343,9 @@
         [_activityIndicatorView removeFromSuperview];
         SimiResponder *responder = [noti.userInfo valueForKey:responderKey];
         if (responder.status == SUCCESS) {
-            [self trackingWithProperties:@{@"action":@"scanned_product",@"product_id":_barCodeModel.productEntityId,@"product_name":_barCodeModel.productName}];
+            if (_barCodeModel.productEntityId != nil && _barCodeModel.productName != nil) {
+                [self trackingWithProperties:@{@"action":@"scanned_product", @"product_id":_barCodeModel.productEntityId, @"product_name":_barCodeModel.productName}];
+            }
             [[SCAppController sharedInstance]openProductWithNavigationController:self.navigationController productId:_barCodeModel.productEntityId moreParams:nil];
         }else
         {

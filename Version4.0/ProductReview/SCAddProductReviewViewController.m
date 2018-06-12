@@ -145,7 +145,9 @@
     NSString *tempProductName = [NSString stringWithFormat:@"%@",self.productModel.name];
     NSString *tempProductId = [NSString stringWithFormat:@"%@",self.productModel.entityId];
     NSString *tempProductSku = [NSString stringWithFormat:@"%@",self.productModel.sku];
-    [[NSNotificationCenter defaultCenter]postNotificationName:TRACKINGEVENT object:@"product_action" userInfo:@{@"action":@"rated_product",@"product_name":tempProductName,@"product_id":tempProductId,@"sku":tempProductSku,@"qty":@"1"}];
+    if (tempProductName != nil && tempProductId != nil && tempProductSku != nil) {
+        [[NSNotificationCenter defaultCenter]postNotificationName:TRACKINGEVENT object:@"product_action" userInfo:@{@"action":@"rated_product",@"product_name":tempProductName,@"product_id":tempProductId,@"sku":tempProductSku,@"qty":@"1"}];
+    }
     
     SimiResponder* responder = [noti.userInfo objectForKey:responderKey];
     [self stopLoadingData];

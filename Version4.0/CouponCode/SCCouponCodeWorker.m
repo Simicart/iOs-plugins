@@ -80,7 +80,9 @@
 }
 
 - (void)didSetCouponCodeOnCartView:(NSNotification *)noti{
-    [[NSNotificationCenter defaultCenter]postNotificationName:TRACKINGEVENT object:@"cart_action" userInfo:@{@"action":@"apply_coupon_code",@"coupon_code":cartCouponTextField.text}];
+    if (cartCouponTextField.text != nil) {
+        [[NSNotificationCenter defaultCenter]postNotificationName:TRACKINGEVENT object:@"cart_action" userInfo:@{@"action":@"apply_coupon_code",@"coupon_code":cartCouponTextField.text}];
+    }
     
     SimiResponder *responder = [noti.userInfo valueForKey:responderKey];
     [cartVC showToastMessage:responder.message];
@@ -163,7 +165,9 @@
 - (void)applyCouponOnOrderView:(UIButton*)sender {
     NSString *couponCode = @"";
     couponCode = orderCouponTextField.text;
-    [orderVC trackingWithProperties:@{@"action":@"apply_coupon_code",@"coupon_code":couponCode}];
+    if (couponCode != nil) {
+        [orderVC trackingWithProperties:@{@"action":@"apply_coupon_code",@"coupon_code":couponCode}];
+    }
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didSetCouponCodeOnOrderView:) name:Simi_DidApplyCouponCode object:nil];
     [orderVC.order setCouponCode:couponCode];
     [orderVC startLoadingData];

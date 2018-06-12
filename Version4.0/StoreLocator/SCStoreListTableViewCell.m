@@ -176,7 +176,9 @@
 {
     NSString *phNo = [NSString  stringWithFormat:@"telprompt:%@",storeLocatorModel.phone];
     NSURL *phoneUrl = [[NSURL alloc]initWithString:[phNo stringByReplacingOccurrencesOfString:@" " withString:@""]];
-    [[NSNotificationCenter defaultCenter]postNotificationName:TRACKINGEVENT object:@"store_locator_action" userInfo:@{@"action":@"call_to_store",@"store_name":self.storeLocatorModel.name}];
+    if (self.storeLocatorModel.name != nil) {
+        [[NSNotificationCenter defaultCenter]postNotificationName:TRACKINGEVENT object:@"store_locator_action" userInfo:@{@"action":@"call_to_store",@"store_name":self.storeLocatorModel.name}];
+    }
     if ([[UIApplication sharedApplication] canOpenURL:phoneUrl]) {
         [[UIApplication sharedApplication] openURL:phoneUrl];
     } else
@@ -187,7 +189,9 @@
 }
 - (void)btnMail_Click:(id)sender
 {
-    [[NSNotificationCenter defaultCenter]postNotificationName:TRACKINGEVENT object:@"store_locator_action" userInfo:@{@"action":@"email_to_store",@"store_name":self.storeLocatorModel.name}];
+    if (self.storeLocatorModel.name != nil) {
+        [[NSNotificationCenter defaultCenter]postNotificationName:TRACKINGEVENT object:@"store_locator_action" userInfo:@{@"action":@"email_to_store",@"store_name":self.storeLocatorModel.name}];
+    }
     NSString *email = storeLocatorModel.email;
     NSString *emailContent = @"Content";
     [self.delegate sendEmailToStoreWithEmail:email andEmailContent:emailContent];
@@ -195,6 +199,8 @@
 - (void)btnMap_Click:(id)sender
 {
     [self.delegate choiceStoreLocatorWithStoreLocatorModel:self.storeLocatorModel];
-    [[NSNotificationCenter defaultCenter]postNotificationName:TRACKINGEVENT object:@"store_locator_action" userInfo:@{@"action":@"view_store_map",@"store_name":self.storeLocatorModel.name}];
+    if (self.storeLocatorModel.name != nil) {
+        [[NSNotificationCenter defaultCenter]postNotificationName:TRACKINGEVENT object:@"store_locator_action" userInfo:@{@"action":@"view_store_map",@"store_name":self.storeLocatorModel.name}];
+    }
 }
 @end

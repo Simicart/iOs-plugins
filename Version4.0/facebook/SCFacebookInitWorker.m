@@ -279,7 +279,9 @@
 
 //Handling button clicking
 - (void)fbButtonClicked: (id) sender{
-    [[NSNotificationCenter defaultCenter]postNotificationName:TRACKINGEVENT object:@"facebook_connect_action" userInfo:@{@"action":@"clicked_facebook_connect_button",@"product_name":product.name,@"product_id":product.entityId,@"sku":product.sku}];
+    if (product.name != nil && product.entityId != nil && product.sku != nil) {
+        [[NSNotificationCenter defaultCenter]postNotificationName:TRACKINGEVENT object:@"facebook_connect_action" userInfo:@{@"action":@"clicked_facebook_connect_button",@"product_name":product.name,@"product_id":product.entityId,@"sku":product.sku}];
+    }
     if (!isShowFacebookView) {
         CGRect frame = fbView.frame;
         frame.origin.x -= widthFacebookView;

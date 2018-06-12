@@ -503,7 +503,9 @@
 #pragma mark Button Action
 - (void)btnStorePhone_Click:(id)sender
 {
-    [[NSNotificationCenter defaultCenter]postNotificationName:TRACKINGEVENT object:@"store_locator_action" userInfo:@{@"action":@"call_to_store",@"store_name":sLModel.name}];
+    if (sLModel.name != nil) {
+        [[NSNotificationCenter defaultCenter]postNotificationName:TRACKINGEVENT object:@"store_locator_action" userInfo:@{@"action":@"call_to_store",@"store_name":sLModel.name}];
+    }
     NSString *phNo = [NSString  stringWithFormat:@"telprompt:%@",sLModel.phone];
     NSURL *phoneURL = [NSURL URLWithString:[phNo stringByReplacingOccurrencesOfString:@" " withString:@""]];
     if ([[UIApplication sharedApplication] canOpenURL:phoneURL]) {
@@ -517,7 +519,9 @@
 {
     NSString *emailContent = SCLocalizedString(@"Content");
     [self sendEmailToStoreWithEmail:sLModel.email andEmailContent:emailContent];
-    [[NSNotificationCenter defaultCenter]postNotificationName:TRACKINGEVENT object:@"store_locator_action" userInfo:@{@"action":@"email_to_store",@"store_name":sLModel.name}];
+    if (sLModel.name != nil) {
+        [[NSNotificationCenter defaultCenter]postNotificationName:TRACKINGEVENT object:@"store_locator_action" userInfo:@{@"action":@"email_to_store",@"store_name":sLModel.name}];
+    }
 }
 - (void)btnStoreWebSite_Click:(id)sender
 {
@@ -599,7 +603,9 @@
 - (void)btnGetDirections_Click:(id)sender
 {
     // Sua lai dia chi den sau
-    [[NSNotificationCenter defaultCenter]postNotificationName:TRACKINGEVENT object:@"store_locator_action" userInfo:@{@"action":@"get_directions_to_store",@"store_name":[sLModel valueForKey:@"name"]}];
+    if ([sLModel valueForKey:@"name"] != nil) {
+        [[NSNotificationCenter defaultCenter]postNotificationName:TRACKINGEVENT object:@"store_locator_action" userInfo:@{@"action":@"get_directions_to_store",@"store_name":[sLModel valueForKey:@"name"]}];
+    }
     if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"comgooglemaps://"]]) {
         [[UIApplication sharedApplication] openURL:
          [NSURL URLWithString: [NSString stringWithFormat: @"comgooglemaps://?saddr=%f,%f&daddr=%@,%@&center=%f,%f&zoom=14&views=traffic",currentLatitude , currentLongitude,sLModel.latitude,sLModel.longtitude,currentLatitude, currentLongitude]]];
