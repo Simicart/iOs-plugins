@@ -9,6 +9,7 @@
 #import "SCPProductViewController.h"
 #import "SCPGlobalVars.h"
 #import "SCPProductImagesViewController.h"
+#import "SCPOptionController.h"
 
 @interface SCPProductViewController ()
 
@@ -24,41 +25,285 @@
     [super viewDidAppearBefore:animated];
     self.contentTableView.backgroundColor = COLOR_WITH_HEX(@"#ededed");
     self.contentTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    if (@available(iOS 11.0, *)) {
+        self.contentTableView.estimatedRowHeight = 0;
+        self.contentTableView.estimatedSectionHeaderHeight = 0;
+        self.contentTableView.estimatedSectionFooterHeight = 0;
+    }
+}
+
+- (void)didGetProduct:(NSNotification *)noti{
+    [self stopLoadingData];
+    [self.contentTableView setHidden:NO];
+    SimiResponder *responder = [noti.userInfo valueForKey:responderKey];
+    if ([noti.name isEqualToString:Simi_DidGetProductModel]) {
+        if (responder.status == SUCCESS) {
+            if (self.product.isSalable) {
+                [self initViewAction];
+            }
+            [self initMoreViewAction];
+            if (GLOBALVAR.isMagento2) {
+                optionController = [[SCMagentoTwoOptionController alloc]initWithProduct:self.product];
+            }else
+                optionController = [[SCPOptionController alloc]initWithProduct:self.product];
+            [self initCells];
+            [self getRelatedProducts];
+            if (self.product.name && self.product.entityId) {
+                [[NSNotificationCenter defaultCenter]postNotificationName:TRACKINGEVENT object:@"page_view_action" userInfo:@{@"action":@"viewed_product_screen",@"product_name":self.product.name,@"product_id":self.product.entityId}];
+            }
+        }
+        [[NSNotificationCenter defaultCenter]removeObserverForNotification:noti];
+    }
 }
 
 - (void)createCells{
     SimiSection *mainSection = [[SimiSection alloc]initWithIdentifier:product_main_section];
-    [self.cells addObject:mainSection];
     [mainSection addRowWithIdentifier:product_images_row height:tableWidth];
+    [self.cells addObject:mainSection];
     if (self.product.productType == ProductTypeConfigurable) {
-        for(SimiConfigurableOptionModel *configOptionModel in optionController.configureOptions){
-            if ([[configOptionModel.code uppercaseString] isEqualToString:@"COLOR"] || [[configOptionModel.code uppercaseString] isEqualToString:@"SIZE"]) {
-                SCProductOptionRow *configOptionRow = [[SCProductOptionRow alloc]initWithIdentifier:scpproduct_option_item_select_row height:100];
-                configOptionRow.model = configOptionModel;
-                [mainSection addRow:configOptionRow];
-            }
+        [self addConfigOptionsToCells];
+        [self addCustomOptionsToCells];
+    }else if (self.product.productType == ProductTypeSimple){
+        [self addCustomOptionsToCells];
+    }
+    SimiSection *descriptionSection = [[SimiSection alloc]initWithIdentifier:scpproduct_description_section];
+    [descriptionSection addRowWithIdentifier:product_description_row height:200];
+    [self.cells addObject:descriptionSection];
+}
+
+- (void)addConfigOptionsToCells{
+    for(SimiConfigurableOptionModel *configOptionModel in optionController.configureOptions){
+        if ([[configOptionModel.code uppercaseString] isEqualToString:@"COLOR"]) {
+            SCProductOptionSection *configOptionSection = [[SCProductOptionSection alloc]initWithIdentifier:scpproduct_configurableoption_section];
+            configOptionSection.optionModel = configOptionModel;
+            configOptionSection.isShow = YES;
+            SCProductOptionRow *configOptionRow = [[SCProductOptionRow alloc]initWithIdentifier:scpproduct_option_item_select_row height:[self calculateHeightOfOption:configOptionModel]];
+            configOptionRow.model = configOptionModel;
+            [configOptionSection addRow:configOptionRow];
+            [self.cells addObject:configOptionSection];
+            break;
         }
     }
-    [mainSection addRowWithIdentifier:product_description_row height:200];
+    for(SimiConfigurableOptionModel *configOptionModel in optionController.configureOptions){
+        if ([[configOptionModel.code uppercaseString] isEqualToString:@"SIZE"]) {
+            SCProductOptionSection *configOptionSection = [[SCProductOptionSection alloc]initWithIdentifier:scpproduct_configurableoption_section];
+            configOptionSection.optionModel = configOptionModel;
+            configOptionSection.isShow = YES;
+            SCProductOptionRow *configOptionRow = [[SCProductOptionRow alloc]initWithIdentifier:scpproduct_option_item_select_row height:[self calculateHeightOfOption:configOptionModel]];
+            configOptionRow.model = configOptionModel;
+            [configOptionSection addRow:configOptionRow];
+            [self.cells addObject:configOptionSection];
+        }
+    }
+    for(SimiConfigurableOptionModel *configOptionModel in optionController.configureOptions){
+        if (![[configOptionModel.code uppercaseString] isEqualToString:@"SIZE"] && ![[configOptionModel.code uppercaseString] isEqualToString:@"COLOR"]) {
+            SCProductOptionSection *configOptionSection = [[SCProductOptionSection alloc]initWithIdentifier:scpproduct_configurableoption_section];
+            configOptionSection.header = [[SimiSectionHeader alloc]initWithTitle:configOptionModel.title height:44];
+            configOptionSection.optionModel = configOptionModel;
+            configOptionSection.isShow = NO;
+            for (SimiConfigurableOptionValueModel *valueModel in configOptionModel.values) {
+                SCProductOptionRow *configOptionRow = [[SCProductOptionRow alloc]initWithIdentifier:scpproduct_option_single_select_row height:45];
+                configOptionRow.optionValueModel = valueModel;
+                [configOptionSection addRow:configOptionRow];
+            }
+            [self.cells addObject:configOptionSection];
+        }
+    }
+}
+
+- (void)addCustomOptionsToCells{
+    for (SimiCustomOptionModel *customOptionModel in optionController.customOptions) {
+        SCProductOptionSection *section = [[SCProductOptionSection alloc]initWithIdentifier:scpproduct_customoption_section];
+        section.header = [[SimiSectionHeader alloc]initWithTitle:customOptionModel.title height:44];
+        section.optionModel = customOptionModel;
+        section.isShow = NO;
+        NSString *identifier = @"";
+        for (SimiCustomOptionValueModel *valueModel in customOptionModel.values) {
+            float rowHeight = 44;
+            if ([customOptionModel.type isEqualToString:@"drop_down"]||[customOptionModel.type isEqualToString:@"radio"]) {
+                identifier = scpproduct_option_single_select_row;
+                rowHeight = 44;
+            }else if ([customOptionModel.type isEqualToString:@"checkbox"]||[customOptionModel.type isEqualToString:@"multiple"]){
+                identifier = scpproduct_option_multi_select_row;
+                section.isMultiSelect = YES;
+                rowHeight = 44;
+            }else if([customOptionModel.type isEqualToString:@"area"] || [customOptionModel.type isEqualToString:@"field"]){
+                identifier = scpproduct_option_textfield_row;
+                rowHeight = 50;
+            }else if ([customOptionModel.type isEqualToString:@"date_time"] || [customOptionModel.type isEqualToString:@"date"] || [customOptionModel.type isEqualToString:@"time"]){
+                identifier = scpproduct_option_datetime_row;
+                rowHeight = 170;
+            }
+            SCProductOptionRow *row = [[SCProductOptionRow alloc]initWithIdentifier:identifier height:rowHeight];
+            row.optionValueModel = valueModel;
+            [section addObject:row];
+        }
+        [self.cells addObject:section];
+    }
+}
+
+- (float)calculateHeightOfOption:(SimiConfigurableOptionModel*)configurableOptionModel{
+    NSMutableArray *itemWidthArray = [NSMutableArray new];
+    for (SimiConfigurableOptionValueModel *optionValueModel in configurableOptionModel.values) {
+        float itemWidth = [optionValueModel.title sizeWithAttributes:@{NSFontAttributeName:[UIFont fontWithName:SCP_FONT_SEMIBOLD size:FONT_SIZE_MEDIUM]}].width + 36 ;
+        [itemWidthArray addObject:[NSNumber numberWithFloat:itemWidth]];
+    }
+    float numberItemRow = 0;
+    float totalWidthInRow = 0;
+    float collectionWidth = SCREEN_WIDTH - SCP_GLOBALVARS.padding*4 - 80;
+    for (int i = 0; i < itemWidthArray.count; i++) {
+        float itemWidth = [itemWidthArray[i] floatValue];
+        totalWidthInRow += itemWidth + 18;
+        if (totalWidthInRow < collectionWidth) {
+            continue;
+        }else{
+            numberItemRow += 1;
+            totalWidthInRow = itemWidth + 18;
+        }
+    }
+    numberItemRow += 1;
+    float height = numberItemRow * 44;
+    return height;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
+    if(tableView == self.contentTableView){
+        SimiSection *simiSection = [self.cells objectAtIndex:section];
+        if ([simiSection isKindOfClass:[SCProductOptionSection class]]) {
+            SCProductOptionSection *optionSection = (SCProductOptionSection*)simiSection;
+            if (optionSection.isShow) {
+                return optionSection.count;
+            }else{
+                return 0;
+            }
+        }
+        return simiSection.count;
+    }
+    return 0;
 }
 
 - (UITableViewCell *)contentTableViewCellForRowAtIndexPath:(NSIndexPath *)indexPath{
     SimiSection *section = [self.cells objectAtIndex:indexPath.section];
     SimiRow *row = [section objectAtIndex:indexPath.row];
     UITableViewCell *cell;
-    if ([row.identifier isEqualToString:scpproduct_option_item_select_row]) {
-        cell = [self createOptionItemSelectCell:row];
-    }else{
-        cell = [super contentTableViewCellForRowAtIndexPath:indexPath];
+    if ([section.identifier isEqualToString:product_main_section]) {
+        if ([row.identifier isEqualToString:product_images_row]) {
+            cell = [self createProductImageCell:row];
+        }else if([row.identifier isEqualToString:product_nameandprice_row]){
+            cell =  [self createNameCell:row];
+        }
+    }else if([section.identifier isEqualToString:scpproduct_configurableoption_section]){
+        if ([row.identifier isEqualToString:scpproduct_option_item_select_row]) {
+            cell = [self createOptionItemSelectCell:row];
+        }else if ([row.identifier isEqualToString:scpproduct_option_single_select_row]){
+            cell = [self createOptionSingleSelectCell:row];
+        }
+    }else if([section.identifier isEqualToString:scpproduct_customoption_section]){
+        if ([row.identifier isEqualToString:scpproduct_option_single_select_row]){
+            cell = [self createOptionSingleSelectCell:row];
+        }else if ([row.identifier isEqualToString:scpproduct_option_multi_select_row]){
+            cell = [self createOptionMultiSelectCell:row];
+        }
+    }else if ([section.identifier isEqualToString:scpproduct_description_section]){
+        if ([row.identifier isEqualToString:product_description_row]) {
+            cell = [self createDescriptionCell:row];
+        }
     }
     return cell;
 }
 
 - (SimiTableViewCell*)createOptionItemSelectCell:(SimiRow*)row{
-    SCPProductOptionTypeGridTableViewCell *cell = [[SCPProductOptionTypeGridTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:row.simiObjectName andRow:(SCProductOptionRow*)row];
+    SCPOptionGridTableViewCell *cell = [[SCPOptionGridTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:row.simiObjectName andRow:(SCProductOptionRow*)row];
     cell.delegate = self;
     return cell;
 }
+
+- (SimiTableViewCell*)createOptionSingleSelectCell:(SimiRow*)row{
+    SCProductOptionRow *optionRow = (SCProductOptionRow*)row;
+    SCPOptionSingleSelectTableViewCell *cell = [self.contentTableView dequeueReusableCellWithIdentifier:optionRow.optionValueModel.valueId];
+    if (cell == nil) {
+        cell = [[SCPOptionSingleSelectTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:optionRow.optionValueModel.valueId optionRow:optionRow productModel:self.product];
+    }
+    [cell updateCellWithRow:optionRow];
+    return cell;
+}
+
+- (SimiTableViewCell*)createOptionMultiSelectCell:(SimiRow*)row{
+    SCProductOptionRow *optionRow = (SCProductOptionRow*)row;
+    SCPOptionMultiSelectTableViewCell *cell = [self.contentTableView dequeueReusableCellWithIdentifier:optionRow.optionValueModel.valueId];
+    if (cell == nil) {
+        cell = [[SCPOptionMultiSelectTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:optionRow.optionValueModel.valueId optionRow:optionRow productModel:self.product];
+    }
+    [cell updateCellWithRow:optionRow];
+    return cell;
+}
+
+- (UIView *)contentTableViewViewForHeaderInSection:(NSInteger)section{
+    SimiSection *simiSection = [self.cells objectAtIndex:section];
+    if ([simiSection.identifier isEqualToString:scpproduct_configurableoption_section]){
+        SCProductOptionSection *optionSection = (SCProductOptionSection*)simiSection;
+        SimiConfigurableOptionModel *configOptionModel = (SimiConfigurableOptionModel*)optionSection.optionModel;
+        if (![[configOptionModel.code uppercaseString] isEqualToString:@"COLOR"]&&![[configOptionModel.code uppercaseString] isEqualToString:@"SIZE"]) {
+            return [self generateDropdownHeaderViewWithSection:optionSection];
+        }
+    }else if ([simiSection.identifier isEqualToString:scpproduct_customoption_section]) {
+        SCProductOptionSection *optionSection = (SCProductOptionSection*)simiSection;
+        return [self generateDropdownHeaderViewWithSection:optionSection];
+    }
+    return nil;
+}
+
+- (UIView*)generateDropdownHeaderViewWithSection:(SCProductOptionSection*)optionSection{
+    float padding = SCP_GLOBALVARS.padding;
+    float height = optionSection.header.height;
+    SCPTableViewHeaderFooterView *headerView = [[SCPTableViewHeaderFooterView alloc]initWithReuseIdentifier:optionSection.optionModel.entityId];
+    [headerView.contentView setBackgroundColor:[UIColor clearColor]];
+    headerView.simiContentView = [[UIView alloc]initWithFrame:CGRectMake(padding, 0, CGRectGetWidth(self.contentTableView.frame) - padding*2, height)];
+    [headerView.simiContentView setBackgroundColor:[UIColor whiteColor]];
+    [headerView.contentView addSubview:headerView.simiContentView];
+    float titleWidth = [[optionSection.optionModel.title uppercaseString] sizeWithAttributes:@{NSFontAttributeName:[UIFont fontWithName:SCP_FONT_SEMIBOLD size:FONT_SIZE_LARGE]}].width;
+    SimiLabel *titleLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(padding, 0, titleWidth, height) andFontName:SCP_FONT_SEMIBOLD andFontSize:FONT_SIZE_LARGE];
+    [titleLabel setText:[optionSection.optionModel.title uppercaseString]];
+    [headerView.simiContentView addSubview:titleLabel];
+    
+    UIImageView *imageView = [[UIImageView alloc]initWithFrame:CGRectMake(CGRectGetWidth(headerView.simiContentView.frame) - padding - 9, 17.5, 9, 9)];
+    if (optionSection.isShow) {
+        [imageView setImage:[UIImage imageNamed:@"scp_ic_option_up"]];
+    }else{
+        [imageView setImage:[UIImage imageNamed:@"scp_ic_option_down"]];
+    }
+    [headerView.simiContentView addSubview:imageView];
+    
+    UIButton *headerButton = [[UIButton alloc]initWithFrame:headerView.simiContentView.bounds];
+    [headerButton addTarget:self action:@selector(updateOptionSectionState:) forControlEvents:UIControlEventTouchUpInside];
+    headerButton.simiObjectIdentifier = optionSection;
+    [headerButton setBackgroundColor:[UIColor clearColor]];
+    [headerView.simiContentView addSubview:headerButton];
+    return headerView;
+}
+
+- (void)updateOptionSectionState:(UIButton*)sender{
+    SCProductOptionSection *optionSection = (SCProductOptionSection *)sender.simiObjectIdentifier;
+    NSInteger sectionIndex = [self.cells indexOfObject:optionSection];
+    NSMutableArray *indexPaths = [NSMutableArray new];
+    for (int i = 0; i < optionSection.count; i++) {
+        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:sectionIndex];
+        [indexPaths addObject:indexPath];
+    }
+    optionSection.isShow = !optionSection.isShow;
+    if (optionSection.isShow) {
+        [self.contentTableView beginUpdates];
+        [self.contentTableView insertRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationFade];
+        [self.contentTableView endUpdates];
+    }else{
+        [self.contentTableView beginUpdates];
+        [self.contentTableView deleteRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationFade];
+        [self.contentTableView endUpdates];
+    }
+    
+}
+
+
 
 - (UITableViewCell *)createProductImageCell:(SimiRow *)row{
     UITableViewCell *cell = [self.contentTableView dequeueReusableCellWithIdentifier:row.identifier];
@@ -166,5 +411,70 @@
     imagesViewController.productImages = [productImages valueForKey:@"url"];
     imagesViewController.currentIndexImage = imagesPageControll.currentPage;
     [self presentViewController:imagesViewController animated:YES completion:nil];
+}
+
+- (void)contentTableViewDidSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    SimiSection *section = [self.cells objectAtIndex:indexPath.section];
+    SimiRow *row = [section objectAtIndex:indexPath.row];
+    if ([section.identifier isEqualToString:scpproduct_description_section]) {
+        if ([row.identifier isEqualToString:product_description_row]){
+            [self didSelectDescriptionRow];
+        }else if ([row.identifier isEqualToString:product_techspecs_row]){
+            [self didSelectTechSpecsRow];
+        }
+    }else if ([section.identifier isEqualToString:scpproduct_configurableoption_section]){
+        if([row.identifier isEqualToString:scpproduct_option_single_select_row]){
+            SCProductOptionSection *simiSection = [self.cells objectAtIndex:indexPath.section];
+            SCProductOptionRow *simiRow = (SCProductOptionRow *)[simiSection objectAtIndex:indexPath.row];
+            SimiConfigurableOptionModel *optionModel = (SimiConfigurableOptionModel*)simiSection.optionModel;
+            for (int i = 0; i < optionModel.values.count; i++) {
+                SimiConfigurableOptionValueModel *valueModel = [optionModel.values objectAtIndex:i];
+                if (i != indexPath.row) {
+                    valueModel.isSelected = NO;
+                }
+            }
+            if (!simiRow.optionValueModel.isSelected) {
+                simiRow.optionValueModel.isSelected = YES;
+                [optionController activeDependenceWithConfigurableValueModel:(SimiConfigurableOptionValueModel*)simiRow.optionValueModel configurableOptioModel:optionModel];
+            }
+            [optionController handleSelectedOption];
+            [self.contentTableView reloadData];
+        }
+    }else if ([section.identifier isEqualToString:scpproduct_customoption_section]){
+        SCProductOptionSection *simiSection = [self.cells objectAtIndex:indexPath.section];
+        SCProductOptionRow *simiRow = (SCProductOptionRow *)[simiSection objectAtIndex:indexPath.row];
+        SimiCustomOptionModel *customOptionModel = (SimiCustomOptionModel*)simiSection.optionModel;
+        if([row.identifier isEqualToString:scpproduct_option_single_select_row]){
+            for (int i = 0; i < customOptionModel.values.count;i++) {
+                SimiCustomOptionValueModel *valueModel = [customOptionModel.values objectAtIndex:i];
+                if (i != indexPath.row) {
+                    valueModel.isSelected = NO;
+                }
+            }
+            if (!simiRow.optionValueModel.isSelected) {
+                simiRow.optionValueModel.isSelected = YES;
+            }else
+                simiRow.optionValueModel.isSelected = NO;
+            [self handleSelectedOption];
+            [self.contentTableView reloadData];
+        }else if([row.identifier isEqualToString:scpproduct_option_multi_select_row]){
+            if (!simiRow.optionValueModel.isSelected) {
+                simiRow.optionValueModel.isSelected = YES;
+            }else
+                simiRow.optionValueModel.isSelected = NO;
+            [self handleSelectedOption];
+        }
+    }
+    [self.contentTableView deselectRowAtIndexPath:indexPath animated:YES];
+}
+
+- (void)handleSelectedOption{
+    [optionController handleSelectedOption];
+}
+
+#pragma Collection Delegate
+- (void)updateOptionsWithProductOptionModel:(SimiConfigurableOptionModel *)optionModel andValueModel:(SimiConfigurableOptionValueModel *)valueModel{
+    [optionController activeDependenceWithConfigurableValueModel:valueModel configurableOptioModel:optionModel];
+    [self.contentTableView reloadData];
 }
 @end
