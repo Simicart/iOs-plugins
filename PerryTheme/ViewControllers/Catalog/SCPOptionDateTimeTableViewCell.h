@@ -1,5 +1,5 @@
 //
-//  SCPOptionTextFieldTableViewCell.h
+//  SCPOptionDateTimeTableViewCell.h
 //  SimiCartPluginFW
 //
 //  Created by Liam on 6/12/18.
@@ -9,7 +9,7 @@
 #import <SimiCartBundle/SimiTableViewCell.h>
 #import "SCPGlobalVars.h"
 
-@interface SCPOptionTextFieldTableViewCell : SimiTableViewCell
-@property (nonatomic, strong) UITextField *optionTextField;
+@interface SCPOptionDateTimeTableViewCell : SimiTableViewCell
+@property (nonatomic, strong) UIDatePicker *datePicker;
 - (instancetype)initWithReuseIdentifier:(NSString *)reuseIdentifier optionRow:(SCProductOptionRow *)optionRow;
 @end

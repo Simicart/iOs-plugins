@@ -1,14 +1,14 @@
 //
-//  SCPOptionTextFieldTableViewCell.m
+//  SCPOptionDateTimeTableViewCell.m
 //  SimiCartPluginFW
 //
 //  Created by Liam on 6/12/18.
 //  Copyright © 2018 Trueplus. All rights reserved.
 //
 
-#import "SCPOptionTextFieldTableViewCell.h"
+#import "SCPOptionDateTimeTableViewCell.h"
 
-@implementation SCPOptionTextFieldTableViewCell
+@implementation SCPOptionDateTimeTableViewCell
 - (instancetype)initWithReuseIdentifier:(NSString *)reuseIdentifier optionRow:(SCProductOptionRow *)optionRow{
     self = [super initWithStyle:UITableViewCellStyleDefault reuseIdentifier:reuseIdentifier];
     if (self) {
@@ -23,10 +23,16 @@
         [self.simiContentView setBackgroundColor:[UIColor whiteColor]];
         [self.contentView addSubview:self.simiContentView];
         
-        self.optionTextField = [[SimiTextField alloc]initWithFrame:CGRectMake(padding, 5, widthCell - padding*2, 40) placeHolder:@"" font:[UIFont fontWithName:SCP_FONT_REGULAR size:FONT_SIZE_MEDIUM] textColor:[UIColor blackColor] backgroundColor:[UIColor whiteColor] borderWidth:1 borderColor:[UIColor lightGrayColor] paddingLeft:10];
-        self.optionTextField.clearButtonMode = UITextFieldViewModeWhileEditing;
-        self.optionTextField.layer.cornerRadius = 4;
-        [self.simiContentView addSubview:self.optionTextField];
+        SimiCustomOptionModel *optionModel = (SimiCustomOptionModel*)optionRow.model;
+        self.datePicker = [[UIDatePicker alloc] initWithFrame:CGRectMake(padding, padding, widthCell - padding*2, optionRow.height - padding*2)];
+        if ([optionModel.type isEqualToString:@"date"]) {
+            self.datePicker.datePickerMode = UIDatePickerModeDate;
+        } else if ([optionModel.type isEqualToString:@"date_time"]) {
+            self.datePicker.datePickerMode = UIDatePickerModeDateAndTime;
+        } else {
+            self.datePicker.datePickerMode = UIDatePickerModeTime;
+        }
+        [self.simiContentView addSubview:self.datePicker];
     }
     return self;
 }

@@ -7,7 +7,6 @@
 //
 
 #import "SCPOptionSingleSelectTableViewCell.h"
-#import "SCPGlobalVars.h"
 
 @implementation SCPOptionSingleSelectTableViewCell{
     NSMutableAttributedString *titleAttributeString;

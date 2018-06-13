@@ -7,6 +7,7 @@
 //
 
 #import <SimiCartBundle/SimiTableViewCell.h>
+#import "SCPGlobalVars.h"
 
 @interface SCPOptionSingleSelectTableViewCell : SimiTableViewCell
 @property (strong, nonatomic) SimiLabel *nameLabel;

@@ -10,4 +10,6 @@
 
 @interface SCPTableViewHeaderFooterView : UITableViewHeaderFooterView
 @property (nonatomic, strong) UIView *simiContentView;
+@property (nonatomic, strong) SimiLabel *titleLabel;
+@property (nonatomic, strong) UIImageView *iconImageView;
 @end
