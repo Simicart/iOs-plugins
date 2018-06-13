@@ -8,7 +8,8 @@
 
 #import <SimiCartBundle/SimiCartBundle.h>
 #import <SimiCartBundle/SCOrderViewController.h>
-#import "SCPAddressTableViewCell.h"
+#import "SCPOrderAddressTableViewCell.h"
+#import "SCPOrderMethodCell.h"
 
 @interface SCPOrderViewController : SCOrderViewController
 

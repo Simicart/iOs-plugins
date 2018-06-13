@@ -14,7 +14,7 @@ typedef enum : NSUInteger {
     SCPAddressTypeShipping,
 } SCPAddressType;
 
-@interface SCPAddressTableViewCell : SimiTableViewCell
+@interface SCPOrderAddressTableViewCell : SimiTableViewCell
 @property (nonatomic) SCPAddressType addressType;
 @property (strong, nonatomic) SimiAddressModel *addressModel;
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier width:(CGFloat)width type:(SCPAddressType)type;
