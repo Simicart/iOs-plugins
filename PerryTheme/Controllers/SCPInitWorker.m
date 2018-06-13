@@ -15,6 +15,7 @@
 #import "SCPSearchViewController.h"
 #import "SCPLeftMenuViewController.h"
 #import "SCPProductViewController.h"
+#import "SCPOrderViewController.h"
 
 @implementation SCPInitWorker{
     SCPLeftMenuViewController *leftMenuViewController;
@@ -28,6 +29,7 @@
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializedMenu:) name:Simi_MainViewController_InitializedMenu object:nil];
         [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(initializedMenuSize:) name:Simi_MainViewController_InitializedMenuSize object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(openProduct:) name:SIMI_SHOWPRODUCTDETAIL object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(openOrderReview:) name:SIMI_SHOWORDERREVIEWSCREEN object:nil];
         if (SCP_GLOBALVARS.wishlistPluginAllow) {
             [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateWishlist:) name:SCCartController_CompletedChangeCustomerState object:nil];
         }
@@ -35,7 +37,22 @@
     }
     return self;
 }
-
+- (void)openOrderReview:(NSNotification *)noti{
+    if(PHONEDEVICE){
+        SCPOrderViewController *orderViewController = [SCPOrderViewController new];
+        orderViewController.billingAddress = [noti.userInfo objectForKey:KEYEVENT.ORDERVIEWCONTROLLER.billing_address];
+        orderViewController.shippingAddress = [noti.userInfo objectForKey:KEYEVENT.ORDERVIEWCONTROLLER.shipping_address];
+        orderViewController.cart = GLOBALVAR.cart;
+        orderViewController.checkOutType = [[noti.userInfo valueForKey:KEYEVENT.ORDERVIEWCONTROLLER.checkOut_type]integerValue];
+        if (orderViewController.checkOutType == CheckOutTypeNewCustomer) {
+            orderViewController.addressNewCustomerModel = [noti.userInfo objectForKey:KEYEVENT.ORDERVIEWCONTROLLER.billing_address];
+        }
+        UINavigationController *navi = [noti.userInfo objectForKey:KEYEVENT.APPCONTROLLER.navigation_controller];
+        [navi pushViewController:orderViewController animated:YES];
+        SCAppController *appController = noti.object;
+        appController.isDiscontinue = YES;
+    }
+}
 - (void)initializedMenu:(NSNotification *)noti{
     SCMainViewController *mainVC = noti.object;
     mainVC.isDiscontinue = YES;
