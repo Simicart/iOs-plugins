@@ -10,7 +10,6 @@
 #import "SCPGlobalVars.h"
 
 @implementation SCPCartCell{
-    UIView *contentView;
     UIView *qtyView;
     SimiLabel *priceLabel;
     float contentPadding;
@@ -43,15 +42,15 @@
         if(contentHeight < imageWidth)
             contentHeight = imageWidth;
         self.heightCell += contentHeight;
-        CGRect frame = contentView.frame;
+        CGRect frame = self.simiContentView.frame;
         frame.size.height = contentHeight;
-        contentView.frame = frame;
+        self.simiContentView.frame = frame;
         [[NSNotificationCenter defaultCenter] postNotificationName:SCCartCell_EndInitialize object:self];
         if(self.isDiscontinue){
             self.isDiscontinue = NO;
             return self;
         }
-        [SimiGlobalFunction sortViewForRTL:contentView andWidth:contentWidth];
+        [SimiGlobalFunction sortViewForRTL:self.simiContentView andWidth:contentWidth];
         self.selectionStyle = UITableViewCellSelectionStyleNone;
         self.contentView.backgroundColor = [UIColor clearColor];
     }
@@ -63,7 +62,7 @@
     padding = SCALEVALUE(15);
     contentPadding = SCALEVALUE(15);
     imageX = 0;
-    imageWidth = SCALEVALUE(125);
+    imageWidth = SCALEVALUE(100);
     if(PADDEVICE){
         cellWidth = SCREEN_WIDTH*0.6f;
         contentPadding = SCALEVALUE(20);
@@ -79,6 +78,9 @@
     optionX = labelX;
     qtyViewHeight = 30;
     qtyViewWidth = SCALEVALUE(70);
+    if(self.useOnOrderPage){
+        qtyViewWidth = SCALEVALUE(95);
+    }
     priceWidth = labelWidth - qtyViewWidth - SCALEVALUE(15);
     
     if(PADDEVICE){
@@ -86,13 +88,18 @@
     }
     
     self.heightCell = contentPadding;
+    if(self.useOnOrderPage){
+        self.heightCell = 0;
+    }
     contentHeight = 0;
 }
 
 - (void)initContentView{
-    contentView = [[UIView alloc] initWithFrame:CGRectMake(padding, self.heightCell, contentWidth, 0)];
-    contentView.backgroundColor = [UIColor whiteColor];
-    [self.contentView addSubview:contentView];
+    self.simiContentView = [[UIView alloc] initWithFrame:CGRectMake(padding, self.heightCell, contentWidth, 0)];
+    self.simiContentView.backgroundColor = [UIColor whiteColor];
+    self.contentView.backgroundColor = [UIColor clearColor];
+    self.backgroundColor = [UIColor clearColor];
+    [self.contentView addSubview:self.simiContentView];
 }
 
 - (void)initializedProductImageView{
@@ -107,7 +114,7 @@
     singleTap.numberOfTapsRequired = 1;
     [productImageView setUserInteractionEnabled:YES];
     [productImageView addGestureRecognizer:singleTap];
-    [contentView addSubview:productImageView];
+    [self.simiContentView addSubview:productImageView];
 }
 
 - (void)initializedDeleteButton{
@@ -117,14 +124,14 @@
     [deleteButton addTarget:self action:@selector(deleteButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
     if (!self.useOnOrderPage) {
         [deleteButton setFrame:CGRectMake(deleteButtonX, 0, deleteButtonWidth, deleteButtonWidth)];
-        [contentView addSubview:deleteButton];
+        [self.simiContentView addSubview:deleteButton];
     }
 }
 
 - (void)initializedProductName{
     contentHeight += 2*contentPadding;
     nameLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(labelX, contentHeight, labelWidth, 20) andFontName:SCP_FONT_SEMIBOLD andFontSize:FONT_SIZE_LARGE andTextColor:[UIColor blackColor] text:self.item.name];
-    [contentView addSubview:nameLabel];
+    [self.simiContentView addSubview:nameLabel];
     contentHeight += CGRectGetHeight(nameLabel.frame) + contentPadding - 5;
 }
 
@@ -154,7 +161,7 @@
                                documentAttributes: nil
                                             error: nil];
         optionsLabel.textColor = [UIColor blackColor];
-        [contentView addSubview:optionsLabel];
+        [self.simiContentView addSubview:optionsLabel];
         optionsLabel.numberOfLines = 0;
         [optionsLabel sizeToFit];
         contentHeight += CGRectGetHeight(optionsLabel.frame) + contentPadding;
@@ -163,37 +170,50 @@
 
 - (void)initializedCartQuantity{
     qtyView = [[UIView alloc] initWithFrame:CGRectMake(labelX, contentHeight, qtyViewWidth, qtyViewHeight)];
-    [contentView addSubview:qtyView];
+    [self.simiContentView addSubview:qtyView];
     contentHeight += CGRectGetHeight(qtyView.frame) + contentPadding;
-    float qtyBoxWidth = SCALEVALUE(30);
-    float qtyBoxHeight = SCALEVALUE(25);
-    float qtyButtonWidth = (qtyViewWidth - qtyBoxWidth)/2;
-    if(self.item.maxQty > 10000)
-        self.item.maxQty = 10000;
-    qtyButton = [[UIButton alloc]initWithFrame:CGRectMake((qtyViewWidth - qtyBoxWidth)/2 , (qtyViewHeight - qtyBoxHeight)/2, qtyBoxWidth, qtyBoxHeight)];
-    [qtyButton titleLabel].font = [UIFont fontWithName:SCP_FONT_SEMIBOLD size:FONT_SIZE_MEDIUM];
-    qtyButton.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
-    [qtyButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-    [[qtyButton layer] setBorderColor:COLOR_WITH_HEX(@"#ff7d00").CGColor];
-    [[qtyButton layer] setBorderWidth:1];
-    [[qtyButton layer] setCornerRadius:qtyBoxWidth/3];
-    [qtyButton addTarget:self action:@selector(qtyButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
-    [qtyView addSubview:qtyButton];
-    UIButton *minusButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, qtyButtonWidth, qtyViewHeight)];
-    [minusButton addTarget:self action:@selector(minusQty:) forControlEvents:UIControlEventTouchUpInside];
-    [minusButton setTitle:@"-" forState:UIControlStateNormal];
-    minusButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
-    [minusButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-    [minusButton titleLabel].font = [UIFont fontWithName:SCP_FONT_REGULAR size:30];
-    UIButton *plusButton = [[UIButton alloc] initWithFrame:CGRectMake(qtyViewWidth - qtyButtonWidth, 0, qtyButtonWidth, qtyViewHeight)];
-    [plusButton addTarget:self action:@selector(plusQty:) forControlEvents:UIControlEventTouchUpInside];
-    [plusButton setTitle:@"+" forState:UIControlStateNormal];
-    plusButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentRight;
-    [plusButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-    [plusButton titleLabel].font = [UIFont fontWithName:SCP_FONT_REGULAR size:30];
-    [qtyView addSubview:qtyButton];
-    [qtyView addSubview:minusButton];
-    [qtyView addSubview:plusButton];
+    if(self.useOnOrderPage){
+        SimiLabel *qtyLabel = [[SimiLabel alloc] initWithFrame:qtyView.bounds];
+        NSString *qtyHTML = [NSString stringWithFormat:@"<span style='font-family:%@;font-size:%f'>%@</span>:&nbsp;<span style='font-family:%@;font-size:%f'>%@</span>",SCP_FONT_REGULAR,FONT_SIZE_MEDIUM,SCLocalizedString(@"Quantity"),SCP_FONT_LIGHT,FONT_SIZE_MEDIUM,[NSString stringWithFormat:@"%ld",(long)self.item.qty]];
+        qtyLabel.attributedText =
+        [[NSAttributedString alloc]  initWithData: [qtyHTML dataUsingEncoding:NSUnicodeStringEncoding]
+                                          options: @{ NSDocumentTypeDocumentAttribute: NSHTMLTextDocumentType }
+                               documentAttributes: nil
+                                            error: nil];
+        qtyLabel.textColor = [UIColor blackColor];
+        [qtyLabel adjustFontSizeToFitText];
+        [qtyView addSubview:qtyLabel];
+    }else{
+        float qtyBoxWidth = SCALEVALUE(30);
+        float qtyBoxHeight = SCALEVALUE(25);
+        float qtyButtonWidth = (qtyViewWidth - qtyBoxWidth)/2;
+        if(self.item.maxQty > 10000)
+            self.item.maxQty = 10000;
+        qtyButton = [[UIButton alloc]initWithFrame:CGRectMake((qtyViewWidth - qtyBoxWidth)/2 , (qtyViewHeight - qtyBoxHeight)/2, qtyBoxWidth, qtyBoxHeight)];
+        [qtyButton titleLabel].font = [UIFont fontWithName:SCP_FONT_SEMIBOLD size:FONT_SIZE_MEDIUM];
+        qtyButton.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
+        [qtyButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+        [[qtyButton layer] setBorderColor:COLOR_WITH_HEX(@"#ff7d00").CGColor];
+        [[qtyButton layer] setBorderWidth:1];
+        [[qtyButton layer] setCornerRadius:qtyBoxWidth/3];
+        [qtyButton addTarget:self action:@selector(qtyButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
+        [qtyView addSubview:qtyButton];
+        UIButton *minusButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, qtyButtonWidth, qtyViewHeight)];
+        [minusButton addTarget:self action:@selector(minusQty:) forControlEvents:UIControlEventTouchUpInside];
+        [minusButton setTitle:@"-" forState:UIControlStateNormal];
+        minusButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
+        [minusButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+        [minusButton titleLabel].font = [UIFont fontWithName:SCP_FONT_REGULAR size:30];
+        UIButton *plusButton = [[UIButton alloc] initWithFrame:CGRectMake(qtyViewWidth - qtyButtonWidth, 0, qtyButtonWidth, qtyViewHeight)];
+        [plusButton addTarget:self action:@selector(plusQty:) forControlEvents:UIControlEventTouchUpInside];
+        [plusButton setTitle:@"+" forState:UIControlStateNormal];
+        plusButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentRight;
+        [plusButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+        [plusButton titleLabel].font = [UIFont fontWithName:SCP_FONT_REGULAR size:30];
+        [qtyView addSubview:qtyButton];
+        [qtyView addSubview:minusButton];
+        [qtyView addSubview:plusButton];
+    }
 }
 - (void)minusQty:(id)sender{
     if(self.item.qty - self.item.qtyIncrement >= self.item.minQty){
@@ -211,7 +231,7 @@
 }
 - (void)initializedCartCellPrices{
     priceLabel = [[SimiLabel alloc] initWithFrame:CGRectMake(labelX + labelWidth - priceWidth, contentHeight, priceWidth, qtyViewHeight) andFontName:SCP_FONT_SEMIBOLD andFontSize:FONT_SIZE_HEADER andTextColor:COLOR_WITH_HEX(@"#ff7d00")];
-    [contentView addSubview:priceLabel];
+    [self.simiContentView addSubview:priceLabel];
 }
 
 - (void)updatePrices{

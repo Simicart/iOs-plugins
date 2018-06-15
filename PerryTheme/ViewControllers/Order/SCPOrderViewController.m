@@ -8,17 +8,20 @@
 
 #import "SCPOrderViewController.h"
 #import "SCPGlobalVars.h"
+#import "SCPCartCell.h"
+#import "SCPOrderFeeCell.h"
 
 @interface SCPOrderViewController ()
 
 @end
 
 @implementation SCPOrderViewController
+- (void)viewDidLoadBefore{
+    [super viewDidLoadBefore];
+}
 - (void)viewDidAppearBefore:(BOOL)animated{
     [super viewDidAppearBefore:animated];
-    CGRect frame = CGRectMake(15, 0, CGRectGetWidth(self.view.bounds) - 30, CGRectGetHeight(self.view.frame) - heightPlaceOrder);
-    if(self.contentTableView.frame.size.width != frame.size.width){
-        self.contentTableView.frame = frame;
+    if(self.btnPlaceNow.backgroundColor != SCP_BUTTON_BACKGROUND_COLOR){
         self.contentTableView.estimatedRowHeight = 0;
         self.contentTableView.showsVerticalScrollIndicator = NO;
         [self.contentTableView setContentInset:UIEdgeInsetsMake(0, 0, 20, 0)];
@@ -58,7 +61,7 @@
         [self addPaymentMethodsToCells:self.cells];
     }
 //    //Add Shippment Detail section
-//    [self addShipmentDetailToCells:self.cells];
+    [self addShipmentDetailToCells:self.cells];
 }
 
 - (SimiSection*)addBillingSectionToCells:(SimiTable*)cells{
@@ -113,11 +116,27 @@
     return paymentSection;
 }
 
+- (SimiSection *)addShipmentDetailToCells:(SimiTable*)cells{
+    SimiSection *shipmentDetailSection = [[SimiSection alloc]initWithIdentifier:ORDER_TOTALS_SECTION];
+    shipmentDetailSection.header = [[SimiSectionHeader alloc]initWithTitle:SCLocalizedString(@"Shipment Details") height:80];
+    if(self.cart.collectionData.count > 0){
+        for(int j=0; j < self.cart.collectionData.count; j++){
+            SimiRow *cartItemRow = [[SimiRow alloc] initWithIdentifier:ORDER_VIEW_CART];
+            [shipmentDetailSection addRow:cartItemRow];
+        }
+    }
+    
+    cartPrices = [GLOBALVAR convertCartPriceData:self.order.total];
+    SimiRow *totalRow = [[SimiRow alloc] initWithIdentifier:ORDER_VIEW_TOTAL];
+    [shipmentDetailSection addRow:totalRow];
+    [cells addObject:shipmentDetailSection];
+    return shipmentDetailSection;
+}
 
 #pragma mark Table View Data Source
 - (UIView *)contentTableViewViewForHeaderInSection:(NSInteger)section{
     SimiSection *simiSection = [self.cells objectAtIndex:section];
-    float headerWidth = CGRectGetWidth(self.contentTableView.frame);
+    float headerWidth = CGRectGetWidth(self.contentTableView.frame) - 30;
     float titlePaddingX = 15;
     float buttonWidth = 44;
     float buttonInset = 15;
@@ -128,7 +147,7 @@
         
         headerView.backgroundColor = [UIColor clearColor];
         headerView.contentView.backgroundColor = [UIColor clearColor];
-        UIView *headerContentView = [[UIView alloc] initWithFrame:CGRectMake(0, 20, headerWidth, 64)];
+        UIView *headerContentView = [[UIView alloc] initWithFrame:CGRectMake(15, 20, headerWidth, 64)];
         headerContentView.backgroundColor = [UIColor whiteColor];
         [headerView.contentView addSubview:headerContentView];
         SimiLabel *headerTitleLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(titlePaddingX, 18, headerWidth - titlePaddingX - 2*titlePaddingX, 24) andFontName:SCP_FONT_SEMIBOLD andFontSize:FONT_SIZE_HEADER andTextColor:[UIColor blackColor]];
@@ -159,9 +178,19 @@
         return [self createShippingMethodCellWithIndexPath:indexPath tableView:self.contentTableView cells:self.cells];
     }else if([row.identifier isEqualToString:ORDER_VIEW_PAYMENT_METHOD]){
         return [self createPaymentMethodCellWithIndex:indexPath tableView:self.contentTableView cells:self.cells];
-    }
-    else{
-        return [self contentTableViewCellForRowAtIndexPath:indexPath];
+    }else if([row.identifier isEqualToString:ORDER_VIEW_CART]){
+        return [self createItemCellWithIndexPath:indexPath tableView:self.contentTableView cells:self.cells];
+    }else if([row.identifier isEqualToString:ORDER_VIEW_TOTAL]){
+        SCOrderFeeCell *cell = [self.contentTableView dequeueReusableCellWithIdentifier:ORDER_VIEW_TOTAL];
+        if(!cell){
+            cell = [[SCPOrderFeeCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:ORDER_VIEW_TOTAL];
+            cell.userInteractionEnabled = NO;
+        }
+        [(SCPOrderFeeCell *)cell setData:cartPrices andWidthCell:CGRectGetWidth(self.contentTableView.frame)];
+        row.height = cell.heightCell;
+        return cell;
+    }else{
+        return [super contentTableViewCellForRowAtIndexPath:indexPath];
     }
 }
 - (SCPOrderAddressTableViewCell *)createBillingAddressCellWithRow:(SimiRow *)row{
@@ -218,7 +247,7 @@
         cell.creditCartPaymentModel = payment;
         cell.delegate = self;
     }
-    [cell setTitle:payment.title andContent:paymentContent andIsSelected:payment.isSelected titleWidth:widthMethodTitle contentWidth:widthMethodContent];
+    [cell setTitle:payment.title andContent:paymentContent andIsSelected:payment.isSelected width:CGRectGetWidth(self.contentTableView.frame)];
     row.height = cell.heightCell;
     if(row == section.rows.lastObject){
         row.height += 5;
@@ -236,11 +265,27 @@
     }
     NSString *title = shippingModel.title;
     NSString *name = shippingModel.name;
-    [cell setTitle:title andContent:name andIsSelected:shippingModel.isSelected titleWidth:widthMethodTitle contentWidth:widthMethodContent];
+    [cell setTitle:title andContent:name andIsSelected:shippingModel.isSelected width:CGRectGetWidth(self.contentTableView.frame)];
     [cell setPriceWithParams:simiRow.model.modelData];
     simiRow.height = cell.heightCell;
     if(simiRow == simiSection.rows.lastObject){
         simiRow.height += 5;
+    }
+    return cell;
+}
+- (SCPCartCell *)createItemCellWithIndexPath:(NSIndexPath *)indexPath tableView:(UITableView *)tableView cells:(SimiTable *)cells{
+    SimiSection *simiSection = [cells objectAtIndex:indexPath.section];
+    SimiRow *simiRow = [simiSection.rows objectAtIndex:indexPath.row];
+    SimiQuoteItemModel *item = (SimiQuoteItemModel *)[self.cart.collectionData objectAtIndex:indexPath.row];
+    NSString *identifier = [NSString stringWithFormat:@"%@_%@",simiRow.identifier, item.itemId];
+    SCPCartCell *cell = [tableView dequeueReusableCellWithIdentifier:identifier];
+    if (cell == nil) {
+        cell = [[SCPCartCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier quoteItemModel:item useOnOrderPage:YES];
+        [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
+        cell.userInteractionEnabled = NO;
+    }
+    if(cell.heightCell > simiRow.height){
+        simiRow.height = cell.heightCell;
     }
     return cell;
 }

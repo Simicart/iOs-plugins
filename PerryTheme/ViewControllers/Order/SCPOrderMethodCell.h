@@ -10,5 +10,5 @@
 #import <SimiCartBundle/SCOrderMethodCell.h>
 
 @interface SCPOrderMethodCell : SCOrderMethodCell
-
+- (void)setTitle:(NSString *)title andContent:(NSString *)content andIsSelected:(BOOL)isSelected width:(CGFloat)width;
 @end

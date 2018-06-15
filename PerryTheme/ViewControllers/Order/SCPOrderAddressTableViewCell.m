@@ -21,7 +21,9 @@
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier width:(CGFloat)width type:(SCPAddressType)type{
     self.addressType = type;
     if(self == [super initWithStyle:style reuseIdentifier:reuseIdentifier]){
-        self.simiContentView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, width, 0)];
+        self.simiContentView = [[UIView alloc] initWithFrame:CGRectMake(15, 0, width - 30, 0)];
+        self.contentView.backgroundColor = [UIColor clearColor];
+        self.backgroundColor = [UIColor clearColor];
         self.simiContentView.backgroundColor = [UIColor whiteColor];
         [self.contentView addSubview:self.simiContentView];
         cellWidth = width;
