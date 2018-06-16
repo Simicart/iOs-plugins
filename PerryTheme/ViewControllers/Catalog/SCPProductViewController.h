@@ -14,6 +14,7 @@
 #import "SCPOptionTextFieldTableViewCell.h"
 #import "SCPOptionDateTimeTableViewCell.h"
 #import "SCPBundleOptionMultiSelectTableViewCell.h"
+#import "SCPProductCollectionViewCell.h"
 
 static NSString *scpproduct_configurableoption_section = @"scpproduct_configurableoption_section";
 static NSString *scpproduct_customoption_section = @"scpproduct_customoption_section";
@@ -21,7 +22,8 @@ static NSString *scpproduct_bundleoption_section = @"scpproduct_bundleoption_sec
 static NSString *scpproduct_groupoption_section = @"scpproduct_groupoption_section";
 static NSString *scpproduct_downloadableoption_section = @"scpproduct_downloadableoption_section";
 
-static NSString *scpproduct_description_section = @"product_description_section";
+static NSString *scpproduct_description_section = @"scpproduct_description_section";
+static NSString *scpproduct_techspecs_section = @"scpproduct_techspecs_section";
 
 static NSString *scpproduct_option_item_select_row = @"scpproduct_otion_item_select_row";
 static NSString *scpproduct_option_single_select_row = @"scpproduct_option_single_select_row";

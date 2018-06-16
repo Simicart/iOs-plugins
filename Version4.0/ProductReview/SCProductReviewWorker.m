@@ -8,14 +8,10 @@
 
 #import "SCProductReviewWorker.h"
 #import <SimiCartBundle/SCProductMoreViewController.h>
-#import <SimiCartBundle/SCProductSecondDesignViewController.h>
 #import "SCAddProductReviewViewController.h"
 #import "SCProductReviewShortCell.h"
+#import "SimiReviewModel.h"
 #import "ASStarRatingView.h"
-
-#if __has_include("SCPProductViewController.h")
-#import "SCPProductViewController.h"
-#endif
 
 @implementation SCProductReviewWorker {
     MoreActionView* moreActionView;
@@ -43,9 +39,8 @@
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(productMoreViewControllerInitTab:) name:SCProductMoreViewControllerInitTab object:nil];
         paddingEdge = SCALEVALUE(15);
         heightHeader = 44;
-#if __has_include("SCPProductViewController.h")
-        heightHeader = 44 + paddingEdge;
-#endif
+        // Update for Perry Theme
+        [self addObserverOnPerryTheme];
     }
     return self;
 }
@@ -129,7 +124,7 @@
 - (void)getReviews{
     SimiReviewModelCollection *reviewCollection = [[SimiReviewModelCollection alloc] init];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didGetReviewCollection:) name:@"DidGetReviewCollection" object:reviewCollection];
-    [reviewCollection getReviewCollectionWithProductId:[product valueForKey:@"entity_id"] offset:0 limit:6];
+    [reviewCollection getReviewCollectionWithProductId:product.entityId offset:0 limit:6];
 }
 
 - (void)didGetReviewCollection:(NSNotification *)noti{
@@ -191,31 +186,13 @@
     if ([section.identifier isEqualToString:product_reviews_section]) {
         productVC.isDiscontinue = YES;
         if ([row.identifier isEqualToString:product_reviews_normal_row]) {
-#if __has_include("SCPProductViewController.h")
-            row.tableCell = [self createPerryReviewNormalCellForRow:row];
-#else
             row.tableCell = [self createCherryReviewNormalCellForRow:row];
-#endif
         }else if([row.identifier isEqualToString:product_reviews_add_row]){
-#if __has_include("SCPProductViewController.h")
-            row.tableCell = [self createPerryReviewAddCellForRow:row];
-#else
             row.tableCell = [self createCherryReviewAddCellForRow:row];
-#endif
-        }
-        else if ([row.identifier isEqualToString:product_reviews_firstpeople_row])
-        {
-#if __has_include("SCPProductViewController.h")
-            row.tableCell = [self createPerryReviewFirstPeopleCellForRow:row];
-#else
+        }else if ([row.identifier isEqualToString:product_reviews_firstpeople_row]){
             row.tableCell = [self createCherryReviewFirstPeopleCellForRow: row];
-#endif
         }else if ([row.identifier isEqualToString:product_reviews_viewall_row]) {
-#if __has_include("SCPProductViewController.h")
-            row.tableCell = [self createPerryReviewViewAllCellForRow:row];
-#else
             row.tableCell = [self createCherryReviewViewAllCellForRow: row];
-#endif
         }
     }
 }
@@ -229,11 +206,7 @@
     tableWidth = tableView.frame.size.width;
     if([section.identifier isEqualToString:product_reviews_section]) {
         productVC.isDiscontinue = YES;
-#if __has_include("SCPProductViewController.h")
-        [self createPerryReviewViewForHeader:headerView inSection:section];
-#else
         [self createCherryReviewViewForHeader:headerView inSection:section];
-#endif
     }
 }
 
@@ -396,90 +369,228 @@
     }
     return cell;
 }
-#if __has_include("SCPProductViewController.h")
-//For perry theme
+
+#pragma mark -
+#pragma mark Implement Perry Theme
+- (void)addObserverOnPerryTheme{
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initPerryProductCellsAfter:) name:[NSString stringWithFormat:@"%@%@",@"SCPProductViewController",SimiTableViewController_SubKey_InitCells_End] object:nil];
+}
+
+- (void)initPerryProductCellsAfter:(NSNotification*)noti{
+    cells = noti.object;
+    productVC = [noti.userInfo objectForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.viewcontroller];
+    SCPProductDetailReviewWorker *unitWorker = [SCPProductDetailReviewWorker new];
+    unitWorker.cells = cells;
+    unitWorker.product = productVC.product;
+    unitWorker.contentTableView = productVC.contentTableView;
+    [unitWorker createReviewSection];
+    productVC.reviewManageObject = unitWorker;
+}
+@end
+
+@implementation SCPProductDetailReviewWorker{
+    NSDictionary *appReviews;
+    BOOL hadReviews;
+    float paddingEdge, heightHeader, tableWidth;
+}
+
+- (void)createReviewSection{
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializedPerryProductCellBegin:) name:[NSString stringWithFormat:@"%@%@",@"SCPProductViewController",SimiTableViewController_SubKey_InitializedCell_Begin] object:self.cells];
+    appReviews = self.product.appReviews;
+    hadReviews = NO;
+    if ([[appReviews valueForKey:@"number"] floatValue]) {
+        hadReviews = YES;
+    }
+    if(!hadReviews){
+        SimiSection *reviewSection = [self.cells addSectionWithIdentifier:product_reviews_section headerTitle:SCLocalizedString(@"Review")];
+        reviewSection.header.height = SCALEVALUE(15);
+        [reviewSection addRowWithIdentifier:product_reviews_normal_row height:52];
+        [reviewSection addRowWithIdentifier:product_reviews_add_row height:49];
+    }
+    if(hadReviews) {
+        [self getReviews];
+    }
+}
+
+- (void)getReviews{
+    SimiReviewModelCollection *reviewCollection = [[SimiReviewModelCollection alloc] init];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(perryThemeDidGetReviewCollection:) name:@"DidGetReviewCollection" object:reviewCollection];
+    [reviewCollection getReviewCollectionWithProductId:self.product.entityId offset:0 limit:6];
+}
+
+- (void)perryThemeDidGetReviewCollection:(NSNotification*)noti{
+    SimiResponder *responder = [noti.userInfo valueForKey:responderKey];
+    if (responder.status == SUCCESS) {
+        NSInteger beforeIndex = 0;
+        if ([self.cells getSectionIndexByIdentifier:@"scpproduct_description_section"] != NSNotFound) {
+            beforeIndex = [self.cells getSectionIndexByIdentifier:@"scpproduct_description_section"];
+        }
+        if (beforeIndex == 0) {
+            beforeIndex = [self.cells getSectionIndexByIdentifier:@"scpproduct_description_section"];
+        }
+        SimiSection *reviewSection = [self.cells addSectionWithIdentifier:product_reviews_section atIndex:beforeIndex+1];
+        reviewSection.header = [[SimiSectionHeader alloc]initWithTitle:SCLocalizedString(@"Review") height:SCALEVALUE(15)];
+        SimiReviewModelCollection *reviewCollection = noti.object;
+        if (reviewCollection.count > 0) {
+            SimiRow *row = [[SimiRow alloc]initWithIdentifier:product_reviews_normal_row height:140];
+            row.model = [reviewCollection objectAtIndex:0];
+            [reviewSection addRow:row];
+        }
+        [reviewSection addRowWithIdentifier:product_reviews_add_row height:49];
+    }
+    [self.contentTableView reloadData];
+}
+
+- (void)initializedPerryProductCellBegin:(NSNotification*)noti{
+    SimiTable *cells = noti.object;
+    NSIndexPath *indexPath = [noti.userInfo objectForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.indexpath];
+    SCProductSecondDesignViewController *productViewController = [noti.userInfo valueForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.viewcontroller];
+    SimiSection *section = [cells objectAtIndex:indexPath.section];
+    SimiRow *row = [section objectAtIndex:indexPath.row];
+    tableWidth = CGRectGetWidth(self.contentTableView.frame);
+    if ([section.identifier isEqualToString:product_reviews_section]) {
+        productViewController.isDiscontinue = YES;
+        if ([row.identifier isEqualToString:product_reviews_normal_row]) {
+            row.tableCell = [self createPerryReviewNormalCellForRow:row];
+        }else if([row.identifier isEqualToString:product_reviews_add_row]){
+            row.tableCell = [self createPerryReviewAddCellForRow:row];
+        }
+    }
+}
+
 - (UITableViewCell *)createPerryReviewNormalCellForRow:(SimiRow *)row{
-    SimiModel *reviewModel = row.model;
-    NSString *cellIdentifier = [NSString stringWithFormat:@"%@_%@",row.identifier,[reviewModel valueForKey:@"review_id"]];
-    SCProductReviewShortCell *cell = [productTableView dequeueReusableCellWithIdentifier:cellIdentifier];
-    if(!cell) {
-        cell = [[SCProductReviewShortCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier reviewData:reviewModel numberTitleLine:1 numberBodyLine:2];
-        row.height = cell.cellHeight;
-        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+    SimiTableViewCell *cell = [self.contentTableView dequeueReusableCellWithIdentifier:row.identifier];
+    if(cell == nil) {
+        cell = [[SimiTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:row.identifier];
+        [cell setBackgroundColor:[UIColor clearColor]];
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        float padding = SCALEVALUE(15);
+        float widthCell = SCREEN_WIDTH - padding *2;
+        if (PADDEVICE) {
+            widthCell = SCREEN_WIDTH *2/3 - padding *2;
+        }
+        cell.simiContentView = [[UIView alloc]initWithFrame:CGRectMake(padding, 0, widthCell, row.height)];
+        [cell.simiContentView setBackgroundColor:[UIColor whiteColor]];
+        [cell.contentView addSubview:cell.simiContentView];
+        
+        UIFont *headerFont = [UIFont fontWithName:@"Montserrat-SemiBold" size:FONT_SIZE_HEADER];
+        float titleWidth = [[SCLocalizedString(@"Reviews") uppercaseString] sizeWithAttributes:@{NSFontAttributeName:headerFont}].width;
+        SimiLabel *headerLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(padding,17,titleWidth,18) andFont:headerFont];
+        [headerLabel setText:[SCLocalizedString(@"Reviews") uppercaseString]];
+        [cell.simiContentView addSubview:headerLabel];
+        
+        if (row.model != nil) {
+            float sizeStar = 12;
+            float ratePoint = [[appReviews valueForKey:@"rate"]floatValue];
+            ASStarRatingView *starView = [[ASStarRatingView alloc] initWithFrame:CGRectMake(widthCell - 5*(sizeStar+5)-padding, 20, 5*sizeStar, sizeStar)];
+            starView.canEdit = NO;
+            starView.minStarSize = CGSizeMake(sizeStar, sizeStar);
+            starView.midMargin = 5;
+            starView.leftMargin = 0;
+            starView.rightMargin = 0;
+            starView.rating = ratePoint;
+            [cell.simiContentView addSubview:starView];
+            
+            UIFont *rateFont = [UIFont fontWithName:@"Montserrat-Regular" size:FONT_SIZE_HEADER];
+            NSString *rateStr = [NSString stringWithFormat:@"%0.2f",ratePoint];
+            float rateStrWidth = [rateStr sizeWithAttributes:@{NSFontAttributeName:rateFont}].width +2;
+            SimiLabel *rateLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(widthCell - padding*1.5 - 5*(sizeStar+5) - rateStrWidth, 17, rateStrWidth, 18) andFont:rateFont];
+            [rateLabel setText:rateStr];
+            [cell.simiContentView addSubview:rateLabel];
+            
+            SimiLabel *numberReviewLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(padding*1.5+titleWidth, 17, 50, 18) andFont:rateFont];
+            [numberReviewLabel setText:[NSString stringWithFormat:@"(%@)",[appReviews valueForKey:@"number"]]];
+            [cell.simiContentView addSubview:numberReviewLabel];
+            
+            
+            SimiReviewModel *reviewModel = (SimiReviewModel*)row.model;
+            float heightContent = 52;
+            padding += 5;
+            sizeStar = 9;
+            ASStarRatingView *firstReviewStarView = [[ASStarRatingView alloc] initWithFrame:CGRectMake(padding, heightContent, 5*sizeStar, sizeStar)];
+            firstReviewStarView.canEdit = NO;
+            firstReviewStarView.minStarSize = CGSizeMake(sizeStar, sizeStar);
+            firstReviewStarView.midMargin = 4.5;
+            firstReviewStarView.leftMargin = 0;
+            firstReviewStarView.rightMargin = 0;
+            firstReviewStarView.rating = [[reviewModel valueForKey:@"rate_points"] floatValue];
+            [cell.simiContentView addSubview:firstReviewStarView];
+            
+            heightContent += 16;
+            SimiLabel *firstReviewTitleLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(padding, heightContent, widthCell - padding*2, 16) andFont:[UIFont fontWithName:@"Montserrat-Regular" size:FONT_SIZE_MEDIUM]];
+            [firstReviewTitleLabel setText:[NSString stringWithFormat:@"%@",[reviewModel valueForKey:@"title"]]];
+            [cell.simiContentView addSubview:firstReviewTitleLabel];
+            [firstReviewTitleLabel resizLabelToFit];
+            CGRect frame = firstReviewTitleLabel.frame;
+            if (frame.size.height < 16) {
+                frame.size.height = 16;
+                [firstReviewTitleLabel setFrame:frame];
+            }
+            
+            heightContent += CGRectGetHeight(frame) + 5;
+            SimiLabel *firstReviewContentLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(padding, heightContent, widthCell, 16) andFont:[UIFont fontWithName:@"Montserrat-Light" size:FONT_SIZE_MEDIUM]];
+            firstReviewContentLabel.text = [NSString stringWithFormat:@"%@",[reviewModel valueForKey:@"detail"]];
+            [firstReviewContentLabel resizLabelToFit];
+            frame = firstReviewContentLabel.frame;
+            if (frame.size.height < 16) {
+                frame.size.height = 16;
+                [firstReviewContentLabel setFrame:frame];
+            }
+            [cell.simiContentView addSubview:firstReviewContentLabel];
+            heightContent += CGRectGetHeight(frame) + padding;
+            row.height = heightContent;
+        }
     }
     return cell;
 }
-- (UITableViewCell *)createPerryReviewAddCellForRow:(SimiRow *)row{
-    UITableViewCell *cell = [productTableView dequeueReusableCellWithIdentifier:row.identifier];
-    if(!cell) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:row.identifier];
-        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-        SimiLabel *titleLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(paddingEdge, 10, tableWidth - paddingEdge*3, 30) andFontName:THEME_FONT_NAME_REGULAR];
-        [titleLabel setText:SCLocalizedString(@"Add Your Review")];
-        [cell.contentView addSubview:titleLabel];
-        [SimiGlobalFunction sortViewForRTL:cell.contentView andWidth:tableWidth - paddingEdge];
-    }
-    return cell;
-}
-- (UITableViewCell *)createPerryReviewFirstPeopleCellForRow:(SimiRow *)row{
-    UITableViewCell *cell = [productTableView dequeueReusableCellWithIdentifier:row.identifier];
-    if(!cell) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:row.identifier];
-        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-        SimiLabel *titleLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(paddingEdge, 10, tableWidth - paddingEdge*3, 30) andFontName:THEME_FONT_NAME_REGULAR];
-        [titleLabel setText:SCLocalizedString(@"Be the first to review this product")];
-        [cell.contentView addSubview:titleLabel];
-        [SimiGlobalFunction sortViewForRTL:cell.contentView andWidth:tableWidth - paddingEdge];
+- (SimiTableViewCell *)createPerryReviewAddCellForRow:(SimiRow *)row{
+    SimiTableViewCell *cell = [self.contentTableView dequeueReusableCellWithIdentifier:row.identifier];
+    if(cell == nil) {
+        cell = [[SimiTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:row.identifier];
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        [cell setBackgroundColor:[UIColor clearColor]];
+        float padding = SCALEVALUE(15);
+        float widthCell = SCREEN_WIDTH - padding *2;
+        if (PADDEVICE) {
+            widthCell = SCREEN_WIDTH *2/3 - padding *2;
+        }
+        cell.simiContentView = [[UIView alloc]initWithFrame:CGRectMake(padding, 1, widthCell, row.height-1)];
+        [cell.simiContentView setBackgroundColor:[UIColor whiteColor]];
+        [cell.contentView addSubview:cell.simiContentView];
+        
+        float buttonWidth = widthCell/2-padding;
+        UIButton *viewAllButton = [[UIButton alloc]initWithFrame:CGRectMake(padding, 2, buttonWidth, 44)];
+        [viewAllButton setBackgroundColor:[UIColor clearColor]];
+        viewAllButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
+        [viewAllButton.titleLabel setFont:[UIFont fontWithName:@"Montserrat-Regular" size:FONT_SIZE_LARGE]];
+        [viewAllButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+        [viewAllButton setTitle:SCLocalizedString(@"View all reviews") forState:UIControlStateNormal];
+        [viewAllButton addTarget:self action:@selector(viewAllReviews:) forControlEvents:UIControlEventTouchUpInside];
+        [cell.simiContentView addSubview:viewAllButton];
+        
+        UIButton *addReviewButton = [[UIButton alloc]initWithFrame:CGRectMake(widthCell - padding - buttonWidth, 2, buttonWidth, 44)];
+        [addReviewButton setBackgroundColor:[UIColor clearColor]];
+        addReviewButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentRight;
+        [addReviewButton.titleLabel setFont:[UIFont fontWithName:@"Montserrat-Semibold" size:FONT_SIZE_LARGE]];
+        [addReviewButton setTitleColor:[UIColor orangeColor] forState:UIControlStateNormal];
+        [addReviewButton setTitle:SCLocalizedString(@"Add your reviews") forState:UIControlStateNormal];
+        [addReviewButton addTarget:self action:@selector(addYourReviews:) forControlEvents:UIControlEventTouchUpInside];
+        [cell.simiContentView addSubview:addReviewButton];
+        if (!hadReviews) {
+            [viewAllButton removeFromSuperview];
+            [addReviewButton setFrame:CGRectMake(padding, 2, widthCell - padding*2, 44)];
+            [addReviewButton setContentHorizontalAlignment:UIControlContentHorizontalAlignmentCenter];
+        }
     }
     return cell;
 }
 
-- (UITableViewCell *)createPerryReviewViewAllCellForRow:(SimiRow *)row{
-    UITableViewCell *cell = [productTableView dequeueReusableCellWithIdentifier:row.identifier];
-    if(!cell) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:row.identifier];
-        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-        SimiLabel *titleLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(paddingEdge, 10, tableWidth - paddingEdge*3, 30) andFontName:THEME_FONT_NAME_REGULAR];
-        [titleLabel setTextAlignment:NSTextAlignmentCenter];
-        [titleLabel setText:SCLocalizedString(@"View all")];
-        [cell.contentView addSubview:titleLabel];
-        [SimiGlobalFunction sortViewForRTL:cell.contentView andWidth:tableWidth-paddingEdge];
-    }
-    return cell;
+- (void)viewAllReviews:(UIButton*)sender{
+    
 }
 
-- (void)createPerryReviewViewForHeader: (UITableViewHeaderFooterView *)headerView inSection:(SimiSection *)section{
-    [headerView setBackgroundColor:[UIColor clearColor]];
-    float viewWidth = tableWidth - 2*paddingEdge;
-    UIView *view = [[UIView alloc] initWithFrame:CGRectMake(paddingEdge, 0, viewWidth, heightHeader)];
-    view.backgroundColor = [UIColor whiteColor];
-    [headerView addSubview:view];
-    if (!hadReviews) {
-        SimiLabel *titleLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(paddingEdge, paddingEdge, viewWidth - paddingEdge*2, 44) andFontName:THEME_FONT_NAME_REGULAR andFontSize:FONT_SIZE_HEADER];
-        [titleLabel setText:section.header.title];
-        [view addSubview:titleLabel];
-    }else
-    {
-        NSString *title = [NSString stringWithFormat:@"%@ (%@)",section.header.title, [appReviews valueForKey:@"number"]];
-        SimiLabel *titleLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(paddingEdge, paddingEdge, 0, 44) andFontName:THEME_FONT_NAME_REGULAR andFontSize:FONT_SIZE_HEADER];
-        [titleLabel setText:title];
-        [titleLabel sizeToFit];
-        [view addSubview:titleLabel];
-        
-        float sizeStar = CGRectGetHeight(titleLabel.frame);
-        float ratePoint = [[appReviews valueForKey:@"rate"]floatValue];
-        ASStarRatingView *starView = [[ASStarRatingView alloc] initWithFrame:CGRectMake(viewWidth - 5*sizeStar, paddingEdge, 5*sizeStar, sizeStar)];
-        starView.rating = ratePoint;
-        [view addSubview:starView];
-        
-        NSString *rateNumberString = [NSString stringWithFormat:@"%0.2f",[[appReviews valueForKey:@"rate"]floatValue]];
-        SimiLabel *rateNumberLabel = [[SimiLabel alloc]initWithFrame:CGRectMake((viewWidth - CGRectGetWidth(starView.frame)) - 45, paddingEdge, 40, sizeStar) andFontSize:FONT_SIZE_MEDIUM];
-        [rateNumberLabel setText:rateNumberString];
-        rateNumberLabel.textAlignment = NSTextAlignmentRight;
-        [view addSubview:rateNumberLabel];
-    }
-    [SimiGlobalFunction sortViewForRTL:headerView andWidth:tableWidth];
+- (void)addYourReviews:(UIButton*)sender{
+    
 }
-#endif
 @end
 

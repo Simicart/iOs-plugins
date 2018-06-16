@@ -19,6 +19,8 @@
 
 - (void)viewDidLoadBefore {
     [super viewDidLoadBefore];
+    paddingEdge = SCP_GLOBALVARS.padding;
+    self.rootEventName = @"SCPProductViewController";
 }
 
 - (void)viewDidAppearBefore:(BOOL)animated{
@@ -55,13 +57,37 @@
         [[NSNotificationCenter defaultCenter]removeObserverForNotification:noti];
     }
 }
+#pragma mark -
+#pragma mark Relate Products
+- (void)didGetRelatedProducts:(NSNotification*)noti{
+    SimiResponder *responder = [noti.userInfo valueForKey:responderKey];
+    if (responder.status == SUCCESS) {
+        if (relatedProducts.count > 0) {
+            itemHeight = 220;
+            SimiSection *relatedSection = [self.cells addSectionWithIdentifier:product_related_section];
+            relatedSection.header = [[SimiSectionHeader alloc]initWithTitle:SCLocalizedString(@"Related Products") height:60];
+            [relatedSection addRowWithIdentifier:product_related_row height:itemHeight];
+            [self.contentTableView reloadData];
+        }
+    }
+    [self removeObserverForNotification:noti];
+}
+
+- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath{
+    SimiProductModel *relateProduct = [relatedProducts objectAtIndex:indexPath.row];
+    NSString *identifier = relateProduct.entityId;
+    [collectionView registerClass:[SCPProductCollectionViewCell class] forCellWithReuseIdentifier:identifier];
+    SCPProductCollectionViewCell *productViewCell = [collectionView dequeueReusableCellWithReuseIdentifier:identifier forIndexPath:indexPath];
+    [productViewCell setProductModelForCell:relateProduct];
+    return productViewCell;
+}
 
 #pragma mark -
 #pragma mark Generate Cells
 - (void)createCells{
     headerManages = [NSMutableDictionary new];
     SimiSection *mainSection = [[SimiSection alloc]initWithIdentifier:product_main_section];
-    [mainSection addRowWithIdentifier:product_images_row height:tableWidth];
+    [mainSection addRowWithIdentifier:product_images_row height:(tableWidth - paddingEdge)];
     [self.cells addObject:mainSection];
     if (self.product.productType == ProductTypeConfigurable) {
         [self addConfigOptionsToCells];
@@ -72,8 +98,20 @@
         [self addBundleOptionsToCells];
     }
     SimiSection *descriptionSection = [[SimiSection alloc]initWithIdentifier:scpproduct_description_section];
+    descriptionSection.header = [[SimiSectionHeader alloc]initWithTitle:@"" height:paddingEdge];
     [descriptionSection addRowWithIdentifier:product_description_row height:200];
     [self.cells addObject:descriptionSection];
+    
+    if (self.product.additional) {
+        NSDictionary *additional = self.product.additional;
+        if (additional.count > 0) {
+            SimiSection *techspecsSection = [[SimiSection alloc]initWithIdentifier:scpproduct_techspecs_section];
+            techspecsSection.header = [[SimiSectionHeader alloc]initWithTitle:@"" height:paddingEdge];
+            [techspecsSection addRowWithIdentifier:product_techspecs_row height:44];
+            [self.cells addObject:techspecsSection];
+        }
+    }
+    
 }
 
 - (void)addConfigOptionsToCells{
@@ -247,6 +285,14 @@
         }else if ([row.identifier isEqualToString:scpproduct_option_multi_select_row]){
             cell = [self createBundleOptionMultiSelectCell:row];
         }
+    }else if ([section.identifier isEqualToString:product_related_section]){
+        if ([row.identifier isEqualToString:product_related_row]){
+            cell = [self createRelatedCell:row];
+        }
+    }else if ([section.identifier isEqualToString:scpproduct_techspecs_section]){
+        if ([row.identifier isEqualToString:product_techspecs_row]) {
+            cell = [self createTechSpecsCell:row];
+        }
     }
     return cell;
 }
@@ -342,7 +388,7 @@
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         cell.backgroundColor = COLOR_WITH_HEX(@"#ededed");
         float imageWidth = tableWidth - paddingEdge*2;
-        float imageHeight = row.height - 2*paddingEdge;
+        float imageHeight = row.height - paddingEdge;
         UIView *imageView = [[UIView alloc] initWithFrame:CGRectMake(paddingEdge, paddingEdge, imageWidth, imageHeight)];
         imageView.backgroundColor = [UIColor whiteColor];
         [cell.contentView addSubview:imageView];
@@ -394,8 +440,27 @@
     return [super createNameCell:row];
 }
 
-- (UITableViewCell *)createRelatedCell:(SimiRow *)row{
-    return [super createRelatedCell:row];
+- (UITableViewCell*)createRelatedCell:(SimiRow*)row{
+    UITableViewCell *cell = [self.contentTableView dequeueReusableCellWithIdentifier:row.identifier];
+    if (cell == nil) {
+        cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:row.identifier];
+        [cell setBackgroundColor:[UIColor clearColor]];
+        itemWidth = 140;
+        UICollectionViewFlowLayout *flowLayout=[[UICollectionViewFlowLayout alloc] init];
+        [flowLayout setScrollDirection:UICollectionViewScrollDirectionHorizontal];
+        flowLayout.itemSize = CGSizeMake(itemWidth, itemHeight);
+        flowLayout.minimumInteritemSpacing = SCP_GLOBALVARS.interitemSpacing;
+        flowLayout.minimumLineSpacing = SCP_GLOBALVARS.lineSpacing;
+        relatedProductCollectionView =[[UICollectionView alloc] initWithFrame:CGRectMake(0, 0, tableWidth, itemHeight) collectionViewLayout:flowLayout];
+        [relatedProductCollectionView setContentInset:UIEdgeInsetsMake(0, paddingEdge, 0, paddingEdge)];
+        relatedProductCollectionView.dataSource = self;
+        relatedProductCollectionView.delegate = self;
+        [relatedProductCollectionView setBackgroundColor:[UIColor clearColor]];
+        relatedProductCollectionView.showsHorizontalScrollIndicator = NO;
+        [cell.contentView addSubview: relatedProductCollectionView];
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    }
+    return cell;
 }
 
 - (UITableViewCell *)createDescriptionCell:(SimiRow *)row{
@@ -404,35 +469,58 @@
         cell = [[SimiTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:row.identifier];
         cell.backgroundColor = [UIColor clearColor];
         float heightCell = 0;
-        UIView *descriptionView = [[UIView alloc] initWithFrame:CGRectMake(paddingEdge, heightCell, tableWidth - 2*paddingEdge, 0)];
-        [cell.contentView addSubview:descriptionView];
-        descriptionView.backgroundColor = [UIColor whiteColor];
-        UIImageView *nextImageView = [[UIImageView alloc] initWithFrame:CGRectMake(CGRectGetWidth(descriptionView.frame) - paddingEdge - 30, paddingEdge, 20, 20)];
+        cell.simiContentView = [[UIView alloc] initWithFrame:CGRectMake(paddingEdge, heightCell, tableWidth - 2*paddingEdge, 0)];
+        cell.simiContentView.backgroundColor = [UIColor whiteColor];
+        [cell.contentView addSubview:cell.simiContentView];
+        
+        UIImageView *nextImageView = [[UIImageView alloc] initWithFrame:CGRectMake(CGRectGetWidth(cell.simiContentView.frame) - paddingEdge - 18, 13, 18, 18)];
         nextImageView.image = [[UIImage imageNamed:@"scp_ic_next"] imageWithColor:SCP_ICON_COLOR];
-        [descriptionView addSubview:nextImageView];
-        SimiLabel *titleLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(paddingEdge, paddingEdge, CGRectGetWidth(descriptionView.frame) - paddingEdge*2 - 40, 30) andFontName:THEME_FONT_NAME_REGULAR andFontSize:FONT_SIZE_LARGE];
+        [cell.simiContentView addSubview:nextImageView];
+        
+        SimiLabel *titleLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(paddingEdge, 13, CGRectGetWidth(cell.simiContentView.frame) - paddingEdge*2 - 40, 18) andFontName:SCP_FONT_SEMIBOLD andFontSize:FONT_SIZE_LARGE];
         [titleLabel setText:[SCLocalizedString(@"Description") uppercaseString]];
-        [descriptionView addSubview:titleLabel];
+        [cell.simiContentView addSubview:titleLabel];
         heightCell += 40;
         
         if (self.product.shortDescription) {
             NSString *shortDescription = self.product.shortDescription;
             if (![shortDescription isEqualToString:@""]) {
-                SimiLabel *shortDescriptionLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(paddingEdge, heightCell, CGRectGetWidth(descriptionView.frame) - paddingEdge*2, 30) andFontSize:FONT_SIZE_MEDIUM];
+                SimiLabel *shortDescriptionLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(paddingEdge, heightCell, CGRectGetWidth(cell.simiContentView.frame) - paddingEdge*2, 30) andFontSize:FONT_SIZE_MEDIUM];
                 NSMutableAttributedString *attributeString = [[NSMutableAttributedString alloc]initWithData:[shortDescription dataUsingEncoding:NSUnicodeStringEncoding] options:@{ NSDocumentTypeDocumentAttribute: NSHTMLTextDocumentType } documentAttributes:nil error:nil];
-                [attributeString addAttributes:@{NSFontAttributeName:[UIFont fontWithName:THEME_FONT_NAME size:FONT_SIZE_MEDIUM]} range:NSMakeRange(0, attributeString.length)];
+                [attributeString addAttributes:@{NSFontAttributeName:[UIFont fontWithName:SCP_FONT_LIGHT size:FONT_SIZE_MEDIUM]} range:NSMakeRange(0, attributeString.length)];
                 shortDescriptionLabel.attributedText = attributeString;
-                [descriptionView addSubview:shortDescriptionLabel];
+                [cell.simiContentView addSubview:shortDescriptionLabel];
                 heightCell = [shortDescriptionLabel resizLabelToFit] + paddingEdge;
             }
         }
-        CGRect frame = descriptionView.frame;
+        CGRect frame = cell.simiContentView.frame;
         frame.size.height = heightCell;
-        descriptionView.frame = frame;
-        cell.heightCell = heightCell + paddingEdge;
-        [SimiGlobalFunction sortViewForRTL:descriptionView andWidth:CGRectGetWidth(descriptionView.frame)];
+        cell.simiContentView.frame = frame;
+        cell.heightCell = heightCell;
+        [SimiGlobalFunction sortViewForRTL:cell.simiContentView andWidth:CGRectGetWidth(cell.simiContentView.frame)];
     }
     row.height = cell.heightCell;
+    return cell;
+}
+
+- (UITableViewCell*)createTechSpecsCell:(SimiRow*)row{
+    SimiTableViewCell *cell = [self.contentTableView dequeueReusableCellWithIdentifier:row.identifier];
+    if (cell == nil) {
+        cell = [[SimiTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:row.identifier];
+        cell.backgroundColor = [UIColor clearColor];
+        float heightCell = 0;
+        cell.simiContentView = [[UIView alloc] initWithFrame:CGRectMake(paddingEdge, heightCell, tableWidth - 2*paddingEdge, row.height)];
+        cell.simiContentView.backgroundColor = [UIColor whiteColor];
+        [cell.contentView addSubview:cell.simiContentView];
+        
+        UIImageView *nextImageView = [[UIImageView alloc] initWithFrame:CGRectMake(CGRectGetWidth(cell.simiContentView.frame) - paddingEdge - 18, 13, 18, 18)];
+        nextImageView.image = [[UIImage imageNamed:@"scp_ic_next"] imageWithColor:SCP_ICON_COLOR];
+        [cell.simiContentView addSubview:nextImageView];
+        
+        SimiLabel *titleLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(paddingEdge, 13, CGRectGetWidth(cell.simiContentView.frame) - paddingEdge*2 - 40, 18) andFontName:SCP_FONT_SEMIBOLD andFontSize:FONT_SIZE_LARGE];
+        [titleLabel setText:[SCLocalizedString(@"Tech Specs") uppercaseString]];
+        [cell.simiContentView addSubview:titleLabel];
+    }
     return cell;
 }
 
@@ -450,6 +538,12 @@
     }else if ([simiSection.identifier isEqualToString:scpproduct_bundleoption_section]) {
         SCProductOptionSection *optionSection = (SCProductOptionSection*)simiSection;
         return [self generateDropdownHeaderViewWithBundleSection:optionSection];
+    }else if ([simiSection.identifier isEqualToString:scpproduct_description_section] || [simiSection.identifier isEqualToString:scpproduct_techspecs_section] || [simiSection.identifier isEqualToString:@"product_reviews_section"]){
+        SCPTableViewHeaderFooterView *headerView = [[SCPTableViewHeaderFooterView alloc]initWithReuseIdentifier:simiSection.identifier];
+        [headerView.contentView setBackgroundColor:[UIColor clearColor]];
+        return headerView;
+    }else if ([simiSection.identifier isEqualToString:product_related_section]){
+        return [self generateRelatedHeaderViewWithSection:simiSection];
     }
     return nil;
 }
@@ -486,6 +580,18 @@
 - (SCPTableViewHeaderFooterView*)generateDropdownHeaderViewWithBundleSection:(SCProductOptionSection*)optionSection{
     SCPTableViewHeaderFooterView *headerView = [self generateDropdownHeaderViewWithSection:optionSection];
     [headerView.simiContentView setBackgroundColor:COLOR_WITH_HEX(@"#fafafa")];
+    return headerView;
+}
+
+- (SCPTableViewHeaderFooterView*)generateRelatedHeaderViewWithSection:(SimiSection*)section{
+    float padding = SCP_GLOBALVARS.padding;
+    float height = section.header.height;
+    SCPTableViewHeaderFooterView *headerView = [[SCPTableViewHeaderFooterView alloc]initWithReuseIdentifier:section.identifier];
+    [headerView.contentView setBackgroundColor:[UIColor clearColor]];
+    
+    headerView.titleLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(padding, 0, CGRectGetWidth(self.contentTableView.frame) - padding*2, height) andFontName:SCP_FONT_SEMIBOLD andFontSize:FONT_SIZE_HEADER];
+    [headerView.titleLabel setText:[section.header.title uppercaseString]];
+    [headerView.contentView addSubview:headerView.titleLabel];
     return headerView;
 }
 #pragma mark -
