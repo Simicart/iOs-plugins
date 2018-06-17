@@ -21,7 +21,9 @@
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier width:(CGFloat)width type:(SCPAddressType)type{
     self.addressType = type;
     if(self == [super initWithStyle:style reuseIdentifier:reuseIdentifier]){
-        self.simiContentView = [[UIView alloc] initWithFrame:CGRectMake(15, 0, width - 30, 0)];
+        float simiContentPadding = SCALEVALUE(15);
+        float simiContentWidth = width - 2*SCALEVALUE(15);
+        self.simiContentView = [[UIView alloc] initWithFrame:CGRectMake(simiContentPadding, 0, simiContentWidth, 0)];
         self.contentView.backgroundColor = [UIColor clearColor];
         self.backgroundColor = [UIColor clearColor];
         self.simiContentView.backgroundColor = [UIColor whiteColor];
@@ -74,13 +76,14 @@
 - (void)setAddressModel:(SimiAddressModel *)addressModel{
     _addressModel = addressModel;
     self.heightCell = 0;
+    float paddingLabelX = 10;
     nameButtonImageView.frame = CGRectMake(contentPaddingX, self.heightCell, labelHeight, labelHeight);
-    nameLabel.frame = CGRectMake(contentPaddingX + labelHeight, self.heightCell, contentWidth - labelHeight, labelHeight);
+    nameLabel.frame = CGRectMake(contentPaddingX + labelHeight + paddingLabelX, self.heightCell, contentWidth - labelHeight - paddingLabelX, labelHeight);
     nameLabel.text = [NSString stringWithFormat:@"%@ %@",addressModel.firstName,addressModel.lastName];
     [nameLabel resizLabelToFit];
     self.heightCell += (nameLabel.labelHeight > labelHeight)?nameLabel.labelHeight:labelHeight;
     addressButtonImageView.frame = CGRectMake(contentPaddingX, self.heightCell, labelHeight, labelHeight);
-    addressLabel.frame = CGRectMake(contentPaddingX + labelHeight, self.heightCell, contentWidth - labelHeight, labelHeight);
+    addressLabel.frame = CGRectMake(contentPaddingX + labelHeight + paddingLabelX, self.heightCell, contentWidth - labelHeight - paddingLabelX, labelHeight);
     NSMutableArray *result = [NSMutableArray new];
     if(addressModel.street){
         [result addObject:addressModel.street];
@@ -109,12 +112,12 @@
     [addressLabel resizLabelToFit];
     self.heightCell += (addressLabel.labelHeight > labelHeight)?addressLabel.labelHeight:labelHeight;
     phoneButtonImageView.frame = CGRectMake(contentPaddingX, self.heightCell, labelHeight, labelHeight);
-    phoneLabel.frame = CGRectMake(contentPaddingX + labelHeight, self.heightCell, contentWidth - labelHeight, labelHeight);
+    phoneLabel.frame = CGRectMake(contentPaddingX + labelHeight + paddingLabelX, self.heightCell, contentWidth - labelHeight -paddingLabelX, labelHeight);
     phoneLabel.text = addressModel.telephone;
     [phoneLabel resizLabelToFit];
     self.heightCell += (phoneLabel.labelHeight > labelHeight)?phoneLabel.labelHeight:labelHeight;
     mailButtonImageView.frame = CGRectMake(contentPaddingX, self.heightCell, labelHeight, labelHeight);
-    mailLabel.frame = CGRectMake(contentPaddingX + labelHeight, self.heightCell, contentWidth - labelHeight, labelHeight);
+    mailLabel.frame = CGRectMake(contentPaddingX + labelHeight + paddingLabelX, self.heightCell, contentWidth - labelHeight - paddingLabelX, labelHeight);
     mailLabel.text = addressModel.email;
     [mailLabel resizLabelToFit];
     self.heightCell += (mailLabel.labelHeight > labelHeight)?mailLabel.labelHeight:labelHeight + SCALEVALUE(20);

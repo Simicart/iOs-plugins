@@ -7,9 +7,6 @@
 //
 
 #import "SCPOrderViewController.h"
-#import "SCPGlobalVars.h"
-#import "SCPCartCell.h"
-#import "SCPOrderFeeCell.h"
 
 @interface SCPOrderViewController ()
 
@@ -18,6 +15,9 @@
 @implementation SCPOrderViewController
 - (void)viewDidLoadBefore{
     [super viewDidLoadBefore];
+    shipmentExpandIndexPaths = [NSMutableArray new];
+    isExpandShipment = NO;
+    self.title = @"Order review";
 }
 - (void)viewDidAppearBefore:(BOOL)animated{
     [super viewDidAppearBefore:animated];
@@ -119,27 +119,32 @@
 - (SimiSection *)addShipmentDetailToCells:(SimiTable*)cells{
     SimiSection *shipmentDetailSection = [[SimiSection alloc]initWithIdentifier:ORDER_TOTALS_SECTION];
     shipmentDetailSection.header = [[SimiSectionHeader alloc]initWithTitle:SCLocalizedString(@"Shipment Details") height:80];
+    [cells addObject:shipmentDetailSection];
+    NSInteger sectionIndex = [cells indexOfObject:shipmentDetailSection];
     if(self.cart.collectionData.count > 0){
         for(int j=0; j < self.cart.collectionData.count; j++){
-            SimiRow *cartItemRow = [[SimiRow alloc] initWithIdentifier:ORDER_VIEW_CART];
-            [shipmentDetailSection addRow:cartItemRow];
+            if(isExpandShipment){
+                SimiRow *cartItemRow = [[SimiRow alloc] initWithIdentifier:ORDER_VIEW_CART];
+                [shipmentDetailSection addRow:cartItemRow];
+            }
+            if(!shipmentExpandIndexPaths.count)
+                [shipmentExpandIndexPaths addObject:[NSIndexPath indexPathForRow:j inSection:sectionIndex]];
         }
     }
     
     cartPrices = [GLOBALVAR convertCartPriceData:self.order.total];
     SimiRow *totalRow = [[SimiRow alloc] initWithIdentifier:ORDER_VIEW_TOTAL];
     [shipmentDetailSection addRow:totalRow];
-    [cells addObject:shipmentDetailSection];
     return shipmentDetailSection;
 }
 
 #pragma mark Table View Data Source
 - (UIView *)contentTableViewViewForHeaderInSection:(NSInteger)section{
     SimiSection *simiSection = [self.cells objectAtIndex:section];
-    float headerWidth = CGRectGetWidth(self.contentTableView.frame) - 30;
-    float titlePaddingX = 15;
+    float headerPadding = SCALEVALUE(15);
+    float headerWidth = CGRectGetWidth(self.contentTableView.frame) - 2*headerPadding;
+    float titlePaddingX = SCALEVALUE(15);
     float buttonWidth = 44;
-    float buttonInset = 15;
     
     UITableViewHeaderFooterView *headerView = [self.contentTableView dequeueReusableHeaderFooterViewWithIdentifier:simiSection.identifier];
     if(!headerView){
@@ -147,7 +152,7 @@
         
         headerView.backgroundColor = [UIColor clearColor];
         headerView.contentView.backgroundColor = [UIColor clearColor];
-        UIView *headerContentView = [[UIView alloc] initWithFrame:CGRectMake(15, 20, headerWidth, 64)];
+        UIView *headerContentView = [[UIView alloc] initWithFrame:CGRectMake(headerPadding, 20, headerWidth, 64)];
         headerContentView.backgroundColor = [UIColor whiteColor];
         [headerView.contentView addSubview:headerContentView];
         SimiLabel *headerTitleLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(titlePaddingX, 18, headerWidth - titlePaddingX - 2*titlePaddingX, 24) andFontName:SCP_FONT_SEMIBOLD andFontSize:FONT_SIZE_HEADER andTextColor:[UIColor blackColor]];
@@ -156,11 +161,19 @@
         if([simiSection.identifier isEqualToString:ORDER_SHIPPING_ADDRESS_SECTION] || [simiSection.identifier isEqualToString:ORDER_BILLING_ADDRESS_SECTION]) {
             headerTitleLabel.frame = CGRectMake(titlePaddingX, 18, headerWidth - titlePaddingX - buttonWidth, 24);
             UIButton *editButton = [[UIButton alloc] initWithFrame:CGRectMake(headerWidth - buttonWidth, 0, buttonWidth, buttonWidth)];
-            editButton.imageEdgeInsets = UIEdgeInsetsMake(buttonInset, buttonInset, buttonInset, buttonInset);
+            editButton.imageEdgeInsets = UIEdgeInsetsMake(15, 10, 10, 15);
             [editButton setImage:[[UIImage imageNamed:@"scp_ic_address_edit"] imageWithColor:SCP_ICON_COLOR] forState:UIControlStateNormal];
             editButton.simiObjectIdentifier = simiSection;
             [editButton addTarget:self action:@selector(editAddress:) forControlEvents:UIControlEventTouchUpInside];
             [headerContentView addSubview:editButton];
+        }else if([simiSection.identifier isEqualToString:ORDER_TOTALS_SECTION]){
+            headerTitleLabel.frame = CGRectMake(titlePaddingX, 18, headerWidth - titlePaddingX - buttonWidth, 24);
+            UIButton *expandShipmentButton = [[UIButton alloc] initWithFrame:CGRectMake(headerWidth - buttonWidth, 0, buttonWidth, buttonWidth)];
+            expandShipmentButton.imageEdgeInsets = UIEdgeInsetsMake(15, 10, 10, 15);
+            [expandShipmentButton setImage:[[UIImage imageNamed:@"ic_narrow_down"] imageWithColor:SCP_ICON_COLOR] forState:UIControlStateNormal];
+            expandShipmentButton.simiObjectIdentifier = simiSection;
+            [expandShipmentButton addTarget:self action:@selector(expandShipment:) forControlEvents:UIControlEventTouchUpInside];
+            [headerContentView addSubview:expandShipmentButton];
         }
         [SimiGlobalFunction sortViewForRTL:headerContentView andWidth:headerWidth];
     }
@@ -289,4 +302,23 @@
     }
     return cell;
 }
+- (void)expandShipment:(id)sender{
+    UIButton *button = (UIButton *)sender;
+    isExpandShipment = !isExpandShipment;
+    [self initCells];
+    if(isExpandShipment){
+        [button setImage:[UIImage imageNamed:@"ic_narrow_up"] forState:UIControlStateNormal];
+    }else{
+        [button setImage:[UIImage imageNamed:@"ic_narrow_down"] forState:UIControlStateNormal];
+    }
+    [self.contentTableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:[self.cells getSectionIndexByIdentifier:ORDER_TOTALS_SECTION]] atScrollPosition:UITableViewScrollPositionMiddle animated:YES];
+//    [self.contentTableView beginUpdates];
+//    if(isExpandShipment){
+//        [self.contentTableView insertRowsAtIndexPaths:shipmentExpandIndexPaths withRowAnimation:UITableViewRowAnimationFade];
+//    }else{
+//        [self.contentTableView deleteRowsAtIndexPaths:shipmentExpandIndexPaths withRowAnimation:UITableViewRowAnimationFade];
+//    }
+//    [self.contentTableView endUpdates];
+}
+
 @end

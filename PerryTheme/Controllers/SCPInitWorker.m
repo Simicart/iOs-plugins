@@ -15,7 +15,7 @@
 #import "SCPSearchViewController.h"
 #import "SCPLeftMenuViewController.h"
 #import "SCPProductViewController.h"
-#import "SCPOrderViewController.h"
+#import "SCPPadOrderViewController.h"
 
 @implementation SCPInitWorker{
     SCPLeftMenuViewController *leftMenuViewController;
@@ -38,20 +38,21 @@
     return self;
 }
 - (void)openOrderReview:(NSNotification *)noti{
-    if(PHONEDEVICE){
-        SCPOrderViewController *orderViewController = [SCPOrderViewController new];
-        orderViewController.billingAddress = [noti.userInfo objectForKey:KEYEVENT.ORDERVIEWCONTROLLER.billing_address];
-        orderViewController.shippingAddress = [noti.userInfo objectForKey:KEYEVENT.ORDERVIEWCONTROLLER.shipping_address];
-        orderViewController.cart = GLOBALVAR.cart;
-        orderViewController.checkOutType = [[noti.userInfo valueForKey:KEYEVENT.ORDERVIEWCONTROLLER.checkOut_type]integerValue];
-        if (orderViewController.checkOutType == CheckOutTypeNewCustomer) {
-            orderViewController.addressNewCustomerModel = [noti.userInfo objectForKey:KEYEVENT.ORDERVIEWCONTROLLER.billing_address];
-        }
-        UINavigationController *navi = [noti.userInfo objectForKey:KEYEVENT.APPCONTROLLER.navigation_controller];
-        [navi pushViewController:orderViewController animated:YES];
-        SCAppController *appController = noti.object;
-        appController.isDiscontinue = YES;
+    SCPOrderViewController *orderViewController = [SCPOrderViewController new];
+    if(PADDEVICE){
+        orderViewController = [SCPPadOrderViewController new];
     }
+    orderViewController.billingAddress = [noti.userInfo objectForKey:KEYEVENT.ORDERVIEWCONTROLLER.billing_address];
+    orderViewController.shippingAddress = [noti.userInfo objectForKey:KEYEVENT.ORDERVIEWCONTROLLER.shipping_address];
+    orderViewController.cart = GLOBALVAR.cart;
+    orderViewController.checkOutType = [[noti.userInfo valueForKey:KEYEVENT.ORDERVIEWCONTROLLER.checkOut_type]integerValue];
+    if (orderViewController.checkOutType == CheckOutTypeNewCustomer) {
+        orderViewController.addressNewCustomerModel = [noti.userInfo objectForKey:KEYEVENT.ORDERVIEWCONTROLLER.billing_address];
+    }
+    UINavigationController *navi = [noti.userInfo objectForKey:KEYEVENT.APPCONTROLLER.navigation_controller];
+    [navi pushViewController:orderViewController animated:YES];
+    SCAppController *appController = noti.object;
+    appController.isDiscontinue = YES;
 }
 - (void)initializedMenu:(NSNotification *)noti{
     SCMainViewController *mainVC = noti.object;

@@ -27,9 +27,8 @@
     self.moreContentTableView.autoresizingMask = UIViewAutoresizingFlexibleHeight;
     self.moreContentTableView.delegate = self;
     self.moreContentTableView.dataSource = self;
-    if (SIMI_SYSTEM_IOS >= 9) {
-        self.moreContentTableView.cellLayoutMarginsFollowReadableWidth = NO;
-    }
+    self.moreContentTableView.cellLayoutMarginsFollowReadableWidth = NO;
+    
     [self.moreContentTableView setContentOffset:CGPointMake(0, 0)];
     [self.moreContentTableView setBackgroundColor:[UIColor clearColor]];
     [self.moreContentTableView addSubview:refreshControl];

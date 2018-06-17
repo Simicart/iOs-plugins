@@ -10,7 +10,13 @@
 #import <SimiCartBundle/SCOrderViewController.h>
 #import "SCPOrderAddressTableViewCell.h"
 #import "SCPOrderMethodCell.h"
+#import "SCPGlobalVars.h"
+#import "SCPCartCell.h"
+#import "SCPOrderFeeCell.h"
 
-@interface SCPOrderViewController : SCOrderViewController
+@interface SCPOrderViewController : SCOrderViewController{
+    NSMutableArray *shipmentExpandIndexPaths;
+    BOOL isExpandShipment;
+}
 
 @end

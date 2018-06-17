@@ -415,7 +415,6 @@
             imagesScrollView.showsHorizontalScrollIndicator = NO;
             imagesScrollView.delegate = self;
             [imageView addSubview:imagesScrollView];
-            
             if (self.product.images) {
                 productImages = [[NSMutableArray alloc]initWithArray:self.product.images];
             }
@@ -448,6 +447,12 @@
             imagesPageControll.currentPageIndicatorTintColor = SCP_ICON_HIGHLIGHT_COLOR;
             imagesPageControll.tintColor = SCP_ICON_HIGHLIGHT_COLOR;
             [imageView addSubview:imagesPageControll];
+        }
+        
+        if ([[self.product.appPrices valueForKey:@"has_special_price"]intValue] == 1) {
+            UIImageView *saleImageView = [[UIImageView alloc] initWithFrame:CGRectMake(imageWidth - 54, 10, 44, 44)];
+            saleImageView.image = [UIImage imageNamed:@"scp_ic_sale"];
+            [imageView addSubview:saleImageView];
         }
     }
     return cell;
@@ -822,8 +827,6 @@
     if ([section.identifier isEqualToString:scpproduct_description_section]) {
         if ([row.identifier isEqualToString:product_description_row]){
             [self didSelectDescriptionRow];
-        }else if ([row.identifier isEqualToString:product_techspecs_row]){
-            [self didSelectTechSpecsRow];
         }
     }else if ([section.identifier isEqualToString:scpproduct_configurableoption_section]){
         if([row.identifier isEqualToString:scpproduct_option_single_select_row]){
@@ -833,6 +836,8 @@
         [self didSelectCustomOptionAtIndexPath:indexPath];
     }else if ([section.identifier isEqualToString:scpproduct_bundleoption_section]){
         [self didSelectBundleOptionAtIndexPath:indexPath];
+    }else if([row.identifier isEqualToString:product_techspecs_row]){
+        [self didSelectTechSpecsRow];
     }
     [self.contentTableView deselectRowAtIndexPath:indexPath animated:YES];
 }

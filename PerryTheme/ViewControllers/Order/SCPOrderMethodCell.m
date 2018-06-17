@@ -46,8 +46,15 @@
 
 - (void)setTitle:(NSString *)title andContent:(NSString *)content andIsSelected:(BOOL)isSelected width:(CGFloat)width;
 {
-    float lblMethodTitleWidth = width - 105;
-    float contentWidth = width - 75;
+    float simiContentPaddingX = SCALEVALUE(15);
+    float simiContentWidth = width - 2*simiContentPaddingX;
+    float optionImageX = SCALEVALUE(31);
+    float optionImageSize = 15;
+    float titlePaddingX = 10;
+    float titleX = optionImageX + optionImageSize + titlePaddingX;
+    float contentX = titleX;
+    float lblMethodTitleWidth = simiContentWidth - contentX;
+    float contentWidth = simiContentWidth - titleX;
     methodTitle = title;
     self.heightCell = 0;
     
@@ -59,10 +66,10 @@
         optionImageName = @"ic_unselected";
     }
     UIImage *optionImage = [UIImage imageNamed:optionImageName];
-    [self.optionImageView setFrame:CGRectMake(16, self.heightCell + 5, 15, 15)];
+    [self.optionImageView setFrame:CGRectMake(optionImageX, self.heightCell + 5, optionImageSize, 15)];
     self.optionImageView.image = optionImage;
     
-    [self.lblMethodTitle setFrame:CGRectMake(45, self.heightCell, lblMethodTitleWidth, 30)];
+    [self.lblMethodTitle setFrame:CGRectMake(titleX, self.heightCell, lblMethodTitleWidth, 30)];
     self.lblMethodTitle.text = title;
     [self.lblMethodTitle resizLabelToFit];
     self.heightCell += self.lblMethodTitle.labelHeight;
@@ -81,12 +88,12 @@
             self.lblMethodContent.text = content;
             [self.lblMethodContent setFont:[UIFont fontWithName:SCP_FONT_LIGHT size:FONT_SIZE_SMALL]];
         }
-        [self.lblMethodContent setFrame:CGRectMake(45, self.heightCell, contentWidth, 20)];
+        [self.lblMethodContent setFrame:CGRectMake(contentX, self.heightCell, contentWidth, 20)];
         [self.lblMethodContent resizLabelToFit];
         self.heightCell += self.lblMethodContent.labelHeight;
     }
     self.heightCell += 15;
-    self.simiContentView.frame = CGRectMake(15, 0, width - 30, self.heightCell);
+    self.simiContentView.frame = CGRectMake(simiContentPaddingX, 0, simiContentWidth, self.heightCell);
 }
 
 - (void)setPriceWithParams:(NSDictionary *)param{
@@ -96,6 +103,9 @@
     if (self.isCreditCard) {
         float titleWidth = [SimiGlobalFunction widthOfText:self.lblMethodTitle.text font:self.lblMethodTitle.font];
         [self.btnEditCard setFrame:CGRectMake(self.lblMethodTitle.frame.origin.x + titleWidth, 0, 100, 40)];
+        if(self.lblMethodTitle.frame.origin.x + titleWidth + 100 > CGRectGetWidth(self.simiContentView.frame)){
+            [self.btnEditCard setFrame:CGRectMake(CGRectGetWidth(self.simiContentView.frame) - 100, 0, 100, 40)];
+        }
         [self.simiContentView addSubview:self.btnEditCard];
     }
 }

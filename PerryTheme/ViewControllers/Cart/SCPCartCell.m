@@ -129,7 +129,10 @@
 }
 
 - (void)initializedProductName{
-    contentHeight += 2*contentPadding;
+    if(self.useOnOrderPage)
+        contentHeight += contentPadding;
+    else
+        contentHeight += 2*contentPadding;
     nameLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(labelX, contentHeight, labelWidth, 20) andFontName:SCP_FONT_SEMIBOLD andFontSize:FONT_SIZE_LARGE andTextColor:[UIColor blackColor] text:self.item.name];
     [self.simiContentView addSubview:nameLabel];
     contentHeight += CGRectGetHeight(nameLabel.frame) + contentPadding - 5;
