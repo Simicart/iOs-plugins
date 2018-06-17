@@ -26,6 +26,7 @@
 
 - (void)viewDidAppearBefore:(BOOL)animated{
     [super viewDidAppearBefore:animated];
+    [self.contentTableView setContentInset:UIEdgeInsetsMake(0, 0, CGRectGetHeight(self.tabBarController.tabBar.frame), 0)];
     self.contentTableView.backgroundColor = COLOR_WITH_HEX(@"#ededed");
     self.contentTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     if (@available(iOS 11.0, *)) {
@@ -84,9 +85,11 @@
 #pragma mark Generate Cells
 - (void)createCells{
     headerManages = [NSMutableDictionary new];
-    SimiSection *mainSection = [[SimiSection alloc]initWithIdentifier:product_main_section];
-    [mainSection addRowWithIdentifier:product_images_row height:(tableWidth - paddingEdge)];
-    [self.cells addObject:mainSection];
+    if (PHONEDEVICE) {
+        SimiSection *mainSection = [[SimiSection alloc]initWithIdentifier:product_main_section];
+        [mainSection addRowWithIdentifier:product_images_row height:(tableWidth - paddingEdge)];
+        [self.cells addObject:mainSection];
+    }
     SimiSection *namePriceSection = [[SimiSection alloc]initWithIdentifier:scpproduct_nameprice_section];
     namePriceSection.footer = [[SimiSectionFooter alloc]initWithTitle:@"" height:1];
     [namePriceSection addRowWithIdentifier:scpproduct_name_row height:47];
@@ -542,6 +545,7 @@
         
         minusQuantityButton = [[UIButton alloc]initWithFrame:CGRectMake(0, 10, 44, 44)];
         [minusQuantityButton setImage:[UIImage imageNamed:@"scp_ic_minus"] forState:UIControlStateNormal];
+        [minusQuantityButton addTarget:self action:@selector(decreaseQuantity:) forControlEvents:UIControlEventTouchUpInside];
         [minusQuantityButton setImageEdgeInsets:UIEdgeInsetsMake(13.5, 18, 13.5, 9)];
         [cell.simiContentView addSubview:minusQuantityButton];
         
@@ -555,10 +559,12 @@
         
         plusQuantityButton = [[UIButton alloc]initWithFrame:CGRectMake(96, 10, 44, 44)];
         [plusQuantityButton setImage:[UIImage imageNamed:@"scp_ic_plus"] forState:UIControlStateNormal];
+        [plusQuantityButton addTarget:self action:@selector(increaseQuantity:) forControlEvents:UIControlEventTouchUpInside];
         [plusQuantityButton setImageEdgeInsets:UIEdgeInsetsMake(13.5, 9, 13.5, 18)];
         [cell.simiContentView addSubview:plusQuantityButton];
         
         self.buttonAddToCart = [[SimiButton alloc]initWithFrame:CGRectMake(140, 12, CGRectGetWidth(cell.simiContentView.frame) - 158, 40) title:SCLocalizedString(@"Add to Cart") titleFont:[UIFont fontWithName:SCP_FONT_SEMIBOLD size:FONT_SIZE_HEADER] cornerRadius:20];
+        [self.buttonAddToCart addTarget:self action:@selector(addToCart) forControlEvents:UIControlEventTouchUpInside];
         [self.buttonAddToCart setBackgroundColor:SCP_BUTTON_BACKGROUND_COLOR];
         [self.buttonAddToCart setTitleColor:SCP_BUTTON_TEXT_COLOR forState:UIControlStateNormal];
         [cell.simiContentView addSubview:self.buttonAddToCart];
@@ -683,29 +689,33 @@
 - (SCPTableViewHeaderFooterView*)generateDropdownHeaderViewWithSection:(SCProductOptionSection*)optionSection{
     float padding = SCP_GLOBALVARS.padding;
     float height = optionSection.header.height;
-    SCPTableViewHeaderFooterView *headerView = [[SCPTableViewHeaderFooterView alloc]initWithReuseIdentifier:optionSection.optionModel.entityId];
-    [headerView.contentView setBackgroundColor:[UIColor clearColor]];
-    headerView.simiContentView = [[UIView alloc]initWithFrame:CGRectMake(padding, 0, CGRectGetWidth(self.contentTableView.frame) - padding*2, height)];
-    [headerView.simiContentView setBackgroundColor:[UIColor whiteColor]];
-    [headerView.contentView addSubview:headerView.simiContentView];
-    float titleWidth = [[optionSection.optionModel.title uppercaseString] sizeWithAttributes:@{NSFontAttributeName:[UIFont fontWithName:SCP_FONT_SEMIBOLD size:FONT_SIZE_LARGE]}].width;
-    headerView.titleLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(padding, 0, titleWidth, height) andFontName:SCP_FONT_SEMIBOLD andFontSize:FONT_SIZE_LARGE];
-    [headerView.titleLabel setText:[optionSection.optionModel.title uppercaseString]];
-    [headerView.simiContentView addSubview:headerView.titleLabel];
-    
-    headerView.iconImageView = [[UIImageView alloc]initWithFrame:CGRectMake(CGRectGetWidth(headerView.simiContentView.frame) - padding - 9, 17.5, 9, 9)];
-    if (optionSection.isShow) {
-        [headerView.iconImageView setImage:[UIImage imageNamed:@"scp_ic_option_up"]];
-    }else{
-        [headerView.iconImageView setImage:[UIImage imageNamed:@"scp_ic_option_down"]];
+    SCPTableViewHeaderFooterView *headerView = [self.contentTableView dequeueReusableHeaderFooterViewWithIdentifier:optionSection.optionModel.entityId];
+    if (headerView == nil) {
+        headerView = [[SCPTableViewHeaderFooterView alloc]initWithReuseIdentifier:optionSection.optionModel.entityId];
+        [headerView.contentView setBackgroundColor:[UIColor clearColor]];
+        headerView.simiContentView = [[UIView alloc]initWithFrame:CGRectMake(padding, 0, CGRectGetWidth(self.contentTableView.frame) - padding*2, height)];
+        [headerView.simiContentView setBackgroundColor:[UIColor whiteColor]];
+        [headerView.contentView addSubview:headerView.simiContentView];
+        float titleWidth = [[optionSection.optionModel.title uppercaseString] sizeWithAttributes:@{NSFontAttributeName:[UIFont fontWithName:SCP_FONT_SEMIBOLD size:FONT_SIZE_LARGE]}].width;
+        headerView.titleLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(padding, 0, titleWidth, height) andFontName:SCP_FONT_SEMIBOLD andFontSize:FONT_SIZE_LARGE];
+        [headerView.titleLabel setText:[optionSection.optionModel.title uppercaseString]];
+        [headerView.simiContentView addSubview:headerView.titleLabel];
+        
+        headerView.iconImageView = [[UIImageView alloc]initWithFrame:CGRectMake(CGRectGetWidth(headerView.simiContentView.frame) - padding - 9, 17.5, 9, 9)];
+        if (optionSection.isShow) {
+            [headerView.iconImageView setImage:[UIImage imageNamed:@"scp_ic_option_up"]];
+        }else{
+            [headerView.iconImageView setImage:[UIImage imageNamed:@"scp_ic_option_down"]];
+        }
+        [headerView.simiContentView addSubview:headerView.iconImageView];
+        
+        UIButton *headerButton = [[UIButton alloc]initWithFrame:headerView.simiContentView.bounds];
+        [headerButton addTarget:self action:@selector(updateOptionSectionState:) forControlEvents:UIControlEventTouchUpInside];
+        headerButton.simiObjectIdentifier = headerView.iconImageView;
+        headerView.iconImageView.simiObjectIdentifier = optionSection;
+        [headerButton setBackgroundColor:[UIColor clearColor]];
+        [headerView.simiContentView addSubview:headerButton];
     }
-    [headerView.simiContentView addSubview:headerView.iconImageView];
-    
-    UIButton *headerButton = [[UIButton alloc]initWithFrame:headerView.simiContentView.bounds];
-    [headerButton addTarget:self action:@selector(updateOptionSectionState:) forControlEvents:UIControlEventTouchUpInside];
-    headerButton.simiObjectIdentifier = optionSection;
-    [headerButton setBackgroundColor:[UIColor clearColor]];
-    [headerView.simiContentView addSubview:headerButton];
     return headerView;
 }
 
@@ -729,7 +739,8 @@
 #pragma mark -
 #pragma mark Option Action
 - (void)updateOptionSectionState:(UIButton*)sender{
-    SCProductOptionSection *optionSection = (SCProductOptionSection *)sender.simiObjectIdentifier;
+    UIImageView *iconImageView = (UIImageView*)sender.simiObjectIdentifier;
+    SCProductOptionSection *optionSection = (SCProductOptionSection *)iconImageView.simiObjectIdentifier;
     NSInteger sectionIndex = [self.cells indexOfObject:optionSection];
     NSMutableArray *indexPaths = [NSMutableArray new];
     for (int i = 0; i < optionSection.count; i++) {
@@ -745,6 +756,11 @@
         [self.contentTableView beginUpdates];
         [self.contentTableView deleteRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationFade];
         [self.contentTableView endUpdates];
+    }
+    if (optionSection.isShow) {
+        [iconImageView setImage:[UIImage imageNamed:@"scp_ic_option_up"]];
+    }else{
+        [iconImageView setImage:[UIImage imageNamed:@"scp_ic_option_down"]];
     }
 }
 
@@ -795,10 +811,59 @@
     }
 }
 
+#pragma mark -
+#pragma mark Product Detail Action
 - (void)handleSelectedOption{
     [optionController handleSelectedOption];
     [self.contentTableView reloadData];
     [self.priceView showPriceWithProduct:self.product optionController:optionController widthView:CGRectGetWidth(self.priceView.frame) showTierPrice:YES];
+}
+
+- (void)increaseQuantity:(UIButton*)sender{
+    float qtyIncrement = 1;
+    if (self.product.qtyIncrement > 0) {
+        qtyIncrement = self.product.qtyIncrement;
+    }
+    qty += qtyIncrement;
+    [quantityButton setTitle:[NSString stringWithFormat:@"%d",qty] forState:UIControlStateNormal];
+}
+
+- (void)decreaseQuantity:(UIButton*)sender{
+    float qtyIncrement = 1;
+    if (self.product.qtyIncrement > 0) {
+        qtyIncrement = self.product.qtyIncrement;
+    }
+    if (qty > self.product.minQty) {
+        qty -= qtyIncrement;
+    }
+    [quantityButton setTitle:[NSString stringWithFormat:@"%d",qty] forState:UIControlStateNormal];
+}
+
+- (void)addToCart{
+    if ([optionController enableAddProductToCart]) {
+        //Create animation
+        UIImageView *thumnailView = [[UIImageView alloc]initWithFrame:CGRectMake(10, 100, 300, 400)];
+        thumnailView.image = currentImageProduct.image;
+        [thumnailView setContentMode:UIViewContentModeScaleAspectFit];
+        [self.view addSubview:thumnailView];
+        [UIView animateWithDuration:0.6
+                              delay:0
+                            options:UIViewAnimationOptionAllowAnimatedContent
+                         animations:^{
+                             thumnailView.frame = CGRectMake(260, 0, 60, 90);
+                             thumnailView.transform = CGAffineTransformMakeRotation(140);
+                         }
+                         completion:^(BOOL finished){
+                             [thumnailView removeFromSuperview];
+                         }];
+        [self startLoadingData];
+        NSDictionary* cartItem = [self cartItem];
+        [[NSNotificationCenter defaultCenter] postNotificationName:Simi_AddToCart object:nil userInfo:@{@"data":cartItem}];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didAddToCart:) name:Simi_DidAddToCart object:nil];
+        return;
+    }else{
+        [self showAlertWithTitle:@"" message:@"Please select all require options"];
+    }
 }
 #pragma mark -
 #pragma mark Option Collection Delegate
@@ -822,8 +887,6 @@
     if ([section.identifier isEqualToString:scpproduct_description_section]) {
         if ([row.identifier isEqualToString:product_description_row]){
             [self didSelectDescriptionRow];
-        }else if ([row.identifier isEqualToString:product_techspecs_row]){
-            [self didSelectTechSpecsRow];
         }
     }else if ([section.identifier isEqualToString:scpproduct_configurableoption_section]){
         if([row.identifier isEqualToString:scpproduct_option_single_select_row]){
@@ -833,6 +896,10 @@
         [self didSelectCustomOptionAtIndexPath:indexPath];
     }else if ([section.identifier isEqualToString:scpproduct_bundleoption_section]){
         [self didSelectBundleOptionAtIndexPath:indexPath];
+    }else if ([section.identifier isEqualToString:scpproduct_techspecs_section]){
+        if ([row.identifier isEqualToString:product_techspecs_row]){
+            [self didSelectTechSpecsRow];
+        }
     }
     [self.contentTableView deselectRowAtIndexPath:indexPath animated:YES];
 }
@@ -851,7 +918,7 @@
         simiRow.optionValueModel.isSelected = YES;
         [optionController activeDependenceWithConfigurableValueModel:(SimiConfigurableOptionValueModel*)simiRow.optionValueModel configurableOptioModel:optionModel];
     }
-    [optionController handleSelectedOption];
+    [self handleSelectedOption];
 }
 
 - (void)didSelectCustomOptionAtIndexPath:(NSIndexPath *)indexPath{
@@ -901,6 +968,57 @@
         }else
             simiRow.optionValueModel.isSelected = NO;
         [self handleSelectedOption];
+    }
+}
+
+#pragma mark More Action
+- (void)initMoreViewAction
+{
+    float sizeButton = 50;
+    float sizePlus = 18;
+    float tabbarHeight = CGRectGetHeight(self.tabBarController.tabBar.frame);
+    float moreButtonOrgionX = CGRectGetWidth(self.view.frame) - sizeButton - paddingEdge/2;
+    float moreButtonOrgionY = CGRectGetHeight(self.view.frame) - sizeButton - tabbarHeight - paddingEdge;
+    float paddingIcon = 20;
+    
+    self.buttonMoreAction = [[UIButton alloc]initWithFrame:CGRectMake(moreButtonOrgionX, moreButtonOrgionY, sizeButton, sizeButton)];
+    [self.buttonMoreAction addTarget:self action:@selector(didTouchMoreAction) forControlEvents:UIControlEventTouchUpInside];
+    [self.buttonMoreAction setBackgroundColor:THEME_BUTTON_BACKGROUND_COLOR];
+    [self.buttonMoreAction.layer setCornerRadius:sizeButton/2.0f];
+    [self.buttonMoreAction.layer setShadowOffset:CGSizeMake(1, 1)];
+    [self.buttonMoreAction.layer setShadowRadius:2];
+    self.buttonMoreAction.layer.shadowOpacity = 0.5;
+    [self.buttonMoreAction setImage:[[UIImage imageNamed:@"ic_cong"]imageWithColor:THEME_BUTTON_TEXT_COLOR] forState:UIControlStateNormal];
+    [self.buttonMoreAction setImageEdgeInsets:UIEdgeInsetsMake((sizeButton - sizePlus)/2, (sizeButton - sizePlus)/2, (sizeButton - sizePlus)/2, (sizeButton - sizePlus)/2)];
+    
+    CGRect frame = self.buttonMoreAction.frame;
+    frame.size.height = 0;
+    frame.size.width += paddingEdge *2;
+    frame.origin.x -=  paddingEdge;
+    
+    self.viewMoreAction = [[MoreActionView alloc]initWithFrame:frame];
+    [self.viewMoreAction setBackgroundColor:[UIColor clearColor]];
+    self.viewMoreAction.arrayIcon = [NSMutableArray new];
+    self.viewMoreAction.clipsToBounds = YES;
+    
+    [[NSNotificationCenter defaultCenter]postNotificationName:SCProductViewControllerInitViewMoreAction object:self.viewMoreAction];
+    NSArray *sortedArrayIcon = [self.viewMoreAction.arrayIcon sortedArrayUsingComparator:^NSComparisonResult(UIView *view1, UIView *view2) {
+        NSInteger view1Tag = view1.tag;
+        NSInteger view2Tag = view2.tag;
+        if(view1Tag < view2Tag) {
+            return NSOrderedAscending;
+        }else if(view1Tag > view2Tag) {
+            return NSOrderedDescending;
+        }else {
+            return NSOrderedSame;
+        }
+    }];
+    self.viewMoreAction.arrayIcon = [[NSMutableArray alloc] initWithArray:sortedArrayIcon];
+    self.viewMoreAction.heightMoreView = (paddingIcon + sizeButton) * (self.viewMoreAction.arrayIcon.count) + paddingIcon;
+    if (self.viewMoreAction.arrayIcon.count > 0) {
+        [self setInterFaceViewMore];
+        [self.view addSubview:self.viewMoreAction];
+        [self.view addSubview:self.buttonMoreAction];
     }
 }
 @end

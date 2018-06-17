@@ -8,6 +8,7 @@
 
 #import "SCPPadProductsViewController.h"
 #import "SCPPadProductCollectionView.h"
+#import "SCPPadProductViewController.h"
 
 @interface SCPPadProductsViewController ()
 
@@ -104,5 +105,12 @@
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         [self presentViewController:navigationController animated:YES completion:nil];
     });
+}
+
+- (void)selectedProduct:(SimiProductModel *)productModel{
+    SCPPadProductViewController *productVC = [SCPPadProductViewController new];
+    productVC.product = productModel;
+    productVC.productId = productModel.entityId;
+    [self.navigationController pushViewController:productVC animated:nil];
 }
 @end
