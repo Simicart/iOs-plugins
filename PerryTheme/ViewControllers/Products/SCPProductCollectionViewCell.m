@@ -106,7 +106,11 @@
         if (self.onListMode) {
             priceFontSize = FONT_SIZE_HEADER;
         }
-        [(SCPPriceView*)self.priceView showPriceWithProduct:self.productModel widthView:CGRectGetWidth(self.priceView.frame) fontSize:priceFontSize];
+        if (self.productModel.productType == ProductTypeBundle || self.productModel.productType == ProductTypeGrouped) {
+            [self.priceView showPriceWithProduct:self.productModel widthView:CGRectGetWidth(self.priceView.frame)];
+        }else{
+            [(SCPPriceView*)self.priceView showPriceWithProduct:self.productModel widthView:CGRectGetWidth(self.priceView.frame) fontSize:priceFontSize];
+        }
         
         [[NSNotificationCenter defaultCenter] postNotificationName:@"DidDrawProductImageView" object:self.imageProduct userInfo:@{@"imageView": self.imageProduct, @"product": self.productModel}];
         if (SCP_GLOBALVARS.wishlistPluginAllow) {

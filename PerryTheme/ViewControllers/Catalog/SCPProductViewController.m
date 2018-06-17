@@ -10,6 +10,7 @@
 #import "SCPGlobalVars.h"
 #import "SCPProductImagesViewController.h"
 #import "SCPOptionController.h"
+#import "SCPPriceView.h"
 
 @interface SCPProductViewController ()
 
@@ -40,9 +41,6 @@
     SimiResponder *responder = [noti.userInfo valueForKey:responderKey];
     if ([noti.name isEqualToString:Simi_DidGetProductModel]) {
         if (responder.status == SUCCESS) {
-            if (self.product.isSalable) {
-                [self initViewAction];
-            }
             [self initMoreViewAction];
             if (GLOBALVAR.isMagento2) {
                 optionController = [[SCMagentoTwoOptionController alloc]initWithProduct:self.product];
@@ -89,6 +87,11 @@
     SimiSection *mainSection = [[SimiSection alloc]initWithIdentifier:product_main_section];
     [mainSection addRowWithIdentifier:product_images_row height:(tableWidth - paddingEdge)];
     [self.cells addObject:mainSection];
+    SimiSection *namePriceSection = [[SimiSection alloc]initWithIdentifier:scpproduct_nameprice_section];
+    namePriceSection.footer = [[SimiSectionFooter alloc]initWithTitle:@"" height:1];
+    [namePriceSection addRowWithIdentifier:scpproduct_name_row height:47];
+    [namePriceSection addRowWithIdentifier:scpproduct_price_row height:44];
+    [self.cells addObject:namePriceSection];
     if (self.product.productType == ProductTypeConfigurable) {
         [self addConfigOptionsToCells];
         [self addCustomOptionsToCells];
@@ -97,6 +100,10 @@
     }else if (self.product.productType == ProductTypeBundle){
         [self addBundleOptionsToCells];
     }
+    SimiSection *addToCartSection = [[SimiSection alloc]initWithIdentifier:scpproduct_addtocart_section];
+    [addToCartSection addRowWithIdentifier:scpproduct_addtocart_row height:64];
+    [self.cells addObject:addToCartSection];
+    
     SimiSection *descriptionSection = [[SimiSection alloc]initWithIdentifier:scpproduct_description_section];
     descriptionSection.header = [[SimiSectionHeader alloc]initWithTitle:@"" height:paddingEdge];
     [descriptionSection addRowWithIdentifier:product_description_row height:200];
@@ -293,6 +300,16 @@
         if ([row.identifier isEqualToString:product_techspecs_row]) {
             cell = [self createTechSpecsCell:row];
         }
+    }else if ([section.identifier isEqualToString:scpproduct_nameprice_section]){
+        if ([row.identifier isEqualToString:scpproduct_name_row]) {
+            cell = [self createNameCell:row];
+        }else if ([row.identifier isEqualToString:scpproduct_price_row]){
+            cell = [self createPriceCell:row];
+        }
+    }else if ([section.identifier isEqualToString:scpproduct_addtocart_section]){
+        if ([row.identifier isEqualToString:scpproduct_addtocart_row]) {
+            cell = [self createAddToCartCell:row];
+        }
     }
     return cell;
 }
@@ -436,8 +453,123 @@
     return cell;
 }
 
-- (UITableViewCell *)createNameCell:(SimiRow *)row{
-    return [super createNameCell:row];
+- (SimiTableViewCell *)createNameCell:(SimiRow *)row{
+    SimiTableViewCell *cell = [self.contentTableView dequeueReusableCellWithIdentifier:row.identifier];
+    if (cell == nil) {
+        cell = [[SimiTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:row.identifier];
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        [cell setBackgroundColor:[UIColor clearColor]];
+        
+        cell.simiContentView = [[UIView alloc] initWithFrame:CGRectMake(paddingEdge, 0, tableWidth - 2*paddingEdge, row.height)];
+        cell.simiContentView.backgroundColor = [UIColor whiteColor];
+        [cell.contentView addSubview:cell.simiContentView];
+    
+        float heightCell = 17;
+        self.labelProductName = [[SimiLabel alloc]initWithFrame:CGRectMake(paddingEdge, heightCell, CGRectGetWidth(cell.simiContentView.frame) - paddingEdge*2, 20) andFontName:SCP_FONT_REGULAR andFontSize:FONT_SIZE_HEADER+2];
+        [self.labelProductName setTextAlignment:NSTextAlignmentCenter];
+        [self.labelProductName setText:self.product.name];
+        [cell.simiContentView addSubview:self.labelProductName];
+        BOOL hasVideo = NO;
+        NSArray *youtubeArray = [self.product valueForKey:@"product_video"];
+        if(youtubeArray.count > 0){
+            hasVideo = YES;
+        }
+        if (hasVideo) {
+            UIImageView *videoIconImageView = [[UIImageView alloc]initWithFrame:CGRectMake(0, 22, 20, 20)];
+            [videoIconImageView setImage:[UIImage imageNamed:@"scp_ic_video_small"]];
+            [cell.simiContentView addSubview:videoIconImageView];
+            float nameWidth = [self.product.name sizeWithAttributes:@{NSFontAttributeName:self.labelProductName.font}].width;
+            CGRect frame = videoIconImageView.frame;
+            if (nameWidth < (CGRectGetWidth(cell.simiContentView.frame) - paddingEdge*2 - 20)) {
+                frame.origin.x = CGRectGetWidth(cell.simiContentView.frame)/2 + nameWidth/2;
+            }else{
+                frame.origin.x = CGRectGetWidth(cell.simiContentView.frame) - paddingEdge - 20;
+            }
+            [videoIconImageView setFrame:frame];
+            
+            frame = self.labelProductName.frame;
+            frame.size.width -= 20;
+            [self.labelProductName setFrame:frame];
+        }
+        [self.labelProductName resizLabelToFit];
+        CGRect frame = self.labelProductName.frame;
+        if (CGRectGetHeight(frame) < 20) {
+            frame.size.height = 20;
+            [self.labelProductName setFrame:frame];
+        }
+        heightCell += CGRectGetHeight(frame) + 15;
+        frame = cell.simiContentView.frame;
+        frame.size.height = heightCell;
+        [cell.simiContentView setFrame:frame];
+        row.height = heightCell;
+    }
+    return cell;
+}
+
+- (SimiTableViewCell *)createPriceCell:(SimiRow *)row{
+    SimiTableViewCell *cell = [self.contentTableView dequeueReusableCellWithIdentifier:row.identifier];
+    if (cell == nil) {
+        cell = [[SimiTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:row.identifier];
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        [cell setBackgroundColor:[UIColor clearColor]];
+        
+        cell.simiContentView = [[UIView alloc] initWithFrame:CGRectMake(paddingEdge, 0, tableWidth - 2*paddingEdge, row.height)];
+        cell.simiContentView.backgroundColor = [UIColor whiteColor];
+        [cell.contentView addSubview:cell.simiContentView];
+        
+        self.priceView = [[SCPPriceView alloc]initWithFrame:CGRectMake(paddingEdge, 0, CGRectGetWidth(cell.simiContentView.frame) - paddingEdge*2,20)];
+        [self.priceView showPriceWithProduct:self.product optionController:optionController widthView:CGRectGetWidth(self.priceView.frame) showTierPrice:YES];
+        [cell.simiContentView addSubview:self.priceView];
+        cell.heightCell = CGRectGetHeight(self.priceView.frame)+paddingEdge;
+        CGRect frame = cell.simiContentView.frame;
+        frame.size.height = cell.heightCell;
+        [cell.simiContentView setFrame:frame];
+        row.height = cell.heightCell;
+    }
+    return cell;
+}
+
+- (SimiTableViewCell*)createAddToCartCell:(SimiRow*)row{
+    SimiTableViewCell *cell = [self.contentTableView dequeueReusableCellWithIdentifier:row.identifier];
+    if (cell == nil) {
+        cell = [[SimiTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:row.identifier];
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        [cell setBackgroundColor:[UIColor clearColor]];
+        
+        cell.simiContentView = [[UIView alloc] initWithFrame:CGRectMake(paddingEdge, 1, tableWidth - 2*paddingEdge, row.height - 1)];
+        cell.simiContentView.backgroundColor = [UIColor whiteColor];
+        [cell.contentView addSubview:cell.simiContentView];
+        
+        minusQuantityButton = [[UIButton alloc]initWithFrame:CGRectMake(0, 10, 44, 44)];
+        [minusQuantityButton setImage:[UIImage imageNamed:@"scp_ic_minus"] forState:UIControlStateNormal];
+        [minusQuantityButton setImageEdgeInsets:UIEdgeInsetsMake(13.5, 18, 13.5, 9)];
+        [cell.simiContentView addSubview:minusQuantityButton];
+        
+        quantityButton = [[UIButton alloc]initWithFrame:CGRectMake(44, 15, 52, 34)];
+        [quantityButton setTitleColor:COLOR_WITH_HEX(@"#272727") forState:UIControlStateNormal];
+        [quantityButton.titleLabel setFont:[UIFont fontWithName:SCP_FONT_SEMIBOLD size:FONT_SIZE_HEADER]];
+        quantityButton.layer.borderColor = SCP_BUTTON_BACKGROUND_COLOR.CGColor;
+        quantityButton.layer.borderWidth = 1;
+        quantityButton.layer.cornerRadius = 17;
+        [cell.simiContentView addSubview:quantityButton];
+        
+        plusQuantityButton = [[UIButton alloc]initWithFrame:CGRectMake(96, 10, 44, 44)];
+        [plusQuantityButton setImage:[UIImage imageNamed:@"scp_ic_plus"] forState:UIControlStateNormal];
+        [plusQuantityButton setImageEdgeInsets:UIEdgeInsetsMake(13.5, 9, 13.5, 18)];
+        [cell.simiContentView addSubview:plusQuantityButton];
+        
+        self.buttonAddToCart = [[SimiButton alloc]initWithFrame:CGRectMake(140, 12, CGRectGetWidth(cell.simiContentView.frame) - 158, 40) title:SCLocalizedString(@"Add to Cart") titleFont:[UIFont fontWithName:SCP_FONT_SEMIBOLD size:FONT_SIZE_HEADER] cornerRadius:20];
+        [self.buttonAddToCart setBackgroundColor:SCP_BUTTON_BACKGROUND_COLOR];
+        [self.buttonAddToCart setTitleColor:SCP_BUTTON_TEXT_COLOR forState:UIControlStateNormal];
+        [cell.simiContentView addSubview:self.buttonAddToCart];
+        
+        if(self.product.maxQty > 10000)
+            self.product.maxQty = 10000;
+        qty = (int)self.product.minQty;
+        [quantityButton setTitle:[NSString stringWithFormat:@"%d",qty] forState:UIControlStateNormal];
+        [quantityButton addTarget:self action:@selector(editQty:) forControlEvents:UIControlEventTouchUpInside];
+    }
+    return cell;
 }
 
 - (UITableViewCell*)createRelatedCell:(SimiRow*)row{
@@ -635,7 +767,6 @@
             valueModel.isSelected = YES;
         }
         [self handleSelectedOption];
-        [self.contentTableView reloadData];
     }
 }
 
@@ -661,12 +792,13 @@
         [customOptionModel setValue:[dateFormater stringFromDate:datePicker.date] forKey:@"option_value"];
         [customOptionModel setValue:datePicker.date forKey:@"date_value"];
         [self handleSelectedOption];
-        [self.contentTableView reloadData];
     }
 }
 
 - (void)handleSelectedOption{
     [optionController handleSelectedOption];
+    [self.contentTableView reloadData];
+    [self.priceView showPriceWithProduct:self.product optionController:optionController widthView:CGRectGetWidth(self.priceView.frame) showTierPrice:YES];
 }
 #pragma mark -
 #pragma mark Option Collection Delegate
@@ -720,7 +852,6 @@
         [optionController activeDependenceWithConfigurableValueModel:(SimiConfigurableOptionValueModel*)simiRow.optionValueModel configurableOptioModel:optionModel];
     }
     [optionController handleSelectedOption];
-    [self.contentTableView reloadData];
 }
 
 - (void)didSelectCustomOptionAtIndexPath:(NSIndexPath *)indexPath{
@@ -739,14 +870,12 @@
         }else
             simiRow.optionValueModel.isSelected = NO;
         [self handleSelectedOption];
-        [self.contentTableView reloadData];
     }else if([simiRow.identifier isEqualToString:scpproduct_option_multi_select_row]){
         if (!simiRow.optionValueModel.isSelected) {
             simiRow.optionValueModel.isSelected = YES;
         }else
             simiRow.optionValueModel.isSelected = NO;
         [self handleSelectedOption];
-        [self.contentTableView reloadData];
     }
 }
 
@@ -766,14 +895,12 @@
         }else
             simiRow.optionValueModel.isSelected = NO;
         [self handleSelectedOption];
-        [self.contentTableView reloadData];
     }else if([simiRow.identifier isEqualToString:scpproduct_option_multi_select_row]){
         if (!simiRow.optionValueModel.isSelected) {
             simiRow.optionValueModel.isSelected = YES;
         }else
             simiRow.optionValueModel.isSelected = NO;
         [self handleSelectedOption];
-        [self.contentTableView reloadData];
     }
 }
 @end
