@@ -14,8 +14,9 @@
 #import "SCPCategoryViewController.h"
 #import "SCPSearchViewController.h"
 #import "SCPLeftMenuViewController.h"
-#import "SCPProductViewController.h"
 #import "SCPPadOrderViewController.h"
+#import "SCPPadProductViewController.h"
+>>>>>>> a0d40b37ec71f2bdda9022d2a49b041d139c1bbb
 
 @implementation SCPInitWorker{
     SCPLeftMenuViewController *leftMenuViewController;
@@ -210,6 +211,9 @@
     UINavigationController *navi = [noti.userInfo objectForKey:KEYEVENT.APPCONTROLLER.navigation_controller];
     NSString *productId = [noti.userInfo objectForKey:KEYEVENT.PRODUCTVIEWCONTROLLER.product_id];
     SCPProductViewController *productVC = [SCPProductViewController new];
+    if (PADDEVICE) {
+        productVC = [SCPPadProductViewController new];
+    }
     productVC.productId = productId;
     [navi pushViewController:productVC animated:YES];
     SCAppController *appController = noti.object;

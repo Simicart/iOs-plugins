@@ -392,6 +392,7 @@
     NSDictionary *appReviews;
     BOOL hadReviews;
     float paddingEdge, heightHeader, tableWidth;
+    SCProductSecondDesignViewController *productViewController;
 }
 
 - (void)createReviewSection{
@@ -444,7 +445,7 @@
 - (void)initializedPerryProductCellBegin:(NSNotification*)noti{
     SimiTable *cells = noti.object;
     NSIndexPath *indexPath = [noti.userInfo objectForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.indexpath];
-    SCProductSecondDesignViewController *productViewController = [noti.userInfo valueForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.viewcontroller];
+    productViewController = [noti.userInfo valueForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.viewcontroller];
     SimiSection *section = [cells objectAtIndex:indexPath.section];
     SimiRow *row = [section objectAtIndex:indexPath.row];
     tableWidth = CGRectGetWidth(self.contentTableView.frame);
@@ -467,7 +468,7 @@
         float padding = SCALEVALUE(15);
         float widthCell = SCREEN_WIDTH - padding *2;
         if (PADDEVICE) {
-            widthCell = SCREEN_WIDTH *2/3 - padding *2;
+            widthCell = SCALEVALUE(510) - padding *2;
         }
         cell.simiContentView = [[UIView alloc]initWithFrame:CGRectMake(padding, 0, widthCell, row.height)];
         [cell.simiContentView setBackgroundColor:[UIColor whiteColor]];
@@ -552,7 +553,7 @@
         float padding = SCALEVALUE(15);
         float widthCell = SCREEN_WIDTH - padding *2;
         if (PADDEVICE) {
-            widthCell = SCREEN_WIDTH *2/3 - padding *2;
+            widthCell = SCALEVALUE(510) - padding *2;
         }
         cell.simiContentView = [[UIView alloc]initWithFrame:CGRectMake(padding, 1, widthCell, row.height-1)];
         [cell.simiContentView setBackgroundColor:[UIColor whiteColor]];
@@ -586,11 +587,25 @@
 }
 
 - (void)viewAllReviews:(UIButton*)sender{
-    
+    SCProductReviewController *reviewDetailController = [SCProductReviewController new];
+    reviewDetailController.product = self.product;
+    if(PHONEDEVICE)
+        [productViewController.navigationController pushViewController:reviewDetailController animated:YES];
+    else
+        [productViewController presentWithRootViewController:reviewDetailController];
 }
 
 - (void)addYourReviews:(UIButton*)sender{
-    
+    if ([SimiGlobalVar sharedInstance].isLogin || (![SimiGlobalVar sharedInstance].isLogin && [SimiGlobalVar sharedInstance].isReviewAllowGuest)) {
+        SCAddProductReviewViewController* reviewController = [SCAddProductReviewViewController new];
+        reviewController.productModel = self.product;
+        if(PHONEDEVICE)
+            [productViewController.navigationController pushViewController:reviewController animated:YES];
+        else
+            [productViewController presentWithRootViewController:reviewController];
+    }else{
+        [productViewController showAlertWithTitle:@"" message:@"Please login first"];
+    }
 }
 @end
 

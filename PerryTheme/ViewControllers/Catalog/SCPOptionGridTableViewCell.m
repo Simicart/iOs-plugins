@@ -17,7 +17,7 @@
     float padding = SCP_GLOBALVARS.padding;
     float widthCell = SCREEN_WIDTH - padding *2;
     if (PADDEVICE) {
-        widthCell = SCREEN_WIDTH *2/3 - padding *2;
+        widthCell = SCALEVALUE(510) - padding *2;
     }
     itemWidth = 120;
     itemHeight = 26;

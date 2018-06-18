@@ -20,7 +20,7 @@
             float padding = SCP_GLOBALVARS.padding;
             float widthCell = SCREEN_WIDTH - padding *2;
             if (PADDEVICE) {
-                widthCell = SCREEN_WIDTH *2/3 - padding *2;
+                widthCell = SCALEVALUE(510) - padding *2;
             }
             self.simiContentView = [[UIView alloc]initWithFrame:CGRectMake(padding, 0, widthCell, optionRow.height)];
             [self.simiContentView setBackgroundColor:[UIColor whiteColor]];
