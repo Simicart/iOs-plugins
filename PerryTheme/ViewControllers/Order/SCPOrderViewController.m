@@ -184,9 +184,9 @@
     SimiSection *section = [self.cells objectAtIndex:indexPath.section];
     SimiRow *row = [section objectAtIndex:indexPath.row];
     if([row.identifier isEqualToString:ORDER_VIEW_BILLING_ADDRESS]){
-        return [self createBillingAddressCellWithRow:row];
+        return [self createSCPBillingAddressCellWithRow:row tableView:self.contentTableView];
     }else if([row.identifier isEqualToString:ORDER_VIEW_SHIPPING_ADDRESS]){
-        return [self createShippingAddressCellWithRow:row];
+        return [self createSCPShippingAddressCellWithRow:row tableView:self.contentTableView];
     }else if([row.identifier isEqualToString:ORDER_VIEW_SHIPPING_METHOD]){
         return [self createShippingMethodCellWithIndexPath:indexPath tableView:self.contentTableView cells:self.cells];
     }else if([row.identifier isEqualToString:ORDER_VIEW_PAYMENT_METHOD]){
@@ -206,20 +206,26 @@
         return [super contentTableViewCellForRowAtIndexPath:indexPath];
     }
 }
-- (SCPOrderAddressTableViewCell *)createBillingAddressCellWithRow:(SimiRow *)row{
-    SCPOrderAddressTableViewCell *cell = [self.contentTableView dequeueReusableCellWithIdentifier:ORDER_VIEW_BILLING_ADDRESS];
+- (SCPOrderAddressTableViewCell *)createSCPBillingAddressCellWithRow:(SimiRow *)row tableView:(UITableView *)tableView{
+    SCPOrderAddressTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:ORDER_VIEW_BILLING_ADDRESS];
     if (cell == nil) {
-        cell = [[SCPOrderAddressTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:ORDER_VIEW_BILLING_ADDRESS width:CGRectGetWidth(self.contentTableView.frame) type:SCPAddressTypeBilling];
+        float width = CGRectGetWidth(self.contentTableView.frame);
+        if(PADDEVICE)
+            width = CGRectGetWidth(self.moreContentTableView.frame);
+        cell = [[SCPOrderAddressTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:ORDER_VIEW_BILLING_ADDRESS width:width type:SCPAddressTypeBilling];
         cell.accessoryType = UITableViewCellAccessoryNone;
     }
     [cell setAddressModel:self.billingAddress];
     row.height = cell.heightCell;
     return cell;
 }
-- (SCPOrderAddressTableViewCell *)createShippingAddressCellWithRow:(SimiRow *)row{
-    SCPOrderAddressTableViewCell *cell = [self.contentTableView dequeueReusableCellWithIdentifier:ORDER_VIEW_SHIPPING_ADDRESS];
+- (SCPOrderAddressTableViewCell *)createSCPShippingAddressCellWithRow:(SimiRow *)row tableView:(UITableView *)tableView{
+    SCPOrderAddressTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:ORDER_VIEW_SHIPPING_ADDRESS];
     if (cell == nil) {
-        cell = [[SCPOrderAddressTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:ORDER_VIEW_SHIPPING_ADDRESS width:CGRectGetWidth(self.contentTableView.frame) type:SCPAddressTypeShipping];
+        float width = CGRectGetWidth(self.contentTableView.frame);
+        if(PADDEVICE)
+            width = CGRectGetWidth(self.moreContentTableView.frame);
+        cell = [[SCPOrderAddressTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:ORDER_VIEW_SHIPPING_ADDRESS width:width type:SCPAddressTypeShipping];
         cell.accessoryType = UITableViewCellAccessoryNone;
     }
     [cell setAddressModel:self.shippingAddress];
@@ -260,7 +266,10 @@
         cell.creditCartPaymentModel = payment;
         cell.delegate = self;
     }
-    [cell setTitle:payment.title andContent:paymentContent andIsSelected:payment.isSelected width:CGRectGetWidth(self.contentTableView.frame)];
+    float width = CGRectGetWidth(self.contentTableView.frame);
+    if(PADDEVICE)
+        width = CGRectGetWidth(self.moreContentTableView.frame);
+    [cell setTitle:payment.title andContent:paymentContent andIsSelected:payment.isSelected width:width];
     row.height = cell.heightCell;
     if(row == section.rows.lastObject){
         row.height += 5;
@@ -278,7 +287,10 @@
     }
     NSString *title = shippingModel.title;
     NSString *name = shippingModel.name;
-    [cell setTitle:title andContent:name andIsSelected:shippingModel.isSelected width:CGRectGetWidth(self.contentTableView.frame)];
+    float width = CGRectGetWidth(self.contentTableView.frame);
+    if(PADDEVICE)
+        width = CGRectGetWidth(self.moreContentTableView.frame);
+    [cell setTitle:title andContent:name andIsSelected:shippingModel.isSelected width:width];
     [cell setPriceWithParams:simiRow.model.modelData];
     simiRow.height = cell.heightCell;
     if(simiRow == simiSection.rows.lastObject){

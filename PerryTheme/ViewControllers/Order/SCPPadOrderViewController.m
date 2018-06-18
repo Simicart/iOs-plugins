@@ -13,7 +13,7 @@
 @end
 
 @implementation SCPPadOrderViewController
-
+#pragma mark Main Method
 -(void)viewDidLoadBefore{
     [super viewDidLoadBefore];
     widthMethodTitle = SCALEVALUE(400);
@@ -23,27 +23,27 @@
 
 - (void)viewDidAppearBefore:(BOOL)animated{
     if (self.moreContentTableView == nil) {
-        self.view.backgroundColor = COLOR_WITH_HEX(@"#f2f2f2");
-        CGRect frame = self.view.bounds;
-        frame.size.width *= 0.6f;
-        self.contentTableView = [[UITableView alloc]initWithFrame:frame style:UITableViewStylePlain];
-        self.contentTableView.autoresizingMask = UIViewAutoresizingFlexibleHeight;
-        self.contentTableView.delegate = self;
-        self.contentTableView.dataSource = self;
-        self.contentTableView.cellLayoutMarginsFollowReadableWidth = NO;
+        self.moreContentTableView  = [[UITableView alloc]initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH * 0.6f, SCREEN_HEIGHT - 64) style:UITableViewStyleGrouped];
+        self.moreContentTableView .backgroundColor = [UIColor clearColor];
+        self.moreContentTableView .showsVerticalScrollIndicator = NO;
+        self.moreContentTableView .showsHorizontalScrollIndicator = NO;
+        self.moreContentTableView .dataSource = self;
+        self.moreContentTableView .delegate = self;
+        [self.view addSubview:self.moreContentTableView ];
         
-        [self.contentTableView setContentOffset:CGPointMake(0, 0)];
-        [self.contentTableView setBackgroundColor:[UIColor clearColor]];
+        self.contentTableView = [[UITableView alloc]initWithFrame:CGRectMake(SCREEN_WIDTH*0.6f, 0, SCREEN_WIDTH*0.4f , SCREEN_HEIGHT - 64) style:UITableViewStyleGrouped];
+        self.contentTableView.backgroundColor = [UIColor clearColor];
+        self.contentTableView.showsHorizontalScrollIndicator = NO;
+        self.contentTableView.showsVerticalScrollIndicator = NO;
+        self.contentTableView.dataSource = self;
+        self.contentTableView.delegate = self;
         [self.view addSubview:self.contentTableView];
-        frame = self.view.bounds;
-        frame.origin.x += frame.size.width * 0.6f;
-        frame.size.width = frame.size.width * 0.4 - SCALEVALUE(28);
-        self.moreContentTableView = [[SimiTableView alloc] initWithFrame:frame style:UITableViewStylePlain];
-        self.moreContentTableView.autoresizingMask = UIViewAutoresizingFlexibleHeight;
-        self.moreContentTableView.dataSource = self;
-        self.moreContentTableView.delegate = self;
-        [self.moreContentTableView setBackgroundColor:[UIColor clearColor]];
-        [self.view addSubview:self.moreContentTableView];
+        
+        self.view.backgroundColor = COLOR_WITH_HEX(@"#f2f2f2");
+        self.contentTableView.backgroundColor = [UIColor clearColor];
+        self.moreContentTableView.backgroundColor = [UIColor clearColor];
+        self.contentTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+        self.moreContentTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
         
         self.btnPlaceNow = [[SimiButton alloc] initWithFrame:CGRectMake(20, 20, 472, 50)];
         [self.btnPlaceNow setTitle:SCLocalizedString(@"PLACE ORDER") forState:UIControlStateNormal];
@@ -133,9 +133,10 @@
 
 #pragma mark TableView Datasource
 - (UIView *)moreContentTableViewViewForHeaderInSection:(NSInteger)section{
-    SimiSection *simiSection = [self.cells objectAtIndex:section];
-    float headerWidth = CGRectGetWidth(self.contentTableView.frame) - 30;
-    float titlePaddingX = 15;
+    SimiSection *simiSection = [self.moreCells objectAtIndex:section];
+    float headerPadding = SCALEVALUE(15);
+    float headerWidth = CGRectGetWidth(self.moreContentTableView.frame) - 2*headerPadding;
+    float titlePaddingX = SCALEVALUE(15);
     float buttonWidth = 44;
     
     UITableViewHeaderFooterView *headerView = [self.moreContentTableView dequeueReusableHeaderFooterViewWithIdentifier:simiSection.identifier];
@@ -144,7 +145,7 @@
         
         headerView.backgroundColor = [UIColor clearColor];
         headerView.contentView.backgroundColor = [UIColor clearColor];
-        UIView *headerContentView = [[UIView alloc] initWithFrame:CGRectMake(15, 20, headerWidth, 64)];
+        UIView *headerContentView = [[UIView alloc] initWithFrame:CGRectMake(headerPadding, 20, headerWidth, 64)];
         headerContentView.backgroundColor = [UIColor whiteColor];
         [headerView.contentView addSubview:headerContentView];
         SimiLabel *headerTitleLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(titlePaddingX, 18, headerWidth - titlePaddingX - 2*titlePaddingX, 24) andFontName:SCP_FONT_SEMIBOLD andFontSize:FONT_SIZE_HEADER andTextColor:[UIColor blackColor]];
@@ -174,9 +175,9 @@
 
 - (UIView *)contentTableViewViewForHeaderInSection:(NSInteger)section{
     SimiSection *simiSection = [self.cells objectAtIndex:section];
-    float headerWidth = CGRectGetWidth(self.contentTableView.frame) - 30;
-    float titlePaddingX = 15;
-    float buttonWidth = 44;
+    float headerPadding = SCALEVALUE(15);
+    float headerWidth = CGRectGetWidth(self.contentTableView.frame) - 2*headerPadding;
+    float titlePaddingX = SCALEVALUE(15);
     
     UITableViewHeaderFooterView *headerView = [self.contentTableView dequeueReusableHeaderFooterViewWithIdentifier:simiSection.identifier];
     if(!headerView){
@@ -184,7 +185,7 @@
         
         headerView.backgroundColor = [UIColor clearColor];
         headerView.contentView.backgroundColor = [UIColor clearColor];
-        UIView *headerContentView = [[UIView alloc] initWithFrame:CGRectMake(15, 20, headerWidth, 64)];
+        UIView *headerContentView = [[UIView alloc] initWithFrame:CGRectMake(headerPadding, 20, headerWidth, 64)];
         headerContentView.backgroundColor = [UIColor whiteColor];
         [headerView.contentView addSubview:headerContentView];
         SimiLabel *headerTitleLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(titlePaddingX, 18, headerWidth - titlePaddingX - 2*titlePaddingX, 24) andFontName:SCP_FONT_SEMIBOLD andFontSize:FONT_SIZE_HEADER andTextColor:[UIColor blackColor]];
@@ -204,13 +205,13 @@
     UITableViewCell *cell;
     if ([simiSection.identifier isEqualToString:ORDER_BILLING_ADDRESS_SECTION]) {
         if(simiRow.identifier == ORDER_VIEW_BILLING_ADDRESS){
-            cell = [self createBillingAddressCellWithIndexPath:indexPath tableView:self.moreContentTableView cells:self.moreCells];
+            cell = [self createSCPBillingAddressCellWithRow:simiRow tableView:self.moreContentTableView];
         }
     }
 #pragma mark Shipping Address Section
     else if ([simiSection.identifier isEqualToString:ORDER_SHIPPING_ADDRESS_SECTION]){
         if(simiRow.identifier == ORDER_VIEW_SHIPPING_ADDRESS){
-            cell = [self createShippingAddressCellWithIndexPath:indexPath tableView:self.moreContentTableView cells:self.moreCells];
+            cell = [self createSCPShippingAddressCellWithRow:simiRow tableView:self.moreContentTableView];
         }
 #pragma mark Payment Section
     }else if ([simiSection.identifier isEqualToString:ORDER_PAYMENT_SECTION])
@@ -237,9 +238,9 @@
         if(simiRow.identifier == ORDER_VIEW_CART){
             cell = [self createItemCellWithIndexPath:indexPath tableView:self.contentTableView cells:self.cells];
         }else if(simiRow.identifier == ORDER_VIEW_TOTAL){
-            cell = [[SCOrderFeeCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:ORDER_VIEW_TOTAL];
+            cell = [[SCPOrderFeeCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:ORDER_VIEW_TOTAL];
             [cell setFrame:CGRectMake(0, 0, self.moreContentTableView.frame.size.width, simiRow.height)];
-            [(SCOrderFeeCell *)cell setData:cartPrices andWidthCell:512];
+            [(SCPOrderFeeCell *)cell setData:cartPrices andWidthCell:CGRectGetWidth(self.moreContentTableView.frame)];
             cell.userInteractionEnabled = NO;
         }else if(simiRow.identifier == ORDER_VIEW_TERM){
             cell = [self createTermCellWithIndexPath:indexPath tableView:self.contentTableView cells:self.cells];

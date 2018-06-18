@@ -16,7 +16,6 @@
 #import "SCPLeftMenuViewController.h"
 #import "SCPPadOrderViewController.h"
 #import "SCPPadProductViewController.h"
->>>>>>> a0d40b37ec71f2bdda9022d2a49b041d139c1bbb
 
 @implementation SCPInitWorker{
     SCPLeftMenuViewController *leftMenuViewController;
