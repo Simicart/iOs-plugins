@@ -12,6 +12,10 @@
 typedef NS_ENUM(NSInteger, CreditCardBrand) {
     CreditCardBrandVisa,
     CreditCardBrandMasterCard,
+    CreditCardBrandAmericanExpress,
+    CreditCardBrandDinners,
+    CreditCardBrandDiscover,
+    CreditCardBrandJSB,
     CreditCardBrandUnknown
 };
 

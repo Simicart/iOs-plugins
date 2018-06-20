@@ -12,6 +12,10 @@
 
 @implementation SCPNavigationBar
 @synthesize leftButtonItems = _leftButtonItems, rightButtonItems = _rightButtonItems;
+- (void)addObserverToController{
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didChangeCart:) name:SCCartController_DidChangeCart object:nil];
+}
+
 - (NSMutableArray *)leftButtonItems{
     if (_leftButtonItems == nil) {
         _leftButtonItems = [[NSMutableArray alloc] init];

@@ -559,19 +559,19 @@
         [cell.simiContentView setBackgroundColor:[UIColor whiteColor]];
         [cell.contentView addSubview:cell.simiContentView];
         
-        float buttonWidth = widthCell/2-padding;
-        UIButton *viewAllButton = [[UIButton alloc]initWithFrame:CGRectMake(padding, 2, buttonWidth, 44)];
+        float buttonWidth = widthCell/2;
+        UIButton *viewAllButton = [[UIButton alloc]initWithFrame:CGRectMake(0, 2, buttonWidth, 44)];
         [viewAllButton setBackgroundColor:[UIColor clearColor]];
-        viewAllButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
+        viewAllButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
         [viewAllButton.titleLabel setFont:[UIFont fontWithName:@"Montserrat-Regular" size:FONT_SIZE_LARGE]];
         [viewAllButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
         [viewAllButton setTitle:SCLocalizedString(@"View all reviews") forState:UIControlStateNormal];
         [viewAllButton addTarget:self action:@selector(viewAllReviews:) forControlEvents:UIControlEventTouchUpInside];
         [cell.simiContentView addSubview:viewAllButton];
         
-        UIButton *addReviewButton = [[UIButton alloc]initWithFrame:CGRectMake(widthCell - padding - buttonWidth, 2, buttonWidth, 44)];
+        UIButton *addReviewButton = [[UIButton alloc]initWithFrame:CGRectMake(buttonWidth, 2, buttonWidth, 44)];
         [addReviewButton setBackgroundColor:[UIColor clearColor]];
-        addReviewButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentRight;
+        addReviewButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
         [addReviewButton.titleLabel setFont:[UIFont fontWithName:@"Montserrat-Semibold" size:FONT_SIZE_LARGE]];
         [addReviewButton setTitleColor:[UIColor orangeColor] forState:UIControlStateNormal];
         [addReviewButton setTitle:SCLocalizedString(@"Add your reviews") forState:UIControlStateNormal];
@@ -579,8 +579,7 @@
         [cell.simiContentView addSubview:addReviewButton];
         if (!hadReviews) {
             [viewAllButton removeFromSuperview];
-            [addReviewButton setFrame:CGRectMake(padding, 2, widthCell - padding*2, 44)];
-            [addReviewButton setContentHorizontalAlignment:UIControlContentHorizontalAlignmentCenter];
+            [addReviewButton setFrame:CGRectMake(padding, 2, widthCell, 44)];
         }
     }
     return cell;

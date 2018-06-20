@@ -138,9 +138,11 @@
             SCPNavigationBar *navigationBar = [SCPNavigationBar new];
             navigationController.simiObjectIdentifier = navigationBar;
         }
-        [SCAppController sharedInstance].navigationBarPhone = (SCPNavigationBar*)homeNavi.simiObjectIdentifier;
+        SCPNavigationBar *navigationBar = (SCPNavigationBar*)homeNavi.simiObjectIdentifier;
+        navigationBar.cartController = [SCCartController new];
+        [SCAppController sharedInstance].navigationBarPhone = navigationBar;
         if(PADDEVICE){
-            [SCAppController sharedInstance].navigationBarPad = (SCPNavigationBar*)homeNavi.simiObjectIdentifier;
+            [SCAppController sharedInstance].navigationBarPad = navigationBar;
         }
         initWorker.rootController.viewControllers = navigationControllers;
         initWorker.rootController.delegate = self;

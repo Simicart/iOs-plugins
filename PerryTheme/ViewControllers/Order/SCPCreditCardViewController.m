@@ -9,8 +9,12 @@
 #import "SCPCreditCardViewController.h"
 #import "SCPTableViewHeaderFooterView.h"
 
-#define kVISA_TYPE          @"^4[0-9]{3}?"
-#define kMASTER_CARD_TYPE   @"^5[1-5][0-9]{2}$"
+#define kVISA_TYPE          @"^4[0-9]{6,}$"
+#define kMASTER_CARD_TYPE   @"^5[1-5][0-9]{5,}|222[1-9][0-9]{3,}|22[3-9][0-9]{4,}|2[3-6][0-9]{5,}|27[01][0-9]{4,}|2720[0-9]{3,}$"
+#define kAMERICAN_EXPRESS   @"^3[47][0-9]{5,}$"
+#define kDINNERS_CLUB       @"^3(?:0[0-5]|[68][0-9])[0-9]{4,}$"
+#define kDISCOVER           @"^6(?:011|5[0-9]{2})[0-9]{3,}$"
+#define kJCB                @"^(?:2131|1800|35[0-9]{3})[0-9]{3,}$"
 
 @interface SCPCreditCardViewController (){
     UICollectionView *cardTypeCollectionView;
@@ -327,6 +331,22 @@
             [self updateCardTypeInfoWithCode:@"MC"];
         }
             break;
+        case CreditCardBrandAmericanExpress:{
+            [self updateCardTypeInfoWithCode:@"AE"];
+        }
+            break;
+        case CreditCardBrandDinners:{
+            [self updateCardTypeInfoWithCode:@"DN"];
+        }
+            break;
+        case CreditCardBrandJSB:{
+            [self updateCardTypeInfoWithCode:@"JCB"];
+        }
+            break;
+        case CreditCardBrandDiscover:{
+            [self updateCardTypeInfoWithCode:@"DI"];
+        }
+            break;
         default:
             break;
     }
@@ -351,11 +371,23 @@
             case CreditCardBrandMasterCard:
                 regex = [NSRegularExpression regularExpressionWithPattern:kMASTER_CARD_TYPE options:0 error:&error];
                 break;
+            case CreditCardBrandDiscover:
+                regex = [NSRegularExpression regularExpressionWithPattern:kDISCOVER options:0 error:&error];
+                break;
+            case CreditCardBrandDinners:
+                regex = [NSRegularExpression regularExpressionWithPattern:kDINNERS_CLUB options:0 error:&error];
+                break;
+            case CreditCardBrandJSB:
+                regex = [NSRegularExpression regularExpressionWithPattern:kJCB options:0 error:&error];
+                break;
+            case CreditCardBrandAmericanExpress:
+                regex = [NSRegularExpression regularExpressionWithPattern:kAMERICAN_EXPRESS options:0 error:&error];
+                break;
             default:
                 break;
         }
         
-        NSUInteger matches = [regex numberOfMatchesInString:_cardNumber options:0 range:NSMakeRange(0, 4)];
+        NSUInteger matches = [regex numberOfMatchesInString:_cardNumber options:0 range:NSMakeRange(0, _cardNumber.length)];
         if(matches == 1)
             return cardType;
     }

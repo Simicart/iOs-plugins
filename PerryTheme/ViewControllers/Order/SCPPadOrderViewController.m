@@ -285,7 +285,7 @@
     if (selectingPaymentModel.showType == PaymentShowTypeCreditCard) {
         NSArray *creditCardTypes = selectingPaymentModel.ccTypes;
         if (creditCardTypes != nil) {
-            SCCreditCardViewController *nextController = [[SCCreditCardViewController alloc] init];
+            SCPCreditCardViewController *nextController = [[SCPCreditCardViewController alloc] init];
             nextController.delegate = self;
             for (int i = 0; i < creditCards.count; i++) {
                 NSMutableDictionary *creditCard = [creditCards objectAtIndex:i];

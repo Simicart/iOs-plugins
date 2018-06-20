@@ -579,6 +579,9 @@
         qty = (int)self.product.minQty;
         [quantityButton setTitle:[NSString stringWithFormat:@"%d",qty] forState:UIControlStateNormal];
         [quantityButton addTarget:self action:@selector(editQty:) forControlEvents:UIControlEventTouchUpInside];
+        if (!self.product.isSalable) {
+            [self updateAddToCartState:NO];
+        }
     }
     return cell;
 }
@@ -816,6 +819,24 @@
     }
 }
 
+- (void)updateAddToCartState:(BOOL)availabelAddToCart{
+    if(availabelAddToCart){
+        [minusQuantityButton setEnabled:YES];
+        [plusQuantityButton setEnabled:YES];
+        [quantityButton setEnabled:YES];
+        [self.buttonAddToCart setEnabled:YES];
+        [self.buttonAddToCart setTitle:SCLocalizedString(@"Add to Cart") forState:UIControlStateNormal];
+        self.buttonAddToCart.alpha = 1;
+    }else{
+        [minusQuantityButton setEnabled:NO];
+        [plusQuantityButton setEnabled:NO];
+        [quantityButton setEnabled:NO];
+        [self.buttonAddToCart setEnabled:NO];
+        [self.buttonAddToCart setTitle:SCLocalizedString(@"Out of stock") forState:UIControlStateNormal];
+        self.buttonAddToCart.alpha = 0.4;
+    }
+}
+
 #pragma mark -
 #pragma mark Product Detail Action
 - (void)handleSelectedOption{
@@ -874,6 +895,7 @@
 #pragma mark Option Collection Delegate
 - (void)updateOptionsWithProductOptionModel:(SimiConfigurableOptionModel *)optionModel andValueModel:(SimiConfigurableOptionValueModel *)valueModel{
     [optionController activeDependenceWithConfigurableValueModel:valueModel configurableOptioModel:optionModel];
+    [self updateAddToCartState:((SCPOptionController*)optionController).availableAddToCart];
     [self.contentTableView reloadData];
 }
 
@@ -922,6 +944,7 @@
     if (!simiRow.optionValueModel.isSelected) {
         simiRow.optionValueModel.isSelected = YES;
         [optionController activeDependenceWithConfigurableValueModel:(SimiConfigurableOptionValueModel*)simiRow.optionValueModel configurableOptioModel:optionModel];
+        [self updateAddToCartState:((SCPOptionController*)optionController).availableAddToCart];
     }
     [self handleSelectedOption];
 }

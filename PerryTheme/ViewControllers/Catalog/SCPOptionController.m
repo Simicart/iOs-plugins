@@ -44,6 +44,7 @@
 - (void)activeDependenceWithConfigurableValueModel:(SimiConfigurableOptionValueModel *)valueModel configurableOptioModel:(SimiConfigurableOptionModel *)optionModel{
     NSArray *dependenceOptionIds = valueModel.dependIds;
     NSMutableSet *depenceOptionSet = [NSMutableSet setWithArray:dependenceOptionIds];
+    self.availableAddToCart = YES;
     if (dependenceOptionIds.count > 0) {
         for (int i = 0; i < self.configureOptions.count; i++) {
             SimiConfigurableOptionModel *configurableOptionModel = [self.configureOptions objectAtIndex:i];
@@ -62,20 +63,10 @@
                     }else{
                         tempValueModel.hightLight = NO;
                     }
+                    if ([[tempSet allObjects] count] == 0 && tempValueModel.isSelected) {
+                        self.availableAddToCart = NO;
+                    }
                 }
-//                if (configurableOptionModel.isSelected) {
-//                    for (int j = 0; j < configurableOptionModel.values.count; j++) {
-//                        SimiConfigurableOptionValueModel *tempValueModel = [configurableOptionModel.values objectAtIndex:j];
-//                        tempValueModel.hightLight = NO;
-//                    }
-//                }
-            }else{
-//                for (int j = 0; j < configurableOptionModel.values.count; j++) {
-//                    SimiConfigurableOptionValueModel *tempValueModel = [configurableOptionModel.values objectAtIndex:j];
-//                    if (![tempValueModel.valueId isEqualToString:valueModel.valueId]) {
-//                        tempValueModel.hightLight = NO;
-//                    }
-//                }
             }
         }
     }

@@ -9,5 +9,5 @@
 #import <SimiCartBundle/SCOptionController.h>
 
 @interface SCPOptionController : SCOptionController
-
+@property (nonatomic) BOOL availableAddToCart; // Check with Configurable Product Dependence Option
 @end
