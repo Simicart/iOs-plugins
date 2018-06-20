@@ -37,7 +37,7 @@
                 labelView.frame = frame;
                 labelView.simiObjectIdentifier = PRODUCT_LABEL_IDENTIFIER;
                 NSURL *url = [NSURL URLWithString:[productLabel valueForKey:@"image"]];
-                [labelView sd_setBackgroundImageWithURL:url forState:UIControlStateNormal];
+                [labelView sd_setImageWithURL:url forState:UIControlStateNormal];
                 labelView.contentMode = UIViewContentModeScaleAspectFit;
                 labelView.imageView.contentMode = UIViewContentModeScaleAspectFit;
                 [labelView setTitle:[productLabel valueForKey:@"text"] forState:UIControlStateNormal];
@@ -120,7 +120,7 @@
             labelView.contentMode = UIViewContentModeScaleAspectFit;
             labelView.imageView.contentMode = UIViewContentModeScaleAspectFit;
             NSURL *url = [NSURL URLWithString:[productLabel valueForKey:@"image"]];
-            [labelView sd_setBackgroundImageWithURL:url forState:UIControlStateNormal];
+            [labelView sd_setImageWithURL:url forState:UIControlStateNormal];
             [labelView setTitle:[productLabel valueForKey:@"text"] forState:UIControlStateNormal];
             [labelView.titleLabel setFont:[UIFont fontWithName:THEME_FONT_NAME size:THEME_FONT_SIZE - 6]];
             [labelView.titleLabel setTextAlignment:NSTextAlignmentCenter];
