@@ -333,4 +333,38 @@
 //    [self.contentTableView endUpdates];
 }
 
+- (void)didSelectPaymentCellWithIndex:(NSIndexPath*)indexPath{
+    SimiSection *simiSection = [self.cells objectAtIndex:indexPath.section];
+    SimiRow *simiRow = [simiSection.rows objectAtIndex:indexPath.row];
+    selectingPaymentModel = (SimiPaymentMethodModel *)simiRow.model;
+    if (selectingPaymentModel.showType == PaymentShowTypeCreditCard) {
+        NSArray *creditCardTypes = selectingPaymentModel.ccTypes;
+        if (creditCardTypes != nil) {
+            SCPCreditCardViewController *nextController = [[SCPCreditCardViewController alloc] init];
+            nextController.delegate = self;
+            for (int i = 0; i < creditCards.count; i++) {
+                NSDictionary *creditCard = [creditCards objectAtIndex:i];
+                if ([[creditCard valueForKey:@"payment_method"] isEqualToString:selectingPaymentModel.code]) {
+                    if (![[creditCard valueForKey:@"hasData"]boolValue]) {
+                        nextController.creditCardList = selectingPaymentModel.ccTypes;
+                        nextController.isUseCVV = selectingPaymentModel.useCcv;
+                        nextController.isShowName = selectingPaymentModel.isShowName;
+                        [self.navigationController pushViewController:nextController animated:YES];
+                        return;
+                    }
+                    for (NSString *key in [creditCard allKeys]) {
+                        if ([key isEqualToString:@"cc_type"]) {
+                            [selectingPaymentModel setValue:[[creditCard valueForKey:key] valueForKey:@"cc_code"] forKey:@"cc_type"];
+                        }else
+                            [selectingPaymentModel setValue:[creditCard valueForKey:key] forKey:key];
+                    }
+                    [selectingPaymentModel removeObjectForKey:hasData];
+                }
+            }
+        }
+    }
+    [self savePaymentMethod:selectingPaymentModel];
+    [self.contentTableView deselectRowAtIndexPath:indexPath animated:YES];
+}
+
 @end

@@ -15,10 +15,10 @@
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         _sharedInstance = [[SCPGlobalVars alloc] init];
-        _sharedInstance.padding = SCALEVALUE(15);
-        _sharedInstance.lineSpacing = SCALEVALUE(10);
-        _sharedInstance.interitemSpacing = SCALEVALUE(10);
-        _sharedInstance.textPadding = SCALEVALUE(5);
+        _sharedInstance.padding = 15;
+        _sharedInstance.lineSpacing = 10;
+        _sharedInstance.interitemSpacing = 10;
+        _sharedInstance.textPadding = 5;
     });
     return _sharedInstance;
 }

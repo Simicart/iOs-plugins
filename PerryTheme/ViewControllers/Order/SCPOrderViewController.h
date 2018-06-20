@@ -13,6 +13,7 @@
 #import "SCPGlobalVars.h"
 #import "SCPCartCell.h"
 #import "SCPOrderFeeCell.h"
+#import "SCPCreditCardViewController.h"
 
 @interface SCPOrderViewController : SCOrderViewController{
     NSMutableArray *shipmentExpandIndexPaths;
