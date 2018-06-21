@@ -49,6 +49,7 @@
     float sizeButton = 50;
     reviewButton = [UIButton new];
     [reviewButton setImage:[[UIImage imageNamed:@"ic_review"] imageWithColor:[UIColor blackColor]] forState:UIControlStateNormal];
+    reviewButton.simiObjectName = SCLocalizedString(@"Comment");
     [reviewButton setImageEdgeInsets:UIEdgeInsetsMake(9, 9, 9, 9)];
     [reviewButton.layer setCornerRadius:sizeButton/2.0f];
     [reviewButton.layer setShadowOffset:CGSizeMake(1, 1)];

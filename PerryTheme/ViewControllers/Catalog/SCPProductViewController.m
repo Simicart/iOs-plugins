@@ -12,7 +12,10 @@
 #import "SCPOptionController.h"
 #import "SCPPriceView.h"
 
-@interface SCPProductViewController ()
+@interface SCPProductViewController (){
+    UIViewController *baseRootViewController;
+    UIView *backgroundView;
+}
 
 @end
 
@@ -22,6 +25,9 @@
     [super viewDidLoadBefore];
     paddingEdge = SCP_GLOBALVARS.padding;
     self.rootEventName = @"SCPProductViewController";
+    baseRootViewController = [UIApplication sharedApplication].keyWindow.rootViewController;
+    backgroundView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)];
+    [backgroundView setBackgroundColor:[UIColor colorWithRed:0 green:0 blue:0 alpha:0.5]];
 }
 
 - (void)viewDidAppearBefore:(BOOL)animated{
@@ -162,6 +168,7 @@
             [self.cells addObject:configOptionSection];
         }
     }
+    [self detectFirstConfigurableOptionsSelected];
 }
 
 - (void)addCustomOptionsToCells{
@@ -237,6 +244,47 @@
     numberItemRow += 1;
     float height = numberItemRow * 44;
     return height;
+}
+
+- (void)detectFirstConfigurableOptionsSelected{
+    NSMutableSet *tempDepenceOptionSet = nil;
+    for(int i = 0; i < optionController.configureOptions.count; i++){
+        SimiConfigurableOptionModel *configOptionModel = [optionController.configureOptions objectAtIndex:i];
+        if (i == 0 && configOptionModel.values.count > 0) {
+            SimiConfigurableOptionValueModel *valueModel = [configOptionModel.values objectAtIndex:0];
+            valueModel.isSelected = YES;
+            tempDepenceOptionSet = [NSMutableSet setWithArray:valueModel.dependIds];
+            continue;
+        }
+        for (SimiConfigurableOptionValueModel *tempValueModel in configOptionModel.values) {
+            NSMutableSet *tempSet = [NSMutableSet setWithArray:tempValueModel.dependIds];
+            [tempSet intersectSet:tempDepenceOptionSet];
+            if ([tempSet allObjects].count > 0) {
+                tempDepenceOptionSet = tempSet;
+                tempValueModel.isSelected = YES;
+                break;
+            }
+        }
+        if (i == optionController.configureOptions.count - 1) {
+            for (SimiConfigurableOptionValueModel *tempValueModel in configOptionModel.values) {
+                NSMutableSet *tempSet = [NSMutableSet setWithArray:tempValueModel.dependIds];
+                [tempSet intersectSet:tempDepenceOptionSet];
+                if ([tempSet allObjects].count > 0) {
+                    tempValueModel.hightLight = YES;
+                }else{
+                    tempValueModel.hightLight = NO;
+                }
+            }
+            
+            for (SimiConfigurableOptionValueModel *tempValueModel in configOptionModel.values) {
+                if (tempValueModel.isSelected) {
+                    [self updateOptionsWithProductOptionModel:configOptionModel andValueModel:tempValueModel];
+                    break;
+                }
+            }
+            [self handleSelectedOption];
+        }
+    }
 }
 
 #pragma mark -
@@ -1020,9 +1068,10 @@
     [self.buttonMoreAction setImageEdgeInsets:UIEdgeInsetsMake((sizeButton - sizePlus)/2, (sizeButton - sizePlus)/2, (sizeButton - sizePlus)/2, (sizeButton - sizePlus)/2)];
     
     CGRect frame = self.buttonMoreAction.frame;
+    frame.origin.y += 64;
     frame.size.height = 0;
-    frame.size.width += paddingEdge *2;
-    frame.origin.x -=  paddingEdge;
+    frame.size.width = SCREEN_WIDTH;
+    frame.origin.x = 0;
     
     self.viewMoreAction = [[MoreActionView alloc]initWithFrame:frame];
     [self.viewMoreAction setBackgroundColor:[UIColor clearColor]];
@@ -1045,8 +1094,62 @@
     self.viewMoreAction.heightMoreView = (paddingIcon + sizeButton) * (self.viewMoreAction.arrayIcon.count) + paddingIcon;
     if (self.viewMoreAction.arrayIcon.count > 0) {
         [self setInterFaceViewMore];
-        [self.view addSubview:self.viewMoreAction];
+        [backgroundView addSubview:self.viewMoreAction];
         [self.view addSubview:self.buttonMoreAction];
     }
+}
+
+- (void)didTouchMoreAction{
+    [[NSNotificationCenter defaultCenter]postNotificationName:SCProductViewControllerBeforeTouchMoreAction object:self];
+    if (!self.viewMoreAction.isShowViewMoreAction) {
+        [baseRootViewController.view addSubview:backgroundView];
+        [backgroundView addSubview:self.buttonMoreAction];
+        CGRect frame = self.buttonMoreAction.frame;
+        frame.origin.y += 64;
+        [self.buttonMoreAction setFrame:frame];
+        [UIView animateWithDuration:0.15 animations:^{
+            CGRect frame = self.viewMoreAction.frame;
+            frame.origin.y -= self.viewMoreAction.heightMoreView;
+            frame.size.height = self.viewMoreAction.heightMoreView;
+            [self.viewMoreAction setFrame:frame];
+            [self.buttonMoreAction setTransform:CGAffineTransformMakeRotation(M_PI_4)];
+        } completion:^(BOOL finished) {
+            
+        }];
+    }else
+    {
+        CGRect frame = self.viewMoreAction.frame;
+        frame.origin.y += self.viewMoreAction.heightMoreView;
+        frame.size.height = 0;
+        [UIView animateWithDuration:0.15 animations:^{
+            [self.buttonMoreAction setTransform:CGAffineTransformMakeRotation(0)];
+        } completion:^(BOOL finished) {
+            [UIView animateWithDuration:0.15 animations:^{
+                [self.viewMoreAction setFrame:frame];
+            } completion:^(BOOL finished) {
+                [self->backgroundView removeFromSuperview];
+                CGRect frame = self.buttonMoreAction.frame;
+                frame.origin.y -= 64;
+                [self.buttonMoreAction setFrame:frame];
+                [self.view addSubview:self.buttonMoreAction];
+            }];
+        }];
+    }
+    self.viewMoreAction.isShowViewMoreAction = !self.viewMoreAction.isShowViewMoreAction;
+}
+
+- (void)setInterFaceViewMore{
+    float paddingIcon = 20;
+    float sizeButton = 50;
+    for (int i = 0; i < self.viewMoreAction.arrayIcon.count; i++) {
+        UIButton *button = (UIButton*)[self.viewMoreAction.arrayIcon objectAtIndex:i];
+        [button setFrame:CGRectMake(SCREEN_WIDTH - sizeButton - SCP_GLOBALVARS.padding/2,self.viewMoreAction.heightMoreView - (i + 1) * (sizeButton + paddingIcon),sizeButton , sizeButton)];
+        SimiLabel *titleLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(0, self.viewMoreAction.heightMoreView - (i + 1) * (sizeButton + paddingIcon), SCREEN_WIDTH - sizeButton - SCP_GLOBALVARS.padding, sizeButton) andFontName:SCP_FONT_REGULAR andFontSize:FONT_SIZE_LARGE andTextColor:[UIColor whiteColor]];
+        [titleLabel setTextAlignment:NSTextAlignmentRight];
+        [titleLabel setText:button.simiObjectName];
+        [self.viewMoreAction addSubview:titleLabel];
+        [self.viewMoreAction addSubview:button];
+    }
+    [[NSNotificationCenter defaultCenter]postNotificationName:SCProductViewControllerAfterInitViewMore object:self.viewMoreAction userInfo:@{@"productModel":self.product,@"controller":self}];
 }
 @end

@@ -43,23 +43,38 @@
 
 - (void)activeDependenceWithConfigurableValueModel:(SimiConfigurableOptionValueModel *)valueModel configurableOptioModel:(SimiConfigurableOptionModel *)optionModel{
     NSArray *dependenceOptionIds = valueModel.dependIds;
-    NSMutableSet *depenceOptionSet = [NSMutableSet setWithArray:dependenceOptionIds];
     self.availableAddToCart = YES;
     if (dependenceOptionIds.count > 0) {
         for (int i = 0; i < self.configureOptions.count; i++) {
             SimiConfigurableOptionModel *configurableOptionModel = [self.configureOptions objectAtIndex:i];
+            NSMutableSet *tempDepenceOptionSet = nil;
+            for (int j = 0; j < self.configureOptions.count; j++) {
+                SimiConfigurableOptionModel *tempConfigrableOptionModel = [self.configureOptions objectAtIndex:j];
+                if ([tempConfigrableOptionModel isEqual:configurableOptionModel]) {
+                    continue;
+                }
+                for (int j = 0; j < tempConfigrableOptionModel.values.count; j++) {
+                    SimiConfigurableOptionValueModel *tempValueModel = [tempConfigrableOptionModel.values objectAtIndex:j];
+                    if (tempValueModel.isSelected) {
+                        if (tempDepenceOptionSet == nil) {
+                            tempDepenceOptionSet = [NSMutableSet setWithArray:tempValueModel.dependIds];
+                        }else{
+                            NSMutableSet *tempSet = [NSMutableSet setWithArray:tempValueModel.dependIds];
+                            [tempSet intersectSet:tempDepenceOptionSet];
+                            tempDepenceOptionSet = tempSet;
+                        }
+                        break;
+                    }
+                }
+            }
+            
             if(![configurableOptionModel isEqual:optionModel]){
-                configurableOptionModel.isSelected = NO;
                 for (int j = 0; j < configurableOptionModel.values.count; j++) {
                     SimiConfigurableOptionValueModel *tempValueModel = [configurableOptionModel.values objectAtIndex:j];
                     NSMutableSet *tempSet = [NSMutableSet setWithArray:tempValueModel.dependIds];
-                    [tempSet intersectSet:depenceOptionSet];
+                    [tempSet intersectSet:tempDepenceOptionSet];
                     if ([[tempSet allObjects] count] > 0) {
                         tempValueModel.hightLight = YES;
-                        if (tempValueModel.isSelected) {
-                            depenceOptionSet = tempSet;
-                            configurableOptionModel.isSelected = YES;
-                        }
                     }else{
                         tempValueModel.hightLight = NO;
                     }
