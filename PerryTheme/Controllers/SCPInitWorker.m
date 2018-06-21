@@ -16,6 +16,9 @@
 #import "SCPLeftMenuViewController.h"
 #import "SCPPadOrderViewController.h"
 #import "SCPPadProductViewController.h"
+#import "SCPPadThankYouPageViewController.h"
+#import <SimiCartBundle/SimiOrderHistoryModel.h>
+#import "SCPOrderDetailViewController.h"
 
 @implementation SCPInitWorker{
     SCPLeftMenuViewController *leftMenuViewController;
@@ -30,12 +33,38 @@
         [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(initializedMenuSize:) name:Simi_MainViewController_InitializedMenuSize object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(openProduct:) name:SIMI_SHOWPRODUCTDETAIL object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(openOrderReview:) name:SIMI_SHOWORDERREVIEWSCREEN object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(openThankyouPage:) name:SIMI_SHOWTHANKYOUPAGE object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(openOrderDetail:) name:SIMI_SHOWORDERHISTORYDETAILSCREEN object:nil];
         if (SCP_GLOBALVARS.wishlistPluginAllow) {
             [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateWishlist:) name:SCCartController_CompletedChangeCustomerState object:nil];
         }
         GLOBALVAR.isUseDiscountMinus = YES;
     }
     return self;
+}
+- (void)openOrderDetail:(NSNotification *)noti{
+    UINavigationController *navi = [noti.userInfo objectForKey:KEYEVENT.APPCONTROLLER.navigation_controller];
+    SimiOrderHistoryModel *orderHistoryModel = [noti.userInfo valueForKey:KEYEVENT.ORDERHISTORYDETAILVIEWCONTROLLER.order_history_model];
+    SCAppController *appController = noti.object;
+    appController.isDiscontinue = YES;
+    NSString *orderId = [noti.userInfo valueForKey:KEYEVENT.ORDERHISTORYDETAILVIEWCONTROLLER.order_id];
+    if (PADDEVICE) {
+        SCPOrderDetailViewController *orderDetailViewController = [SCPOrderDetailViewController new];
+        orderDetailViewController.orderId = orderId;
+        orderDetailViewController.order = orderHistoryModel;
+        UINavigationController *orderNavi = [[UINavigationController alloc]initWithRootViewController:orderDetailViewController];
+        orderNavi.modalPresentationStyle = UIModalPresentationPopover;
+        UIPopoverPresentationController *popover = orderNavi.popoverPresentationController;
+        popover.sourceRect = CGRectMake(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 1, 1);
+        popover.sourceView = [UIApplication sharedApplication].delegate.window.rootViewController.view;
+        popover.permittedArrowDirections = 0;
+        [[UIApplication sharedApplication].delegate.window.rootViewController presentViewController:orderNavi animated:YES completion:nil];
+    }else{
+        SCPOrderDetailViewController *orderDetailViewController = [SCPOrderDetailViewController new];
+        orderDetailViewController.orderId = orderId;
+        orderDetailViewController.order = orderHistoryModel;
+        [navi pushViewController:orderDetailViewController animated:YES];
+    }
 }
 - (void)openOrderReview:(NSNotification *)noti{
     SCPOrderViewController *orderViewController = [SCPOrderViewController new];
@@ -53,6 +82,32 @@
     [navi pushViewController:orderViewController animated:YES];
     SCAppController *appController = noti.object;
     appController.isDiscontinue = YES;
+}
+- (void)openThankyouPage:(NSNotification *)noti{
+    SCAppController *appController = noti.object;
+    UINavigationController *navi = [noti.userInfo objectForKey:KEYEVENT.APPCONTROLLER.navigation_controller];
+    SimiOrderModel *orderModel = [noti.userInfo objectForKey:KEYEVENT.THANKYOUPAGEVIEWCONTROLLER.order_model];
+    
+    SCPThankYouPageViewController *thankVC = [[SCPThankYouPageViewController alloc] init];
+    thankVC.order = orderModel;
+    if([noti.userInfo objectForKey:KEYEVENT.THANKYOUPAGEVIEWCONTROLLER.checkout_type]){
+        CheckOutType checkoutType = [[noti.userInfo objectForKey:KEYEVENT.THANKYOUPAGEVIEWCONTROLLER.checkout_type] integerValue];
+        if(checkoutType == CheckOutTypeGuest){
+            thankVC.isGuest = YES;
+        }
+    }
+    appController.isDiscontinue = YES;
+    if (PHONEDEVICE) {
+        [navi pushViewController:thankVC animated:YES];
+    }else{
+        UINavigationController *navi = [[UINavigationController alloc]initWithRootViewController:thankVC];
+        navi.modalPresentationStyle = UIModalPresentationPopover;
+        UIPopoverPresentationController *popover = navi.popoverPresentationController;
+        popover.sourceRect = CGRectMake(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 1, 1);
+        popover.sourceView = navi.view;
+        popover.permittedArrowDirections = 0;
+        [navi presentViewController:navi animated:YES completion:nil];
+    }
 }
 - (void)initializedMenu:(NSNotification *)noti{
     SCMainViewController *mainVC = noti.object;

@@ -7,7 +7,9 @@
 //
 
 #import <SimiCartBundle/SimiCartBundle.h>
+#import "SCPGlobalVars.h"
 
 @interface SCPLabel : SimiLabel
-
+- (void)showHTMLTextWithTitle:(NSString *)title value:(NSString *)value titleFont:(UIFont *)titleFont valueFont:(UIFont *)valueFont;
+- (CGFloat)wrapContent;
 @end

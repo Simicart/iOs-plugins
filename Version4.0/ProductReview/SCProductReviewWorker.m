@@ -339,7 +339,7 @@
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:row.identifier];
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         SimiLabel *titleLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(paddingEdge, 10, tableWidth - paddingEdge*3, 30) andFontName:THEME_FONT_NAME_REGULAR];
-        [titleLabel setText:SCLocalizedString(@"Add Your Review")];
+        [titleLabel setText:SCLocalizedString(@"Add your review")];
         [cell.contentView addSubview:titleLabel];
         [SimiGlobalFunction sortViewForRTL:cell.contentView andWidth:tableWidth - paddingEdge];
     }
@@ -575,7 +575,7 @@
         addReviewButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
         [addReviewButton.titleLabel setFont:[UIFont fontWithName:@"Montserrat-Semibold" size:FONT_SIZE_LARGE]];
         [addReviewButton setTitleColor:[UIColor orangeColor] forState:UIControlStateNormal];
-        [addReviewButton setTitle:SCLocalizedString(@"Add your reviews") forState:UIControlStateNormal];
+        [addReviewButton setTitle:SCLocalizedString(@"Add your review") forState:UIControlStateNormal];
         [addReviewButton addTarget:self action:@selector(addYourReviews:) forControlEvents:UIControlEventTouchUpInside];
         [cell.simiContentView addSubview:addReviewButton];
         if (!hadReviews) {

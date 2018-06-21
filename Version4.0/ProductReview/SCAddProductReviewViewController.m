@@ -30,7 +30,7 @@
 
 - (void)viewWillAppearBefore:(BOOL)animated
 {
-    self.navigationItem.title  = SCLocalizedString(@"Add Review");
+    self.navigationItem.title  = SCLocalizedString(@"Add your review");
     if(PHONEDEVICE) {
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidShow:) name:UIKeyboardDidShowNotification object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidHide:) name:UIKeyboardDidHideNotification object:nil];
@@ -60,7 +60,7 @@
                 float viewY = 10;
                 if ([[formAddReviews objectAtIndex:0] isKindOfClass:[NSDictionary class]]) {
                     if([[[formAddReviews objectAtIndex:0] objectForKey:@"rates"] isKindOfClass:[NSArray class]]){
-                        SimiLabel *titleLabel = [[SimiLabel alloc] initWithFrame:CGRectMake(paddingWidth, viewY, viewWidth - 2*paddingWidth, 40) andFontName:THEME_FONT_NAME_REGULAR andFontSize:FONT_SIZE_LARGE andTextColor:THEME_CONTENT_COLOR text:[NSString stringWithFormat:@"%@?",SCLocalizedString(@"HOW DO YOU RATE THIS PRODUCT")]];
+                        SimiLabel *titleLabel = [[SimiLabel alloc] initWithFrame:CGRectMake(paddingWidth, viewY, viewWidth - 2*paddingWidth, 40) andFontName:THEME_FONT_NAME_REGULAR andFontSize:FONT_SIZE_LARGE andTextColor:THEME_CONTENT_COLOR text:[NSString stringWithFormat:@"%@",SCLocalizedString(@"HOW DO YOU RATE THIS PRODUCT?")]];
                         [reviewContentView addSubview:titleLabel];
                         viewY += titleLabel.frame.size.height;
                         rateFields = [[formAddReviews objectAtIndex:0] objectForKey:@"rates"];
@@ -102,7 +102,7 @@
                 }
                 viewY += 20;
                 submitButton = [[SimiButton alloc] initWithFrame:CGRectMake(paddingWidth, viewY, viewWidth - 2*paddingWidth, 50)];
-                [submitButton setTitle:SCLocalizedString(@"Submit Review") forState:UIControlStateNormal];
+                [submitButton setTitle:SCLocalizedString(@"Submit review") forState:UIControlStateNormal];
                 [submitButton addTarget:self action:@selector(submitReview:) forControlEvents:UIControlEventTouchUpInside];
                 [reviewContentView addSubview:submitButton];
                 viewY += submitButton.frame.size.height;
