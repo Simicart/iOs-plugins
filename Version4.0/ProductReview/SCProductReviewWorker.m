@@ -197,7 +197,7 @@
                 SimiLabel *titleLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(paddingEdge, 10, tableWidth - paddingEdge*3, 30) andFontName:THEME_FONT_NAME_REGULAR];
                 [titleLabel setText:SCLocalizedString(@"Add Your Review")];
                 [cell.contentView addSubview:titleLabel];
-                [SimiGlobalFunction sortViewForRTL:cell.contentView andWidth:tableWidth - paddingEdge];
+                [SimiGlobalFunction sortViewForRTL:cell.contentView andWidth:tableWidth - 32];
             }
             row.tableCell = cell;
         }
@@ -210,7 +210,7 @@
                 SimiLabel *titleLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(paddingEdge, 10, tableWidth - paddingEdge*3, 30) andFontName:THEME_FONT_NAME_REGULAR];
                 [titleLabel setText:SCLocalizedString(@"Be the first to review this product")];
                 [cell.contentView addSubview:titleLabel];
-                [SimiGlobalFunction sortViewForRTL:cell.contentView andWidth:tableWidth - paddingEdge];
+                [SimiGlobalFunction sortViewForRTL:cell.contentView andWidth:tableWidth - 32];
             }
             row.tableCell = cell;
         }else if ([row.identifier isEqualToString:product_reviews_viewall_row]) {
@@ -222,7 +222,7 @@
                 [titleLabel setTextAlignment:NSTextAlignmentCenter];
                 [titleLabel setText:SCLocalizedString(@"View all")];
                 [cell.contentView addSubview:titleLabel];
-                [SimiGlobalFunction sortViewForRTL:cell.contentView andWidth:tableWidth-paddingEdge];
+                [SimiGlobalFunction sortViewForRTL:cell.contentView andWidth:tableWidth - 32];
             }
             row.tableCell = cell;
         }

@@ -62,7 +62,7 @@
         if (PADDEVICE) {
             screenWidth = SCREEN_WIDTH/2;
         }
-        [SimiGlobalFunction sortViewForRTL:self.contentView andWidth:screenWidth];
+        [SimiGlobalFunction sortViewForRTL:self.contentView andWidth:screenWidth - 32];
         [self setBackgroundColor:THEME_APP_BACKGROUND_COLOR];
     }
     return self;
