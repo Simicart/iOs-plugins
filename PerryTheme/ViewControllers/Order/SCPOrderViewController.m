@@ -135,6 +135,17 @@
     cartPrices = [GLOBALVAR convertCartPriceData:self.order.total];
     SimiRow *totalRow = [[SimiRow alloc] initWithIdentifier:ORDER_VIEW_TOTAL];
     [shipmentDetailSection addRow:totalRow];
+    
+    if(termAndConditions.count > 0){
+        for(int m=0; m<termAndConditions.count; m++){
+            SimiRow *termRow = [[SimiRow alloc] initWithIdentifier:ORDER_VIEW_TERM height:85];
+            termRow.data = [termAndConditions objectAtIndex:m];
+            [shipmentDetailSection addRow:termRow];
+            SimiRow* checkboxRow = [[SimiRow alloc] initWithIdentifier:ORDER_VIEW_AGREE_CHECKBOX height:40];
+            checkboxRow.data = [termAndConditions objectAtIndex:m];
+            [shipmentDetailSection addRow:checkboxRow];
+        }
+    }
     return shipmentDetailSection;
 }
 
@@ -202,6 +213,10 @@
         [(SCPOrderFeeCell *)cell setData:cartPrices andWidthCell:CGRectGetWidth(self.contentTableView.frame)];
         row.height = cell.heightCell;
         return cell;
+    }else if([row.identifier isEqualToString:ORDER_VIEW_TERM]){
+        return [self createTermCellWithIndexPath:indexPath tableView:self.contentTableView cells:self.cells];
+    }else if([row.identifier isEqualToString:ORDER_VIEW_AGREE_CHECKBOX]){
+        return [self createTermCheckboxCellWithIndexPath:indexPath tableView:self.contentTableView cells:self.cells];
     }else{
         return [super contentTableViewCellForRowAtIndexPath:indexPath];
     }
@@ -314,6 +329,66 @@
     }
     return cell;
 }
+- (SimiTableViewCell *)createTermCellWithIndexPath:(NSIndexPath*)indexPath tableView:(UITableView*)tableView cells:(SimiTable*)cells{
+    SimiSection *simiSection = [cells objectAtIndex:indexPath.section];
+    SimiRow *simiRow = [simiSection.rows objectAtIndex:indexPath.row];
+    NSString* termIdentifier = [NSString stringWithFormat:@"%@%ld",ORDER_VIEW_TERM,(long)indexPath.row];
+    SimiTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:termIdentifier];
+    NSDictionary *term = simiRow.data;
+    if(cell == nil){
+        cell = [[SimiTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:termIdentifier];
+        cell.heightCell = 5;
+        UIButton *button = [[UIButton alloc] initWithFrame:CGRectMake(CGRectGetWidth(tableView.frame) - cellPaddingLeft - 44, cell.heightCell, 44, 44)];
+        button.enabled = NO;
+        [button setImage:[UIImage imageNamed:@"scp_ic_next"] forState:UIControlStateNormal];
+        [button setImageEdgeInsets:UIEdgeInsetsMake(10, 10, 15, 15)];
+        [cell.contentView addSubview:button];
+        UILabel* termConditionLabel = [[UILabel alloc] initWithFrame:CGRectMake(cellPaddingLeft, cell.heightCell, CGRectGetWidth(tableView.frame) - 2*cellPaddingLeft - 10, 75)];
+        termConditionLabel.attributedText = [[NSAttributedString alloc] initWithData:[[NSString stringWithFormat:@"<span style=\"font-family: %@; font-size: %f\">%@</span>",THEME_FONT_NAME,FONT_SIZE_LARGE,[term objectForKey:@"content"]] dataUsingEncoding:NSUnicodeStringEncoding] options:@{ NSDocumentTypeDocumentAttribute: NSHTMLTextDocumentType } documentAttributes:nil error:nil];
+        if(GLOBALVAR.isReverseLanguage){
+            termConditionLabel.textAlignment = NSTextAlignmentRight;
+        }
+        termConditionLabel.numberOfLines = 3;
+        [termConditionLabel sizeToFit];
+        [cell.contentView addSubview:termConditionLabel];
+        cell.heightCell += CGRectGetHeight(termConditionLabel.frame) + 5;
+        cell.backgroundColor = [UIColor clearColor];
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    }
+    simiRow.height = cell.heightCell;
+    return cell;
+}
+
+- (UITableViewCell*)createTermCheckboxCellWithIndexPath:(NSIndexPath*)indexPath tableView:(UITableView*)tableView cells:(SimiTable*)cells{
+    SimiSection *simiSection = [cells objectAtIndex:indexPath.section];
+    SimiRow *simiRow = [simiSection.rows objectAtIndex:indexPath.row];
+    NSString* identifier = [NSString stringWithFormat:@"%@%ld",ORDER_VIEW_AGREE_CHECKBOX,(long)indexPath.row];
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:identifier];
+    NSDictionary *term = simiRow.data;
+    if(!cell){
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier];
+        cell.backgroundColor = [UIColor clearColor];
+        SimiCheckbox* checkbox = [[SimiCheckbox alloc] initWithTitle:SCLocalizedString([term objectForKey:@"title"])];
+        [checkbox.titleLabel setFont:[UIFont fontWithName:SCP_FONT_SEMIBOLD size:FONT_SIZE_LARGE]];
+        [checkbox.titleLabel setTextColor:[UIColor blackColor]];
+        checkbox.strokeColor = [UIColor blackColor];
+        checkbox.checkColor = SCP_ICON_HIGHLIGHT_COLOR;
+        checkbox.frame = CGRectMake(cellPaddingLeft, 5, CGRectGetWidth(tableView.frame) - 2*cellPaddingLeft, 30);
+        if ([GLOBALVAR isReverseLanguage]) {
+            [checkbox setFrame: CGRectMake(cellPaddingLeft, 5, CGRectGetWidth(tableView.frame) - 2*cellPaddingLeft, 30)];
+            [checkbox.titleLabel setTextAlignment:NSTextAlignmentRight];
+            [checkbox setCheckAlignment:M13CheckboxAlignmentRight];
+        }
+        checkbox.radius = 1.0f;
+        checkbox.simiObjectIdentifier = simiRow.data;
+        [cell.contentView addSubview:checkbox];
+        cell.clipsToBounds = YES;
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        [checkbox addTarget:self action:@selector(toggleCheckBox:) forControlEvents:UIControlEventValueChanged];
+    }
+    return cell;
+}
+
 - (void)expandShipment:(id)sender{
     UIButton *button = (UIButton *)sender;
     isExpandShipment = !isExpandShipment;
