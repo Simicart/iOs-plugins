@@ -7,6 +7,7 @@
 //
 
 #import "SCPPadOrderViewController.h"
+#import "SCPButton.h"
 
 @interface SCPPadOrderViewController ()
 
@@ -45,8 +46,7 @@
         self.contentTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
         self.moreContentTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
         
-        self.btnPlaceNow = [[SimiButton alloc] initWithFrame:CGRectMake(20, 20, 472, 50)];
-        [self.btnPlaceNow setTitle:SCLocalizedString(@"PLACE ORDER") forState:UIControlStateNormal];
+        self.btnPlaceNow = [[SCPButton alloc] initWithFrame:CGRectMake(20, 20, 472, 50) title:@"PLACE ORDER" titleFont:[UIFont fontWithName:SCP_FONT_SEMIBOLD size:FONT_SIZE_HEADER] cornerRadius:0 borderWidth:0 borderColor:nil];
         [self.btnPlaceNow addTarget:self action:@selector(placeOrder) forControlEvents:UIControlEventTouchUpInside];
         
         [self getOrderConfig];
@@ -238,10 +238,14 @@
         if(simiRow.identifier == ORDER_VIEW_CART){
             cell = [self createItemCellWithIndexPath:indexPath tableView:self.contentTableView cells:self.cells];
         }else if(simiRow.identifier == ORDER_VIEW_TOTAL){
-            cell = [[SCPOrderFeeCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:ORDER_VIEW_TOTAL];
-            [cell setFrame:CGRectMake(0, 0, self.moreContentTableView.frame.size.width, simiRow.height)];
-            [(SCPOrderFeeCell *)cell setData:cartPrices andWidthCell:CGRectGetWidth(self.moreContentTableView.frame)];
-            cell.userInteractionEnabled = NO;
+            SCPOrderFeeCell *cell = [self.contentTableView dequeueReusableCellWithIdentifier:ORDER_VIEW_TOTAL];
+            if(!cell){
+                cell = [[SCPOrderFeeCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:ORDER_VIEW_TOTAL];
+                cell.userInteractionEnabled = NO;
+            }
+            [(SCPOrderFeeCell *)cell setData:cartPrices andWidthCell:CGRectGetWidth(self.contentTableView.frame)];
+            simiRow.height = cell.heightCell;
+            return cell;
         }else if(simiRow.identifier == ORDER_VIEW_TERM){
             cell = [self createTermCellWithIndexPath:indexPath tableView:self.contentTableView cells:self.cells];
         }else if(simiRow.identifier == ORDER_VIEW_AGREE_CHECKBOX){
@@ -250,6 +254,8 @@
             cell = [self.contentTableView dequeueReusableCellWithIdentifier:ORDER_VIEW_PLACE];
             if (cell == nil) {
                 cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:ORDER_VIEW_PLACE];
+                
+                self.btnPlaceNow.frame = CGRectMake(20, 20, CGRectGetWidth(self.contentTableView.frame) - 40, 50);
                 [cell.contentView addSubview:self.btnPlaceNow];
             }
         }

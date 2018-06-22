@@ -205,7 +205,7 @@
     }else if([row.identifier isEqualToString:ORDER_VIEW_CART]){
         return [self createItemCellWithIndexPath:indexPath tableView:self.contentTableView cells:self.cells];
     }else if([row.identifier isEqualToString:ORDER_VIEW_TOTAL]){
-        SCOrderFeeCell *cell = [self.contentTableView dequeueReusableCellWithIdentifier:ORDER_VIEW_TOTAL];
+        SCPOrderFeeCell *cell = [self.contentTableView dequeueReusableCellWithIdentifier:ORDER_VIEW_TOTAL];
         if(!cell){
             cell = [[SCPOrderFeeCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:ORDER_VIEW_TOTAL];
             cell.userInteractionEnabled = NO;

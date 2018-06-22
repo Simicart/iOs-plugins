@@ -10,16 +10,21 @@
 #import "SCPGlobalVars.h"
 
 @implementation SCPOrderFeeCell
-- (void)setData:(NSMutableArray*)cartPrices andWidthCell:(float)widthCell{
-    self.heightCell = 0;
-    float paddingY = SCALEVALUE(10);
-    float paddingX = SCALEVALUE(15);
-    if(PADDEVICE){
-        paddingX = SCALEVALUE(5);
+@synthesize paddingX, paddingY, paddingContentX, paddingContentY, heightLabel;
+
+- (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier{
+    if(self == [super initWithStyle:style reuseIdentifier:reuseIdentifier]){
+        paddingY = SCALEVALUE(10);
+        paddingX = SCALEVALUE(15);
+        if(PADDEVICE)
+            paddingX = SCALEVALUE(5);
+        paddingContentX = SCALEVALUE(20);
+        paddingContentY = SCALEVALUE(15);
+        heightLabel = SCALEVALUE(30);
     }
-    float paddingContentX = SCALEVALUE(20);
-    float paddingContentY = SCALEVALUE(15);
-    float heightLabel = SCALEVALUE(30);
+    return self;
+}
+- (void)setData:(NSMutableArray*)cartPrices andWidthCell:(float)widthCell{
     float cellWidth = widthCell - 2*paddingX;
     self.heightCell = paddingY;
     UIView *contentView = [[UIView alloc] initWithFrame:CGRectMake(paddingX, self.heightCell, cellWidth, 0)];

@@ -10,5 +10,5 @@
 #import <SimiCartBundle/SCOrderFeeCell.h>
 
 @interface SCPOrderFeeCell : SCOrderFeeCell
-
+@property (nonatomic) float paddingY,paddingX,paddingContentX,paddingContentY,heightLabel;
 @end

@@ -48,23 +48,10 @@
     SCAppController *appController = noti.object;
     appController.isDiscontinue = YES;
     NSString *orderId = [noti.userInfo valueForKey:KEYEVENT.ORDERHISTORYDETAILVIEWCONTROLLER.order_id];
-    if (PADDEVICE) {
-        SCPOrderDetailViewController *orderDetailViewController = [SCPOrderDetailViewController new];
-        orderDetailViewController.orderId = orderId;
-        orderDetailViewController.order = orderHistoryModel;
-        UINavigationController *orderNavi = [[UINavigationController alloc]initWithRootViewController:orderDetailViewController];
-        orderNavi.modalPresentationStyle = UIModalPresentationPopover;
-        UIPopoverPresentationController *popover = orderNavi.popoverPresentationController;
-        popover.sourceRect = CGRectMake(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 1, 1);
-        popover.sourceView = [UIApplication sharedApplication].delegate.window.rootViewController.view;
-        popover.permittedArrowDirections = 0;
-        [[UIApplication sharedApplication].delegate.window.rootViewController presentViewController:orderNavi animated:YES completion:nil];
-    }else{
-        SCPOrderDetailViewController *orderDetailViewController = [SCPOrderDetailViewController new];
-        orderDetailViewController.orderId = orderId;
-        orderDetailViewController.order = orderHistoryModel;
-        [navi pushViewController:orderDetailViewController animated:YES];
-    }
+    SCPOrderDetailViewController *orderDetailViewController = [SCPOrderDetailViewController new];
+    orderDetailViewController.orderId = orderId;
+    orderDetailViewController.order = orderHistoryModel;
+    [navi pushViewController:orderDetailViewController animated:YES];
 }
 - (void)openOrderReview:(NSNotification *)noti{
     SCPOrderViewController *orderViewController = [SCPOrderViewController new];

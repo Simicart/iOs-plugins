@@ -9,12 +9,8 @@
 #import <SimiCartBundle/SimiCartBundle.h>
 #import <SimiCartBundle/SCCartCell.h>
 
-@interface SCPCartCell : SCCartCell{
-    float contentWidth;
-    float contentHeight;
-    float qtyViewHeight;
-    float qtyViewWidth, priceWidth;
-    float paddingX, paddingY;
-}
+@interface SCPCartCell : SCCartCell
+
+@property (nonatomic) float contentWidth, contentHeight, qtyViewHeight,qtyViewWidth,priceWidth,paddingX,paddingY;
 
 @end

@@ -165,6 +165,45 @@
     orderVC = [noti.userInfo objectForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.viewcontroller];
     UITableView *tableView = orderVC.contentTableView;
     if([row.identifier isEqualToString:ORDER_COUPONCODE_ROW]){
+#if __has_include("SCPInitWorker.h")
+        SimiTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:row.identifier];
+        if(!cell){
+            float paddingX = SCALEVALUE(20);
+            float paddingY = SCALEVALUE(15);
+            if(PADDEVICE){
+                paddingX = SCALEVALUE(5);
+            }
+            float contentWidth = CGRectGetWidth(tableView.frame) - 2*paddingX;
+            cell = [[SimiTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:row.identifier];
+            cell.heightCell = paddingY;
+            cell.contentView.backgroundColor = [UIColor clearColor];
+            cell.backgroundColor = [UIColor clearColor];
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+            SimiLabel *titleLabel = [[SimiLabel alloc] initWithFrame:CGRectMake(paddingX, cell.heightCell, contentWidth, SCALEVALUE(20)) andFontName:SCP_FONT_SEMIBOLD andFontSize:FONT_SIZE_MEDIUM andTextColor:COLOR_WITH_HEX(@"#FD7D23") text:@"Enter a coupon code"];
+            [cell.contentView addSubview:titleLabel];
+            cell.heightCell += CGRectGetHeight(titleLabel.frame) + paddingY - 5;
+            
+            orderCouponTextField = [[SimiTextField alloc] initWithFrame:CGRectMake(paddingX, cell.heightCell, contentWidth - SCALEVALUE(90), 40) placeHolder:@"Enter code here" font:[UIFont fontWithName:SCP_FONT_REGULAR size:FONT_SIZE_MEDIUM] textColor:[UIColor blackColor] backgroundColor:[UIColor whiteColor] borderWidth:0 borderColor:[UIColor clearColor] cornerRadius:4 leftView:[[UIView alloc] initWithFrame:CGRectMake(0, 0, 15, 1)] rightView:nil leftBarTitle:nil rightBarTitle:@"Done"];
+            orderCouponTextField.autocorrectionType = UITextAutocorrectionTypeNo;
+            orderCouponTextField.autocapitalizationType = UITextAutocapitalizationTypeNone;
+            orderCouponTextField.delegate = self;
+            [orderCouponTextField setClearButtonMode:UITextFieldViewModeWhileEditing];
+            SCPButton *applyCouponCodeButton = [[SCPButton alloc]initWithFrame:CGRectMake(paddingX + contentWidth - SCALEVALUE(85), cell.heightCell, 85, 40) title:@"Apply" titleFont:[UIFont fontWithName:SCP_FONT_SEMIBOLD size:FONT_SIZE_MEDIUM] cornerRadius:4 borderWidth:0 borderColor:nil];
+            [applyCouponCodeButton addTarget:self action:@selector(applyCouponOnOrderView:) forControlEvents:UIControlEventTouchUpInside];
+            
+            [cell.contentView addSubview:orderCouponTextField];
+            [cell.contentView addSubview:applyCouponCodeButton];
+            cell.heightCell += CGRectGetHeight(orderCouponTextField.frame);
+            [SimiGlobalFunction sortViewForRTL:cell.contentView andWidth:CGRectGetWidth(tableView.frame)];
+        }
+        if([orderVC.order.total valueForKey:@"coupon_code"]){
+            [orderCouponTextField setText:[orderVC.order.total valueForKey:@"coupon_code"]];
+        }else
+            [orderCouponTextField setText:@""];
+        row.tableCell = cell;
+        row.height = cell.heightCell;
+        orderVC.isDiscontinue = YES;
+#else
         UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:row.identifier];
         if (cell == nil) {
             cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:row.identifier];;
@@ -194,6 +233,7 @@
             [orderCouponTextField setText:@""];
         row.tableCell = cell;
         orderVC.isDiscontinue = YES;
+#endif
     }
 }
 

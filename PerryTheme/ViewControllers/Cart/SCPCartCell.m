@@ -14,10 +14,12 @@
     SimiLabel *priceLabel;
     float contentPadding;
 }
+@synthesize contentWidth, contentHeight, qtyViewHeight,qtyViewWidth,priceWidth,paddingX,paddingY;
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier quoteItemModel:(SimiQuoteItemModel *)itemModel{
     self = [self initWithStyle:style reuseIdentifier:reuseIdentifier quoteItemModel:itemModel useOnOrderPage:NO];
     return self;
 }
+
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier quoteItemModel:(SimiQuoteItemModel*)itemModel useOnOrderPage:(BOOL)useOnOrderPage{
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
@@ -59,21 +61,21 @@
 
 - (void)configureInterface{
     cellWidth = SCREEN_WIDTH;
-    padding = SCALEVALUE(15);
+    paddingX = SCALEVALUE(15);
     contentPadding = SCALEVALUE(15);
     imageX = 0;
     imageWidth = SCALEVALUE(100);
     if(PADDEVICE){
         cellWidth = SCREEN_WIDTH*0.6f;
         contentPadding = SCALEVALUE(20);
-        padding = SCALEVALUE(20);
+        paddingX = SCALEVALUE(20);
         imageWidth = SCALEVALUE(150);
     }
-    contentWidth = cellWidth - 2*padding;
+    contentWidth = cellWidth - 2*paddingX;
     deleteButtonWidth = 44;
     deleteButtonX = contentWidth - deleteButtonWidth;
-    labelX = imageWidth + imageX + padding;
-    labelWidth = contentWidth - labelX - padding;
+    labelX = imageWidth + imageX + paddingX;
+    labelWidth = contentWidth - labelX - paddingX;
     optionWidth = labelWidth;
     optionX = labelX;
     qtyViewHeight = 30;
@@ -95,7 +97,7 @@
 }
 
 - (void)initContentView{
-    self.simiContentView = [[UIView alloc] initWithFrame:CGRectMake(padding, self.heightCell, contentWidth, 0)];
+    self.simiContentView = [[UIView alloc] initWithFrame:CGRectMake(paddingX, self.heightCell, contentWidth, 0)];
     self.simiContentView.backgroundColor = [UIColor whiteColor];
     self.contentView.backgroundColor = [UIColor clearColor];
     self.backgroundColor = [UIColor clearColor];
