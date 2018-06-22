@@ -65,12 +65,14 @@
         }else if([row.identifier isEqualToString:THANK_YOU_PAGE_NUMBER_ROW]){
             cell.heightCell = 30;
             SCPButton *viewDetailButton = [[SCPButton alloc] initWithFrame:CGRectMake(paddingX, cell.heightCell, contentWidth, buttonHeight) title:@"" titleFont:nil cornerRadius:buttonHeight/2 borderWidth:2 borderColor:[UIColor blackColor]];
-            [viewDetailButton setImage:[[UIImage imageNamed:@"scp_ic_next"] imageWithColor:[UIColor blackColor]] forState:UIControlStateNormal];
-            [viewDetailButton setImageEdgeInsets:UIEdgeInsetsMake(12, contentWidth - 30, 12, 10)];
+            UIImageView *nextImageView = [[UIImageView alloc] initWithFrame:CGRectMake(contentWidth - 27, 15, 14, 14)];
+            nextImageView.image = [[UIImage imageNamed:@"scp_ic_next"] imageWithColor:[UIColor blackColor]];
+            nextImageView.contentMode = UIViewContentModeScaleAspectFit;
+            [viewDetailButton addSubview:nextImageView];
             [viewDetailButton addTarget:self action:@selector(viewOrderDetail:) forControlEvents:UIControlEventTouchUpInside];
             viewDetailButton.backgroundColor = [UIColor clearColor];
             [viewDetailButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-            NSString *htmlString = [NSString stringWithFormat:@"<span style='font-family:%@;font-size:%f'>%@: </span><span style='font-family:%@;font-size:%f'>%@</span>",SCP_FONT_LIGHT,FONT_SIZE_MEDIUM,SCLocalizedString(@"View detail of your order"),SCP_FONT_REGULAR,FONT_SIZE_MEDIUM,[NSString stringWithFormat:@"#%@", @"1203231"]];
+            NSString *htmlString = [NSString stringWithFormat:@"<span style='font-family:%@;font-size:%f'>%@: </span><span style='font-family:%@;font-size:%f'>%@</span>",SCP_FONT_LIGHT,FONT_SIZE_MEDIUM,SCLocalizedString(@"View detail of your order"),SCP_FONT_REGULAR,FONT_SIZE_MEDIUM,[NSString stringWithFormat:@"#%@", self.order.invoiceNumber]];
             NSAttributedString * attrStr = [[NSAttributedString alloc] initWithData:[htmlString dataUsingEncoding:NSUnicodeStringEncoding] options:@{ NSDocumentTypeDocumentAttribute: NSHTMLTextDocumentType } documentAttributes:nil error:nil];
             [viewDetailButton setAttributedTitle:attrStr forState:UIControlStateNormal];
             [cell.contentView addSubview:viewDetailButton];
@@ -87,9 +89,9 @@
     return cell;
 }
 - (void)continueShopping:(UIButton *)sender{
-    
+    [self.navigationController popToRootViewControllerAnimated:YES];
 }
 - (void)viewOrderDetail:(UIButton *)sender{
-    
+    [[SCAppController sharedInstance] openOrderHistoryDetailScreenWithNavigationController:self.navigationController moreParams:@{KEYEVENT.ORDERHISTORYDETAILVIEWCONTROLLER.order_id:self.order.invoiceNumber}];
 }
 @end
