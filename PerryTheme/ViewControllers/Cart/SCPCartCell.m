@@ -67,8 +67,11 @@
     imageWidth = SCALEVALUE(100);
     if(PADDEVICE){
         cellWidth = SCREEN_WIDTH*0.6f;
+        if(self.useOnOrderPage){
+            cellWidth = SCREEN_WIDTH*0.4f;
+        }
         contentPadding = SCALEVALUE(20);
-        paddingX = SCALEVALUE(20);
+        paddingX = SCALEVALUE(15);
         imageWidth = SCALEVALUE(150);
     }
     contentWidth = cellWidth - 2*paddingX;

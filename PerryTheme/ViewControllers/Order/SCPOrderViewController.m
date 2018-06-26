@@ -263,18 +263,16 @@
             paymentContent = payment.content;
         }
     }else if (payment.showType == PaymentShowTypeCreditCard){
-        if (payment.isSelected) {
-            for (int i = 0; i < creditCards.count; i++) {
-                NSDictionary *creditCard = [creditCards objectAtIndex:i];
-                if ([[creditCard valueForKey:@"payment_method"] isEqualToString:payment.code]) {
-                    if ([[creditCard valueForKey:hasData]boolValue]) {
-                        NSString *ccNumberString = [creditCard valueForKey:@"cc_number"];
-                        if (ccNumberString.length > 4) {
-                            paymentContent = [NSString stringWithFormat:@"****%@", [[creditCard valueForKey:@"cc_number"] substringWithRange:NSMakeRange([[creditCard valueForKey:@"cc_number"] length] - 4, 4)]];
-                        }
+        for (int i = 0; i < creditCards.count; i++) {
+            NSDictionary *creditCard = [creditCards objectAtIndex:i];
+            if ([[creditCard valueForKey:@"payment_method"] isEqualToString:payment.code]) {
+                if ([[creditCard valueForKey:hasData]boolValue]) {
+                    NSString *ccNumberString = [creditCard valueForKey:@"cc_number"];
+                    if (ccNumberString.length > 4) {
+                        paymentContent = [NSString stringWithFormat:@"****%@", [[creditCard valueForKey:@"cc_number"] substringWithRange:NSMakeRange([[creditCard valueForKey:@"cc_number"] length] - 4, 4)]];
                     }
-                    break;
                 }
+                break;
             }
         }
         cell.isCreditCard = YES;
@@ -392,12 +390,12 @@
 - (void)expandShipment:(id)sender{
     UIButton *button = (UIButton *)sender;
     isExpandShipment = !isExpandShipment;
-    [self initCells];
     if(isExpandShipment){
         [button setImage:[UIImage imageNamed:@"ic_narrow_up"] forState:UIControlStateNormal];
     }else{
         [button setImage:[UIImage imageNamed:@"ic_narrow_down"] forState:UIControlStateNormal];
     }
+    [self initCells];
     [self.contentTableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:[self.cells getSectionIndexByIdentifier:ORDER_TOTALS_SECTION]] atScrollPosition:UITableViewScrollPositionMiddle animated:YES];
 //    [self.contentTableView beginUpdates];
 //    if(isExpandShipment){

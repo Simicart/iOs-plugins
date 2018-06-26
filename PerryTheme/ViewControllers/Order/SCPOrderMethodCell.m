@@ -36,7 +36,7 @@
         self.btnEditCard = [UIButton new];
         [self.btnEditCard setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
        [self.btnEditCard setImage:[[UIImage imageNamed:@"scp_ic_address_edit"] imageWithColor:SCP_BUTTON_BACKGROUND_COLOR] forState:UIControlStateNormal];
-        [self.btnEditCard setImageEdgeInsets:UIEdgeInsetsMake(10, 60, 10, 20)];
+        [self.btnEditCard setImageEdgeInsets:UIEdgeInsetsMake(0, 10, 20, 10)];
         [self.btnEditCard addTarget:self action:@selector(editCreditCard:) forControlEvents:UIControlEventTouchUpInside];
         
         self.selectionStyle = UITableViewCellSelectionStyleNone;
@@ -93,21 +93,20 @@
         self.heightCell += self.lblMethodContent.labelHeight;
     }
     self.heightCell += 15;
+    if (self.isCreditCard) {
+        float titleWidth = [SimiGlobalFunction widthOfText:self.lblMethodTitle.text font:self.lblMethodTitle.font];
+        [self.btnEditCard setFrame:CGRectMake(self.lblMethodTitle.frame.origin.x + titleWidth, 0, 44, 44)];
+        if(titleWidth > lblMethodTitleWidth){
+            [self.btnEditCard setFrame:CGRectMake(CGRectGetWidth(self.simiContentView.frame) - 44, 0, 44, 44)];
+        }
+        [self.simiContentView addSubview:self.btnEditCard];
+    }
     self.simiContentView.frame = CGRectMake(simiContentPaddingX, 0, simiContentWidth, self.heightCell);
 }
 
 - (void)setPriceWithParams:(NSDictionary *)param{
     NSString *price = [param valueForKey:@"s_method_fee"]?[[SimiFormatter sharedInstance] priceWithPrice:[NSString stringWithFormat:@"%@",[param valueForKey:@"s_method_fee"]]]:@"";
     self.lblMethodTitle.text = [NSString stringWithFormat:@"%@ (%@)",methodTitle,price];
-    
-    if (self.isCreditCard) {
-        float titleWidth = [SimiGlobalFunction widthOfText:self.lblMethodTitle.text font:self.lblMethodTitle.font];
-        [self.btnEditCard setFrame:CGRectMake(self.lblMethodTitle.frame.origin.x + titleWidth, 0, 100, 40)];
-        if(self.lblMethodTitle.frame.origin.x + titleWidth + 100 > CGRectGetWidth(self.simiContentView.frame)){
-            [self.btnEditCard setFrame:CGRectMake(CGRectGetWidth(self.simiContentView.frame) - 100, 0, 100, 40)];
-        }
-        [self.simiContentView addSubview:self.btnEditCard];
-    }
 }
 
 @end

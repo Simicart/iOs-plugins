@@ -81,11 +81,6 @@
     if(self.order.paymentMethods.count > 0){
         [self addPaymentMethodsToCells:self.moreCells];
     }
-    [self endInitMoreCellsWithInfo:@{}];
-    for(SimiSection *section in self.moreCells){
-        [section sortItems];
-    }
-    [self.moreContentTableView reloadData];
 }
 
 - (SimiSection*)addShipmentDetailToCells:(SimiTable *)cells{
@@ -159,14 +154,6 @@
             editButton.simiObjectIdentifier = simiSection;
             [editButton addTarget:self action:@selector(editAddress:) forControlEvents:UIControlEventTouchUpInside];
             [headerContentView addSubview:editButton];
-        }else if([simiSection.identifier isEqualToString:ORDER_TOTALS_SECTION]){
-            headerTitleLabel.frame = CGRectMake(titlePaddingX, 18, headerWidth - titlePaddingX - buttonWidth, 24);
-            UIButton *expandShipmentButton = [[UIButton alloc] initWithFrame:CGRectMake(headerWidth - buttonWidth, 0, buttonWidth, buttonWidth)];
-            expandShipmentButton.imageEdgeInsets = UIEdgeInsetsMake(15, 10, 10, 15);
-            [expandShipmentButton setImage:[[UIImage imageNamed:@"ic_narrow_down"] imageWithColor:SCP_ICON_COLOR] forState:UIControlStateNormal];
-            expandShipmentButton.simiObjectIdentifier = simiSection;
-            [expandShipmentButton addTarget:self action:@selector(expandShipment:) forControlEvents:UIControlEventTouchUpInside];
-            [headerContentView addSubview:expandShipmentButton];
         }
         [SimiGlobalFunction sortViewForRTL:headerContentView andWidth:headerWidth];
     }
@@ -191,11 +178,23 @@
         SimiLabel *headerTitleLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(titlePaddingX, 18, headerWidth - titlePaddingX - 2*titlePaddingX, 24) andFontName:SCP_FONT_SEMIBOLD andFontSize:FONT_SIZE_HEADER andTextColor:[UIColor blackColor]];
         headerTitleLabel.text = simiSection.header.title;
         [headerContentView addSubview:headerTitleLabel];
+        if([simiSection.identifier isEqualToString:ORDER_TOTALS_SECTION]){
+            float buttonWidth = 44;
+            headerTitleLabel.frame = CGRectMake(titlePaddingX, 18, headerWidth - titlePaddingX - buttonWidth, 24);
+            UIButton *expandShipmentButton = [[UIButton alloc] initWithFrame:CGRectMake(headerWidth - buttonWidth, 0, buttonWidth, buttonWidth)];
+            expandShipmentButton.imageEdgeInsets = UIEdgeInsetsMake(15, 10, 10, 15);
+            [expandShipmentButton setImage:[[UIImage imageNamed:@"ic_narrow_down"] imageWithColor:SCP_ICON_COLOR] forState:UIControlStateNormal];
+            expandShipmentButton.simiObjectIdentifier = simiSection;
+            [expandShipmentButton addTarget:self action:@selector(expandShipment:) forControlEvents:UIControlEventTouchUpInside];
+            [headerContentView addSubview:expandShipmentButton];
+        }
         [SimiGlobalFunction sortViewForRTL:headerContentView andWidth:headerWidth];
     }
     return headerView;
 }
-
+- (void)expandShipment:(id)sender{
+    [super expandShipment:sender];
+}
 
 #pragma mark Cell for Row At IndexPath
 - (UITableViewCell *)moreContentTableViewCellForRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -375,7 +374,7 @@
 #pragma mark Order Method Cell Delegate
 - (void)editCreditCard:(SimiPaymentMethodModel*)paymentModel{
     selectingPaymentModel = paymentModel;
-    SCCreditCardViewController *nextController = [[SCCreditCardViewController alloc] init];
+    SCPCreditCardViewController *nextController = [[SCPCreditCardViewController alloc] init];
     nextController.delegate = self;
     for (int i = 0; i < creditCards.count; i++) {
         NSMutableDictionary *creditCard = [creditCards objectAtIndex:i];

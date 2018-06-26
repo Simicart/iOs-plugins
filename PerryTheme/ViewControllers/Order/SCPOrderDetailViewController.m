@@ -206,6 +206,7 @@
         }else if([row.identifier isEqualToString:ORDER_DETAIL_SHIPPING_METHOD]){
             cell.heightCell = paddingContentY;
             SCPLabel *shippingMethodLabel = [[SCPLabel alloc] initWithFrame:CGRectMake(paddingContentX, cell.heightCell, tableWidth - 2*paddingContentX, 20)];
+            shippingMethodLabel.textColor = SCP_ICON_HIGHLIGHT_COLOR;
             shippingMethodLabel.text = self.order.shippingMethod;
             [shippingMethodLabel wrapContent];
             cell.heightCell += CGRectGetHeight(shippingMethodLabel.frame) + paddingContentY;
@@ -214,6 +215,7 @@
         }else if([row.identifier isEqualToString:ORDER_DETAIL_PAYMENT_METHOD]){
             cell.heightCell = paddingContentY;
             SCPLabel *paymentMethodLabel = [[SCPLabel alloc] initWithFrame:CGRectMake(paddingContentX, cell.heightCell, tableWidth - 2*paddingContentX, 20)];
+            paymentMethodLabel.textColor = SCP_ICON_HIGHLIGHT_COLOR;
             paymentMethodLabel.text = self.order.paymentMethod;
             [cell.contentView addSubview:paymentMethodLabel];
             cell.heightCell += [paymentMethodLabel wrapContent];
@@ -236,7 +238,8 @@
         }else if([row.identifier isEqualToString:ORDER_DETAIL_COUPONCODE]){
             cell.heightCell = paddingContentY;
             SCPLabel *couponLabel = [[SCPLabel alloc] initWithFrame:CGRectMake(paddingContentX, cell.heightCell, tableWidth - 2*paddingContentX, 20)];
-            couponLabel.text = [NSString stringWithFormat:@"%@: %@",SCLocalizedString(@"Coupon code"),self.order.couponCode];
+            couponLabel.text = [NSString stringWithFormat:@"%@: %@",SCLocalizedString(@"Coupon code"),[self.order.couponCode isNull]?@"none":self.order.couponCode];
+            couponLabel.textColor = SCP_ICON_HIGHLIGHT_COLOR;
             cell.heightCell += [couponLabel wrapContent] + paddingContentY;
             [cell.contentView addSubview:couponLabel];
             cell.heightCell += paddingItems;
@@ -251,6 +254,7 @@
             [(SCOrderFeeCell *)cell setData:orderTotal andWidthCell:tableWidth];
         }
     }
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
     row.height = cell.heightCell;
     return cell;
 }

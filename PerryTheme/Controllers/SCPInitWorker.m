@@ -51,7 +51,18 @@
     SCPOrderDetailViewController *orderDetailViewController = [SCPOrderDetailViewController new];
     orderDetailViewController.orderId = orderId;
     orderDetailViewController.order = orderHistoryModel;
-    [navi pushViewController:orderDetailViewController animated:YES];
+    BOOL isShowPopup = [[noti.userInfo objectForKey:KEYEVENT.APPCONTROLLER.is_showpopover] boolValue];
+    if(!isShowPopup){
+        [navi pushViewController:orderDetailViewController animated:YES];
+    }else{
+        UINavigationController *orderNavi = [[UINavigationController alloc]initWithRootViewController:orderDetailViewController];
+        orderNavi.modalPresentationStyle = UIModalPresentationPopover;
+        UIPopoverPresentationController *popover = orderNavi.popoverPresentationController;
+        popover.sourceRect = CGRectMake(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 1, 1);
+        popover.sourceView = [UIApplication sharedApplication].delegate.window.rootViewController.view;
+        popover.permittedArrowDirections = 0;
+        [GLOBALVAR.currentViewController presentViewController:orderNavi animated:YES completion:nil];
+    }
 }
 - (void)openOrderReview:(NSNotification *)noti{
     SCPOrderViewController *orderViewController = [SCPOrderViewController new];
@@ -76,6 +87,8 @@
     SimiOrderModel *orderModel = [noti.userInfo objectForKey:KEYEVENT.THANKYOUPAGEVIEWCONTROLLER.order_model];
     
     SCPThankYouPageViewController *thankVC = [[SCPThankYouPageViewController alloc] init];
+    if(PADDEVICE)
+        thankVC = [SCPPadThankYouPageViewController new];
     thankVC.order = orderModel;
     if([noti.userInfo objectForKey:KEYEVENT.THANKYOUPAGEVIEWCONTROLLER.checkout_type]){
         CheckOutType checkoutType = [[noti.userInfo objectForKey:KEYEVENT.THANKYOUPAGEVIEWCONTROLLER.checkout_type] integerValue];
@@ -84,17 +97,7 @@
         }
     }
     appController.isDiscontinue = YES;
-    if (PHONEDEVICE) {
-        [navi pushViewController:thankVC animated:YES];
-    }else{
-        UINavigationController *navi = [[UINavigationController alloc]initWithRootViewController:thankVC];
-        navi.modalPresentationStyle = UIModalPresentationPopover;
-        UIPopoverPresentationController *popover = navi.popoverPresentationController;
-        popover.sourceRect = CGRectMake(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 1, 1);
-        popover.sourceView = navi.view;
-        popover.permittedArrowDirections = 0;
-        [navi presentViewController:navi animated:YES completion:nil];
-    }
+    [navi pushViewController:thankVC animated:YES];
 }
 - (void)initializedMenu:(NSNotification *)noti{
     SCMainViewController *mainVC = noti.object;

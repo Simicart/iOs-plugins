@@ -21,4 +21,5 @@
 }
 - (SCPOrderAddressTableViewCell *)createSCPShippingAddressCellWithRow:(SimiRow *)row tableView:(UITableView *)tableView;
 - (SCPOrderAddressTableViewCell *)createSCPBillingAddressCellWithRow:(SimiRow *)row tableView:(UITableView *)tableView;
+- (void)expandShipment:(id)sender;
 @end
