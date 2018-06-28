@@ -55,9 +55,13 @@
     if (product.name != nil && product.entityId != nil && product.sku != nil){
         [[NSNotificationCenter defaultCenter]postNotificationName:TRACKINGEVENT object:@"product_action" userInfo:@{@"action":@"clicked_share_button",@"product_name":product.name,@"product_id":product.entityId,@"sku":product.sku,@"qty":@"1",@"theme":[viewController isKindOfClass:[SCProductSecondDesignViewController class]]?@"cherry":@"default"}];
     }
+    NSURL *productURL = nil;
     if ([product valueForKey:@"url_path"]) {
-        NSURL *productURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@",kBaseURL, [product valueForKey:@"url_path"]]];
-        
+        productURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@",kBaseURL, [product valueForKey:@"url_path"]]];
+    }else{
+        productURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@catalog/product/view/id/%@",kBaseURL,product.entityId]];
+    }
+    if (productURL != nil) {
         UIActivityViewController *activityViewController =
         [[UIActivityViewController alloc] initWithActivityItems:@[productURL]
                                           applicationActivities:nil];
@@ -68,7 +72,7 @@
                                                             // ...
                                                         }];
     }
-    }
+}
 
 - (void)beforeTouchMoreAction: (NSNotification *)noti {
     

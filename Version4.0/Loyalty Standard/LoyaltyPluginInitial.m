@@ -60,7 +60,7 @@ static NSString *CHERRY_REWARDS_ROW = @"CHERRY_REWARDS_ROW";
         // Order Review
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orderViewControllerViewDidLoad:) name:@"SCOrderViewControllerViewDidLoad" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initLoyaltyCell:) name:[NSString stringWithFormat:@"%@%@",SCOrderViewController_RootEventName,SimiTableViewController_SubKey_InitCells_End] object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializeOrderCellAfter:) name:[NSString stringWithFormat:@"%@%@",SCOrderViewController_RootEventName,SimiTableViewController_SubKey_InitializedCell_End] object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializeOrderCellBegin:) name:[NSString stringWithFormat:@"%@%@",SCOrderViewController_RootEventName,SimiTableViewController_SubKey_InitializedCell_Begin] object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didSpendPointsOrder:) name:Loyalty_DidSpendPointsOrder object:nil];
     }
     return self;
@@ -219,7 +219,7 @@ static NSString *CHERRY_REWARDS_ROW = @"CHERRY_REWARDS_ROW";
     }
 }
 
-- (void)initializeOrderCellAfter:(NSNotification *)noti
+- (void)initializeOrderCellBegin:(NSNotification *)noti
 {
     NSIndexPath *indexPath = [noti.userInfo valueForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.indexpath];
     SimiTable *cells = noti.object;
@@ -227,7 +227,7 @@ static NSString *CHERRY_REWARDS_ROW = @"CHERRY_REWARDS_ROW";
     SimiRow *row = [section objectAtIndex:indexPath.row];
     SCOrderViewController *orderViewController = [noti.userInfo valueForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.viewcontroller];
     if ([row.identifier isEqualToString:LOYALTY_CHECKOUT]) {
-        UITableViewCell *cell = [noti.userInfo objectForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.cell];
+        UITableViewCell *cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:row.identifier];
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         if (![globalVar isLogin]) {
             cell.textLabel.font = [UIFont fontWithName:THEME_FONT_NAME size:FONT_SIZE_LARGE];
@@ -266,7 +266,8 @@ static NSString *CHERRY_REWARDS_ROW = @"CHERRY_REWARDS_ROW";
                 points.textAlignment = NSTextAlignmentCenter;
                 points.frame = CGRectMake(15, 72, width, 22);
                 if ([[order.modelData valueForKey:@"loyalty"] objectForKey:@"loyalty_spend"]) {
-                    points.text = [[SCLocalizedString(@"Spending") stringByAppendingString:@": "] stringByAppendingString:[[[order.modelData valueForKey:@"loyalty"] objectForKey:@"loyalty_spend"] stringValue]];
+                    NSString *loyaltySpend = [NSString stringWithFormat:@"%@",[[order.modelData valueForKey:@"loyalty"] objectForKey:@"loyalty_spend"]];
+                    points.text = [[SCLocalizedString(@"Spending") stringByAppendingString:@": "] stringByAppendingString:loyaltySpend];
                 }
                 [cell addSubview:points];
                 slider.simiObjectIdentifier = points;

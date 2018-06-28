@@ -133,7 +133,7 @@
             CGFloat width = MIN(CGRectGetWidth(tableView.frame), 360);
             UIView *view = [[UIView alloc] initWithFrame:CGRectMake((CGRectGetWidth(tableView.frame) - width) / 2, 0, width, row.height)];
             view.tag = 100;
-            [cell addSubview:view];
+            [cell.contentView addSubview:view];
             // Draw Reward Points Information
             CGFloat y = 20;
             CGFloat height;
@@ -274,6 +274,7 @@
                 maxLabel.minimumScaleFactor = 0.5;
                 [status addSubview:maxLabel];
             }
+            [SimiGlobalFunction sortViewForRTL:view andWidth:width];
         }
     } else if ([section.identifier isEqualToString:LOYALTY_LOGIN]) {
         // Login Cell
@@ -297,6 +298,9 @@
             cell.textLabel.font = [UIFont fontWithName:THEME_FONT_NAME size:FONT_SIZE_LARGE];
             cell.textLabel.adjustsFontSizeToFitWidth = YES;
             cell.textLabel.minimumScaleFactor = 0.5f;
+            if (GLOBALVAR.isReverseLanguage) {
+                [cell.textLabel setTextAlignment:NSTextAlignmentRight];
+            }
         }
         if ([row.identifier isEqualToString:LOYALTY_HISTORY] || [row.identifier isEqualToString:LOYALTY_SETTING]) {
             cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;

@@ -307,13 +307,15 @@
     if([section.identifier isEqualToString:product_reviews_section]) {
         if([row.identifier isEqualToString:product_reviews_normal_row]) {
             UIViewController *nextController = [[UIViewController alloc]init];
+            nextController.preferredContentSize = CGSizeMake(SCREEN_WIDTH/2, SCREEN_HEIGHT*2/3);
             SimiModel *reviewModel = row.model;
             UIScrollView *scrollView = [[UIScrollView alloc]initWithFrame:nextController.view.bounds];
+            scrollView.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
             nextController.title = [reviewModel valueForKey:@"title"];
             
             SCProductReviewShortCell *reviewCell = [[SCProductReviewShortCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil reviewData:reviewModel numberTitleLine:0 numberBodyLine:0];
             [reviewCell setFrame:scrollView.bounds];
-            scrollView.contentSize = CGSizeMake(scrollView.frame.size.width, reviewCell.cellHeight);
+            scrollView.contentSize = CGSizeMake(SCREEN_WIDTH/2, SCREEN_HEIGHT*2/3);
             [scrollView addSubview:reviewCell];
             scrollView.backgroundColor = THEME_APP_BACKGROUND_COLOR;
             [nextController.view addSubview:scrollView];

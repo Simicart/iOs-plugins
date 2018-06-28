@@ -12,10 +12,10 @@
 #import "SCWishlistModel.h"
 
 @protocol SCWishlistCollectionViewCellDelegate <NSObject>
--(void) deleteWishlistItem: (SCWishlistModel*) wishlistItem;
--(void) addToCartWithWishlistItem: (SCWishlistModel*) wishlistItem;
--(void) shareWishlistItem: (SCWishlistModel*) wishlistItem inView:(UIView*) view;
--(void) tapToWishlistItem: (SCWishlistModel*) wishlistItem;
+- (void)deleteWishlistItem: (SCWishlistModel*) wishlistItem;
+- (void)addToCartWithWishlistItem: (SCWishlistModel*) wishlistItem;
+- (void)shareWishlistItem: (SCWishlistModel*) wishlistItem inView:(UIView*) view;
+- (void)tapToWishlistItem: (SCWishlistModel*) wishlistItem;
 @end
 
 @interface SCWishlistCollectionViewCell : UICollectionViewCell
