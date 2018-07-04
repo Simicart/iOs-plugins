@@ -182,7 +182,7 @@
     contentHeight += CGRectGetHeight(qtyView.frame) + contentPadding;
     if(self.useOnOrderPage){
         SimiLabel *qtyLabel = [[SimiLabel alloc] initWithFrame:qtyView.bounds];
-        NSString *qtyHTML = [NSString stringWithFormat:@"<span style='font-family:%@;font-size:%f'>%@</span>:&nbsp;<span style='font-family:%@;font-size:%f'>%@</span>",SCP_FONT_REGULAR,FONT_SIZE_MEDIUM,SCLocalizedString(@"Quantity"),SCP_FONT_LIGHT,FONT_SIZE_MEDIUM,[NSString stringWithFormat:@"%ld",(long)self.item.qty]];
+        NSString *qtyHTML = [NSString stringWithFormat:@"<span style='font-family:%@;font-size:%f'>%@</span>:&nbsp;<span style='font-family:%@;font-size:%f'>%@</span>",SCP_FONT_REGULAR,FONT_SIZE_MEDIUM,SCLocalizedString(@"Quantity"),SCP_FONT_LIGHT,FONT_SIZE_MEDIUM,[NSString stringWithFormat:@"%ld",(long)(self.item.qty > 0?self.item.qty:self.item.qtyOrdered)]];
         qtyLabel.attributedText =
         [[NSAttributedString alloc]  initWithData: [qtyHTML dataUsingEncoding:NSUnicodeStringEncoding]
                                           options: @{ NSDocumentTypeDocumentAttribute: NSHTMLTextDocumentType }
@@ -195,8 +195,8 @@
         float qtyBoxWidth = SCALEVALUE(30);
         float qtyBoxHeight = SCALEVALUE(25);
         float qtyButtonWidth = (qtyViewWidth - qtyBoxWidth)/2;
-        if(self.item.maxQty > 10000)
-            self.item.maxQty = 10000;
+        if(self.item.product.maxQty > 10000)
+            self.item.product.maxQty = 10000;
         qtyButton = [[UIButton alloc]initWithFrame:CGRectMake((qtyViewWidth - qtyBoxWidth)/2 , (qtyViewHeight - qtyBoxHeight)/2, qtyBoxWidth, qtyBoxHeight)];
         [qtyButton titleLabel].font = [UIFont fontWithName:SCP_FONT_SEMIBOLD size:FONT_SIZE_MEDIUM];
         qtyButton.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
@@ -224,15 +224,15 @@
     }
 }
 - (void)minusQty:(id)sender{
-    if(self.item.qty - self.item.qtyIncrement >= self.item.minQty){
-        qty = self.item.qty - self.item.qtyIncrement;
+    if(self.item.qty - self.item.product.qtyIncrement >= self.item.product.minQty){
+        qty = self.item.qty - self.item.product.qtyIncrement;
         [self.delegate editItemQtyWithItem:self.item andQty:[NSString stringWithFormat:@"%d",qty]];
         [qtyButton setTitle:[NSString stringWithFormat:@"%ld",(long)qty] forState:UIControlStateNormal];
     }
 }
 - (void)plusQty:(id)sender{
-    if(self.item.qty + self.item.qtyIncrement < self.item.maxQty){
-        qty = self.item.qty + self.item.qtyIncrement;
+    if(self.item.qty + self.item.product.qtyIncrement < self.item.product.maxQty){
+        qty = self.item.qty + self.item.product.qtyIncrement;
         [self.delegate editItemQtyWithItem:self.item andQty:[NSString stringWithFormat:@"%d",qty]];
         [qtyButton setTitle:[NSString stringWithFormat:@"%ld",(long)qty] forState:UIControlStateNormal];
     }
@@ -268,10 +268,10 @@
 - (void)qtyButtonClicked:(UIButton*)sender{
     qtyArray = [[NSMutableArray alloc] init];
     float qtyIncrement = 1;
-    if (self.item.qtyIncrement > 0) {
-        qtyIncrement = self.item.qtyIncrement;
+    if (self.item.product.qtyIncrement > 0) {
+        qtyIncrement = self.item.product.qtyIncrement;
     }
-    for (int i = self.item.minQty; i <= self.item.maxQty; i+= qtyIncrement) {
+    for (int i = self.item.product.minQty; i <= self.item.product.maxQty; i+= qtyIncrement) {
         [qtyArray addObject:[NSString stringWithFormat:@"%d",i]];
     }
     int qty = [[qtyButton titleForState:UIControlStateNormal] intValue];

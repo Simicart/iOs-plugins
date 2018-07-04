@@ -238,7 +238,7 @@
         }else if([row.identifier isEqualToString:ORDER_DETAIL_COUPONCODE]){
             cell.heightCell = paddingContentY;
             SCPLabel *couponLabel = [[SCPLabel alloc] initWithFrame:CGRectMake(paddingContentX, cell.heightCell, tableWidth - 2*paddingContentX, 20)];
-            couponLabel.text = [NSString stringWithFormat:@"%@: %@",SCLocalizedString(@"Coupon code"),[self.order.couponCode isNull]?@"none":self.order.couponCode];
+            couponLabel.text = [NSString stringWithFormat:@"%@: %@",SCLocalizedString(@"Coupon code"),[[self.order objectForKey:@"coupon_code"] isNull]?@"None":self.order.couponCode];
             couponLabel.textColor = SCP_ICON_HIGHLIGHT_COLOR;
             cell.heightCell += [couponLabel wrapContent] + paddingContentY;
             [cell.contentView addSubview:couponLabel];

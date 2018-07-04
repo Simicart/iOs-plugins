@@ -17,6 +17,8 @@
     [super viewDidLoadBefore];
     shipmentExpandIndexPaths = [NSMutableArray new];
     isExpandShipment = NO;
+}
+- (void)configureLogo{
     self.title = @"Order review";
 }
 - (void)viewDidAppearBefore:(BOOL)animated{

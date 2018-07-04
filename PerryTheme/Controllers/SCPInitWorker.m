@@ -107,11 +107,9 @@
     if(PADDEVICE){
         width = 328;
     }
-    [mainVC setLeftViewEnabledWithWidth:width
-                      presentationStyle:LGSideMenuPresentationStyleSlideAbove
-                   alwaysVisibleOptions:LGSideMenuAlwaysVisibleOnNone];
-    mainVC.leftViewStatusBarVisibleOptions = LGSideMenuStatusBarVisibleOnAll;
-    [mainVC.leftView addSubview:leftMenuViewController.view];
+    mainVC.leftViewController = leftMenuViewController;
+    mainVC.leftViewWidth = width;
+    mainVC.leftViewPresentationStyle = LGSideMenuPresentationStyleSlideAbove;
 }
 
 - (void)initializedMenuSize:(NSNotification*)noti{
