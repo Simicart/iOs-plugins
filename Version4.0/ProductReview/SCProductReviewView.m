@@ -66,7 +66,7 @@
         float originY;
         for(int i = 0;i< 5;i++){
             UIImageView *imgStar = [[UIImageView alloc] initWithFrame:SCALEFRAME(CGRectMake(0, originY_StarRate,sizeStar, sizeStar))];
-            [imgStar setImage:[UIImage imageNamed:@"rate0"]];
+            [imgStar setImage:[UIImage imageNamed:@"ic_star2"]];
             CGRect frameStar = [imgStar frame];
             frameStar.origin.x = SCALEVALUE(originXStarRate)+ i*SCALEVALUE(sizeStar);
             [imgStar setFrame:frameStar];

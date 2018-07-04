@@ -69,8 +69,11 @@
                             NSDictionary* rateField = [rateFields objectAtIndex:i];
                             UIView* ratingView = [[UIView alloc] initWithFrame:CGRectMake(0, viewY, viewWidth, 30)];
                             [reviewContentView addSubview:ratingView];
-                            SimiLabel* ratingLabel = [[SimiLabel alloc] initWithFrame:CGRectMake(paddingWidth, 0, viewWidth/2 - paddingWidth, 30) andFontName:THEME_FONT_NAME andFontSize:FONT_SIZE_LARGE andTextColor:THEME_CONTENT_COLOR text:[rateField objectForKey:@"rate_code"]];
-                            ASStarRatingView* ratingStarView = [[ASStarRatingView alloc] initWithFrame:CGRectMake(viewWidth/2, 0, viewWidth/2 - paddingWidth, 30)];
+                            NSString *labelTitle = [NSString stringWithFormat:@"%@",[rateField objectForKey:@"rate_code"]];
+                            labelTitle = SCLocalizedString(labelTitle);
+                            float ratingLabelWidth = [labelTitle sizeWithAttributes:@{NSFontAttributeName:[UIFont fontWithName:THEME_FONT_NAME size:FONT_SIZE_LARGE]}].width;
+                            SimiLabel* ratingLabel = [[SimiLabel alloc] initWithFrame:CGRectMake(paddingWidth, 0, ratingLabelWidth, 30) andFontName:THEME_FONT_NAME andFontSize:FONT_SIZE_LARGE andTextColor:THEME_CONTENT_COLOR text:[rateField objectForKey:@"rate_code"]];
+                            ASStarRatingView* ratingStarView = [[ASStarRatingView alloc] initWithFrame:CGRectMake(ratingLabelWidth +paddingWidth*2, 0, viewWidth/2 - paddingWidth, 30)];
                             ratingStarView.simiRateData = [rateField objectForKey:@"rate_options"];
                             [ratingViews addObject:ratingStarView];
                             ratingStarView.rating = 1;
@@ -79,6 +82,7 @@
                             [ratingView addSubview:ratingLabel];
                             [ratingView addSubview:ratingStarView];
                             viewY += ratingStarView.frame.size.height;
+                            [SimiGlobalFunction sortViewForRTL:ratingView andWidth:viewWidth];
                         }
                     }
                     if([[[formAddReviews objectAtIndex:0] objectForKey:@"form_review"] isKindOfClass:[NSDictionary class]]){

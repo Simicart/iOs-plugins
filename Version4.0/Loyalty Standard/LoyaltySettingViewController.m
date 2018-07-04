@@ -95,6 +95,9 @@
         cell.textLabel.text = row.title;
         cell.textLabel.font = [UIFont fontWithName:THEME_FONT_NAME size:FONT_SIZE_LARGE];
         cell.textLabel.textColor = THEME_CONTENT_COLOR;
+        if (GLOBALVAR.isReverseLanguage) {
+            [cell.textLabel setTextAlignment:NSTextAlignmentRight];
+        }
         if ([section.identifier isEqualToString:LOYALTY_EMAIL_NOTI]) {
             UISwitch *switcher = [UISwitch new];
             switcher.tag = (NSInteger)LOYALTY_EMAIL_NOTI;
