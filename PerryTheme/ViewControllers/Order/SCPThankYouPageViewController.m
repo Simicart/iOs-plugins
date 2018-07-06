@@ -34,7 +34,8 @@
     self.cells = [SimiTable new];
     SimiSection *mainSection = [self.cells addSectionWithIdentifier:THANK_YOU_PAGE_SECTION];
     [mainSection addRowWithIdentifier:THANK_YOU_PAGE_TITLE_ROW];
-    [mainSection addRowWithIdentifier:THANK_YOU_PAGE_DESCRIBLE_ROW];
+    if(!self.isGuest)
+        [mainSection addRowWithIdentifier:THANK_YOU_PAGE_DESCRIBLE_ROW];
     [mainSection addRowWithIdentifier:THANK_YOU_PAGE_NUMBER_ROW];
     [mainSection addRowWithIdentifier:THANK_YOU_PAGE_BUTTON_ROW];
 }

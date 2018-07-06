@@ -63,7 +63,7 @@
     }
     if(self.order.shippingMethod){
         SimiSection *shippingSection = [[SimiSection alloc] init];
-        shippingSection.header = [[SimiSectionHeader alloc]initWithTitle:SCLocalizedString(@"Ship To") height:52];
+        shippingSection.header = [[SimiSectionHeader alloc]initWithTitle:SCLocalizedString(@"Shipping Details") height:52];
         SimiRow *shippingAddressRow = [[SimiRow alloc] initWithIdentifier:ORDER_DETAIL_SHIPPING_ADDRESS];
         [shippingSection addRow:shippingAddressRow];
         
@@ -74,7 +74,7 @@
     
     //Add billing & payment & coupon section
     SimiSection *billingSection = [[SimiSection alloc] init];
-    billingSection.header = [[SimiSectionHeader alloc]initWithTitle:SCLocalizedString(@"Payment") height:52];
+    billingSection.header = [[SimiSectionHeader alloc]initWithTitle:SCLocalizedString(@"Billing Details") height:52];
     SimiRow *paymentRow = [[SimiRow alloc] initWithIdentifier:ORDER_DETAIL_PAYMENT_METHOD];
     [billingSection addRow:paymentRow];
     

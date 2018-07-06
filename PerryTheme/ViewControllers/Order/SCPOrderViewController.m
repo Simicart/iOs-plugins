@@ -19,7 +19,7 @@
     isExpandShipment = NO;
 }
 - (void)configureLogo{
-    self.title = @"Order review";
+    self.title = @"Order Review";
 }
 - (void)viewDidAppearBefore:(BOOL)animated{
     [super viewDidAppearBefore:animated];

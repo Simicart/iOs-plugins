@@ -29,6 +29,10 @@
     SimiHomeBannerModelCollection *padBanners;
 }
 
+- (void)viewWillAppear:(BOOL)animated{
+    [super viewWillAppear:animated];
+    [self.tabBarController.tabBar setHidden:NO];
+}
 - (void)viewDidLoadBefore{
     [super viewDidLoadBefore];
     self.contentTableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStyleGrouped];
