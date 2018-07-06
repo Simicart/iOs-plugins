@@ -64,6 +64,19 @@
 }
 #pragma mark -
 #pragma mark Relate Products
+- (void)getRelatedProducts{
+    if (relatedProducts == nil) {
+        relatedProducts = [[SimiProductModelCollection alloc] init];
+    }
+    [relatedProducts addLimitToParams:@"15"];
+    [relatedProducts addOffsetToParams:@"0"];
+    [relatedProducts addParamsWithKey:@"image_height" value:@"600"];
+    [relatedProducts addParamsWithKey:@"image_width" value:@"600"];
+    [relatedProducts addFilterWithKey:@"related_to_id" value:self.productId];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didGetRelatedProducts:) name:Simi_DidGetProductCollection object:relatedProducts];
+    [relatedProducts getProductCollection];
+}
+
 - (void)didGetRelatedProducts:(NSNotification*)noti{
     SimiResponder *responder = [noti.userInfo valueForKey:responderKey];
     if (responder.status == SUCCESS) {
@@ -226,6 +239,9 @@
     NSMutableArray *itemWidthArray = [NSMutableArray new];
     for (SimiConfigurableOptionValueModel *optionValueModel in configurableOptionModel.values) {
         float itemWidth = [optionValueModel.title sizeWithAttributes:@{NSFontAttributeName:[UIFont fontWithName:SCP_FONT_SEMIBOLD size:FONT_SIZE_MEDIUM]}].width + 36 ;
+        if ([[configurableOptionModel.code uppercaseString] isEqualToString:@"SIZE"]) {
+            itemWidth = 26;
+        }
         [itemWidthArray addObject:[NSNumber numberWithFloat:itemWidth]];
     }
     float numberItemRow = 0;
@@ -248,9 +264,22 @@
 
 - (void)detectFirstConfigurableOptionsSelected{
     NSMutableSet *tempDepenceOptionSet = nil;
+    BOOL hasColorOption = NO;
     for(int i = 0; i < optionController.configureOptions.count; i++){
         SimiConfigurableOptionModel *configOptionModel = [optionController.configureOptions objectAtIndex:i];
-        if (i == 0 && configOptionModel.values.count > 0) {
+        if ([[configOptionModel.code uppercaseString] isEqualToString:@"COLOR"]) {
+            hasColorOption = YES;
+            if (configOptionModel.values.count > 0) {
+                SimiConfigurableOptionValueModel *valueModel = [configOptionModel.values objectAtIndex:0];
+                valueModel.isSelected = YES;
+                tempDepenceOptionSet = [NSMutableSet setWithArray:valueModel.dependIds];
+                break;
+            }
+        }
+    }
+    for(int i = 0; i < optionController.configureOptions.count; i++){
+        SimiConfigurableOptionModel *configOptionModel = [optionController.configureOptions objectAtIndex:i];
+        if (i == 0 && configOptionModel.values.count > 0 && !hasColorOption) {
             SimiConfigurableOptionValueModel *valueModel = [configOptionModel.values objectAtIndex:0];
             valueModel.isSelected = YES;
             tempDepenceOptionSet = [NSMutableSet setWithArray:valueModel.dependIds];
@@ -755,6 +784,9 @@
         float titleWidth = [[optionSection.optionModel.title uppercaseString] sizeWithAttributes:@{NSFontAttributeName:[UIFont fontWithName:SCP_FONT_SEMIBOLD size:FONT_SIZE_LARGE]}].width;
         headerView.titleLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(padding, 0, titleWidth, height) andFontName:SCP_FONT_SEMIBOLD andFontSize:FONT_SIZE_LARGE];
         [headerView.titleLabel setText:[optionSection.optionModel.title uppercaseString]];
+        if (optionSection.optionModel.isRequire) {
+            [headerView.titleLabel setText:[NSString stringWithFormat:@"%@ *",[optionSection.optionModel.title uppercaseString]]];
+        }
         [headerView.simiContentView addSubview:headerView.titleLabel];
         
         headerView.iconImageView = [[UIImageView alloc]initWithFrame:CGRectMake(CGRectGetWidth(headerView.simiContentView.frame) - padding - 9, 17.5, 9, 9)];
@@ -944,7 +976,7 @@
 - (void)updateOptionsWithProductOptionModel:(SimiConfigurableOptionModel *)optionModel andValueModel:(SimiConfigurableOptionValueModel *)valueModel{
     [optionController activeDependenceWithConfigurableValueModel:valueModel configurableOptioModel:optionModel];
     [self updateAddToCartState:((SCPOptionController*)optionController).availableAddToCart];
-    [self.contentTableView reloadData];
+    [self handleSelectedOption];
 }
 
 #pragma mark -

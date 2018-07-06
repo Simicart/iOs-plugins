@@ -104,6 +104,7 @@
         [self addSubview:regularPriceLabel];
         heightContent += heightLabel;
     }
+    [self showPriceWithLowPrice];
 }
 
 - (void)updateFontForPriceView{

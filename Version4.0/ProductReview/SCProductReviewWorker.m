@@ -522,24 +522,13 @@
             SimiLabel *firstReviewTitleLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(padding, heightContent, widthCell - padding*2, 16) andFont:[UIFont fontWithName:@"Montserrat-Regular" size:FONT_SIZE_MEDIUM]];
             [firstReviewTitleLabel setText:[NSString stringWithFormat:@"%@",[reviewModel valueForKey:@"title"]]];
             [cell.simiContentView addSubview:firstReviewTitleLabel];
-            [firstReviewTitleLabel resizLabelToFit];
-            CGRect frame = firstReviewTitleLabel.frame;
-            if (frame.size.height < 16) {
-                frame.size.height = 16;
-                [firstReviewTitleLabel setFrame:frame];
-            }
             
-            heightContent += CGRectGetHeight(frame) + 5;
-            SimiLabel *firstReviewContentLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(padding, heightContent, widthCell, 16) andFont:[UIFont fontWithName:@"Montserrat-Light" size:FONT_SIZE_MEDIUM]];
+            heightContent += CGRectGetHeight(firstReviewTitleLabel.frame) + 5;
+            SimiLabel *firstReviewContentLabel = [[SimiLabel alloc]initWithFrame:CGRectMake(padding, heightContent, widthCell - padding*2, 35) andFont:[UIFont fontWithName:@"Montserrat-Light" size:FONT_SIZE_MEDIUM]];
             firstReviewContentLabel.text = [NSString stringWithFormat:@"%@",[reviewModel valueForKey:@"detail"]];
-            [firstReviewContentLabel resizLabelToFit];
-            frame = firstReviewContentLabel.frame;
-            if (frame.size.height < 16) {
-                frame.size.height = 16;
-                [firstReviewContentLabel setFrame:frame];
-            }
+            firstReviewContentLabel.numberOfLines = 2;
             [cell.simiContentView addSubview:firstReviewContentLabel];
-            heightContent += CGRectGetHeight(frame) + padding;
+            heightContent += CGRectGetHeight(firstReviewContentLabel.frame) + padding;
             row.height = heightContent;
         }
     }
