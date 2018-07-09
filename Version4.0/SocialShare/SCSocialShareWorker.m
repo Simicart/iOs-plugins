@@ -56,7 +56,7 @@
         [[NSNotificationCenter defaultCenter]postNotificationName:TRACKINGEVENT object:@"product_action" userInfo:@{@"action":@"clicked_share_button",@"product_name":product.name,@"product_id":product.entityId,@"sku":product.sku,@"qty":@"1",@"theme":[viewController isKindOfClass:[SCProductSecondDesignViewController class]]?@"cherry":@"default"}];
     }
     NSURL *productURL = nil;
-    if ([product valueForKey:@"url_path"]) {
+    if ([product valueForKey:@"url_path"] && ![[product valueForKey:@"url_path"] isEqual:[NSNull null]]) {
         productURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@",kBaseURL, [product valueForKey:@"url_path"]]];
     }else{
         productURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@catalog/product/view/id/%@",kBaseURL,product.entityId]];
