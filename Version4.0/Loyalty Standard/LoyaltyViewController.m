@@ -175,7 +175,7 @@
                 invert.textColor = [UIColor grayColor];
                 if (_loyaltyPolicy.invertPoint) {
                     if (_loyaltyPolicy.startDiscount) {
-                        invert.text = [NSString stringWithFormat:SCLocalizedString(@"Only %@ until %@"), _loyaltyPolicy.invertPoint, _loyaltyPolicy.startDiscount];
+                        invert.text = [NSString stringWithFormat:SCLocalizedString(@"Only %@ until %d"), _loyaltyPolicy.invertPoint, _loyaltyPolicy.startDiscount];
                     } else {
                         invert.text = [NSString stringWithFormat:SCLocalizedString(@"Only %@ until redeemable"), _loyaltyPolicy.invertPoint];
                     }
