@@ -94,6 +94,7 @@
             [self showAlertWithTitle:@"" message:[_payment valueForKey:@"message_success"] completionHandler:^{
                 [self.navigationController dismissViewControllerAnimated:YES completion:nil];
             }];
+            [[SCAppController sharedInstance] promptAppReviews];
             return NO;
         }else if([requestURL rangeOfString:[_payment valueForKey:@"url_fail"]].location != NSNotFound){
             [self showAlertWithTitle:@"" message:[_payment valueForKey:@"message_fail"] completionHandler:^{
