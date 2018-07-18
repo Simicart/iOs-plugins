@@ -38,15 +38,21 @@
 {
     SimiResponder *responder = [noti.userInfo valueForKey:responderKey];
     if (responder.status == SUCCESS) {
+        [newAddressViewController.form setValue:@"" forKey:@"country_id"];
         if (addressModel.countryId) {
             [newAddressViewController.country updateFormData:addressModel.countryId];
         }
         if (addressModel.countryName) {
             [newAddressViewController.form setValue:addressModel.countryName forKey:@"country_name"];
+        }else{
+            [newAddressViewController.form setValue:@"" forKey:@"country_name"];
         }
         if (addressModel.region) {
             [newAddressViewController.form setValue:addressModel.region forKey:@"region"];
+        }else{
+            [newAddressViewController.form setValue:@"" forKey:@"region"];
         }
+        [newAddressViewController.form setValue:@"" forKey:@"region_id"];
         if (addressModel.regionId) {
             NSString *regionID = addressModel.regionId;
             [newAddressViewController.form setValue:regionID forKey:@"region_id"];
@@ -61,12 +67,18 @@
         }
         if (addressModel.city) {
             [newAddressViewController.form setValue:addressModel.city forKey:@"city"];
+        }else{
+            [newAddressViewController.form setValue:@"" forKey:@"city"];
         }
         if (addressModel.street) {
             [newAddressViewController.form setValue:addressModel.street forKey:@"street"];
+        }else{
+            [newAddressViewController.form setValue:@"" forKey:@"street"];
         }
         if (addressModel.postcode) {
             [newAddressViewController.form setValue:addressModel.postcode forKey:@"postcode"];
+        }else{
+            [newAddressViewController.form setValue:@"" forKey:@"postcode"];
         }
         [newAddressViewController.form sortFormFields];
         [newAddressViewController.contentTableView reloadData];
