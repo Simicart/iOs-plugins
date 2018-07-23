@@ -46,23 +46,27 @@
         [self stopLoadingData];
     }
     if ([stringRequest containsString:@"simipayuindia/api/success/"]) {
-        [self showAlertWithTitle:@"SUCCESS" message:@"Thank your for purchase"];
-        [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+        [self showAlertWithTitle:@"SUCCESS" message:@"Thank your for purchase" completionHandler:^{
+            [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+        }];
         return NO;
     }else if ([stringRequest containsString:@"simipayuindia/api/failure/"])
     {
-        [self showAlertWithTitle:@"Error" message:@"Have some errors, please try again"];
-        [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+        [self showAlertWithTitle:@"Error" message:@"Have some errors, please try again" completionHandler:^{
+            [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+        }];
         return NO;
     }else if([stringRequest containsString:@"simipayuindia/api/canceled/"])
     {
-        [self showAlertWithTitle:@"FAIL" message:@"Your order has been canceled"];
-        [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+        [self showAlertWithTitle:@"FAIL" message:@"Your order has been canceled" completionHandler:^{
+            [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+        }];
         return NO;
     }else if([stringRequest containsString:@"checkout/cart/"])
     {
-        [self showAlertWithTitle:@"Error" message:@"Have some errors, please try again"];
-        [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+        [self showAlertWithTitle:@"Error" message:@"Have some errors, please try again" completionHandler:^{
+            [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+        }];
         return NO;
     }
     return  YES;
