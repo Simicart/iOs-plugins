@@ -26,11 +26,11 @@
 }
 
 - (void)viewDidLoadBefore {
+    
 }
 
 - (void)viewWillAppearBefore:(BOOL)animated
 {
-    self.navigationItem.title  = SCLocalizedString(@"Add your review");
     if(PHONEDEVICE) {
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidShow:) name:UIKeyboardDidShowNotification object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidHide:) name:UIKeyboardDidHideNotification object:nil];

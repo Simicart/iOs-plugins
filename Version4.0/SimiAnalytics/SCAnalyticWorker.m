@@ -26,8 +26,34 @@ NSString* deviceName()
     [self generateCommonData];
     [self generateCommonProperties];
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(trackingEvent:) name:SIMI_TRACKINGEVENT object:nil];
-//    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(trackingViewedScreen:) name:@"SimiViewControllerViewDidAppear" object:nil];
+    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(trackingViewedScreen:) name:@"SimiViewControllerViewDidAppear" object:nil];
     return self;
+}
+
+- (void)trackingViewedScreen:(NSNotification*)noti
+{
+    SimiViewController *viewController = noti.object;
+    if (viewController.simiScreenTrackingName != nil && ![viewController.simiScreenTrackingName isEqualToString:@""]) {
+        NSString *actionValue = [NSString stringWithFormat:@"view_%@",viewController.simiScreenTrackingName];
+        NSMutableDictionary *trackingProperties = [[NSMutableDictionary alloc]initWithDictionary:@{@"action":actionValue}];
+        [trackingProperties addEntriesFromDictionary:commonProperties];
+        NSMutableDictionary *trackingParams = [[NSMutableDictionary alloc]initWithDictionary:commonData];
+        if(viewController.simiEventTrackingName){
+            [trackingParams setValue:viewController.simiEventTrackingName forKey:@"event_key"];
+        }else{
+            [trackingParams setValue:NSStringFromClass([viewController class]) forKey:@"event_key"];
+        }
+        if (GLOBALVAR.isLogin) {
+            [trackingParams setValue:GLOBALVAR.customer.email forKey:@"user_email"];
+        }else{
+            [trackingParams setValue:@"" forKey:@"user_email"];
+        }
+        if (trackingProperties != nil) {
+            [trackingParams setValue:trackingProperties forKey:@"properties"];
+        }
+        SimiAnalyticModel *analyticModel = [SimiAnalyticModel new];
+        [analyticModel simiTrackingWithParams:trackingParams];
+    }
 }
 
 - (void)trackingEvent:(NSNotification*)noti{
