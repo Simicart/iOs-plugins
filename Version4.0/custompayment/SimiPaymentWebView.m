@@ -17,7 +17,7 @@
 }
 
 - (void)viewDidLoadBefore{
-    self.navigationItem.title = SCLocalizedString(self.navigationItem.title);
+    [self configureLogo];
     UIBarButtonItem *cancel = [[UIBarButtonItem alloc] initWithTitle:SCLocalizedString(@"Cancel") style:UIBarButtonItemStylePlain target:self action:@selector(cancelPayment:)];
     self.navigationItem.rightBarButtonItem = cancel;
     if(self.webTitle){

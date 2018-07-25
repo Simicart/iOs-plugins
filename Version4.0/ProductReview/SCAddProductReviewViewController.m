@@ -26,7 +26,7 @@
 }
 
 - (void)viewDidLoadBefore {
-    
+    [self configureLogo];
 }
 
 - (void)viewWillAppearBefore:(BOOL)animated

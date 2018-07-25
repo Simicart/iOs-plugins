@@ -30,8 +30,7 @@ NSString *REVIEW_SHORT_REVIEW_CELL = @"REVIEW_SHORT_REVIEW_CELL";
 - (void)viewDidLoadBefore
 {
     [self setToSimiView];
-    [self configureNavigationBarOnViewDidLoad];
-    self.navigationItem.title = SCLocalizedString(@"Review");
+    [super viewDidLoadBefore];
     
     BOOL reviewAllowGuest = NO;
     if ([[GLOBALVAR.storeView.catalog valueForKey:@"review"] isKindOfClass:[NSDictionary class]]) {
