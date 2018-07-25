@@ -49,25 +49,21 @@
         [self showAlertWithTitle:@"SUCCESS" message:@"Thank your for purchase" completionHandler:^{
             [self.navigationController dismissViewControllerAnimated:YES completion:nil];
         }];
-        return NO;
     }else if ([stringRequest containsString:@"simipayuindia/api/failure/"])
     {
         [self showAlertWithTitle:@"Error" message:@"Have some errors, please try again" completionHandler:^{
             [self.navigationController dismissViewControllerAnimated:YES completion:nil];
         }];
-        return NO;
     }else if([stringRequest containsString:@"simipayuindia/api/canceled/"])
     {
         [self showAlertWithTitle:@"FAIL" message:@"Your order has been canceled" completionHandler:^{
             [self.navigationController dismissViewControllerAnimated:YES completion:nil];
         }];
-        return NO;
     }else if([stringRequest containsString:@"checkout/cart/"])
     {
         [self showAlertWithTitle:@"Error" message:@"Have some errors, please try again" completionHandler:^{
             [self.navigationController dismissViewControllerAnimated:YES completion:nil];
         }];
-        return NO;
     }
     return  YES;
 }
