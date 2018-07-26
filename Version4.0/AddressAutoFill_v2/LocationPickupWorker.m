@@ -27,10 +27,7 @@
 
 - (void)getAddressWithParams:(NSDictionary*)params
 {
-    if (addressModel == nil) {
-        addressModel = [SimiAddressAutofillModel new];
-    }
-    [addressModel removeAllObjects];
+    addressModel = [SimiAddressAutofillModel new];
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(didGetAddress:) name:@"DidGetAddress" object:addressModel];
     [addressModel getAddressWithParams:params];
 }
