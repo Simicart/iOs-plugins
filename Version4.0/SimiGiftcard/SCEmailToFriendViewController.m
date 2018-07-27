@@ -25,7 +25,7 @@
 @synthesize giftCodeModel;
 
 - (void)viewDidLoadBefore{
-    self.navigationItem.title = SCLocalizedString(@"EMAIL GIFT CARD TO FRIEND");
+    [super configureLogo];
 }
 
 - (void)viewWillAppearBefore:(BOOL)animated{

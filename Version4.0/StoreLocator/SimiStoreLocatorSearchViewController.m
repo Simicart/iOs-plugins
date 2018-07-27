@@ -45,7 +45,7 @@
 
 - (void)viewDidLoadBefore
 {
-    self.navigationItem.title = SCLocalizedString(@"Search Store");
+    [super configureLogo];
     if (PHONEDEVICE) {
         isiPhone = YES;
     }

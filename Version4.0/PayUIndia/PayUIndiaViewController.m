@@ -18,7 +18,6 @@
 
 - (void)viewDidLoadBefore{
     [super viewDidLoadBefore];
-    self.navigationItem.title = SCLocalizedString(@"PayU Indian");
 }
 
 - (void)viewWillAppearBefore:(BOOL)animated{

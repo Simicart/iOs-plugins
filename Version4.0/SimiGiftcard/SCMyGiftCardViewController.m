@@ -17,7 +17,7 @@
 
 @implementation SCMyGiftCardViewController
 - (void)viewDidLoadBefore{
-    self.navigationItem.title = SCLocalizedString(@"GIFT CARD");
+    [super configureLogo];
 }
 
 - (void)viewWillAppearBefore:(BOOL)animated{

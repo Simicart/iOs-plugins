@@ -20,7 +20,6 @@
 - (void)viewDidLoadBefore{
     [super viewDidLoadBefore];
     [self setToSimiView];
-    self.navigationItem.title = SCLocalizedString(@"2Checkout");
 }
 
 - (void)viewWillAppearBefore:(BOOL)animated{

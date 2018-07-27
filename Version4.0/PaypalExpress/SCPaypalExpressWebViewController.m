@@ -25,7 +25,7 @@
     [self paypalStart];
     self.needReviewAddress = YES;
     
-    self.title = SCLocalizedString(@"Paypal Checkout");
+    [super configureLogo];
     [self.view setBackgroundColor:[UIColor whiteColor]];
     paypalExpCheckOutWebView = [[UIWebView alloc]initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, self.view.frame.size.height - TASK_BAR_HEIGH)];
     paypalExpCheckOutWebView.delegate = self;

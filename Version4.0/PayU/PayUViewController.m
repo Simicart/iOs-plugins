@@ -16,7 +16,6 @@
 
 - (void)viewDidLoadBefore{
     [super viewDidLoadBefore];
-    self.navigationItem.title = SCLocalizedString(@"PayU");
 }
 
 - (void)viewWillAppearBefore:(BOOL)animated{

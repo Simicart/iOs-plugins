@@ -16,7 +16,6 @@
 - (void)viewDidLoadBefore{
     self.edgesForExtendedLayout = UIRectEdgeBottom;
     [super viewDidLoadBefore];
-    self.navigationItem.title = SCLocalizedString(@"Klarna");
 }
 
 - (void)viewDidAppearBefore:(BOOL)animated{

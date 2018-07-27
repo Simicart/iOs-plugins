@@ -27,7 +27,6 @@
 
 - (void)viewDidLoadAfter{
     [self setToSimiView];
-    self.navigationItem.title = SCLocalizedString(@"CCAvenue");
 }
 
 - (void)viewWillAppearBefore:(BOOL)animated{

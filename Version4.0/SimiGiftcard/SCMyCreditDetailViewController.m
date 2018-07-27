@@ -15,7 +15,7 @@
 @implementation SCMyCreditDetailViewController
 
 - (void)viewDidLoadBefore{
-    self.navigationItem.title = SCLocalizedString(@"MY GIFT CARD CREDIT");
+    [super configureLogo];
     if ([[self.giftCardCreditModel valueForKey:@"history"] isKindOfClass:[NSArray class]]) {
         myCreditHistories = [self.giftCardCreditModel valueForKey:@"history"];
         [self setCells:nil];

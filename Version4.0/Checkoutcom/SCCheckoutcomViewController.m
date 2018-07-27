@@ -23,7 +23,6 @@
     checkoutWebView.delegate = self;
     NSString* actionURL = [[self.order objectForKey:@"redirect_url"] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     [checkoutWebView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:actionURL]]];
-    self.navigationItem.title = SCLocalizedString(@"Checkout.com");
 }
 
 #pragma mark UIWebViewDelegate

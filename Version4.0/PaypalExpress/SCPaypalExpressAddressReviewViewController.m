@@ -21,7 +21,7 @@
 #pragma mark TableView Datasource
 
 - (void)viewDidLoadBefore{
-    self.navigationItem.title = SCLocalizedString(@"Address Confirmation");
+    [super configureLogo];
 }
 
 - (void)viewWillAppearBefore:(BOOL)animated{

@@ -15,7 +15,7 @@
 @implementation SCAddRedeemViewController
 
 - (void)viewDidLoadBefore{
-    self.navigationItem.title = SCLocalizedString(@"GIFT CARD");
+    [super configureLogo];
     giftCardCreditModel = [SimiGiftCardCreditModel new];
 }
 
