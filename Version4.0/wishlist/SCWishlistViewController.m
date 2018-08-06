@@ -190,7 +190,14 @@
 
 - (void)shareWishlistWithText: (NSString*) text url:(NSString*) url inView:(UIView*) view{
     NSURL *shareUrl = [NSURL URLWithString:url];
-    NSArray *activityItems = [NSArray arrayWithObjects:text, shareUrl, nil];
+    NSMutableArray *sharedArray = [NSMutableArray new];
+    if(text){
+        [sharedArray addObject:text];
+    }
+    if(shareUrl){
+        [sharedArray addObject:shareUrl];
+    }
+    NSArray *activityItems = sharedArray;
     UIActivityViewController *activityViewController = [[UIActivityViewController alloc] initWithActivityItems:activityItems applicationActivities:nil];
     activityViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone)
