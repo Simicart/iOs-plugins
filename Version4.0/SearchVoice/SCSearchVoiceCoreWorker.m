@@ -53,9 +53,13 @@
     if (PHONEDEVICE) {
         if ([noti.object isKindOfClass:[SCHomeViewController class]]) {
             SCHomeViewController *homeViewController = noti.object;
-            [homeViewController.searchBarHome setFrame:SCALEFRAME(CGRectMake(5, 5, 310 - 28 - 5, 28))];
+            float width = 310;
+            if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+                width = 758;
+            }
+            [homeViewController.searchBarHome setFrame:SCALEFRAME(CGRectMake(5, 5, width - 28 - 5, 28))];
             [homeViewController.searchBarBackground setFrame:homeViewController.searchBarHome.frame];
-            self.searchVoiceBtn = [[UIButton alloc] initWithFrame:SCALEFRAME(CGRectMake(282, 0, 38, 38))];
+            self.searchVoiceBtn = [[UIButton alloc] initWithFrame:SCALEFRAME(CGRectMake(width - 28, 0, 38, 38))];
             self.searchVoiceBtn.backgroundColor = [UIColor clearColor];
             self.searchVoiceBtn.imageView.backgroundColor = THEME_SEARCH_BOX_BACKGROUND_COLOR;
             [self.searchVoiceBtn setAlpha:0.9f];
@@ -67,9 +71,13 @@
             [homeViewController.view addSubview:self.searchVoiceBtn];
         } else if ([noti.object isKindOfClass:[SCProductListViewController class]]) {
             SCProductListViewController *productListViewController = noti.object;
-            [productListViewController.productSearchBar setFrame:SCALEFRAME(CGRectMake(5, 5, 310 - 28 - 5, 28))];
+            float width = 310;
+            if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+                width = 758;
+            }
+            [productListViewController.productSearchBar setFrame:SCALEFRAME(CGRectMake(5, 5, width - 28 - 5, 28))];
             [productListViewController.searchBarBackground setFrame:productListViewController.productSearchBar.frame];
-            self.searchVoiceBtn = [[UIButton alloc] initWithFrame:SCALEFRAME(CGRectMake(282, 0, 38, 38))];
+            self.searchVoiceBtn = [[UIButton alloc] initWithFrame:SCALEFRAME(CGRectMake(width - 28, 0, 38, 38))];
             self.searchVoiceBtn.backgroundColor = [UIColor clearColor];
             self.searchVoiceBtn.imageView.backgroundColor = THEME_SEARCH_BOX_BACKGROUND_COLOR;
             [self.searchVoiceBtn setAlpha:0.9f];

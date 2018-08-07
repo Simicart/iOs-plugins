@@ -30,9 +30,6 @@
                                                                 longitude:1.2223645
                                                                     zoom:6];
         float mapWidth = SCREEN_WIDTH;
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-            mapWidth = 2* SCREEN_WIDTH/3;
-        }
         guideSelectAddressLabel = [[UILabel alloc]initWithFrame:CGRectMake(15, 5, mapWidth - 30, 25)];
         [guideSelectAddressLabel setFont:[UIFont fontWithName:THEME_FONT_NAME size:14]];
         [guideSelectAddressLabel setTextColor:THEME_CONTENT_PLACEHOLDER_COLOR];
