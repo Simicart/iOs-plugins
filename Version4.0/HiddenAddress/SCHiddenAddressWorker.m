@@ -188,16 +188,20 @@
         
         NSMutableArray *genderValues = [[NSMutableArray alloc]initWithArray:[[GLOBALVAR.storeView.customer valueForKey:@"address_option"]valueForKey:@"gender_value"]];
         
-        if (genderValues.count == 2) {
-            NSDictionary *dict01 = [[NSDictionary alloc]initWithDictionary:[genderValues objectAtIndex:0]];
-            NSDictionary *dict02 = [[NSDictionary alloc]initWithDictionary:[genderValues objectAtIndex:1]];
+        if (genderValues.count) {
+            NSMutableArray *source = [NSMutableArray new];
+            for(NSDictionary *gender in genderValues){
+                if([gender objectForKey:@"label"] && [gender objectForKey:@"value"]){
+                    [source addObject:@{@"label":SCLocalizedString([gender objectForKey:@"label"]),@"value":[gender objectForKey:@"value"]}];
+                }
+            }
             if ([self hasField:[hiddenAddressModel valueForKey:@"gender_show"]]) {
                 [self.form addField:@"Select"
                         config:@{
                                  @"name": @"gender",
                                  @"title": SCLocalizedString(@"Gender"),
                                  @"required": [NSNumber numberWithBool:[[hiddenAddressModel valueForKey:@"gender_show"] isEqualToString:@"req"]],
-                                 @"source": @[@{@"value":[dict01 valueForKey:@"value"],@"label":SCLocalizedString([dict01 valueForKey:@"label"])},@{@"value":[dict02 valueForKey:@"value"] ,@"label":SCLocalizedString([dict02 valueForKey:@"label"])}]
+                                 @"source": source
                                  }];
             }
         }
