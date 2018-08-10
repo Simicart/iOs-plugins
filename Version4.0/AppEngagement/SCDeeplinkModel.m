@@ -11,12 +11,11 @@
 
 @implementation SCDeeplinkModel
 - (void)getDeeplinkInformation:(NSString *)deeplinkURL {
-    self.parseKey = @"deeplink";
-    notificationName = DidGetDeeplinkInformation;
-    self.resource = @"deeplinks";
-    [self addParamsWithKey:@"url" value:deeplinkURL];
-    self.method = MethodGet;
+    currentNotificationName = DidGetDeeplinkInformation;
+    keyResponse = @"deeplink";
     [self preDoRequest];
-    [self request];
+    NSString *urlPath = [NSString stringWithFormat:@"%@%@%@", kBaseURL, kSimiConnectorURL, @"deeplinks"];
+    [[SimiAPI new] requestWithMethod:GET URL:urlPath params:@{@"url":deeplinkURL} target:self selector:@selector(didFinishRequest:responder:) header:nil];
 }
+
 @end
