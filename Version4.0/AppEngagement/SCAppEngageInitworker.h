@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
+@import Firebase;
 @interface SCAppEngageInitworker : NSObject
 
 @end

@@ -9,9 +9,5 @@
 #import "SimiModel.h"
 
 @interface SimiCMSPageModel : SimiModel
-@property (strong, nonatomic) NSString *cmsTitle;
-@property (strong, nonatomic) NSString *cmsImage;
-@property (strong, nonatomic) NSString *cmsContent;
-@property (nonatomic) int cmsStatus;
 - (void)getCMSPageWithID:(NSString *)cmsID;
 @end

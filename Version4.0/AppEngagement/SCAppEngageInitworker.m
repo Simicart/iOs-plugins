@@ -8,13 +8,13 @@
 
 #import "SCAppEngageInitworker.h"
 #import <CoreSpotlight/CoreSpotlight.h>
-@import FirebaseCore;
-@import FirebaseDynamicLinks;
+@import Firebase;
 #import <SimiCartBundle/SCProductListViewController.h>
 #import <SimiCartBundle/SCCategoryViewController.h>
 #import "SimiCMSPageModel.h"
 #import <SimiCartBundle/SCWebViewController.h>
 #import "SCDeeplinkModel.h"
+#import "SCBlueberryProductViewController.h"
 
 @implementation SCAppEngageInitworker {
     SimiProductModel *productModel;
@@ -79,6 +79,7 @@
             NSString* productID = [userActivity.userInfo objectForKey:@"kCSSearchableItemActivityIdentifier"];
             [[[SimiGlobalVar sharedInstance] currentlyNavigationController] popToRootViewControllerAnimated:NO];
 //            [[SCAppController sharedInstance]openProductWithNavigationController:[[SimiGlobalVar sharedInstance] currentlyNavigationController] productId:productID moreParams:nil];
+            [self openProductViewController:productID];
         }else {
             [self openAppWithUserActivity:userActivity];
         }
@@ -109,6 +110,7 @@
             NSString* productID = [userActivity.userInfo objectForKey:@"kCSSearchableItemActivityIdentifier"];
             [[[SimiGlobalVar sharedInstance] currentlyNavigationController] popToRootViewControllerAnimated:NO];
 //            [[SCAppController sharedInstance]openProductWithNavigationController:[[SimiGlobalVar sharedInstance] currentlyNavigationController] productId:productID moreParams:nil];
+            [self openProductViewController:productID];
             handledNumber = [NSNumber numberWithBool:YES];
         }else {
             NSString *activityURL = userActivity.webpageURL.absoluteURL.absoluteString;
@@ -154,6 +156,7 @@
                 NSString *productID = [deepLinkValues objectForKey:@"simi_product_id"];
                 [[[SimiGlobalVar sharedInstance] currentlyNavigationController] popToRootViewControllerAnimated:NO];
 //                [[SCAppController sharedInstance]openProductWithNavigationController:[[SimiGlobalVar sharedInstance] currentlyNavigationController]  productId:productID moreParams:nil];
+                [self openProductViewController:productID];
             } else if([deepLinkValues objectForKey:@"simi_cate_id"] && [deepLinkValues objectForKey:@"simi_has_child"] && [deepLinkValues objectForKey:@"simi_cate_name"]) {
                 NSString *categoryID = [deepLinkValues objectForKey:@"simi_cate_id"];
                 BOOL hasChild = [[deepLinkValues objectForKey:@"simi_has_child"] boolValue];
@@ -230,6 +233,7 @@
             NSString *productID = [deeplink objectForKey:@"id"];
             [[[SimiGlobalVar sharedInstance] currentlyNavigationController] popToRootViewControllerAnimated:NO];
 //            [[SCAppController sharedInstance]openProductWithNavigationController:[[SimiGlobalVar sharedInstance] currentlyNavigationController] productId:productID moreParams:nil];
+            [self openProductViewController:productID];
         }else if([[deeplink objectForKey:@"type"] isEqualToString:@"3"]) {
             NSString *cmsID = [deeplink objectForKey:@"id"];
             [[[SimiGlobalVar sharedInstance] currentlyNavigationController] popToRootViewControllerAnimated:NO];
@@ -264,5 +268,10 @@
     }
     return deeplinkValues;
 }
-
+- (void)openProductViewController:(NSString *)productID{
+    SCBlueberryProductViewController *productViewController = [SCBlueberryProductViewController new];
+    productViewController.productId = productID;
+    [[[SimiGlobalVar sharedInstance]currentlyNavigationController] pushViewController:productViewController animated:YES];
+    
+}
 @end
