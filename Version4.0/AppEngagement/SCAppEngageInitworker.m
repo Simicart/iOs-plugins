@@ -18,6 +18,7 @@
 
 @implementation SCAppEngageInitworker {
     SimiProductModel *productModel;
+    FIRDynamicLink *dynamicLink;
 }
 - (id)init{
     if(self == [super init]){
@@ -85,6 +86,10 @@
         }
         userActivity = nil;
     }
+    if(dynamicLink){
+        [self handleDynamicLink:dynamicLink.url.absoluteString];
+        dynamicLink = nil;
+    }
 }
 
 #pragma mark Dynamic Links
@@ -92,13 +97,8 @@
 - (void)applicationOpenURL:(NSNotification*) noti{
     NSURL* url = [noti.userInfo objectForKey:@"url"];
     NSNumber* number = noti.object;
-    FIRDynamicLink *dynamicLink = [[FIRDynamicLinks dynamicLinks] dynamicLinkFromCustomSchemeURL:url];
-    if (dynamicLink) {
-        [self handleDynamicLink:dynamicLink.url.absoluteString];
-        number = [NSNumber numberWithBool:YES];
-    }else{
-        number = [NSNumber numberWithBool:NO];
-    }
+    dynamicLink = [[FIRDynamicLinks dynamicLinks] dynamicLinkFromCustomSchemeURL:url];
+    number = [NSNumber numberWithBool:YES];
 }
 
 //Handle links received as Universal Links when the app is already installed (on iOS 9 and newer)
@@ -114,7 +114,7 @@
             handledNumber = [NSNumber numberWithBool:YES];
         }else {
             NSString *activityURL = userActivity.webpageURL.absoluteURL.absoluteString;
-            if([activityURL containsString:@"app.goo.gl"]){
+            if([activityURL containsString:@"page.link"]){
                 BOOL handled = [[FIRDynamicLinks dynamicLinks] handleUniversalLink:userActivity.webpageURL
                                                                         completion:^(FIRDynamicLink * _Nullable dynamicLink,
                                                                                      NSError * _Nullable error) {
@@ -133,7 +133,7 @@
 
 - (void)openAppWithUserActivity: (NSUserActivity *)userActivity {
     NSString *activityURL = userActivity.webpageURL.absoluteURL.absoluteString;
-    if([activityURL containsString:@"app.goo.gl"]){
+    if([activityURL containsString:@"page.link"]){
         [[FIRDynamicLinks dynamicLinks] handleUniversalLink:userActivity.webpageURL
                                                  completion:^(FIRDynamicLink * _Nullable dynamicLink,
                                                               NSError * _Nullable error) {
