@@ -12,6 +12,8 @@
 #import <SimiCartBundle/SCProductListViewController.h>
 #import "SCSearchVoiceViewController.h"
 #import "SCSearchVoicePadViewController.h"
+#import "SCCustomizeCategoryViewController.h"
+#import "SCCustomizeSearchViewController.h"
 
 @implementation SCSearchVoiceCoreWorker {
     SimiViewController *viewController;
@@ -26,6 +28,8 @@
         //Product More View
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(showSearchVoiceBtn:) name:@"SCHomeViewControllerViewWillAppear" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(showSearchVoiceBtn:) name:@"SCProductListViewControllerViewWillAppear" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(showSearchVoiceBtn:) name:@"SCCategoryViewControllerViewWillAppear" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(showSearchVoiceBtn:) name:@"SCCustomizeSearchViewControllerViewWillAppear" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initLeftItemsEnd:) name:@"SCNavigationBarPad-InitLeftItems-End" object:nil];
     }
     return self;
@@ -44,11 +48,7 @@
     itemSpace.sortOrder = navigationbar_pad_search_voice_sort_order - 1;
     itemSpace.width = 20;
     NSMutableArray *rightButtonItems = noti.object;
-    if (GLOBALVAR.isReverseLanguage) {
-        [rightButtonItems addObjectsFromArray:@[voiceSearchItem,itemSpace]];
-    }else{
-         [rightButtonItems addObjectsFromArray:@[itemSpace,voiceSearchItem]];
-    }
+    [rightButtonItems addObjectsFromArray:@[itemSpace,voiceSearchItem]];
 }
 
 - (void)showSearchVoiceBtn:(NSNotification *)noti{
@@ -57,19 +57,13 @@
     if (PHONEDEVICE) {
         if ([noti.object isKindOfClass:[SCHomeViewController class]]) {
             SCHomeViewController *homeViewController = noti.object;
-            if (GLOBALVAR.isReverseLanguage) {
-                [homeViewController.searchBarHome setFrame:SCALEFRAME(CGRectMake(5 + 28 + 5, 5, 310 - 28 - 5, 28))];
-                [homeViewController.searchBarBackground setFrame:homeViewController.searchBarHome.frame];
-                self.searchVoiceBtn = [[UIButton alloc] initWithFrame:SCALEFRAME(CGRectMake(0, 0, 38, 38))];
-            }else{
-                [homeViewController.searchBarHome setFrame:SCALEFRAME(CGRectMake(5, 5, 310 - 28 - 5, 28))];
-                [homeViewController.searchBarBackground setFrame:homeViewController.searchBarHome.frame];
-                self.searchVoiceBtn = [[UIButton alloc] initWithFrame:SCALEFRAME(CGRectMake(282, 0, 38, 38))];
-            }
+            [homeViewController.searchBarHome setFrame:SCALEFRAME(CGRectMake(5, 5, 310 - 28 - 5, 28))];
+            [homeViewController.searchBarBackground setFrame:homeViewController.searchBarHome.frame];
+            self.searchVoiceBtn = [[UIButton alloc] initWithFrame:SCALEFRAME(CGRectMake(282, 0, 38, 38))];
             self.searchVoiceBtn.backgroundColor = [UIColor clearColor];
             self.searchVoiceBtn.imageView.backgroundColor = THEME_SEARCH_BOX_BACKGROUND_COLOR;
             [self.searchVoiceBtn setAlpha:0.9f];
-            [self.searchVoiceBtn setImage:[[UIImage imageNamed:@"ic_small_micro_phone"] imageWithColor:THEME_SEARCH_TEXT_COLOR] forState:UIControlStateNormal];
+            [self.searchVoiceBtn setImage:[UIImage imageNamed:@"ic_small_micro_phone"] forState:UIControlStateNormal];
             [self.searchVoiceBtn setImageEdgeInsets:UIEdgeInsetsMake(insetPadding, insetPadding, insetPadding, insetPadding)];
             self.searchVoiceBtn.imageView.clipsToBounds = YES;
             self.searchVoiceBtn.enabled = YES;
@@ -77,15 +71,9 @@
             [homeViewController.view addSubview:self.searchVoiceBtn];
         } else if ([noti.object isKindOfClass:[SCProductListViewController class]]) {
             SCProductListViewController *productListViewController = noti.object;
-            if (GLOBALVAR.isReverseLanguage) {
-                [productListViewController.productSearchBar setFrame:SCALEFRAME(CGRectMake(5 +28 + 5, 5, 310 - 28 - 5, 28))];
-                [productListViewController.searchBarBackground setFrame:productListViewController.productSearchBar.frame];
-                self.searchVoiceBtn = [[UIButton alloc] initWithFrame:SCALEFRAME(CGRectMake(0, 0, 38, 38))];
-            }else{
-                [productListViewController.productSearchBar setFrame:SCALEFRAME(CGRectMake(5, 5, 310 - 28 - 5, 28))];
-                [productListViewController.searchBarBackground setFrame:productListViewController.productSearchBar.frame];
-                self.searchVoiceBtn = [[UIButton alloc] initWithFrame:SCALEFRAME(CGRectMake(282, 0, 38, 38))];
-            }
+            [productListViewController.productSearchBar setFrame:SCALEFRAME(CGRectMake(5, 5, 310 - 28 - 5, 28))];
+            [productListViewController.searchBarBackground setFrame:productListViewController.productSearchBar.frame];
+            self.searchVoiceBtn = [[UIButton alloc] initWithFrame:SCALEFRAME(CGRectMake(282, 0, 38, 38))];
             self.searchVoiceBtn.backgroundColor = [UIColor clearColor];
             self.searchVoiceBtn.imageView.backgroundColor = THEME_SEARCH_BOX_BACKGROUND_COLOR;
             [self.searchVoiceBtn setAlpha:0.9f];
@@ -95,12 +83,57 @@
             self.searchVoiceBtn.enabled = YES;
             [self.searchVoiceBtn addTarget:self action:@selector(searchVoiceStart:) forControlEvents:(UIControlEventTouchUpInside)];
             [productListViewController.view addSubview:self.searchVoiceBtn];
+        }else if ([noti.object isKindOfClass:[SCCategoryViewController class]]) {
+            SCCustomizeCategoryViewController *cateVC = noti.object;
+            [cateVC.searchBarHome setFrame:SCALEFRAME(CGRectMake(5, 5, 310 - 28 - 5, 28))];
+            [cateVC.searchBarBackground setFrame:cateVC.searchBarHome.frame];
+            self.searchVoiceBtn = [[UIButton alloc] initWithFrame:SCALEFRAME(CGRectMake(282, 0, 38, 38))];
+            self.searchVoiceBtn.backgroundColor = [UIColor clearColor];
+            self.searchVoiceBtn.imageView.backgroundColor = THEME_SEARCH_BOX_BACKGROUND_COLOR;
+            [self.searchVoiceBtn setAlpha:0.9f];
+            [self.searchVoiceBtn setImage:[UIImage imageNamed:@"ic_small_micro_phone" ] forState:UIControlStateNormal];
+            [self.searchVoiceBtn setImageEdgeInsets:UIEdgeInsetsMake(insetPadding, insetPadding, insetPadding, insetPadding)];
+            self.searchVoiceBtn.imageView.clipsToBounds = YES;
+            self.searchVoiceBtn.enabled = YES;
+            [self.searchVoiceBtn addTarget:self action:@selector(searchVoiceStart:) forControlEvents:(UIControlEventTouchUpInside)];
+            [cateVC.view addSubview:self.searchVoiceBtn];
+        }else if ([noti.object isKindOfClass:[SCCustomizeSearchViewController class]]) {
+            SCCustomizeSearchViewController *searchViewController = noti.object;
+            if (![searchViewController.view viewWithTag:1231]) {
+                CGRect frame = searchViewController.customSearchBar.frame;
+                frame.size.width -= 35;
+                [searchViewController.customSearchBar setFrame:frame];
+                [searchViewController.searchBarBackground setFrame:frame];
+                UIButton *searchVoiceBtn = [[UIButton alloc] initWithFrame:CGRectMake(SCREEN_WIDTH - 40, 0, 40, 40)];
+                searchVoiceBtn.tag = 1231;
+                searchVoiceBtn.backgroundColor = [UIColor clearColor];
+                searchVoiceBtn.imageView.backgroundColor = THEME_SEARCH_BOX_BACKGROUND_COLOR;
+                [searchVoiceBtn setAlpha:0.9f];
+                [searchVoiceBtn setImage:[UIImage imageNamed:@"ic_small_micro_phone" ] forState:UIControlStateNormal];
+                [searchVoiceBtn setImageEdgeInsets:UIEdgeInsetsMake(5, 0, 5, 10)];
+                searchVoiceBtn.imageView.clipsToBounds = YES;
+                searchVoiceBtn.enabled = YES;
+                [searchVoiceBtn addTarget:self action:@selector(searchVoiceStart:) forControlEvents:(UIControlEventTouchUpInside)];
+                [searchViewController.view addSubview:searchVoiceBtn];
+            }
         }
     }
 }
 
 #pragma mark SearchVoiceViewController Delegate
 - (void)finishAction:(NSString *)result {
+    SimiViewController *currentViewController = [GLOBALVAR.currentlyNavigationController.viewControllers lastObject];
+    SCCustomizeSearchViewController *searchViewController = [SCCustomizeSearchViewController new];
+    if ([currentViewController isKindOfClass:[SCCustomizeSearchViewController class]]) {
+        searchViewController = (SCCustomizeSearchViewController*)currentViewController;
+    }
+    searchViewController.keySearch = result;
+    [currentViewController dismissViewControllerAnimated:YES completion:^{
+        if (![currentViewController isKindOfClass:[SCCustomizeSearchViewController class]]) {
+            [GLOBALVAR.currentlyNavigationController pushViewController:searchViewController animated:YES];
+        }
+    }];
+    /**
     if (PADDEVICE) {
         [self.searchVoicePadViewController dismissViewControllerAnimated:YES completion:nil];
         if (controller.searchBar ==nil) {
@@ -116,7 +149,7 @@
                 }
             }
         }
-        
+
         controller.searchBar.tintColor = THEME_SEARCH_TEXT_COLOR;
         controller.searchBar.text = result;
         [controller searchBarSearchButtonClicked:controller.searchBar];
@@ -132,9 +165,18 @@
             [productListViewController searchBarSearchButtonClicked:productListViewController.productSearchBar];
         }
     }
+     */
 }
 
 - (void)searchTextAction{
+    SimiViewController *currentViewController = [GLOBALVAR.currentlyNavigationController.viewControllers lastObject];
+    [currentViewController dismissViewControllerAnimated:YES completion:^{
+        if (![currentViewController isKindOfClass:[SCCustomizeSearchViewController class]]) {
+            SCCustomizeSearchViewController *searchViewController = [SCCustomizeSearchViewController new];
+            [GLOBALVAR.currentlyNavigationController pushViewController:searchViewController animated:YES];
+        }
+    }];
+    /**
     if (PHONEDEVICE) {
         [self.searchVoiceViewController dismissViewControllerAnimated:YES completion:^{
             if ([viewController isKindOfClass:[SCHomeViewController class]]) {
@@ -150,6 +192,7 @@
             [controller didSelectSearchButton:controller.searchBar];
         }];
     }
+     */
 }
 
 - (void)tryAgainAction {
@@ -165,14 +208,14 @@
 }
 
 - (void)searchVoiceStart:(UIButton*)sender{
+    SimiViewController *currentViewController = [GLOBALVAR.currentlyNavigationController.viewControllers lastObject];
     if (PADDEVICE) {
         if (self.searchVoicePadViewController == nil) {
             self.searchVoicePadViewController = [[SCSearchVoicePadViewController alloc] init];
         }
         self.searchVoicePadViewController.delegate = self;
-        [[SimiGlobalVar sharedInstance].currentlyNavigationController presentViewController:self.searchVoicePadViewController animated:YES completion:nil];
+        [currentViewController presentViewController:self.searchVoicePadViewController animated:YES completion:nil];
     } else {
-        SimiViewController *currentViewController = viewController;
         if (self.searchVoiceViewController == nil) {
             self.searchVoiceViewController = [[SCSearchVoiceViewController alloc] init];
         }
