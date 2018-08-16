@@ -6,9 +6,9 @@
 //  Copyright © 2018 Trueplus. All rights reserved.
 //
 
-#import "SCFreshChatWorker.h"
+#import "SCCustomChatWorker.h"
 
-@implementation SCFreshChatWorker
+@implementation SCCustomChatWorker
 - (instancetype)init{
     self = [super init];
     if (self) {
@@ -29,6 +29,6 @@
 }
 
 - (void)didSelectChatBarItem:(UIButton *)sender{
-    [[SCAppController sharedInstance] openURL:[NSString stringWithFormat:@"%@%@", kBaseURL,@"simiconnector/freshchat/index"] withNavigationController:GLOBALVAR.currentlyNavigationController];
+    [[SCAppController sharedInstance] openURL:[NSString stringWithFormat:@"%@%@", kBaseURL,@"simiconnector/customchat/index"] withNavigationController:GLOBALVAR.currentlyNavigationController];
 }
 @end

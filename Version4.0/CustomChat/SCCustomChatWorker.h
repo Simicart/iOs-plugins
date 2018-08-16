@@ -8,6 +8,6 @@
 
 #import <Foundation/Foundation.h>
 
-@interface SCFreshChatWorker : NSObject
+@interface SCCustomChatWorker : NSObject
 
 @end
