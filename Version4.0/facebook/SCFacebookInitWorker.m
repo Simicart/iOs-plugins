@@ -501,10 +501,20 @@
         }else{
             [FBSDKAppEvents logEvent:trackingName parameters:trackingProperties];
         }
-        if ([trackingName isEqualToString:@"viewed_product_screen"]) {
-            [trackingProperties setValue:@"product" forKey:@"fb_content_type"];
-            [trackingProperties setValue:[trackingProperties valueForKey:@"product_id"] forKey:@"fb_content_id"];
-            [FBSDKAppEvents logEvent:@"fb_mobile_content_view" parameters:trackingProperties];
+        if ([trackingName isEqualToString:@"page_view_action"]) {
+            if([[trackingProperties objectForKey:@"action"] isEqualToString:@"viewed_product_screen"
+                ]){
+                NSDictionary *params =
+                @{
+                  FBSDKAppEventParameterNameContentType : [trackingProperties valueForKey:@"action"],
+                  FBSDKAppEventParameterNameContent : [trackingProperties valueForKey:@"product_name"],
+                  FBSDKAppEventParameterNameContentID : [trackingProperties valueForKey:@"product_id"],
+                  FBSDKAppEventParameterNameCurrency : GLOBALVAR.currencyCode
+                  };
+                [FBSDKAppEvents
+                 logEvent:FBSDKAppEventNameViewedContent 
+                 parameters:params];
+            }
         }
     }
     [self updateUserProperties];

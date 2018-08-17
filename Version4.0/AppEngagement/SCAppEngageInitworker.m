@@ -8,7 +8,8 @@
 
 #import "SCAppEngageInitworker.h"
 #import <CoreSpotlight/CoreSpotlight.h>
-#import <FirebaseCore/FirebaseCore.h>
+@import FirebaseCore;
+@import FirebaseDynamicLinks;
 #import <FirebaseDynamicLinks/FirebaseDynamicLinks.h>
 #import <SimiCartBundle/SCProductListViewController.h>
 #import <SimiCartBundle/SCCategoryViewController.h>
