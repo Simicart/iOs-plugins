@@ -113,7 +113,7 @@
             handledNumber = [NSNumber numberWithBool:YES];
         }else {
             NSString *activityURL = userActivity.webpageURL.absoluteURL.absoluteString;
-            if([activityURL containsString:@"app.goo.gl"]){
+            if([activityURL containsString:@"app.goo.gl"] || [activityURL containsString:@"page.link"]){
                 BOOL handled = [[FIRDynamicLinks dynamicLinks] handleUniversalLink:userActivity.webpageURL
                                                                         completion:^(FIRDynamicLink * _Nullable dynamicLink,
                                                                                      NSError * _Nullable error) {
@@ -132,7 +132,7 @@
 
 - (void)openAppWithUserActivity: (NSUserActivity *)userActivity {
     NSString *activityURL = userActivity.webpageURL.absoluteURL.absoluteString;
-    if([activityURL containsString:@"app.goo.gl"]){
+    if([activityURL containsString:@"app.goo.gl"] || [activityURL containsString:@"page.link"]){
         [[FIRDynamicLinks dynamicLinks] handleUniversalLink:userActivity.webpageURL
                                                  completion:^(FIRDynamicLink * _Nullable dynamicLink,
                                                               NSError * _Nullable error) {
