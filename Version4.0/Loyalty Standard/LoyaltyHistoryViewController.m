@@ -120,6 +120,9 @@
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         // Title / Content
         CGFloat width = tableView.frame.size.width - 61;
+        if (GLOBALVAR.isReverseLanguage) {
+            width = tableView.frame.size.width - 81;
+        }
         UILabel *title = [[UILabel alloc] initWithFrame:CGRectMake(46, 10, width, 44)];
         title.tag = 1;
         title.font = [UIFont fontWithName:THEME_FONT_NAME size:FONT_SIZE_LARGE];
