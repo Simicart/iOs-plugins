@@ -348,9 +348,6 @@
     if(productURL){
         FBSDKShareLinkContent *content = [[FBSDKShareLinkContent alloc] init];
             content.contentURL = [NSURL URLWithString:productURL];
-        if ([product objectForKey:@"name"]) {
-            content.contentTitle = [NSString stringWithFormat:@"%@",[product objectForKey:@"name"]];
-        }
         NSMutableArray *arrayImage = (NSMutableArray *)[product objectForKey:@"images"];
         if (arrayImage.count > 0) {
             content.imageURL = [NSURL URLWithString:[[arrayImage objectAtIndex:0] objectForKey:@"url"]];
