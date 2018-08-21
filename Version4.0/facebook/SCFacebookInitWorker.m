@@ -506,14 +506,12 @@
                 ]){
                 NSDictionary *params =
                 @{
-                  FBSDKAppEventParameterNameContentType : [trackingProperties valueForKey:@"action"],
+                  FBSDKAppEventParameterNameContentType : @"product",
                   FBSDKAppEventParameterNameContent : [trackingProperties valueForKey:@"product_name"],
-                  FBSDKAppEventParameterNameContentID : [trackingProperties valueForKey:@"product_id"],
+                  FBSDKAppEventParameterNameContentID : [trackingProperties valueForKey:@"sku"],
                   FBSDKAppEventParameterNameCurrency : GLOBALVAR.currencyCode
                   };
-                [FBSDKAppEvents
-                 logEvent:FBSDKAppEventNameViewedContent 
-                 parameters:params];
+                [FBSDKAppEvents logEvent:FBSDKAppEventNameViewedContent parameters:params];
             }
         }
     }
