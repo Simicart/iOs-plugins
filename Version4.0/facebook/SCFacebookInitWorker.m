@@ -120,11 +120,7 @@
                  if(email && firstName && lastName){
                      NSString* password = [SimiGlobalFunction md5PassWordWithEmail:email];
                      [customerModel loginWithSocialEmail:email password:password firstName:firstName lastName:lastName];
-                     NSDictionary *info = [[NSBundle mainBundle] infoDictionary];
-                     NSString *bundleIdentifier = [NSString stringWithFormat:@"%@", [info objectForKey:@"CFBundleIdentifier"]];
-                     KeychainItemWrapper *wrapper = [[KeychainItemWrapper alloc] initWithIdentifier:bundleIdentifier accessGroup:nil];
-                     [wrapper setObject:email forKey:(__bridge id)(kSecAttrAccount)];
-                     [wrapper setObject:password forKey:(__bridge id)(kSecAttrDescription)];
+                     [SimiCustomerModel saveEmailPasswordForAutoLoginToLocal:email password:password];
                      
                      [[NSNotificationCenter defaultCenter] postNotificationName:@"SimiFaceBookWorker_StartLoginWithFaceBook" object:nil];
                      [loginViewController startLoadingData];
