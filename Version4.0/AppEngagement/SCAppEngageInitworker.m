@@ -15,6 +15,8 @@
 #import <SimiCartBundle/SCWebViewController.h>
 #import "SCDeeplinkModel.h"
 #import "SCBlueberryProductViewController.h"
+#import "SCBlueberrySubCategoryViewController.h"
+#import "SCBlueberryProductListViewController.h"
 
 @implementation SCAppEngageInitworker {
     SimiProductModel *productModel;
@@ -163,16 +165,17 @@
                 NSString *categoryName = [deepLinkValues objectForKey:@"simi_cate_name"];
                 if(PHONEDEVICE) {
                     if(hasChild) {
-                        SCCategoryViewController *nextController = [[SCCategoryViewController alloc]init];
+                        SCBlueberrySubCategoryViewController *nextController = [[SCBlueberrySubCategoryViewController alloc]init];
                         nextController.openFrom = CategoryOpenFromParentCategory;
                         [nextController setCategoryId:categoryID];
                         [nextController setCategoryRealName:categoryName];
+                        nextController.categoryPath = [NSString stringWithFormat:@"%@",categoryName];
                         [[[SimiGlobalVar sharedInstance] currentlyNavigationController] popToRootViewControllerAnimated:NO];
                         [[[SimiGlobalVar sharedInstance] currentlyNavigationController] pushViewController:nextController animated:YES];
                     }else {
-                        SCProductListViewController *nextController = [[SCProductListViewController alloc]init];;
+                        SCBlueberryProductListViewController *nextController = [[SCBlueberryProductListViewController alloc]init];;
                         [nextController setCategoryID: categoryID];
-                        nextController.nameOfProductList = categoryName;
+                        nextController.productsName = categoryName;
                         [[[SimiGlobalVar sharedInstance] currentlyNavigationController] popToRootViewControllerAnimated:NO];
                         [[[SimiGlobalVar sharedInstance] currentlyNavigationController] pushViewController:nextController animated:YES];
                     }
@@ -213,16 +216,17 @@
             BOOL hasChild = [[deeplink objectForKey:@"has_child"] boolValue];
             if(PHONEDEVICE) {
                 if(hasChild) {
-                    SCCategoryViewController *nextController = [[SCCategoryViewController alloc]init];
+                    SCBlueberrySubCategoryViewController *nextController = [[SCBlueberrySubCategoryViewController alloc]init];
                     nextController.openFrom = CategoryOpenFromParentCategory;
                     [nextController setCategoryId:categoryID];
                     [nextController setCategoryRealName:categoryName];
+                    nextController.categoryPath = [NSString stringWithFormat:@"%@",categoryName];
                     [[[SimiGlobalVar sharedInstance] currentlyNavigationController] popToRootViewControllerAnimated:NO];
                     [[[SimiGlobalVar sharedInstance] currentlyNavigationController] pushViewController:nextController animated:YES];
                 }else {
-                    SCProductListViewController *nextController = [[SCProductListViewController alloc]init];;
+                    SCBlueberryProductListViewController *nextController = [[SCBlueberryProductListViewController alloc]init];;
                     [nextController setCategoryID: categoryID];
-                    nextController.nameOfProductList = categoryName;
+                    nextController.productsName = categoryName;
                     [[[SimiGlobalVar sharedInstance] currentlyNavigationController] popToRootViewControllerAnimated:NO];
                     [[[SimiGlobalVar sharedInstance] currentlyNavigationController] pushViewController:nextController animated:YES];
                 }
