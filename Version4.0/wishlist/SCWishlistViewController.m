@@ -61,6 +61,8 @@
     else if(PADDEVICE)
         collectionViewLayout.itemSize = CGSizeMake(SCREEN_WIDTH/2 - paddingX, COLLECTIONVIEWCELLHEIGHT);
     wishlistCollectionView = [[UICollectionView alloc] initWithFrame:CGRectMake(0, wishlistShareViewHeight + paddingY, self.view.bounds.size.width, self.view.bounds.size.height - wishlistShareViewHeight - paddingY) collectionViewLayout:collectionViewLayout];
+    wishlistCollectionView.bounces = YES;
+    wishlistCollectionView.alwaysBounceVertical = YES;
     wishlistCollectionView.autoresizingMask = UIViewAutoresizingFlexibleHeight;
     wishlistCollectionView.backgroundColor = [UIColor whiteColor];
     wishlistCollectionView.delegate = self;
