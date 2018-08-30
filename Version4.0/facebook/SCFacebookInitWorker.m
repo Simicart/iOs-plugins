@@ -507,7 +507,8 @@
                   FBSDKAppEventParameterNameContentID : [trackingProperties valueForKey:@"sku"],
                   FBSDKAppEventParameterNameCurrency : GLOBALVAR.currencyCode
                   };
-                [FBSDKAppEvents logEvent:FBSDKAppEventNameViewedContent parameters:params];
+                NSString *price = [trackingProperties objectForKey:@"price"];
+                [FBSDKAppEvents logEvent:FBSDKAppEventNameViewedContent valueToSum:[price doubleValue] parameters:params];
             }
         }
     }
