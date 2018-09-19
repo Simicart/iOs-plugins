@@ -10,7 +10,7 @@
 #import <CoreSpotlight/CoreSpotlight.h>
 @import FirebaseCore;
 @import FirebaseDynamicLinks;
-#import <FirebaseDynamicLinks/FirebaseDynamicLinks.h>
+//#import <FirebaseDynamicLinks/FirebaseDynamicLinks.h>
 #import <SimiCartBundle/SCProductListViewController.h>
 #import <SimiCartBundle/SCCategoryViewController.h>
 #import <SimiCartBundle/SimiCMSPageModel.h>
