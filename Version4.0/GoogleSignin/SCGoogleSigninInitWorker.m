@@ -96,6 +96,7 @@
             customerModel = [SimiCustomerModel new];
         }
         [customerModel loginWithSocialEmail:email password:[SimiGlobalFunction md5PassWordWithEmail:email]  firstName:firstName lastName:lastName];
+        [SimiCustomerModel saveEmailPasswordForAutoLoginToLocal:email password:[SimiGlobalFunction md5PassWordWithEmail:email]];
         [loginViewController startLoadingData];
     }
 }
