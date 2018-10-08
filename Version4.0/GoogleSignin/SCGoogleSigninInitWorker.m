@@ -24,10 +24,12 @@
 -(id) init{
     if(self == [super init]){
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationOpenURL:) name:ApplicationOpenURL object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:SCLoginViewController_InitCellAfter object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveNotification:) name:SCLoginViewController_InitCellsAfter object:nil];
+      
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didLogout:) name:Simi_DidLogin object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didLogin:) name:Simi_DidLogout object:nil];
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initCellsOnLoginViewController:) name:[NSString stringWithFormat:@"%@%@",SCLoginViewController_RootEventName,SimiTableViewController_SubKey_InitCells_End] object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializedCellsOnLoginViewController:) name:[NSString stringWithFormat:@"%@%@",SCLoginViewController_RootEventName,SimiTableViewController_SubKey_InitializedCell_End] object:nil];
         
         //Init GIDSignin attributes
         [GIDSignIn sharedInstance].delegate = self;
@@ -37,6 +39,35 @@
     return self;
 }
 
+- (void)initCellsOnLoginViewController:(NSNotification *)noti{
+    cells = noti.object;
+    loginViewController = [noti.userInfo objectForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.viewcontroller];
+    SimiSection *section = [cells getSectionByIdentifier:LOGIN_SECTION];
+    SimiRow *signInRow = [section getRowByIdentifier:LOGIN_SIGNIN_BUTTON];
+    SimiRow *row = [[SimiRow alloc] initWithIdentifier:GoogleLoginCell height:SCALEVALUE(50) sortOrder:signInRow.sortOrder + 1];
+    [section addRow:row];
+}
+
+- (void)initializedCellsOnLoginViewController:(NSNotification *)noti{
+    NSIndexPath *indexPath = [noti.userInfo valueForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.indexpath];
+    SimiSection *section = [cells objectAtIndex:indexPath.section];
+    SimiRow *row = [section objectAtIndex:indexPath.row];
+    
+    if ([row.identifier isEqualToString:GoogleLoginCell]) {
+        UITableViewCell *cell = [noti.userInfo objectForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.cell];
+        float loginViewWidth = CGRectGetWidth(loginViewController.view.frame);
+        float heightCell = SCALEVALUE(35);
+        float paddingY = SCALEVALUE(6);
+        float paddingX = SCALEVALUE(18);
+        float widthCell = loginViewWidth - 2* paddingX;
+        GIDSignInButton* ggSignInButton = [GIDSignInButton new];
+        ggSignInButton.frame = CGRectMake(paddingX, paddingY , widthCell, heightCell);
+        cell.backgroundColor = [UIColor clearColor];
+        [cell addSubview:ggSignInButton];
+        [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
+    }
+}
+
 -(void) applicationOpenURL: (NSNotification*) noti{
     BOOL numberBool = [[noti object] boolValue];
     numberBool  = [[GIDSignIn sharedInstance] handleURL:[[noti userInfo] valueForKey:@"url"]
@@ -44,35 +75,6 @@
                                annotation:[[noti userInfo] valueForKey:@"annotation"]];
 }
 
--(void) didReceiveNotification:(NSNotification *)noti{
-    if([noti.name isEqualToString:SCLoginViewController_InitCellsAfter]){
-        cells = noti.object;
-        loginViewController = (SimiViewController*)[noti.userInfo valueForKey:@"controller"];
-        SimiSection *section = [cells objectAtIndex:0];
-        SimiRow *row = [[SimiRow alloc] initWithIdentifier:GoogleLoginCell height:[SimiGlobalFunction scaleValue:50]];
-        [section addRow:row];
-    }else if([noti.name isEqualToString:SCLoginViewController_InitCellAfter]){
-        NSIndexPath *indexPath = [noti.userInfo valueForKey:@"indexPath"];
-        SimiSection *section = [cells objectAtIndex:indexPath.section];
-        SimiRow *row = [section objectAtIndex:indexPath.row];
-        
-        if ([row.identifier isEqualToString:GoogleLoginCell]) {
-            
-            UITableViewCell *cell = noti.object;
-            float loginViewWidth = CGRectGetWidth(loginViewController.view.frame);
-            float heightCell = [SimiGlobalFunction scaleValue:35];
-            float paddingY = [SimiGlobalFunction scaleValue:7.5];
-            float paddingX = [SimiGlobalFunction scaleValue:20];
-            
-            float widthCell = loginViewWidth - 2* paddingX;
-            GIDSignInButton* ggSignInButton = [GIDSignInButton new];
-            ggSignInButton.frame = CGRectMake(paddingX, paddingY , widthCell, heightCell);
-            cell.backgroundColor = [UIColor clearColor];
-            [cell addSubview:ggSignInButton];
-            [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
-        }
-    }
-}
 
 -(void) didLogout: (NSNotification*) noti{
     if([[GIDSignIn sharedInstance] currentUser])
