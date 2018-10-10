@@ -56,9 +56,9 @@
     if ([row.identifier isEqualToString:GoogleLoginCell]) {
         UITableViewCell *cell = [noti.userInfo objectForKey:KEYEVENT.SIMITABLEVIEWCONTROLLER.cell];
         float loginViewWidth = CGRectGetWidth(loginViewController.view.frame);
-        float heightCell = SCALEVALUE(35);
+        float heightCell = SCALEVALUE(32);
         float paddingY = SCALEVALUE(6);
-        float paddingX = SCALEVALUE(18);
+        float paddingX = SCALEVALUE(16);
         float widthCell = loginViewWidth - 2* paddingX;
         GIDSignInButton* ggSignInButton = [GIDSignInButton new];
         ggSignInButton.frame = CGRectMake(paddingX, paddingY , widthCell, heightCell);
