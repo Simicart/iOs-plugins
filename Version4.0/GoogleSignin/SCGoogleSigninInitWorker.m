@@ -19,6 +19,7 @@
     SimiCustomerModel* customerModel;
     SimiTable* cells;
     SimiViewController* loginViewController;
+    SimiGlobalVar *globalVar;
 }
 
 -(id) init{
@@ -35,6 +36,7 @@
         [GIDSignIn sharedInstance].delegate = self;
         [GIDSignIn sharedInstance].uiDelegate = self;
         [GIDSignIn sharedInstance].clientID = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"GoogleClientID"];
+        globalVar = GLOBALVAR;
     }
     return self;
 }
@@ -45,7 +47,9 @@
     SimiSection *section = [cells getSectionByIdentifier:LOGIN_SECTION];
     SimiRow *signInRow = [section getRowByIdentifier:LOGIN_SIGNIN_BUTTON];
     SimiRow *row = [[SimiRow alloc] initWithIdentifier:GoogleLoginCell height:SCALEVALUE(50) sortOrder:signInRow.sortOrder + 1];
-    [section addRow:row];
+    if ([[globalVar.storeView.base objectForKey:@"magento_version"] isKindOfClass:[NSString class]]) {
+        [section addRow:row];
+    }
 }
 
 - (void)initializedCellsOnLoginViewController:(NSNotification *)noti{
