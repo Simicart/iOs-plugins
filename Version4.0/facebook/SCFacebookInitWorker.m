@@ -151,8 +151,8 @@
 
 #pragma mark - Facebook Connect
 - (void)addObserversForFacebookConnect{
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initViewMoreAction:) name:@"SCProductMoreViewController_InitViewMoreAction" object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initViewMoreAction:) name:@"SCProductViewController_InitViewMoreAction" object:nil];
+//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initViewMoreAction:) name:@"SCProductMoreViewController_InitViewMoreAction" object:nil];
+//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initViewMoreAction:) name:@"SCProductViewController_InitViewMoreAction" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(resetFacebookViewPosition:) name:@"SCProductMoreViewController-BeforeTouchMoreAction" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(resetFacebookViewPosition:) name:@"SCProductViewController_BeforeTouchMoreAction" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(resetFacebookViewPosition:) name:@"SCProductSecondDesignViewControllerViewDidAppear" object:nil];
