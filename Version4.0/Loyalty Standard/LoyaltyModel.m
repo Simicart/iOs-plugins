@@ -27,7 +27,8 @@
     if([self.modelData objectForKey:@"loyalty_image"])
         self.loyaltyImage = [NSString stringWithFormat:@"%@",[self.modelData objectForKey:@"loyalty_image"]];
     if([self.modelData objectForKey:@"is_notification"])
-        self.isNotification = [NSString stringWithFormat:@"%@",[self.modelData objectForKey:@"is_notification"]];
+//        self.isNotification = [NSString stringWithFormat:@"%@",[self.modelData objectForKey:@"is_notification"]];
+        self.isNotification = [[self.modelData objectForKey:@"is_notification"] boolValue];
     if([self.modelData objectForKey:@"expire_notification"])
         self.expireNotification = [[self.modelData objectForKey:@"expire_notification"] boolValue];
     if([self.modelData objectForKey:@"earning_label"])
