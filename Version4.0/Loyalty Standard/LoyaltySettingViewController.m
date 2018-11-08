@@ -40,9 +40,11 @@
     [self.view addSubview:self.contentTableView];
     
     // Init Settings Data
-    _settings = [LoyaltyModel new];
-    [_settings setObject:_model.isNotification?@"1":@"0" forKey:@"is_notification"];
-    [_settings setValue:_model.expireNotification?@"1":@"0" forKey:@"expire_notification"];
+    _settings = [[LoyaltyModel alloc] initWithModelData:_model.modelData];
+    _settings.isNotification = _model.isNotification;
+    _settings.expireNotification = _model.expireNotification;
+//    [_settings setValue:_model.isNotification?@"1":@"0" forKey:@"is_notification"];
+//    [_settings setValue:_model.expireNotification?@"1":@"0" forKey:@"expire_notification"];
     [self initCells];
 }
 
@@ -119,8 +121,10 @@
 {
     if (sender.tag == (NSInteger)LOYALTY_EMAIL_NOTI) {
         [_settings setValue:sender.on?@1:@0 forKey:@"is_notification"];
+//        _settings.isNotification = sender.on?@1:@0;
     } else if (sender.tag == (NSInteger)LOYALTY_EMAIL_EXP) {
         [_settings setValue:sender.on?@1:@0 forKey:@"expire_notification"];
+//        _settings.expireNotification = sender.on?@1:@0;
     }
 }
 

@@ -263,8 +263,16 @@
             }else if ([fieldType isEqualToString:@"single_option"]) {
                 NSArray *optionArray = [fieldDict valueForKey:@"option_array"];
                 NSMutableArray *sources = [NSMutableArray new];
-                for (NSString *value in optionArray){
-                    [sources addObject:@{@"value":value,@"label":value}];
+                if ([optionArray count] > 0) {
+                    if ([[optionArray objectAtIndex:0] isKindOfClass:[NSDictionary class]]) {
+                        for (NSDictionary *value in optionArray){
+                            [sources addObject:@{@"value":[value objectForKey:@"value"],@"label":[value objectForKey:@"label"]}];
+                        }
+                    }else{
+                        for (NSString *value in optionArray){
+                            [sources addObject:@{@"value":value,@"label":value}];
+                        }
+                    }
                 }
                 [self.form addField:@"Select"
                         config:@{
