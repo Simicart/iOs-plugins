@@ -38,6 +38,15 @@
         _webView.delegate = self;
         NSURLRequest *request = [[NSURLRequest alloc]initWithURL:[NSURL URLWithString:_urlPath]];
         [_webView loadRequest:request];
+        
+//        NSHTTPCookieStorage *storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+//        for (NSHTTPCookie *cookie in [storage cookies]) {
+//            [storage deleteCookie:cookie];
+//        }
+//        [[NSUserDefaults standardUserDefaults] synchronize];
+//        NSMutableURLRequest * request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:_urlPath]];
+//        [request addValue:@"Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:25.0) Gecko/20100101 Firefox/25.0" forHTTPHeaderField:@"user-agent"];
+//        [_webView loadRequest:request];
     }
 }
 
